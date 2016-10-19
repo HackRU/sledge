@@ -1,4 +1,5 @@
 from gavel import app
+from gavel.devpost import get_devpost_data
 from gavel.models import *
 from gavel.constants import *
 import gavel.settings as settings
@@ -74,6 +75,15 @@ def item():
             db.session.commit()
         except IntegrityError as e:
             return render_template('error.html', message=str(e))
+    return redirect(url_for('admin'))
+
+@app.route('/admin/devpost', methods=['POST'])
+@utils.requires_auth
+def devpost():
+    #Item(self, name, location, desc)
+    for idx, item in enumerate(get_devpost_data(request.form['data'])):
+        db.session.add(Item(item[0], idx + 1, item[1]))
+    db.session.commit()
     return redirect(url_for('admin'))
 
 @app.route('/admin/item_patch', methods=['POST'])

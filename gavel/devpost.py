@@ -3,16 +3,15 @@ import csv
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
-def main(baseUrl = 'http://hackumass-ii.devpost.com'):
+def get_devpost_data(baseUrl = 'http://hackumass-ii.devpost.com'):
     subsUrl = baseUrl + '//submissions?page='
     count = 1
-    fieldsList = []
     while True:
         subsObj = BeautifulSoup(urlopen(subsUrl + str(count)), 'html.parser')
         submissions = subsObj.findAll('a', {'class':'block-wrapper-link fade link-to-software'})
         if len(submissions) != 0:
             for submission in submissions:
-                subUrl = submission.attrs['href']
+                # subUrl = submission.attrs['href']
                 # subObj = BeautifulSoup(urlopen(subUrl), 'html.parser')
 
                 title = getTitle(submission)
@@ -20,11 +19,10 @@ def main(baseUrl = 'http://hackumass-ii.devpost.com'):
                 # images = getImages(subObj)
                 # builtWith = getBuiltWith(subObj)
                 # fieldsList.append([title.get_text().strip(), subtitle.get_text().strip(), images, builtWith])
-                fieldsList.append([title.get_text().strip(), subtitle.get_text().strip()])
+                yield ([title.get_text().strip(), subtitle.get_text().strip()])
             count = count + 1
         else:
             break
-    writeToCSV(fieldsList)
 
 
 def getTitle(subObj):
@@ -72,6 +70,9 @@ def writeToCSV(fieldsList):
             writer.writerow((row[0], row[1], idx + 1))
     finally:
         csvFile.close()
+
+def main():
+    writeTOCSV(get_devpost_data())
 
 if __name__ == "__main__":
     main()

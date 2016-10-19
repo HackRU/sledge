@@ -154,10 +154,24 @@
 
 <div class="item">
   <div class="banner">
+    <h2>Add Items From Devpost</h2>
+  </div>
+  <div class="info">
+    <p>Enter the Devpost URL for submissions. ie. http://hackumass-ii.devpost.com</p>
+    <textarea name="data" form="devpost_form"></textarea>
+    <form action="/admin/devpost" method="post" id="devpost_form">
+      <input type="submit" name="action" value="Submit" class="button-full positive">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    </form>
+  </div>
+</div>
+
+<div class="item">
+  <div class="banner">
     <h2>Add Annotators</h2>
   </div>
   <div class="info">
-    <p>name, email, description (CSV format)</p>
+    <p>name, email, description (CSV formaitem_formt)</p>
     <textarea name="data" form="annotator_form"></textarea>
     <form action="/admin/annotator" method="post" id="annotator_form">
       <input type="submit" name="action" value="Submit" class="button-full positive">
