@@ -28,6 +28,7 @@
           <th data-sort-method="caseInsensitiveSort">Name</th>
           <th data-sort-method="caseInsensitiveSort">Location</th>
           <th data-sort-method="caseInsensitiveSort">Description</th>
+          <th data-sort-method="caseInsensitiveSort">Prize</th>
           <th class="sort-default" data-sort-method="number" data-sort-order="desc">Mu</th>
           <th data-sort-method="number">Sigma Squared</th>
           <th data-sort-method="number">Votes</th>
@@ -45,6 +46,7 @@
           <td>{{ item.name | safe }}</td>
           <td>{{ item.location | safe }}</td>
           <td class="preserve-formatting">{{ item.description | safe }}</td>
+          <td>{{ item.prize | safe }}</td>
           <td>{{ item.mu | round(4) }}</td>
           <td>{{ item.sigma_sq | round(4) }}</td>
           <td>{{ item_counts.get(item.id, 0) }}</td>
@@ -90,6 +92,7 @@
           <th data-sort-method="caseInsensitiveSort">Name</th>
           <th data-sort-method="caseInsensitiveSort">Email</th>
           <th data-sort-method="caseInsensitiveSort">Description</th>
+          <th data-sort-method="caseInsensitiveSort">Prize</th>
           <th data-sort-method="number">Votes</th>
           <th data-sort-method="number">Next (Id)</th>
           <th data-sort-method="number">Previous (Id)</th>
@@ -106,6 +109,7 @@
           <td>{{ annotator.name | safe }}</td>
           <td>{{ annotator.email | safe }}</td>
           <td>{{ annotator.description | safe }}</td>
+          <td>{{ annotator.prize | safe }}</td>
           <td>{{ counts.get(annotator.id, 0) }}</td>
           <td data-sort="{{ annotator.next_id or -1 }}">{{ annotator.next_id }}</td>
           <td data-sort="{{ annotator.prev_id or -1 }}">{{ annotator.prev_id }}</td>
@@ -143,7 +147,7 @@
     <h2>Add Items</h2>
   </div>
   <div class="info">
-    <p>name, location, description (CSV format)</p>
+    <p>name, location, description, prize (CSV format)</p>
     <textarea name="data" form="item_form"></textarea>
     <form action="/admin/item" method="post" id="item_form">
       <input type="submit" name="action" value="Submit" class="button-full positive">
@@ -157,7 +161,7 @@
     <h2>Add Items From Devpost</h2>
   </div>
   <div class="info">
-    <p>Enter the Devpost URL for submissions. ie. http://hackumass-ii.devpost.com</p>
+    <p>Enter the Devpost URL for submissions. ie. https://hackru-fall2016.devpost.com/submissions</p>
     <textarea name="data" form="devpost_form"></textarea>
     <form action="/admin/devpost" method="post" id="devpost_form">
       <input type="submit" name="action" value="Submit" class="button-full positive">
@@ -171,7 +175,7 @@
     <h2>Add Annotators</h2>
   </div>
   <div class="info">
-    <p>name, email, description (CSV formaitem_formt)</p>
+    <p>name, email, description, prize (CSV formaitem_formt)</p>
     <textarea name="data" form="annotator_form"></textarea>
     <form action="/admin/annotator" method="post" id="annotator_form">
       <input type="submit" name="action" value="Submit" class="button-full positive">

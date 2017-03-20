@@ -80,9 +80,9 @@ def item():
 @app.route('/admin/devpost', methods=['POST'])
 @utils.requires_auth
 def devpost():
-    #Item(self, name, location, desc)
-    for idx, item in enumerate(get_devpost_data(request.form['data'])):
-        db.session.add(Item(item[0], idx + 1, item[1]))
+    #Item(self, name, location, desc, prize)
+    for item in get_devpost_data(request.form['data']):
+        db.session.add(Item(*item))
     db.session.commit()
     return redirect(url_for('admin'))
 
@@ -98,6 +98,8 @@ def item_patch():
         item.name = request.form['name']
     if 'description' in request.form:
         item.description = request.form['description']
+    if 'prize' in request.form:
+        item.prize = request.form['prize']
     db.session.commit()
     return redirect(url_for('item_detail', item_id=item.id))
 

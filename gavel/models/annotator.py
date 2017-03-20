@@ -23,17 +23,19 @@ class Annotator(db.Model):
     prev_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     prev = db.relationship('Item', foreign_keys=[prev_id], uselist=False)
     ignore = db.relationship('Item', secondary=ignore_table)
+    prize = db.Column(db.String(120), nullable=False)
 
     alpha = db.Column(db.Float)
     beta = db.Column(db.Float)
 
-    def __init__(self, name, email, description):
+    def __init__(self, name, email, description, prize):
         self.name = name
         self.email = email
         self.description = description
         self.alpha = crowd_bt.ALPHA_PRIOR
         self.beta = crowd_bt.BETA_PRIOR
         self.secret = utils.gen_secret(32)
+        self.prize = prize
 
     def update_next(self, new_next):
         if new_next is not None:

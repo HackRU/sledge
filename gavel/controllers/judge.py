@@ -84,10 +84,10 @@ def vote():
             if annotator.prev.active and annotator.next.active:
                 if request.form['action'] == 'Previous':
                     perform_vote(annotator, next_won=False)
-                    decision = Decision(annotator, winner=annotator.prev, loser=annotator.next)
+                    decision = Decision(annotator, winner=annotator.prev, loser=annotator.next, prize=annotator.prev.prize)
                 elif request.form['action'] == 'Current':
                     perform_vote(annotator, next_won=True)
-                    decision = Decision(annotator, winner=annotator.next, loser=annotator.prev)
+                    decision = Decision(annotator, winner=annotator.next, loser=annotator.prev, prize=annotator.prev.prize)
                 db.session.add(decision)
             annotator.next.viewed.append(annotator) # counted as viewed even if deactivated
             annotator.prev = annotator.next
@@ -161,17 +161,18 @@ def preferred_items(annotator):
 
     if ignored_ids:
         available_items = Item.query.filter(
-            (Item.active == True) & (~Item.id.in_(ignored_ids))
+            (Item.active == True) & (Item.prize == annotator.prize) & (~Item.id.in_(ignored_ids))
         ).all()
     else:
-        available_items = Item.query.filter(Item.active == True)
+        available_items = Item.query.filter((Item.active == True) & (Item.prize == annotator.prize)).all()
 
     prioritized_items = [i for i in available_items if i.prioritized]
 
     items = prioritized_items if prioritized_items else available_items
 
     annotators = Annotator.query.filter(
-        (Annotator.active == True) & (Annotator.next != None) & (Annotator.updated != None)
+        (Annotator.active == True) & (Annotator.next != None) & (Annotator.updated != None) & \
+        (Annotator.prize == annotator.prize) \
     ).all()
     busy = {i.next.id for i in annotators if \
         (datetime.utcnow() - i.updated).total_seconds() < settings.TIMEOUT * 60}

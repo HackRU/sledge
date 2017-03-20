@@ -3,27 +3,36 @@ import csv
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
-def get_devpost_data(baseUrl = 'http://hackumass-ii.devpost.com'):
-    subsUrl = baseUrl + '//submissions?page='
-    count = 1
-    while True:
-        subsObj = BeautifulSoup(urlopen(subsUrl + str(count)), 'html.parser')
-        submissions = subsObj.findAll('a', {'class':'block-wrapper-link fade link-to-software'})
-        if len(submissions) != 0:
+def get_devpost_data(baseUrl = 'https://hackru-fall2016.devpost.com//submissions'): 
+    # get prize ID numbers
+    prize_finder = BeautifulSoup(urlopen(baseUrl), 'html.parser')
+    prize_IDs = [(int(x.get('value')), x.parent.text) for x in prize_finder.find('form', {'class': 'filter-submissions'}).find_all('input') if x.get('value').isdigit()]
+
+    locations = {}
+    next_location = 1
+    search_str = lambda page, id : baseUrl + "//search?page=%d&prize_filter%%5Bprizes%%5D%%5B%%5D=%d" % (page, id)
+    items = []
+    for id, prize in prize_IDs:
+        page = 1
+        submissions = BeautifulSoup(urlopen(search_str(page, id)), 'html.parser').findAll('a', {'class':'block-wrapper-link fade link-to-software'})
+        while len(submissions) != 0:
+            try:
+                submissions = BeautifulSoup(urlopen(search_str(page, id)), 'html.parser').findAll('a', {'class':'block-wrapper-link fade link-to-software'})
+            except:
+                continue
             for submission in submissions:
-                # subUrl = submission.attrs['href']
-                # subObj = BeautifulSoup(urlopen(subUrl), 'html.parser')
-
-                title = getTitle(submission)
-                subtitle = getSubtitle(submission)
-                # images = getImages(subObj)
-                # builtWith = getBuiltWith(subObj)
-                # fieldsList.append([title.get_text().strip(), subtitle.get_text().strip(), images, builtWith])
-                yield ([title.get_text().strip(), subtitle.get_text().strip()])
-            count = count + 1
-        else:
-            break
-
+                title = getTitle(submission).get_text().strip()
+                desc = getSubtitle(submission).get_text().strip()
+                if title in locations:
+                    table = locations[title]
+                else:
+                    table = next_location
+                    locations[title] = table
+                    next_location += 1
+                items.append([title, table, desc, prize])
+            page += 1
+        
+    return items
 
 def getTitle(subObj):
     title = subObj.find('h5')
@@ -72,7 +81,7 @@ def writeToCSV(fieldsList):
         csvFile.close()
 
 def main():
-    writeTOCSV(get_devpost_data())
+    print(get_devpost_data())
 
 if __name__ == "__main__":
     main()

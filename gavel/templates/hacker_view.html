@@ -13,6 +13,7 @@
           <th data-sort-method="caseInsensitiveSort">Name</th>
           <th data-sort-method="number">Location</th>
           <th data-sort-method="caseInsensitiveSort">Description</th>
+          <th data-sort-method="caseInsensitiveSort">Prize</th>
           <th data-sort-method="number">Seen</th>
         </tr>
       </thead>
@@ -22,6 +23,7 @@
           <td>{{ item.name | safe }}</td>
           <td>{{ item.location | safe }}</td>
           <td class="preserve-formatting">{{ item.description | safe }}</td>
+          <td>{{ item.prize | safe }}</td>
           <td>{{ item_counts.get(item.id, 0) }}</td>
         </tr>
         {% endfor %}

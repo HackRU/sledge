@@ -45,6 +45,17 @@
         </td>
       </tr>
       <tr>
+        <th>Prize</th>
+        <td>
+          <textarea name="prize" form="prize_form">{{ item.prize | safe }}</textarea>
+          <form action="/admin/item_patch" method="post" id="prize_form">
+            <input type="submit" name="action" value="Update" class="neutral">
+            <input type="hidden" name="item_id" value="{{ item.id }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+          </form>
+        </td>
+      </tr>
+      <tr>
         <th>Mu</th>
         <td>{{ item.mu }}</td>
       </tr>
