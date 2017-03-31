@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 def get_devpost_data(baseUrl = 'https://hackru-fall2016.devpost.com//submissions'): 
     # get prize ID numbers
     prize_finder = BeautifulSoup(urlopen(baseUrl), 'html.parser')
-    prize_IDs = [(int(x.get('value')), x.parent.text) for x in prize_finder.find('form', {'class': 'filter-submissions'}).find_all('input') if x.get('value').isdigit()]
+    prize_IDs = [(int(x.get('value')), x.parent.text.strip()) for x in prize_finder.find('form', {'class': 'filter-submissions'}).find_all('input') if x.get('value').isdigit()]
 
     locations = {}
     next_location = 1
