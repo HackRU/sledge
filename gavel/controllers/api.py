@@ -51,7 +51,7 @@ def decisions_dump():
 @app.route('/api/hackerquery/')
 def get_hack_by_name():
     who = request.args.get('name')
-    q = Items.query.filter(Item.name == who).all()
+    q = Item.query.filter(Item.name == who).all()
     data = [['Name', 'Location', 'Prize', 'Times Seen']] +\
            [[str(d.name), str(d.location), str(d.prize), get_seen_ct(d.id)] for d in q]
     return Response(utils.data_to_csv_string(data), mimetype='text/csv')
