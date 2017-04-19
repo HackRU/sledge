@@ -20,8 +20,10 @@
   <div class="banner">
     <h2>Items</h2>
   </div>
+  {% for prize, items in items_by_prize.items() %}
   <div class="info">
-    <table id="items">
+    <h2>{{ prize }}</h2>
+    <table id="items_{{ prize }}">
       <thead>
         <tr>
           <th data-sort-method="number">Id</th>
@@ -78,6 +80,8 @@
       </tbody>
     </table>
   </div>
+  <br>
+  {% endfor %}
 </div>
 
 <div class="item">
@@ -219,11 +223,13 @@
 <script src="{{ url_for('static', filename='js/vendor/tablesort.number.js') }}"></script>
 <script>
 var tables = [
-  document.getElementById('items'),
-  document.getElementById('annotators'),
+    {% for prize in items_by_prize.keys() %}
+    document.getElementById('items_{{ prize }}'),
+    {% endfor %}
+    document.getElementById('annotators'),
 ];
 for (var i = 0; i < tables.length; i++) {
-  new Tablesort(tables[i]);
+    new Tablesort(tables[i]);
 }
 </script>
 {% endblock %}

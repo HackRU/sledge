@@ -35,13 +35,21 @@ def admin():
                 skipped[i.id] = skipped.get(i.id, 0) + 1
     # settings
     setting_closed = Setting.value_of(SETTING_CLOSED) == SETTING_TRUE
+
+    prizes = set()
+    for item in items:
+        prizes.add(item.prize)
+    items_by_prize = {prize : [] for prize in prizes}
+    for item in items:
+        items_by_prize[item.prize].append(item)
+
     return render_template(
         'admin.html',
         annotators=annotators,
         counts=counts,
         item_counts=item_counts,
         skipped=skipped,
-        items=items,
+        items_by_prize=items_by_prize,
         votes=len(decisions),
         setting_closed=setting_closed,
     )
