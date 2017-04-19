@@ -1,7 +1,7 @@
 from gavel import app
 from gavel.models import *
 import gavel.utils as utils
-from flask import Response
+from flask import Response, request
 
 @app.route('/api/items.csv')
 @utils.requires_auth
