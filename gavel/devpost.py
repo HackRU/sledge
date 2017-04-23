@@ -25,7 +25,7 @@ def get_devpost_data(baseUrl = 'https://hackru-fall2016.devpost.com//submissions
                 table = next_location
                 locations[title] = table
                 next_location += 1
-            items.append([title, table, desc, prize])
+            items.append([title, table, desc, 'General'])
         page += 1
 
 
