@@ -9,7 +9,7 @@ def get_devpost_data(baseUrl = 'https://hackru-fall2016.devpost.com//submissions
     prize_IDs = [(int(x.get('value')), x.parent.text.strip()) for x in prize_finder.find('form', {'class': 'filter-submissions'}).find_all('input') if x.get('value').isdigit()]
 
     page = 1
-    default_search = lambda pg: baseUrl + '//page=%d' %(pg)
+    default_search = lambda pg: baseUrl + '?page=%d' %(pg)
     submissions = BeautifulSoup(urlopen(default_search(page)), 'html.parser').findAll('a', {'class':'block-wrapper-link fade link-to-software'})
     while len(submissions) != 0:
         try:
