@@ -8,6 +8,27 @@ def get_devpost_data(baseUrl = 'https://hackru-fall2016.devpost.com//submissions
     prize_finder = BeautifulSoup(urlopen(baseUrl), 'html.parser')
     prize_IDs = [(int(x.get('value')), x.parent.text.strip()) for x in prize_finder.find('form', {'class': 'filter-submissions'}).find_all('input') if x.get('value').isdigit()]
 
+    page = 1
+    default_search = lambda pg: baseUrl + '//page=%d' %(pg)
+    submissions = BeautifulSoup(urlopen(default_search(page)), 'html.parser').findAll('a', {'class':'block-wrapper-link fade link-to-software'})
+    while len(submissions) != 0:
+        try:
+            submissions = BeautifulSoup(urlopen(search_str(page, id)), 'html.parser').findAll('a', {'class':'block-wrapper-link fade link-to-software'})
+        except:
+            continue
+        for submission in submissions:
+            title = getTitle(submission).get_text().strip()
+            desc = getSubtitle(submission).get_text().strip()
+            if title in locations:
+                table = locations[title]
+            else:
+                table = next_location
+                locations[title] = table
+                next_location += 1
+            items.append([title, table, desc, prize])
+        page += 1
+
+
     locations = {}
     next_location = 1
     search_str = lambda page, id : baseUrl + "//search?page=%d&prize_filter%%5Bprizes%%5D%%5B%%5D=%d" % (page, id)
