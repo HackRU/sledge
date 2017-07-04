@@ -137,5 +137,5 @@ Copyright (c) 2015-2016 Anish Athalye. Released under AGPLv3. See
 [contributing]: CONTRIBUTING.md
 [license]: LICENSE.txt
 [development]: DEVELOPMENT.md
-[email]: mailto:me@anishathalye.com
+[email]: mailto:hemang@ndhi.ninja
 [gunicorn]: http://gunicorn.org/
