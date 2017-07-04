@@ -103,6 +103,49 @@ detailed.
 * This project uses [EditorConfig][editorconfig].
   [Download][editorconfig-download] a plugin for your editor!
 
+
+# Sledge Schemes
+
+This is sort of a tech spec for the changes that sledge would induce.
+
+## What does sledge mean?
+
+So Gavel is disliked for a simple reason: MLH (and most hackathon people) believe that projects stand in a pool that is the hackathon being judged. Hence, it is hard to objectively say "hack A is better than hack B". Instead, judges rank the projects in a weak ordering. The winning hack has the best of the orderings (the lowest net. ranking).
+
+Sledge (the sledgehammer to gavel) will let judges rank hacks throughout the hackathon instead of performing counter-intuitive comparisions.
+
+Additionally, there will be clearer ways to assign and re-assign the locations, allocate judges, and note unprepared presentations. Live updating will be supported where relevant.
+
+## How will scoring work?
+
+Scoring, due to the changes here, will not be done in the same way. (Gavel uses a lot of stats including a dynamically updating judge trustworthiness among other things.)
+
+Instead of Gavel's system (for now) Sledge will use a simple scheme: the project's ranks will be summed and then the lowest average rank will win. Here's an example:
+
+| Judge 1 | Judge 2 | Judge 3 | Overall |
+| --- | --- | --- | --- |
+| Hack A | Hack B | Hack A | Hack A |
+| Hack B | Hack A | Hack C | Hack B |
+| Hack C | Hack C | Hack B | Hack C |
+
+## What will change?
+
+### DB
+
+The database will change. The mean (mu) and standard deviation (sigma_sq) can safely be dropped from item as can a judge's alpha and beta scores.
+
+### Controllers
+
+Not much. Just may be a socket-based connection to each annotator and the admin page for live updating.
+
+### Templates
+
+The `vote.html` template will need to be changed. A lot. Basically re-written. Flex-box will be used... a lot.
+
+### JS?
+
+There'll need to be JS. The hope is for a drag-and-drop UI for the ranking.
+
 [gitter]: https://gitter.im/anishathalye/gavel
 [vagrant]: https://www.vagrantup.com/
 [virtualenv]: https://virtualenv.pypa.io/en/stable/
