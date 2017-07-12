@@ -4,11 +4,6 @@ import gavel.crowd_bt as crowd_bt
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
-ignore_table = db.Table('ignore',
-    db.Column('annotator_id', db.Integer, db.ForeignKey('annotator.id')),
-    db.Column('item_id', db.Integer, db.ForeignKey('item.id'))
-)
-
 class Annotator(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(120), nullable=False)
@@ -18,15 +13,12 @@ class Annotator(db.Model):
     description = db.Column(db.Text, nullable=False)
     secret = db.Column(db.String(32), unique=True, nullable=False)
     next_id = db.Column(db.Integer, db.ForeignKey('item.id'))
-    next = db.relationship('Item', foreign_keys=[next_id], uselist=False)
     updated = db.Column(db.DateTime)
     prev_id = db.Column(db.Integer, db.ForeignKey('item.id'))
-    prev = db.relationship('Item', foreign_keys=[prev_id], uselist=False)
-    ignore = db.relationship('Item', secondary=ignore_table)
     prize = db.Column(db.String(120), nullable=False)
 
-    alpha = db.Column(db.Float)
-    beta = db.Column(db.Float)
+    next = db.relationship('Item', foreign_keys=[next_id], uselist=False)
+    prev = db.relationship('Item', foreign_keys=[prev_id], uselist=False)
 
     def __init__(self, name, email, description, prize):
         self.name = name
