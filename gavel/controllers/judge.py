@@ -3,7 +3,6 @@ from gavel.models import *
 from gavel.constants import *
 import gavel.settings as settings
 import gavel.utils as utils
-import gavel.crowd_bt as crowd_bt
 from flask import (
     redirect,
     render_template,
@@ -11,7 +10,6 @@ from flask import (
     session,
     url_for,
 )
-from numpy.random import choice, random, shuffle
 from functools import wraps
 from datetime import datetime
 

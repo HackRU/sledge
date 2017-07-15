@@ -13,9 +13,10 @@
         "IGNORE_CONFIG_FILE": "true"
     },
     "keywords": [
+        "sledge",
         "gavel",
         "python",
         "flask"
     ],
-    "name": "Gavel Judging System"
+    "name": "Sledge Judging System"
 }
