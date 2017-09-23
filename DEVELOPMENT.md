@@ -144,7 +144,11 @@ The `vote.html` template will need to be changed. A lot. Basically re-written. F
 
 ### JS?
 
-There'll need to be JS. The hope is for a drag-and-drop UI for the ranking.
+There'll need to be JS. The hope is for a drag-and-drop UI for the ranking. Dragula has been chosen.
+
+### Allocation of judges.
+
+The way this will work is quite simple: there'll be an admin button to allow judges to start judging.
 
 [gitter]: https://gitter.im/anishathalye/gavel
 [vagrant]: https://www.vagrantup.com/
