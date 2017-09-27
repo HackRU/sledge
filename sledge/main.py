@@ -1,7 +1,7 @@
 import socketio
 from aiohttp import web
 
-sio = socketio.Asyncserver(async_mode='aiohttp')
+sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
 sio.attach(app)
 
@@ -13,6 +13,7 @@ async def index(request):
 sio.on('connect', namespace="/judge")
 def do_connect(sid, env):
     print(sid, "has connected")
+    print(env, "is env")
     return True
 
 sio.on('disconnect', namespace="/judge")(lambda sid: print("Disconnected:", sid))

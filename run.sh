@@ -2,4 +2,4 @@
 
 export sslmode="require"
 DEBUG=true
-python3 runserver.py
+python3 sledge/main.py
