@@ -1,7 +1,7 @@
 // This page will handle the rendering based on the sockets and user state
 
 $(function () {
-    const socket = io('http://localhost');
+    const socket = io('http://localhost', {query: 'tok=tik'});
 
     var csrf;
 

@@ -1,7 +1,9 @@
-from sledge.models import db
+from sledge.models import Model
+from sqlalchemy import Column, Integer, String, ForeignKey, Text
 
-class Prize(db.model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    is_best_overall = db.Column(db.Integer)
+class Prize(Model):
+    __tablename__ = "prizes"
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Text, nullable=False)
+    description = Column(Text, nullable=False)
+    is_best_overall = Column(Integer)

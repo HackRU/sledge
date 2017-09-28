@@ -1,17 +1,19 @@
-from sledge.models import db
+from sledge.models import Model, metadata
+from sqlalchemy import Column, Integer, String, ForeignKey, Table
 
-class Judge(db.model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
-    secret = db.Column(db.String(32), unique=True, nullable=False)
-    start_loc = db.Column(db.Integer)
-    end_loc = db.Column(db.Integer)
-    curr_loc = db.Column(db.Integer)
+class Judge(Model):
+    __tablename__ = "judges"
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String(120), nullable=False)
+    email = Column(String(120), nullable=False)
+    secret = Column(String(32), unique=True, nullable=False)
+    start_loc = Column(Integer)
+    end_loc = Column(Integer)
+    curr_loc = Column(Integer)
 
-judge_hack_prize = db.Table('judge_hack_prize',
-        db.Column('hack_1', db.Integer, db.ForeignKey('hack.id')),
-        db.Column('hack_2', db.Integer, db.ForeignKey('hack.id')),
-        db.Column('prize_id', db.Integer, db.ForeignKey('prize.id')),
-        db.Column('judge_id', db.Integer, db.ForeignKey('judge.id'))
+judge_hack_prize = Table('judge_hack_prize', metadata,
+        Column('hack_1', Integer, ForeignKey('hack.id')),
+        Column('hack_2', Integer, ForeignKey('hack.id')),
+        Column('prize_id', Integer, ForeignKey('prize.id')),
+        Column('judge_id', Integer, ForeignKey('judge.id'))
 )

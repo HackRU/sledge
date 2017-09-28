@@ -1,13 +1,16 @@
-from sledge.models import db
+from sledge.models import Model, metadata
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text
 
-class Hack(db.model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.Text, nullable=False)
-    location = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    views = db.Column(db.Integer)
+class Hack(Model):
+    __tablename__ = 'hacks'
 
-hack_prize = db.Table('hack_prize',
-        db.Column('hack_id', db.Integer, db.ForeignKey('hack.id')),
-        db.Column('prize_id', db.Integer, db.ForeignKey('prize.id'))
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Text, nullable=False)
+    location = Column(Text, nullable=False)
+    description = Column(Text, nullable=False)
+    views = Column(Integer)
+
+hack_prize = Table('hack_prize', metadata,
+        Column('hack_id', Integer, ForeignKey('hack.id')),
+        Column('prize_id', Integer, ForeignKey('prize.id'))
 )

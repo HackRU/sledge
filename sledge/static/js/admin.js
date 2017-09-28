@@ -1,7 +1,7 @@
 //Stalk all the messages! And then tell the admins what's up.
 
 $(function (){
-    const socket = io('http://localhost', {query: 'tok=tik'});
+    const socket = io('http://localhost', {query: 'admin=true&tok=rigved'});
 
     var csrf;
 
