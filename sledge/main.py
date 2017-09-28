@@ -1,7 +1,8 @@
 import socketio
 import json
-import sqlite3 as sql
+from sqlalchemy.orm import sessionmaker
 from aiohttp import web
+from models import Hack, Judge, Prize
 
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
@@ -9,7 +10,6 @@ sio.attach(app)
 
 tokens = ['test'] #for now
 
-# quick and useless tests
 @sio.on('connect')
 async def do_connect(sid, env):
     print(sid, "has connected")
@@ -20,7 +20,7 @@ async def do_connect(sid, env):
     else:
         return 'tok' in query and query['tok'] == 'the-hash-admin-password'
 
-@sio.on('test')
+@sio.on('add-hacks')
 async def run_test(sid, data):
     print(sid, "sent", data)
     
