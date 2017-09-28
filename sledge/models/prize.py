@@ -1,4 +1,4 @@
-from sledge.models import Model
+from models import Model
 from sqlalchemy import Column, Integer, String, ForeignKey, Text
 
 class Prize(Model):

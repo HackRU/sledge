@@ -1,4 +1,4 @@
-from sledge.models import Model, metadata
+from models import Model, metadata
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text
 
 class Hack(Model):

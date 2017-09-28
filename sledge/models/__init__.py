@@ -5,6 +5,6 @@ db = create_engine('sqlite:///sledge.db', echo=True)
 Model = declarative_base()
 metadata = MetaData()
 
-from sledge.models.judge import Judge, judge_hack_prize
-from sledge.models.hack import Hack, hack_prize
-from sledge.models.prize import Prize
+from models.judge import Judge, judge_hack_prize
+from models.hack import Hack, hack_prize
+from models.prize import Prize

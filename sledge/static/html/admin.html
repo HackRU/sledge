@@ -8,9 +8,23 @@
                 integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
                 crossorigin="anonymous"></script>
         <script src="../js/admin.js"></script>
- 
     </head>
     <body>
-        Hi Chris! TODO: Fixme.
+        <h1> Judges </h1>
+        <form><!-- We can't use the normal "submitting stuff" since no HTTP -->
+            <label for="judge-name">Name:</label><input type="text" id="judge-name"></input>
+            <label for="judge-email">Email:</label><input type="text" id="judge-email"></input>
+            <input type="button" id="add-judge" value="Add Judge"></input>
+        </form>
+        <div id="judge-view"></div>
+        <h1> Prizes </h1>
+        <form><!-- We can't use the normal "submitting stuff" since no HTTP -->
+            <label for="prize-name">Name:</label>
+            <input type="text" id="prize-name"></input>
+            <label for="prize-type">Is Best Overall:</label>
+            <input type="checkbox" id="prize-type"></input>
+            <input type="button" id="add-prize" value="Add Prize"></input>
+        </form>
+        <div id="prize-view"></div>
     </body>
 </html>
