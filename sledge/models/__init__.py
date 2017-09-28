@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
-db = create_engine('sqlite:///../../sledge.db')
+db = create_engine('sqlite:///sledge.db', echo=True)
 Model = declarative_base()
 metadata = MetaData()
 
