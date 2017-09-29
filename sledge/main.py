@@ -3,6 +3,7 @@ import json
 from sqlalchemy.orm import sessionmaker
 from aiohttp import web
 from models import Hack, Judge, Prize, db
+import utils
 
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
@@ -20,10 +21,6 @@ async def do_connect(sid, env):
         return 'tok' in query and query['tok'] in tokens
     else:
         return 'tok' in query and query['tok'] == 'the-hash-admin-password'
-
-@sio.on('add-hacks')
-async def run_test(sid, data):
-    print(sid, "sent", data)
 
 @sio.on('list-judges')
 async def list_judges(sid, data = None):
@@ -44,11 +41,15 @@ async def list_judges(sid, data = None):
     await sio.emit('judges-list', json.dumps(data))
 
 @sio.on('add-judge')
-async def add_judge(sid, data):
+async def add_judge(sid, judge_json):
     session = Sesh()
-    num_hacks = session.query(Hack).count()
-    judge_json = data
-    judge = Judge(name = judge_json['name'], email = judge_json['email'])
+    new_start, new_curr, new_end = await utils.allocate_judges(session)
+    judge = Judge(name = judge_json['name'],
+            email = judge_json['email'],
+            start_loc = new_start,
+            curr_loc = new_curr,
+            end_loc = new_end)
+    await utils.set_secret(judge)
     session.add(judge)
     session.commit()
     session.flush()

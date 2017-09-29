@@ -1,4 +1,39 @@
 import urllib.parse
+from models import Judge, Hack
+
+ct = 0
+async def set_secret(judge):
+    global ct
+    ct = ct + 1
+    judge.secret = 'testing string' + str(ct)
+
+async def allocate_judges(session):
+    VIEWS_PER_HACK = 3
+    num_hacks = session.query(Hack).count()
+    num_judges = session.query(Judge).count() + 1
+
+    if num_hacks == 0:
+        # don't waste time querying the DB... just wait.
+        return 0, 0, 0
+    if num_judges <= VIEWS_PER_HACK:
+        for judge in session.query(Judge):
+            judge.start_loc = 0
+            judge.end_loc = num_hacks - 1
+            session.add(judge)
+        session.commit()
+        return 0, 0, num_hacks - 1
+
+    total_hacks = num_hacks * VIEWS_PER_HACK
+    hacks_per_judge = total_hacks // num_judges
+    for idx, judge in enumerate(session.query(Judge)):
+        judge.start_loc = idx * hacks_per_judge
+        judge.curr_loc = judge.start_loc
+        judge.end_loc = (idx + 1) * hacks_per_judge - 1
+        session.add(judge)
+    session.commit()
+    left_hack = (num_judges - 1) * hacks_per_judge
+    right_hack = left_hack + hacks_per_judge
+    return left_hack, left_hack, right_hack
 
 def email_invite_links(annotators):
     if not isinstance(annotators, list):

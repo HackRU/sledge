@@ -1,7 +1,7 @@
 //Stalk all the messages! And then tell the admins what's up.
 
 var makeInputForAttr = function(attr, value){
-    return $('<input type="text" value="' + value + '" class="judge-input" data-obj-attr="' + attr + '"></input>');
+    return '<input type="text" value="' + value + '" class="judge-input" data-obj-attr="' + attr + '"></input>';
 }
 
 var tabulateObject = function(object){
