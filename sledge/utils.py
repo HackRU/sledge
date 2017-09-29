@@ -35,6 +35,9 @@ async def allocate_judges(session):
     right_hack = left_hack + hacks_per_judge
     return left_hack, left_hack, right_hack
 
+async def devpost_to_db(session, url):
+    pass
+
 def email_invite_links(annotators):
     if not isinstance(annotators, list):
         annotators = [annotators]

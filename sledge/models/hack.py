@@ -1,5 +1,6 @@
-from models import Model, metadata
+from models import Model, metadata, Prize
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text
+from sqlalchemy.orm import relation
 
 class Hack(Model):
     __tablename__ = 'hacks'
@@ -11,6 +12,8 @@ class Hack(Model):
     views = Column(Integer)
 
 hack_prize = Table('hack_prize', metadata,
-        Column('hack_id', Integer, ForeignKey('hack.id')),
-        Column('prize_id', Integer, ForeignKey('prize.id'))
+        Column('hack_id', Integer, ForeignKey(Hack.id)),
+        Column('prize_id', Integer, ForeignKey(Prize.id))
 )
+
+Hack.prizes = relation('Prize', secondary = hack_prize)

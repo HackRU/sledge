@@ -56,7 +56,12 @@ async def add_judge(sid, judge_json):
     session.close()
     await list_judges(sid)
 
-sio.on('disconnect')(lambda sid: print("Disconnected:", sid))
+@sio.on('devpost-scrape')
+async def scrape_devpost(sid, data):
+    session = Sesh()
+    await utils.devpost_to_db(session, data)
+    await sio.emit('list-prizes')
+    await sio.emit('list-hacks')
 
 if __name__ == "__main__":
     web.run_app(app)
