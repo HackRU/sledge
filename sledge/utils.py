@@ -1,5 +1,6 @@
 import urllib.parse
 from models import Judge, Hack
+from devpost import get_devpost_data
 
 ct = 0
 async def set_secret(judge):
@@ -36,7 +37,15 @@ async def allocate_judges(session):
     return left_hack, left_hack, right_hack
 
 async def devpost_to_db(session, url):
-    pass
+    prizes, hacks = get_devpost_data(url)
+    for prize in prizes:
+        session.add(prize)
+    session.commit()
+    for hack in hacks:
+        session.add(hack)
+    session.commit()
+    session.flush()
+    session.close()
 
 def email_invite_links(annotators):
     if not isinstance(annotators, list):

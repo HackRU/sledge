@@ -22,23 +22,40 @@ async def do_connect(sid, env):
     else:
         return 'tok' in query and query['tok'] == 'the-hash-admin-password'
 
+async def list_all(db_obj, transformer, emit_event):
+    venugopal = Sesh()
+    query = venugopal.query(db_obj) #don't query A_IN_112, venugopal Seshions don't support that.
+    data = []
+    for obj in query:
+        data.append(transformer(obj))
+    venugopal.close()
+    await sio.emit(emit_event, json.dumps(data))
+
 @sio.on('list-judges')
 async def list_judges(sid, data = None):
-    venugopal = Sesh()
-
-    query = venugopal.query(Judge) #don't query A_IN_112, venugopal Seshions don't support that.
-    data = []
-    for judge in query:
-        data.append({
+    await list_all(Judge, lambda judge: {
             'name': judge.name,
             'email': judge.email,
             'start_loc': judge.start_loc,
             'curr_loc': judge.curr_loc,
             'end_loc': judge.end_loc
-        })
-    venugopal.close()
-    print('Emiting judge data')
-    await sio.emit('judges-list', json.dumps(data))
+        }, 'judges-list')
+
+@sio.on('list-prizes')
+async def list_prizes(sid, data = None):
+    await list_all(Prize, lambda prize: {
+            'name': prize.name,
+            'description': prize.description,
+            'is_best_overall': prize.is_best_overall
+        }, 'prizes-list')
+
+@sio.on('list-hacks')
+async def list_hacks(sid, data = None):
+    await list_all(Hack, lambda hack: {
+            'name': hack.name,
+            'description': hack.description,
+            'location': hack.location
+        }, 'hacks-list')
 
 @sio.on('add-judge')
 async def add_judge(sid, judge_json):
@@ -60,8 +77,8 @@ async def add_judge(sid, judge_json):
 async def scrape_devpost(sid, data):
     session = Sesh()
     await utils.devpost_to_db(session, data)
-    await sio.emit('list-prizes')
-    await sio.emit('list-hacks')
+    await list_hacks()
+    await list_prizes()
 
 if __name__ == "__main__":
     web.run_app(app)
