@@ -1,5 +1,5 @@
 #! /bin/sh
 
 export sslmode="require"
-DEBUG=true
+export DEBUG=true
 python3 sledge/main.py

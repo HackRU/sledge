@@ -1,5 +1,6 @@
 import socketio
 import json
+import os
 from sqlalchemy.orm import sessionmaker
 from aiohttp import web
 from models import Hack, Judge, Prize, db
@@ -9,6 +10,8 @@ sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
 Sesh = sessionmaker(bind=db)
 sio.attach(app)
+
+staticdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static')
 
 tokens = ['test'] #for now
 
@@ -81,4 +84,8 @@ async def scrape_devpost(sid, data):
     await list_prizes()
 
 if __name__ == "__main__":
+    if os.environ.get('DEBUG') == 'true':
+        # In production, use nginx
+        app.router.add_get('/', lambda req: web.HTTPFound('/index.html'))
+        app.router.add_static('/', path=staticdir)
     web.run_app(app)
