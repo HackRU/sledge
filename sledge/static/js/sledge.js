@@ -3,10 +3,6 @@
 
 var socket;
 
-// Get Data
-
-//function get
-
 // Emit Wrappers
 
 function sendListJudges() {

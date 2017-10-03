@@ -71,19 +71,17 @@
 				<div class="col-md-8">
 
 					<h1 class="my-4">Hacks:
-						<small>name of specific hack </small>
+						<small id="hackName">name of specific hack </small>
 					</h1>
 
 					<!-- Blog Post -->
 					<div class="card mb-4">
 						<img class="card-img-top" src="/images/hackru.jpg" id="hackImage" alt="Card image cap">
 						<div class="card-body">
-							<h2 class="card-title">Table Location</h2>
+							<h2 class="card-title" id="hackLocation">Table Location</h2>
 							<p class="card-text" id="hackDescription">Loading...</p>
 						</div>
-						<div class="card-footer text-muted">
-							Posted on October 15, 2017 by
-							<a href="#" id="userName">persons username</a>
+						<div class="card-footer text-muted" id="hackAuthors">
 						</div>
 
 					</div>
@@ -232,7 +230,7 @@
 				 </div> -->
 				 <div class="btn-group" >
 					 <button type="button" class="btn input-block-level form-control dropdown-toggle"  data-toggle="dropdown">Other Hacks <span class="caret"></span></button>
-					 <ul class="dropdown-menu scrollable-menu" role="menu" >
+					 <ul class="dropdown-menu scrollable-menu" role="menu" id="hackMenu" >
 						 <li><a href="#">Hack #1</a></li>
 						 <li><a href="#">Hack #2</a></li>
 						 <li><a href="#">Hack #3</a></li>
@@ -616,10 +614,10 @@
 					</div>
 					<ul class="pagination justify-content-center mb-4">
 						<li class="page-item">
-							<a class="page-link" href="#">&larr; Previous Hack</a>
+							<a class="page-link" id="prevHackButton" href="javascript:void(0);">&larr; Previous Hack</a>
 						</li>
 						<li class="page-item disabled">
-							<a class="page-link" href="#">Next Hack &rarr;</a>
+							<a class="page-link" id="nextHackButton" href="javascript:void(0);">Next Hack &rarr;</a>
 
 						</li>
 					</ul>
