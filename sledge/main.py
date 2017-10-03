@@ -3,7 +3,7 @@ import json
 import os
 from sqlalchemy.orm import sessionmaker
 from aiohttp import web
-from models import Hack, Judge, Prize, db
+from models import *
 import utils
 
 sio = socketio.AsyncServer(async_mode='aiohttp')
@@ -24,7 +24,7 @@ async def do_connect(sid, env):
         return 'tok' in query and query['tok'] in tokens
     else:
         return 'tok' in query and query['tok'] == 'the-hash-admin-password'
-
+#HELPERS
 async def list_all(db_obj, transformer, emit_event):
     venugopal = Sesh()
     query = venugopal.query(db_obj) #don't query A_IN_112, venugopal Seshions don't support that.
@@ -34,6 +34,9 @@ async def list_all(db_obj, transformer, emit_event):
     venugopal.close()
     await sio.emit(emit_event, json.dumps(data))
 
+
+
+###Lists
 @sio.on('list-judges')
 async def list_judges(sid, data = None):
     await list_all(Judge, lambda judge: {
@@ -59,7 +62,7 @@ async def list_hacks(sid, data = None):
             'description': hack.description,
             'location': hack.location
         }, 'hacks-list')
-
+###Judge Stuff
 @sio.on('add-judge')
 async def add_judge(sid, judge_json):
     session = Sesh()
@@ -75,6 +78,30 @@ async def add_judge(sid, judge_json):
     session.flush()
     session.close()
     await list_judges(sid)
+
+@sio.on('judge')
+async def judge(sid, current_hack):
+	
+await sio.emit('next-hack', json.dumps(FILL))
+	
+@sio.on('view-hacks')
+async def view_hacks(sid, judge_data):
+	session = Sesh()
+	j = session.query(Judge).get(judge_data.judge_id)
+	startl = j.start_loc
+	endl = j.end_loc
+	valid_hacks = []
+	if(end_loc > start_loc)
+		valid_hacks = session.query(Hack).filter_by(location > startl and location < endl)
+	else
+		valid_hacks = session.query(Hack).filter_by(location < startl or location > endl)
+	hacks_for_judge = 
+				{
+				"judge_id":judge_data.judge_id,
+				"overall_total":length(valid_hacks)
+				"hacks:":valid_hacks
+				}
+await sio.emit('hacks-for-judge', json.dumps(hacks_for_judge))
 
 @sio.on('devpost-scrape')
 async def scrape_devpost(sid, data):
