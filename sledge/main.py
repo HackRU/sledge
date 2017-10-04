@@ -81,8 +81,7 @@ async def add_judge(sid, judge_json):
 
 @sio.on('judge')
 async def judge(sid, current_hack):
-	
-await sio.emit('next-hack', json.dumps(FILL))
+	pass	
 	
 @sio.on('view-hacks')
 async def view_hacks(sid, judge_data):
@@ -91,17 +90,16 @@ async def view_hacks(sid, judge_data):
 	startl = j.start_loc
 	endl = j.end_loc
 	valid_hacks = []
-	if(end_loc > start_loc)
+	if(end_loc > start_loc):
 		valid_hacks = session.query(Hack).filter_by(location > startl and location < endl)
-	else
+	else:
 		valid_hacks = session.query(Hack).filter_by(location < startl or location > endl)
-	hacks_for_judge = 
-				{
-				"judge_id":judge_data.judge_id,
-				"overall_total":length(valid_hacks)
-				"hacks:":valid_hacks
-				}
-await sio.emit('hacks-for-judge', json.dumps(hacks_for_judge))
+	jPrizes = session.query(judge_hack_prize).filter_by(judge_id)
+	hacks_for_judge = {	"judge_id":judge_data.judge_id,
+						"overall_total":length(valid_hacks),
+						"hacks":valid_hacks,
+						"superlatives":jPrizes }
+	await sio.emit('hacks-for-judge', json.dumps(hacks_for_judge))
 
 @sio.on('devpost-scrape')
 async def scrape_devpost(sid, data):

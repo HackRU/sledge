@@ -1,4 +1,4 @@
-from sledge.models import Model, db
+from models import Model, db
 from sqlalchemy.orm import sessionmaker
 
 DBSess = sessionmaker(bind=db)
