@@ -1,15 +1,28 @@
 //Stalk all the messages! And then tell the admins what's up.
-
-var makeInputForAttr = function(attr, value){
-    return '<input type="text" value="' + value + '" class="judge-input" data-obj-attr="' + attr + '"></input>';
+var makeInputForAttr = function(key, value){
+    return value;
 }
 
-var tabulateObject = function(object){
-    var htmlStr = '';
-    Object.keys(object).forEach(function(key) {
-        htmlStr += key + ':' + makeInputForAttr(key, object[key]) + '<br/>';
+var tabulateObject = function(object, keys){
+    var htmlStr = '<tr>';
+    keys.forEach(function(key) {
+        htmlStr += '<td>' + makeInputForAttr(key, object[key.toLowerCase().replace(' ', '_')]) + '</td>';
     });
-    return htmlStr;
+    return htmlStr + '</tr>';
+}
+
+var makeTableForObjs = function(objs, keys){
+    var html = '<tr>';
+    keys.forEach(function(key) {
+        html += '<th>' + key + '</th>';
+    });
+    html += "</tr>";
+
+    objs.forEach(function(o){
+        html += tabulateObject(o, keys);
+    });
+
+    return html;
 }
 
 $(function (){
@@ -25,18 +38,20 @@ $(function (){
     socket.on('judges-list', function(data) {
         $('#judge-view').empty();
         judges = JSON.parse(data);
-        judges.forEach(function(judge){
-            $('#judge-view').append(tabulateObject(judge));
-        });
+        $('#judge-view').html(makeTableForObjs(judges, ['Name', 'Email', 'Start Loc', 'End Loc', 'Curr Loc']));
         console.log(data);
     });
+
+    socket.on('hacks-list', function(data) {
+            $('#hack-view').empty();
+            hacks = JSON.parse(data);
+            $('#hack-view').html(makeTableForObjs(hacks, ['Name', 'Location', 'Description']));
+        });
 
     socket.on('prizes-list', function(data) {
         $('#prize-view').empty();
         prizes = JSON.parse(data);
-        prizes.forEach(function(prize){
-            $('#prize-view').append(tabulateObject(prize));
-        });
+        $('#prize-view').html(makeTableForObjs(prizes, ['Name', 'Is Best Overall']));
     });
 
     $('#add-judge').click(function(){
@@ -44,6 +59,10 @@ $(function (){
             name: $('#judge-name').val(),
             email: $('#judge-email').val()
         });
+    });
+
+    $('#devpost-button').click(function(){
+        socket.emit('devpost-scrape', $('#devpost-scrape').val());
     });
 
     socket.connect();

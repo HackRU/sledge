@@ -24,6 +24,7 @@ async def do_connect(sid, env):
         return 'tok' in query and query['tok'] in tokens
     else:
         return 'tok' in query and query['tok'] == 'the-hash-admin-password'
+
 #HELPERS
 async def list_all(db_obj, transformer, emit_event):
     venugopal = Sesh()
@@ -33,8 +34,6 @@ async def list_all(db_obj, transformer, emit_event):
         data.append(transformer(obj))
     venugopal.close()
     await sio.emit(emit_event, json.dumps(data))
-
-
 
 ###Lists
 @sio.on('list-judges')
@@ -105,8 +104,8 @@ async def view_hacks(sid, judge_data):
 async def scrape_devpost(sid, data):
     session = Sesh()
     await utils.devpost_to_db(session, data)
-    await list_hacks()
-    await list_prizes()
+    await list_hacks(sid)
+    await list_prizes(sid)
 
 if __name__ == "__main__":
     if os.environ.get('DEBUG') == 'true':

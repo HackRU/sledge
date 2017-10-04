@@ -16,7 +16,15 @@
             <label for="judge-email">Email:</label><input type="text" id="judge-email"></input>
             <input type="button" id="add-judge" value="Add Judge"></input>
         </form>
-        <div id="judge-view"></div>
+        <table id="judge-view">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Start Loc</th>
+                <th>End Loc</th>
+                <th>Curr Loc</th>
+            </tr>
+        </table>
         <h1> Prizes </h1>
         <form><!-- We can't use the normal "submitting stuff" since no HTTP -->
             <label for="prize-name">Name:</label>
@@ -25,6 +33,10 @@
             <input type="checkbox" id="prize-type"></input>
             <input type="button" id="add-prize" value="Add Prize"></input>
         </form>
-        <div id="prize-view"></div>
+        <table id="prize-view"></table>
+        <h1> Hacks </h1>
+        <input type="text" id="devpost-scrape" placeholder="Devpost URL"></input>
+        <input type="button" id="devpost-button" value="Scrape Devpost!"></input>
+        <table id="hack-view"></table>
     </body>
 </html>
