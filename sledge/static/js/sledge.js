@@ -2,6 +2,12 @@
 "use strict";
 
 var socket;
+var updateListeners = [];
+
+var sledgeState = {
+    hacks: [],
+    judges: []
+};
 
 // Emit Wrappers
 
@@ -36,19 +42,54 @@ function onConnect() {
 
 function onJudged() {
     console.log("Judged");
+
+    notifyUpdateListeners();
 }
 
 function onJudgesList(data) {
-    console.log("Judges List: ", data);
+    let judges = JSON.parse(data);
+    for (let judge of judges) {
+        sledgeState.judges[judge.id] = data;
+    }
+
+    notifyUpdateListeners();
 }
 
-function onListHacks(data) {
-    console.log("List Hacks: ", data);
+function onHacksList(data) {
+    let hacks = JSON.parse(data);
+    for (let hack of hacks) {
+        sledgeState.hacks[hack.id] = hack;
+    }
+
+    notifyUpdateListeners();
 }
 
 function onAddJudge(data) {
     console.log("Add Judge: ", data);
+
+    notifyUpdateListeners();
 }
+
+function notifyOnUpdate(cb) {
+    updateListeners.push(cb);
+}
+window.notifyOnUpdate = notifyOnUpdate;
+
+function notifyUpdateListeners() {
+    for ( let cb of updateListeners ) cb();
+}
+
+// Other
+
+function getSocket() {
+    return socket;
+}
+window.getSocket = getSocket;
+
+function getSledgeState() {
+    return sledgeState;
+}
+window.getSledgeState = getSledgeState;
 
 // Init
 
@@ -58,7 +99,7 @@ function initSocket({token, isAdmin=false}) {
     socket.on("connect", onConnect);
     socket.on("judged", onJudged);
     socket.on("judges-list", onJudgesList);
-    socket.on("list-hacks", onListHacks);
+    socket.on("hacks-list", onHacksList);
     socket.on("add-judge", onAddJudge);
 }
 window.initSocket = initSocket;

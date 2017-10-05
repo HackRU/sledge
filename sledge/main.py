@@ -43,7 +43,8 @@ async def list_judges(sid, data = None):
             'email': judge.email,
             'start_loc': judge.start_loc,
             'curr_loc': judge.curr_loc,
-            'end_loc': judge.end_loc
+            'end_loc': judge.end_loc,
+            'id': judge.id
         }, 'judges-list')
 
 @sio.on('list-prizes')
@@ -59,7 +60,8 @@ async def list_hacks(sid, data = None):
     await list_all(Hack, lambda hack: {
             'name': hack.name,
             'description': hack.description,
-            'location': hack.location
+            'location': hack.location,
+            'id': hack.id
         }, 'hacks-list')
 ###Judge Stuff
 @sio.on('add-judge')
@@ -80,8 +82,8 @@ async def add_judge(sid, judge_json):
 
 @sio.on('judge')
 async def judge(sid, current_hack):
-	pass	
-	
+    pass
+
 @sio.on('view-hacks')
 async def view_hacks(sid, judge_data):
 	session = Sesh()
