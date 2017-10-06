@@ -26,7 +26,7 @@ var makeTableForObjs = function(objs, keys){
 }
 
 $(function (){
-    const socket = io('http://localhost', {query: 'admin=true&tok=the-hash-admin-password'});
+    const socket = io({query: 'admin=true&tok=the-hash-admin-password'});
 
     socket.on('connect', function(data) {
         console.log('connected, allegedly');
