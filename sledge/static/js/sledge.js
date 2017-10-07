@@ -6,12 +6,12 @@ var updateListeners = [];
 
 var sledgeState = {
     hacks: [],
-    hacksAlphabetical: [],
-    alphabetPosition: [],
+    myHacks: [],
+    myHackPositions: [],
 
-    totalHacks: 0,
-
-    judges: []
+    judges: [],
+    myJudgeId: 1, // TODO
+    myTotalHacks: 0,
 };
 
 // Emit Wrappers
@@ -61,7 +61,14 @@ function onJudged() {
 function onJudgesList(data) {
     let judges = JSON.parse(data);
     for (let judge of judges) {
-        sledgeState.judges[judge.id] = data;
+        sledgeState.judges[judge.id] = {
+            id: judge.id,
+            name: judge.name,
+            email: judge.email,
+            currLoc: judge.curr_loc,
+            startLoc: judge.start_loc,
+            endLoc: judge.end_loc,
+        }
     }
 
     notifyUpdateListeners();
@@ -74,7 +81,8 @@ function onHacksList(data) {
     }
 
     // If this causes performance issues, change later
-    sledgeState.hacksAlphabetical = hacks.filter(x => !!x).sort( (x,y) => {
+    let myself = sledgeState.judges[sledgeState.myJudgeId];
+    sledgeState.myHacks = hacks.filter(x => !!x && x.id >= myself.startLoc && x.id < myself.endLoc).sort( (x,y) => {
         let i=0,j=0;
         let n1 = x.name.toLowerCase(),
             n2 = y.name.toLowerCase();
@@ -85,10 +93,10 @@ function onHacksList(data) {
         }
         return n1.length < n2.length;
     });
-    for (let i=0;i<sledgeState.hacksAlphabetical.length;i++) {
-        sledgeState.alphabetPosition[sledgeState.hacksAlphabetical[i].id] = i;
+    for (let i=0;i<sledgeState.myHacks.length;i++) {
+        sledgeState.myHackPositions[sledgeState.myHacks[i].id] = i;
     }
-    sledgeState.totalHacks = sledgeState.hacksAlphabetical.length;
+    sledgeState.myTotalHacks = sledgeState.myHacks.length;
 
     notifyUpdateListeners();
 }
