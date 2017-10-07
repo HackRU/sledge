@@ -68,7 +68,7 @@
 
         let pos = state.alphabetPosition[currentHack.id];
 
-        if ( pos+n > 0 && pos+n < state.totalHacks ) {
+        if ( pos+n >= 0 && pos+n < state.totalHacks ) {
             currentHack = state.hacksAlphabetical[pos+n];
             return true;
         }

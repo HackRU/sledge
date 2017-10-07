@@ -39,6 +39,13 @@ function sendAddJudge(data) {
 }
 window.sendAddJudge = sendAddJudge;
 
+function sendViewHacks(data) {
+    socket.emit("view-hacks", {
+        judge_id: data.judgeId,
+    });
+}
+window.sendViewHacks = sendViewHacks;
+
 // Socket Events
 
 function onConnect() {
@@ -92,6 +99,12 @@ function onAddJudge(data) {
     notifyUpdateListeners();
 }
 
+function onHacksForJudge(data) {
+    console.log("Hacks for Judge: ", JSON.parse(data));
+
+    notifyUpdateListeners();
+}
+
 function notifyOnUpdate(cb) {
     updateListeners.push(cb);
 }
@@ -123,6 +136,7 @@ function initSocket({token, isAdmin=false}) {
     socket.on("judges-list", onJudgesList);
     socket.on("hacks-list", onHacksList);
     socket.on("add-judge", onAddJudge);
+    socket.on("hacks-for-judge", onHacksForJudge);
 }
 window.initSocket = initSocket;
 
