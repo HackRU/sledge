@@ -1,6 +1,7 @@
 import socketio
 import json
 import os
+import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from aiohttp import web
 from models import *
@@ -87,19 +88,16 @@ async def judge(sid, current_hack):
 @sio.on('view-hacks')
 async def view_hacks(sid, judge_data):
     session = Sesh()
-    j = session.query(Judge).get(judge_data.judge_id)
+    j = session.query(Judge).get(judge_data.get('judge_id'))
     startl = j.start_loc
     endl = j.end_loc
-    valid_hacks = []
-    if(end_loc > start_loc):
-        valid_hacks = session.query(Hack).filter_by(location > startl and location < endl)
-    else:
-        valid_hacks = session.query(Hack).filter_by(location < startl or location > endl)
-    jPrizes = session.query(judge_hack_prize).filter_by(judge_id)
-    hacks_for_judge = {	"judge_id":judge_data.judge_id,
-                "overall_total":length(valid_hacks),
-                "hacks":valid_hacks,
-                "superlatives":jPrizes }
+    valid_hacks = session.execute(
+            sqlalchemy.text("SELECT * FROM hacks WHERE id BETWEEN :low AND :high"),
+            {"high": endl, "low": startl} )
+    jPrizes = session.query(judge_hack_prize).filter_by(judge_id=judge_data.get('judge_id'))
+    hacks_for_judge = {	"judge_id":judge_data.get('judge_id'),
+                "hacks": [dict(x) for x in valid_hacks],
+                "superlatives": [dict(x) for x in jPrizes] }
     await sio.emit('hacks-for-judge', json.dumps(hacks_for_judge))
 
 @sio.on('devpost-scrape')
