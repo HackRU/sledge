@@ -1,48 +1,52 @@
 (function () {
     initSocket({token: 'test'});
 
-    var currentHackId = -1;
-
-    function updateUI() {
-        let state = getSledgeState();
-
-        if ( currentHackId < 0 && state.hacks.length > 1 )
-            currentHackId = 1;
-
-        let currentHack = {
+    var currentHack = {
             id: -1,
             name: "[No Hacks Found]",
             location: "[No Hacks Found]",
             description: "[No Hacks Found]",
             view: 0
-        };
-        if ( currentHackId > 0 ) {
-            currentHack = state.hacks[currentHackId];
-        }
+    };
+    var state = null;
+
+    function updateUI() {
+        updateCurrentHack();
+        updatePrevNextButtons();
+        updateHacksDropdown();
+    }
+
+    function updateCurrentHack() {
+        if ( currentHack.id < 0 && state.totalHacks > 0 )
+            currentHack = state.hacksAlphabetical[0];
 
         // Current Hack
-        $("#hackLocation").text(currentHack.location);
-        $("#hackDescription").text(currentHack.description);
-        $("#hackName").text(currentHack.name);
+        $(".hack-name").text(currentHack.name);
+        $(".hack-location").text(currentHack.location);
+        $(".hack-description").text(currentHack.description);
+    }
 
-        // Buttons
-        if ( currentHackId + 1 < state.hacks.length ) {
+    function updatePrevNextButtons() {
+        let pos = -1;
+        if ( state.totalHacks > 0 )
+            pos = state.alphabetPosition[currentHack.id];
+
+        if ( pos < state.totalHacks - 1 ) {
             $("#nextHackButton").parent().removeClass("disabled");
         } else {
             $("#nextHackButton").parent().addClass("disabled");
         }
 
-        if ( currentHackId  >= 2 ) {
+        if ( pos > 0 ) {
             $("#prevHackButton").parent().removeClass("disabled");
         } else {
             $("#prevHackButton").parent().addClass("disabled");
         }
+    }
 
-        // Hack Dropdown
+    function updateHacksDropdown() {
         $("#hackMenu").html("");
-        for (hack of state.hacks) {
-            if (!hack) continue;
-
+        for (hack of state.hacksAlphabetical) {
             let li = document.createElement("li");
             let a  = document.createElement("a");
             a.href = "javascript: void(0);";
@@ -51,32 +55,51 @@
             $("#hackMenu").append(li);
 
             $(a).click( ((hack, evt) => {
-                currentHackId = hack.id;
+                currentHack = state.hacks[hack.id];
                 updateUI();
             }).bind(null, hack) );
         }
     }
     window.updateUI = updateUI;
 
-    function init() {
-        $("#prevHackButton").click(function () {
-            if ( currentHackId >= 2 ) {
-                judgeState.currentHack--;
-            }
+    function gotoRelativeHack(n) {
+        if ( state.totalHacks <= 0 )
+            return false;
 
+        let pos = state.alphabetPosition[currentHack.id];
+
+        if ( pos+n > 0 && pos+n < state.totalHacks ) {
+            currentHack = state.hacksAlphabetical[pos+n];
+            return true;
+        }
+        return false;
+    }
+
+    function init() {
+        state = getSledgeState();
+
+        $("#prevHackButton").click(function () {
+            gotoRelativeHack(-1);
             updateUI();
         });
         $("#nextHackButton").click(function () {
-            if ( judgeState.currentHack + 1 < judgeState.hacks.length ) {
-                judgeState.currentHack++;
-            }
-
+            gotoRelativeHack(1);
             updateUI();
         });
 
         notifyOnUpdate(updateUI);
 
         updateUI();
+
+        sendListHacks();
     }
-    //window.addEventListener("load", init);
+    window.addEventListener("load", init);
+
+    function getStateSummary() {
+        return {
+            currentHack,
+            state
+        };
+    }
+    window.getStateSummary = getStateSummary;
 })();

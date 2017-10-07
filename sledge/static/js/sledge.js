@@ -6,6 +6,11 @@ var updateListeners = [];
 
 var sledgeState = {
     hacks: [],
+    hacksAlphabetical: [],
+    alphabetPosition: [],
+
+    totalHacks: 0,
+
     judges: []
 };
 
@@ -60,6 +65,23 @@ function onHacksList(data) {
     for (let hack of hacks) {
         sledgeState.hacks[hack.id] = hack;
     }
+
+    // If this causes performance issues, change later
+    sledgeState.hacksAlphabetical = hacks.filter(x => !!x).sort( (x,y) => {
+        let i=0,j=0;
+        let n1 = x.name.toLowerCase(),
+            n2 = y.name.toLowerCase();
+        while ( i <  n1.length && j < n2.length ) {
+            if ( n1.charCodeAt(i) != n2.charCodeAt(j) )
+                return n1.charCodeAt(i) - n2.charCodeAt(j);
+            i++;j++;
+        }
+        return n1.length < n2.length;
+    });
+    for (let i=0;i<sledgeState.hacksAlphabetical.length;i++) {
+        sledgeState.alphabetPosition[sledgeState.hacksAlphabetical[i].id] = i;
+    }
+    sledgeState.totalHacks = sledgeState.hacksAlphabetical.length;
 
     notifyUpdateListeners();
 }
