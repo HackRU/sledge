@@ -76,6 +76,15 @@ function updateOverallRating() {
         }
     }
 
+    for (let i=0;i<ratingButtons.length;i++) {
+        for (let j=0;j<ratingButtons[i].length;j++) {
+            if ( j == ratings[currentHack.id][i] )
+                $(ratingButtons[i][j]).addClass("rating-selected");
+            else
+                $(ratingButtons[i][j]).removeClass("rating-selected");
+        }
+    }
+
     overallRating = ratings[currentHack.id].reduce( (x,y) => x+y, 0);
 
     $(".current-rating").text(overallRating.toString(10));
@@ -90,7 +99,6 @@ function gotoRelativeHack(n) {
 
     if ( pos+n >= 0 && pos+n < state.myTotalHacks ) {
         currentHack = state.myHacks[pos+n];
-        console.log(currentHack);
         return true;
     }
     return false;
@@ -115,7 +123,6 @@ function init() {
     dropdown.on("change", function (x) {
         let hackId = dropdown.val();
         if ( hackId && hackId > 0 ) {
-            console.log("WHy Why why?");
             currentHack = state.hacks[dropdown.val()];
             updateCurrentHack();
             updatePrevNextButtons();
@@ -133,6 +140,7 @@ function init() {
         let grp = document.createElement("div");
         $(grp).addClass("btn-group");
         $(grp).addClass("btn-group-justified");
+        $(grp).addClass("rubric-category");
         let btns = [];
         for (let opt of category.possibilities) {
             let a = document.createElement("a");
@@ -143,8 +151,6 @@ function init() {
             $(grp).append(a);
             (function (opt, i) {
                 $(a).on("click", function () {
-                    for (let btn of btns) $(btn).removeClass("rating-selected");
-                    $(a).addClass("rating-selected");
                     ratings[currentHack.id][i] = opt;
                     updateOverallRating();
                 });

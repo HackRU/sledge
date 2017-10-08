@@ -102,13 +102,17 @@ max-height: 300px;
 }
 
 .rating-selected {
-  background: green;
+  background: red;
 }
 
 .rating-selected:hover {
-  background: green;
+  background: red;
 }
 
 .hack-info {
-  height: 150px;
+  min-height: 150px;
+}
+
+.rubric-category {
+  margin-left: 30px;
 }
