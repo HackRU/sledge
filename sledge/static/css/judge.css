@@ -100,3 +100,15 @@ max-height: 300px;
 #help{
   color:red;
 }
+
+.rating-selected {
+  background: green;
+}
+
+.rating-selected:hover {
+  background: green;
+}
+
+.hack-info {
+  height: 150px;
+}

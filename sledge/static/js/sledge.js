@@ -12,7 +12,27 @@ var sledgeState = {
     judges: [],
     myJudgeId: 1, // TODO
     myTotalHacks: 0,
+
+    ratingCategories: [{
+        name: "Egregiousness",
+        possibilities: [0,1,2,3,4,5]
+    }, {
+        name: "Homeliness",
+        possibilities: [0,1,2,3,4,5]
+    }, {
+        name: "Abhorentness",
+        possibilities: [0,1,2,3,4,5]
+    }, {
+        name: "Inoperativeness",
+        possibilities: [0,1,2,3,4,5]
+    }],
 };
+
+// State that should probably be send to the server
+function sendRating(hackId, rating) {
+    sledgeState.ratings[hackId] = rating;
+}
+window.sendRating = sendRating;
 
 // Emit Wrappers
 
