@@ -26,6 +26,7 @@ var sledgeState = {
         name: "Inoperativeness",
         possibilities: [0,1,2,3,4,5]
     }],
+    ratings: [],
 };
 
 // State that should probably be send to the server
@@ -66,6 +67,20 @@ function sendViewHacks(data) {
 }
 window.sendViewHacks = sendViewHacks;
 
+function sendListRatings() {
+    socket.emit("list-ratings");
+}
+window.sendListRatings = sendListRatings;
+
+function sendAddRating(data) {
+    socket.emit("add-rating", {
+        judge_id: data.judgeId,
+        hack_id: data.hackId,
+        rating: data.rating
+    });
+}
+window.sendAddRating = sendAddRating;
+
 // Socket Events
 
 function onConnect() {
@@ -91,6 +106,21 @@ function onJudgesList(data) {
         }
     }
 
+    // Make sure we're actually a judge
+    if ( !sledgeState.judges[sledgeState.myJudgeId] ) {
+        swal({
+            title: "Unknown Judge Id!",
+            text: `We have detected you are judge ${sledgeState.myJudgeId} but we are unable to find `+
+                  `a judge with that id in the database. Please contact a sledge admin for assistance.`,
+            icon: "error",
+            button: {
+                text: "Refresh",
+                closeModal: false
+            }
+        }).then( () => window.location.reload() );
+        throw new Error("Can't find judge "+sledgeState.myJudgeId+" in database.");
+    }
+
     notifyUpdateListeners();
 }
 
@@ -98,6 +128,8 @@ function onHacksList(data) {
     let hacks = JSON.parse(data);
     for (let hack of hacks) {
         sledgeState.hacks[hack.id] = hack;
+        if (typeof sledgeState.ratings[hack.id] == "undefined")
+            sledgeState.ratings[hack.id] = null;
     }
 
     // If this causes performance issues, change later
@@ -129,6 +161,18 @@ function onAddJudge(data) {
 
 function onHacksForJudge(data) {
     console.log("Hacks for Judge: ", JSON.parse(data));
+
+    notifyUpdateListeners();
+}
+
+function onRatingsList(data) {
+    let ratings = JSON.parse(data);
+
+    for (let rating of ratings) {
+        if (rating.judge_id == sledgeState.myJudgeId) {
+            sledgeState.ratings[rating.hack_id] = rating.rating;
+        }
+    }
 
     notifyUpdateListeners();
 }
@@ -165,6 +209,7 @@ function initSocket({token, isAdmin=false}) {
     socket.on("hacks-list", onHacksList);
     socket.on("add-judge", onAddJudge);
     socket.on("hacks-for-judge", onHacksForJudge);
+    socket.on("ratings-list", onRatingsList);
 }
 window.initSocket = initSocket;
 

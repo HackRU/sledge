@@ -2,6 +2,7 @@ import socketio
 import json
 import os
 import sqlalchemy
+import sqlite3
 from sqlalchemy.orm import sessionmaker
 from aiohttp import web
 from models import *
@@ -56,6 +57,32 @@ async def list_prizes(sid, data = None):
             'is_best_overall': prize.is_best_overall
         }, 'prizes-list')
 
+@sio.on('list-ratings')
+async def list_ratings(sid, data = None):
+    session = Sesh()
+    ratings = session.execute(sqlalchemy.text("SELECT * FROM ratings"))
+    ratings_dict = [dict(x) for x in list(ratings)]
+    await sio.emit('ratings-list', json.dumps(ratings_dict))
+
+@sio.on('add-rating')
+async def add_rating(sid, data):
+    # I don't get sqlalchemy and sqlalchemy doesn't get me
+    conn = sqlite3.connect('sledge.db')
+    c = conn.cursor()
+    # TODO: Is there an equivelent query that works in sqlalchemy?
+    r = c.execute(
+        'INSERT OR REPLACE INTO ratings (id, judge_id, hack_id, rating) '
+        'VALUES ('
+            '(SELECT id FROM ratings WHERE judge_id=:judge_id AND hack_id=:hack_id),'
+            ':judge_id, :hack_id, :rating);',
+        {   'judge_id': data.get('judge_id'),
+            'hack_id': data.get('hack_id'),
+            'rating': data.get('rating') }
+    )
+    conn.commit()
+    conn.close()
+    await list_ratings(sid)
+
 @sio.on('list-hacks')
 async def list_hacks(sid, data = None):
     await list_all(Hack, lambda hack: {
@@ -64,7 +91,7 @@ async def list_hacks(sid, data = None):
             'location': hack.location,
             'id': hack.id
         }, 'hacks-list')
-###Judge Stuff
+##Judge Stuff
 @sio.on('add-judge')
 async def add_judge(sid, judge_json):
     session = Sesh()

@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css"  />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
 
 		<link rel="stylesheet" href="/css/judge.css" />
 	</head>
@@ -64,11 +65,11 @@
             <h5 class="card-header"  style="text-align: center;" >Overall Rating</h5>
             <div id="overallRatingCategories"></div>
             <div>
-              Previous Rating:&nbsp;<span class="previous-rating">[Previous Rating]</span><br/>
-              Current Rating:&nbsp;<span class="current-rating">[Current Rating]</span>
+              Currently Saved Rating:&nbsp;<b><span class="previous-rating">[Previous Rating]</span></b><br/>
+              New Rating:&nbsp;<b><span class="current-rating">[Current Rating]</span></b>
             </div>
             <em>Ratings aren't saved until you submit!</em>
-            <button class="btn btn-primary">Submit</button>
+            <button id="ratingsSubmit" class="btn btn-primary">Submit</button>
           </div>
 
         </div>
@@ -86,6 +87,7 @@
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script src="/js/sledge.js"></script>
         <script src="/js/judge.js"></script>
 

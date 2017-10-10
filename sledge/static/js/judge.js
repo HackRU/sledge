@@ -65,10 +65,13 @@ function updateHacksDropdown() {
         let option = new Option(hack.name, hack.id, false, false);
         dropdown.append(option);
     }
+    dropdown.val("-1");
     dropdown.trigger("change");
 }
 
 function updateOverallRating() {
+    if (currentHack.id < 0) return;
+
     if ( !ratings[currentHack.id] ) ratings[currentHack.id] = [];
     for (let i=0;i<state.ratingCategories.length;i++) {
         if (typeof ratings[currentHack.id][i] != "number" ) {
@@ -88,7 +91,7 @@ function updateOverallRating() {
     overallRating = ratings[currentHack.id].reduce( (x,y) => x+y, 0);
 
     $(".current-rating").text(overallRating.toString(10));
-    $(".previous-rating").text("None");
+    $(".previous-rating").text(state.ratings[currentHack.id]===null?"None":state.ratings[currentHack.id].toString(10));
 }
 
 function gotoRelativeHack(n) {
@@ -127,6 +130,8 @@ function init() {
             updateCurrentHack();
             updatePrevNextButtons();
             updateOverallRating();
+            dropdown.val("-1");
+            dropdown.trigger("change");
         }
     });
 
@@ -151,6 +156,7 @@ function init() {
             $(grp).append(a);
             (function (opt, i) {
                 $(a).on("click", function () {
+                    if (currentHack.id < 0) return;
                     ratings[currentHack.id][i] = opt;
                     updateOverallRating();
                 });
@@ -162,10 +168,20 @@ function init() {
         $("#overallRatingCategories").append(div);
     }
 
+    $("#ratingsSubmit").click(function (evt) {
+        if (currentHack.id < 0) return;
+        sendAddRating({
+            judgeId: state.myJudgeId,
+            hackId: currentHack.id,
+            rating: overallRating
+        });
+    });
+
     updateUI();
 
     sendListJudges();
     sendListHacks();
+    sendListRatings();
 }
 window.addEventListener("load", init);
 

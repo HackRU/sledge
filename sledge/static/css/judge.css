@@ -116,3 +116,7 @@ max-height: 300px;
 .rubric-category {
   margin-left: 30px;
 }
+
+.btn {
+  cursor: pointer;
+}
