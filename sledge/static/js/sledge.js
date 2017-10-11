@@ -10,7 +10,7 @@ var sledgeState = {
     myHackPositions: [],
 
     judges: [],
-    myJudgeId: 1, // TODO
+    myJudgeId: 0,
     myTotalHacks: 0,
 
     ratingCategories: [{
@@ -85,6 +85,10 @@ window.sendAddRating = sendAddRating;
 
 function onConnect() {
     console.log("Connected");
+}
+
+function onError(e) {
+    console.log("Error!", e);
 }
 
 function onJudged() {
@@ -200,10 +204,13 @@ window.getSledgeState = getSledgeState;
 
 // Init
 
-function initSocket({token, isAdmin=false}) {
+function initSocket({token, judgeId, isAdmin=false}) {
+    sledgeState.myJudgeId = judgeId;
+
     socket = io({query: `tok=${encodeURIComponent(token)}&admin=${isAdmin}`});
 
     socket.on("connect", onConnect);
+    socket.on("error", onError);
     socket.on("judged", onJudged);
     socket.on("judges-list", onJudgesList);
     socket.on("hacks-list", onHacksList);

@@ -1,8 +1,6 @@
 (function () {
 "use strict";
 
-initSocket({token: 'test'});
-
 var currentHack = {
         id: -1,
         name: "[No Hacks Found]",
@@ -108,6 +106,40 @@ function gotoRelativeHack(n) {
 }
 
 function init() {
+    let judgeId = null;
+    let token = null;
+    document.location.search.substr(1).split("&").forEach( q => {
+        let a = q.split("=");
+        if ( a.length < 2 ) return;
+
+        if (a[0] == "token") {
+            try {
+                token = decodeURIComponent(a[1]);
+            } catch (e) {console.log("Bad URI Component! Ignoring silently.", a[1]);}
+        } else if (a[0] == "judge") {
+            judgeId = parseInt(decodeURIComponent(a[1]));
+        }
+    });
+    if ( !judgeId || !token || isNaN(judgeId) ) {
+        swal({
+            title: "Invalid URL Parameters!",
+            text: `We have detected the URL you are using to access this page contains an invalid token `+
+                  `or Judge Id. Either your token "${token}" or Judge Id "${judgeId}" is invalid.\nPlease `+
+                  `contact a sledge admin for assistance.`,
+            icon: "error",
+            button: {
+                text: "Refresh",
+                closeModal: false
+            }
+        }).then( () => window.location.reload() );
+    }
+
+    initSocket({
+        token: token,
+        isAdmin: false,
+        judgeId: judgeId,
+    });
+
     state = getSledgeState();
 
     $("#prevHackButton").click(function () {
