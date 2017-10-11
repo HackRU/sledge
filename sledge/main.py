@@ -41,6 +41,7 @@ async def list_all(db_obj, transformer, emit_event):
 @sio.on('list-judges')
 async def list_judges(sid, data = None):
     await list_all(Judge, lambda judge: {
+            'id': judge.id,
             'name': judge.name,
             'email': judge.email,
             'start_loc': judge.start_loc,
@@ -52,6 +53,7 @@ async def list_judges(sid, data = None):
 @sio.on('list-prizes')
 async def list_prizes(sid, data = None):
     await list_all(Prize, lambda prize: {
+            'id': prize.id,
             'name': prize.name,
             'description': prize.description,
             'is_best_overall': prize.is_best_overall
@@ -79,9 +81,36 @@ async def add_rating(sid, data):
             'hack_id': data.get('hack_id'),
             'rating': data.get('rating') }
     )
+
+    for super_rating in data.get('superlatives'):
+        r = c.execute(
+                'INSERT OR REPLACE INTO judge_hack_prize (id, judge_id, prize_id, hack_1, hack_2)'
+                'VALUES ('
+                '(SELECT id FROM judge_hack_prize WHERE judge_id:=judge_id AND prize_id:=prize_id),'
+                ':judge_id, :prize_id :hack_1, :hack_2);',
+            {
+                'judge_id': data.get('judge_id'),
+                'prize_id': super_rating.get('prize_id'),
+                'hack_1': super_rating.get('hacks')[0],
+                'hack_2': super_rating.get('hacks')[1]
+            })
+
+    
+
     conn.commit()
     conn.close()
     await list_ratings(sid)
+
+@sio.on('list-superlatives')
+async def list_supers(sid, data):
+    #Fuck sqlalchemy
+    conn = sqlite3.connect('sledge.db')
+    c = conn.cursor()
+    supers = c.execute('SELECT * FROM judge_hack_prize WHERE judge_id=:judge_id', {'judge_id': data})
+    supers = map(dict, supers)
+    conn.commit()
+    conn.close()
+    await sio.emit('superlatives-list', supers)
 
 @sio.on('list-hacks')
 async def list_hacks(sid, data = None):
@@ -89,7 +118,8 @@ async def list_hacks(sid, data = None):
             'name': hack.name,
             'description': hack.description,
             'location': hack.location,
-            'id': hack.id
+            'id': hack.id,
+            'prizes': [p.id for p in hack.prizes]
         }, 'hacks-list')
 ##Judge Stuff
 @sio.on('add-judge')
@@ -107,10 +137,6 @@ async def add_judge(sid, judge_json):
     session.flush()
     session.close()
     await list_judges(sid)
-
-@sio.on('judge')
-async def judge(sid, current_hack):
-    pass
 
 @sio.on('view-hacks')
 async def view_hacks(sid, judge_data):
