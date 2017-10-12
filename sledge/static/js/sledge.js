@@ -13,6 +13,9 @@ var sledgeState = {
     myJudgeId: 0,
     myTotalHacks: 0,
 
+    superlatives: [],
+    superlativesAwarded: [],
+
     ratingCategories: [{
         name: "Egregiousness",
         possibilities: [0,1,2,3,4,5]
@@ -76,10 +79,25 @@ function sendAddRating(data) {
     socket.emit("add-rating", {
         judge_id: data.judgeId,
         hack_id: data.hackId,
-        rating: data.rating
+        rating: data.rating,
     });
 }
 window.sendAddRating = sendAddRating;
+
+function sendAddSuperlative(data) {
+    socket.emit("add-superlative", {
+        judge_id: data.judgeId,
+        prize_id: data.prizeId,
+        hack1: data.hack1,
+        hack2: data.hack2
+    });
+}
+window.sendAddSuperlative = sendAddSuperlative;
+
+function sendListSuperlatives() {
+    socket.emit("list-superlatives");
+}
+window.sendListSuperlatives = sendListSuperlatives;
 
 // Socket Events
 
@@ -181,6 +199,25 @@ function onRatingsList(data) {
     notifyUpdateListeners();
 }
 
+function onSuperlativesList(data) {
+    for (let sup of data) {
+        if (sup.judge_id == judgeState.myJudgeId) {
+            sledgeState.superlativesAwarded[sup.prize_id] = sup;
+        }
+    }
+
+    notifyUpdateListeners();
+}
+
+function onPrizesList(data) {
+    let prizes = JSON.parse(data);
+    for (let prize of prizes) {
+        sledgeState.superlatives[prize.id] = prize;
+    }
+
+    notifyUpdateListeners();
+}
+
 function notifyOnUpdate(cb) {
     updateListeners.push(cb);
 }
@@ -217,6 +254,8 @@ function initSocket({token, judgeId, isAdmin=false}) {
     socket.on("add-judge", onAddJudge);
     socket.on("hacks-for-judge", onHacksForJudge);
     socket.on("ratings-list", onRatingsList);
+    socket.on("superlatives-list", onSuperlativesList);
+    socket.on("prizes-list", onPrizesList);
 }
 window.initSocket = initSocket;
 

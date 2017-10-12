@@ -120,3 +120,8 @@ max-height: 300px;
 .btn {
   cursor: pointer;
 }
+
+#superlativeTable {
+  width: 100%;
+  text-align: center;
+}

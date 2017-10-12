@@ -19,6 +19,7 @@ function updateUI() {
     updatePrevNextButtons();
     updateHacksDropdown();
     updateOverallRating();
+    updateSuperlatives();
 }
 window.updateUI = updateUI;
 
@@ -90,6 +91,54 @@ function updateOverallRating() {
 
     $(".current-rating").text(overallRating.toString(10));
     $(".previous-rating").text(state.ratings[currentHack.id]===null?"None":state.ratings[currentHack.id].toString(10));
+}
+
+function updateSuperlatives() {
+    let table = $("#superlativeTable");
+    table.html("");
+    for (let sup of state.superlatives) {
+        console.log(sup);
+        if (!sup) continue;
+        let row = document.createElement("tr");
+        let name_td = document.createElement("td");
+        $(name_td).text(sup.name);
+        $(row).append(name_td);
+        let hacks_td = document.createElement("td");
+        if (state.superlativesAwarded[sup.prize_id]) {
+            let hack1 = document.createElement("span");
+            $(hack1).text(state.hacks[state.superlativesAwarded[sup.prize_id].hack1].name);
+            $(hacks_td).append(hack1);
+            let hack2 = document.createElement("span");
+            $(hack2).text(state.hacks[state.superlativesAwarded[sup.prize_id].hack2].name);
+            $(hacks_td).append(hack2);
+        } else {
+            let nohack = document.createElement("span");
+            $(nohack).text("[None]");
+            $(hacks_td).append(nohack);
+        }
+        $(row).append(hacks_td);
+        let actions_td = document.createElement("td");
+        let actions_first = document.createElement("button");
+        $(actions_first).addClass("btn");
+        $(actions_first).text("Set Current Hack as First");
+        $(actions_first).click(function () {
+        });
+        $(actions_td).append(actions_first);
+        let actions_second = document.createElement("button");
+        $(actions_second).addClass("btn");
+        $(actions_second).text("Set Current Hack as Second");
+        $(actions_second).click(function () {
+        });
+        $(actions_td).append(actions_second);
+        let actions_swap = document.createElement("button");
+        $(actions_swap).addClass("btn");
+        $(actions_swap).text("Swap First and Second Place");
+        $(actions_swap).click(function () {
+        });
+        $(actions_td).append(actions_swap);
+        $(row).append(actions_td);
+        $(table).append(row);
+    }
 }
 
 function gotoRelativeHack(n) {
@@ -207,6 +256,7 @@ function init() {
             hackId: currentHack.id,
             rating: overallRating
         });
+        sendListRatings();
     });
 
     updateUI();
