@@ -106,7 +106,7 @@ async def list_supers(sid, data):
     #Fuck sqlalchemy
     conn = sqlite3.connect('sledge.db')
     c = conn.cursor()
-    supers = c.execute('SELECT * FROM judge_hack_prize WHERE judge_id=:judge_id', {'judge_id': data})
+    supers = c.execute('SELECT * FROM judge_hack_prize')
     supers = map(dict, supers)
     conn.commit()
     conn.close()
