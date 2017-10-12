@@ -1,8 +1,6 @@
 (function () {
 "use strict";
 
-initSocket({token: 'test'});
-
 var currentHack = {
         id: -1,
         name: "[No Hacks Found]",
@@ -21,6 +19,7 @@ function updateUI() {
     updatePrevNextButtons();
     updateHacksDropdown();
     updateOverallRating();
+    updateSuperlatives();
 }
 window.updateUI = updateUI;
 
@@ -94,6 +93,54 @@ function updateOverallRating() {
     $(".previous-rating").text(state.ratings[currentHack.id]===null?"None":state.ratings[currentHack.id].toString(10));
 }
 
+function updateSuperlatives() {
+    let table = $("#superlativeTable");
+    table.html("");
+    for (let sup of state.superlatives) {
+        console.log(sup);
+        if (!sup) continue;
+        let row = document.createElement("tr");
+        let name_td = document.createElement("td");
+        $(name_td).text(sup.name);
+        $(row).append(name_td);
+        let hacks_td = document.createElement("td");
+        if (state.superlativesAwarded[sup.prize_id]) {
+            let hack1 = document.createElement("span");
+            $(hack1).text(state.hacks[state.superlativesAwarded[sup.prize_id].hack1].name);
+            $(hacks_td).append(hack1);
+            let hack2 = document.createElement("span");
+            $(hack2).text(state.hacks[state.superlativesAwarded[sup.prize_id].hack2].name);
+            $(hacks_td).append(hack2);
+        } else {
+            let nohack = document.createElement("span");
+            $(nohack).text("[None]");
+            $(hacks_td).append(nohack);
+        }
+        $(row).append(hacks_td);
+        let actions_td = document.createElement("td");
+        let actions_first = document.createElement("button");
+        $(actions_first).addClass("btn");
+        $(actions_first).text("Set Current Hack as First");
+        $(actions_first).click(function () {
+        });
+        $(actions_td).append(actions_first);
+        let actions_second = document.createElement("button");
+        $(actions_second).addClass("btn");
+        $(actions_second).text("Set Current Hack as Second");
+        $(actions_second).click(function () {
+        });
+        $(actions_td).append(actions_second);
+        let actions_swap = document.createElement("button");
+        $(actions_swap).addClass("btn");
+        $(actions_swap).text("Swap First and Second Place");
+        $(actions_swap).click(function () {
+        });
+        $(actions_td).append(actions_swap);
+        $(row).append(actions_td);
+        $(table).append(row);
+    }
+}
+
 function gotoRelativeHack(n) {
     if ( state.myTotalHacks <= 0 )
         return false;
@@ -108,6 +155,40 @@ function gotoRelativeHack(n) {
 }
 
 function init() {
+    let judgeId = null;
+    let token = null;
+    document.location.search.substr(1).split("&").forEach( q => {
+        let a = q.split("=");
+        if ( a.length < 2 ) return;
+
+        if (a[0] == "token") {
+            try {
+                token = decodeURIComponent(a[1]);
+            } catch (e) {console.log("Bad URI Component! Ignoring silently.", a[1]);}
+        } else if (a[0] == "judge") {
+            judgeId = parseInt(decodeURIComponent(a[1]));
+        }
+    });
+    if ( !judgeId || !token || isNaN(judgeId) ) {
+        swal({
+            title: "Invalid URL Parameters!",
+            text: `We have detected the URL you are using to access this page contains an invalid token `+
+                  `or Judge Id. Either your token "${token}" or Judge Id "${judgeId}" is invalid.\nPlease `+
+                  `contact a sledge admin for assistance.`,
+            icon: "error",
+            button: {
+                text: "Refresh",
+                closeModal: false
+            }
+        }).then( () => window.location.reload() );
+    }
+
+    initSocket({
+        token: token,
+        isAdmin: false,
+        judgeId: judgeId,
+    });
+
     state = getSledgeState();
 
     $("#prevHackButton").click(function () {
@@ -175,6 +256,7 @@ function init() {
             hackId: currentHack.id,
             rating: overallRating
         });
+        sendListRatings();
     });
 
     updateUI();

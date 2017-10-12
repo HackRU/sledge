@@ -10,8 +10,11 @@ var sledgeState = {
     myHackPositions: [],
 
     judges: [],
-    myJudgeId: 1, // TODO
+    myJudgeId: 0,
     myTotalHacks: 0,
+
+    superlatives: [],
+    superlativesAwarded: [],
 
     ratingCategories: [{
         name: "Egregiousness",
@@ -76,15 +79,34 @@ function sendAddRating(data) {
     socket.emit("add-rating", {
         judge_id: data.judgeId,
         hack_id: data.hackId,
-        rating: data.rating
+        rating: data.rating,
     });
 }
 window.sendAddRating = sendAddRating;
+
+function sendAddSuperlative(data) {
+    socket.emit("add-superlative", {
+        judge_id: data.judgeId,
+        prize_id: data.prizeId,
+        hack1: data.hack1,
+        hack2: data.hack2
+    });
+}
+window.sendAddSuperlative = sendAddSuperlative;
+
+function sendListSuperlatives() {
+    socket.emit("list-superlatives");
+}
+window.sendListSuperlatives = sendListSuperlatives;
 
 // Socket Events
 
 function onConnect() {
     console.log("Connected");
+}
+
+function onError(e) {
+    console.log("Error!", e);
 }
 
 function onJudged() {
@@ -177,6 +199,25 @@ function onRatingsList(data) {
     notifyUpdateListeners();
 }
 
+function onSuperlativesList(data) {
+    for (let sup of data) {
+        if (sup.judge_id == judgeState.myJudgeId) {
+            sledgeState.superlativesAwarded[sup.prize_id] = sup;
+        }
+    }
+
+    notifyUpdateListeners();
+}
+
+function onPrizesList(data) {
+    let prizes = JSON.parse(data);
+    for (let prize of prizes) {
+        sledgeState.superlatives[prize.id] = prize;
+    }
+
+    notifyUpdateListeners();
+}
+
 function notifyOnUpdate(cb) {
     updateListeners.push(cb);
 }
@@ -200,16 +241,21 @@ window.getSledgeState = getSledgeState;
 
 // Init
 
-function initSocket({token, isAdmin=false}) {
+function initSocket({token, judgeId, isAdmin=false}) {
+    sledgeState.myJudgeId = judgeId;
+
     socket = io({query: `tok=${encodeURIComponent(token)}&admin=${isAdmin}`});
 
     socket.on("connect", onConnect);
+    socket.on("error", onError);
     socket.on("judged", onJudged);
     socket.on("judges-list", onJudgesList);
     socket.on("hacks-list", onHacksList);
     socket.on("add-judge", onAddJudge);
     socket.on("hacks-for-judge", onHacksForJudge);
     socket.on("ratings-list", onRatingsList);
+    socket.on("superlatives-list", onSuperlativesList);
+    socket.on("prizes-list", onPrizesList);
 }
 window.initSocket = initSocket;
 

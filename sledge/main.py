@@ -81,36 +81,42 @@ async def add_rating(sid, data):
             'hack_id': data.get('hack_id'),
             'rating': data.get('rating') }
     )
-
-    for super_rating in data.get('superlatives'):
-        r = c.execute(
-                'INSERT OR REPLACE INTO judge_hack_prize (id, judge_id, prize_id, hack_1, hack_2)'
-                'VALUES ('
-                '(SELECT id FROM judge_hack_prize WHERE judge_id:=judge_id AND prize_id:=prize_id),'
-                ':judge_id, :prize_id :hack_1, :hack_2);',
-            {
-                'judge_id': data.get('judge_id'),
-                'prize_id': super_rating.get('prize_id'),
-                'hack_1': super_rating.get('hacks')[0],
-                'hack_2': super_rating.get('hacks')[1]
-            })
-
-    
-
     conn.commit()
     conn.close()
-    await list_ratings(sid)
+
+@sio.on('add-superlative')
+async def add_superlative(sid, data):
+    conn = sqlite3.connect('sledge.db')
+    c = conn.cursor()
+    c.execute(
+            'INSERT OR REPLACE INTO judge_hack_prize (id, judge_id, prize_id, hack_1, hack_2)'
+            'VALUES ('
+            '(SELECT id FROM judge_hack_prize WHERE judge_id=:judge_id AND prize_id=:prize_id),'
+            ':judge_id, :prize_id, :hack_1, :hack_2);',
+        {
+            'judge_id': data.get('judge_id'),
+            'prize_id': data.get('prize_id'),
+            'hack_1': data.get('hack1'),
+            'hack_2': data.get('hack2')
+        })
+    conn.commit();
+    conn.close()
 
 @sio.on('list-superlatives')
-async def list_supers(sid, data):
+async def list_supers(sid):
     #Fuck sqlalchemy
     conn = sqlite3.connect('sledge.db')
     c = conn.cursor()
-    supers = c.execute('SELECT * FROM judge_hack_prize')
-    supers = map(dict, supers)
+    c.execute('SELECT * FROM judge_hack_prize')
+    supers = map(lambda jhp: {
+        'judge_id': jhp.judge_id,
+        'prize_id': jhp.prize_id,
+        'hack1': jhp.hack_1,
+        'hack2': jhp.hack_2
+        }, c.fetchall())
     conn.commit()
     conn.close()
-    await sio.emit('superlatives-list', supers)
+    await sio.emit('superlatives-list', list(supers))
 
 @sio.on('list-hacks')
 async def list_hacks(sid, data = None):
