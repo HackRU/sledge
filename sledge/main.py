@@ -11,6 +11,7 @@ import utils
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
 Sesh = sessionmaker(bind=db)
+sconn = sqlite3.connect('sledge.db')
 sio.attach(app)
 
 staticdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static')
@@ -69,8 +70,7 @@ async def list_ratings(sid, data = None):
 @sio.on('add-rating')
 async def add_rating(sid, data):
     # I don't get sqlalchemy and sqlalchemy doesn't get me
-    conn = sqlite3.connect('sledge.db')
-    c = conn.cursor()
+    c = sconn.cursor()
     # TODO: Is there an equivelent query that works in sqlalchemy?
     r = c.execute(
         'INSERT OR REPLACE INTO ratings (id, judge_id, hack_id, rating) '
@@ -81,13 +81,11 @@ async def add_rating(sid, data):
             'hack_id': data.get('hack_id'),
             'rating': data.get('rating') }
     )
-    conn.commit()
-    conn.close()
+    sconn.commit()
 
 @sio.on('add-superlative')
 async def add_superlative(sid, data):
-    conn = sqlite3.connect('sledge.db')
-    c = conn.cursor()
+    c = sconn.cursor()
     c.execute(
             'INSERT OR REPLACE INTO judge_hack_prize (id, judge_id, prize_id, hack_1, hack_2)'
             'VALUES ('
@@ -99,23 +97,20 @@ async def add_superlative(sid, data):
             'hack_1': data.get('hack1'),
             'hack_2': data.get('hack2')
         })
-    conn.commit();
-    conn.close()
+    sconn.commit();
 
 @sio.on('list-superlatives')
 async def list_supers(sid):
     #Fuck sqlalchemy
-    conn = sqlite3.connect('sledge.db')
-    c = conn.cursor()
-    c.execute('SELECT * FROM judge_hack_prize')
+    c = sconn.cursor()
+    r = c.execute('SELECT judge_id, prize_id, hack_1, hack_2 FROM judge_hack_prize')
     supers = map(lambda jhp: {
-        'judge_id': jhp.judge_id,
-        'prize_id': jhp.prize_id,
-        'hack1': jhp.hack_1,
-        'hack2': jhp.hack_2
-        }, c.fetchall())
-    conn.commit()
-    conn.close()
+        'judge_id': jhp[0],
+        'prize_id': jhp[1],
+        'hack1': jhp[2],
+        'hack2': jhp[3]
+        }, r)
+    sconn.commit()
     await sio.emit('superlatives-list', list(supers))
 
 @sio.on('list-hacks')

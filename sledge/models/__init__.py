@@ -13,7 +13,8 @@ judge_hack_prize = Table('judge_hack_prize', metadata,
         Column('hack_1', Integer, ForeignKey('hacks.id')),
         Column('hack_2', Integer, ForeignKey('hacks.id')),
         Column('prize_id', Integer, ForeignKey('prizes.id')),
-        Column('judge_id', Integer, ForeignKey('judges.id'))
+        Column('judge_id', Integer, ForeignKey('judges.id')),
+        Column('id', Integer, primary_key=True)
 )
 
 ratings = Table('ratings', metadata,

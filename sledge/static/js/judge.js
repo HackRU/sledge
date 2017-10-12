@@ -97,19 +97,22 @@ function updateSuperlatives() {
     let table = $("#superlativeTable");
     table.html("");
     for (let sup of state.superlatives) {
-        console.log(sup);
         if (!sup) continue;
         let row = document.createElement("tr");
         let name_td = document.createElement("td");
         $(name_td).text(sup.name);
         $(row).append(name_td);
         let hacks_td = document.createElement("td");
-        if (state.superlativesAwarded[sup.prize_id]) {
+        if (state.superlativesAwarded[sup.id]) {
             let hack1 = document.createElement("span");
-            $(hack1).text(state.hacks[state.superlativesAwarded[sup.prize_id].hack1].name);
+            let hack1_id = state.superlativesAwarded[sup.id].hack1;
+            $(hack1).text(hack1_id<0?"[No First Place]":state.hacks[hack1_id].name);
             $(hacks_td).append(hack1);
+            let br = document.createElement("br");
+            $(hacks_td).append(br);
             let hack2 = document.createElement("span");
-            $(hack2).text(state.hacks[state.superlativesAwarded[sup.prize_id].hack2].name);
+            let hack2_id = state.superlativesAwarded[sup.id].hack2;
+            $(hack2).text(hack2_id<0?"[No Second Place]":state.hacks[hack2_id].name);
             $(hacks_td).append(hack2);
         } else {
             let nohack = document.createElement("span");
@@ -121,20 +124,42 @@ function updateSuperlatives() {
         let actions_first = document.createElement("button");
         $(actions_first).addClass("btn");
         $(actions_first).text("Set Current Hack as First");
-        $(actions_first).click(function () {
-        });
+        $(actions_first).click((sup => function () {
+            sendAddSuperlative({
+                judgeId: state.myJudgeId,
+                prizeId: sup.id,
+                hack1: currentHack.id,
+                hack2: -1,
+            });
+            sendListSuperlatives();
+        })(sup));
         $(actions_td).append(actions_first);
         let actions_second = document.createElement("button");
         $(actions_second).addClass("btn");
         $(actions_second).text("Set Current Hack as Second");
-        $(actions_second).click(function () {
-        });
+        $(actions_second).click((sup => function () {
+            sendAddSuperlative({
+                judgeId: state.myJudgeId,
+                prizeId: sup.id,
+                hack1: -1,
+                hack2: currentHack.id,
+            });
+            sendListSuperlatives();
+        })(sup));
         $(actions_td).append(actions_second);
         let actions_swap = document.createElement("button");
         $(actions_swap).addClass("btn");
         $(actions_swap).text("Swap First and Second Place");
-        $(actions_swap).click(function () {
-        });
+        $(actions_swap).click((sup => function () {
+            if (!state.superlativesAwarded[sup.id]) return;
+            sendAddSuperlative({
+                judgeId: state.myJudgeId,
+                prizeId: sup.id,
+                hack1: state.superlativesAwarded[sup.id].hack2,
+                hack2: state.superlativesAwarded[sup.id].hack1,
+            });
+            sendListSuperlatives();
+        })(sup));
         $(actions_td).append(actions_swap);
         $(row).append(actions_td);
         $(table).append(row);
@@ -264,6 +289,8 @@ function init() {
     sendListJudges();
     sendListHacks();
     sendListRatings();
+    sendListPrizes();
+    sendListSuperlatives();
 }
 window.addEventListener("load", init);
 

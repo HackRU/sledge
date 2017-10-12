@@ -85,11 +85,17 @@ function sendAddRating(data) {
 window.sendAddRating = sendAddRating;
 
 function sendAddSuperlative(data) {
+    let h1id = data.hack1;
+    if (h1id<0 && sledgeState.superlativesAwarded[data.prizeId])
+        h1id = sledgeState.superlativesAwarded[data.prizeId].hack1;
+    let h2id = data.hack2;
+    if (h2id<0 && sledgeState.superlativesAwarded[data.prizeId])
+        h2id = sledgeState.superlativesAwarded[data.prizeId].hack2;
     socket.emit("add-superlative", {
         judge_id: data.judgeId,
         prize_id: data.prizeId,
-        hack1: data.hack1,
-        hack2: data.hack2
+        hack1: h1id,
+        hack2: h2id,
     });
 }
 window.sendAddSuperlative = sendAddSuperlative;
@@ -201,7 +207,7 @@ function onRatingsList(data) {
 
 function onSuperlativesList(data) {
     for (let sup of data) {
-        if (sup.judge_id == judgeState.myJudgeId) {
+        if (sup.judge_id == sledgeState.myJudgeId) {
             sledgeState.superlativesAwarded[sup.prize_id] = sup;
         }
     }
