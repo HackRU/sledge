@@ -2,11 +2,8 @@ import urllib.parse
 from models import Judge, Hack
 from devpost import get_devpost_data
 
-ct = 0
 async def set_secret(judge):
-    global ct
-    ct = ct + 1
-    judge.secret = 'testing string' + str(ct)
+    judge.secret = judge.email
 
 async def allocate_judges(session):
     VIEWS_PER_HACK = 3
@@ -27,13 +24,13 @@ async def allocate_judges(session):
     total_hacks = num_hacks * VIEWS_PER_HACK
     hacks_per_judge = total_hacks // num_judges
     for idx, judge in enumerate(session.query(Judge)):
-        judge.start_loc = idx * hacks_per_judge
+        judge.start_loc = (idx * hacks_per_judge) % num_hacks
         judge.curr_loc = judge.start_loc
-        judge.end_loc = (idx + 1) * hacks_per_judge - 1
+        judge.end_loc = ((idx + 1) * hacks_per_judge - 1) % num_hacks
         session.add(judge)
     session.commit()
-    left_hack = (num_judges - 1) * hacks_per_judge
-    right_hack = left_hack + hacks_per_judge
+    left_hack = ((num_judges - 1) * hacks_per_judge) % num_hacks
+    right_hack = (left_hack + hacks_per_judge) % num_hacks
     return left_hack, left_hack, right_hack
 
 async def devpost_to_db(session, url):

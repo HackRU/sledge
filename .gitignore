@@ -4,3 +4,4 @@ env/
 .vagrant/
 venv/
 *.db
+*.swp

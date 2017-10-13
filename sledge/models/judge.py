@@ -10,10 +10,3 @@ class Judge(Model):
     start_loc = Column(Integer)
     end_loc = Column(Integer)
     curr_loc = Column(Integer)
-
-judge_hack_prize = Table('judge_hack_prize', metadata,
-        Column('hack_1', Integer, ForeignKey('hack.id')),
-        Column('hack_2', Integer, ForeignKey('hack.id')),
-        Column('prize_id', Integer, ForeignKey('prize.id')),
-        Column('judge_id', Integer, ForeignKey('judge.id'))
-)

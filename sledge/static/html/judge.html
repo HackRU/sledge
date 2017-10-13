@@ -1,16 +1,110 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Welcome to Sledge!</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-        <script
-                src="https://code.jquery.com/jquery-3.2.1.min.js"
-                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-                crossorigin="anonymous"></script>
-        <script src="../js/judge.js"></script>
+<html lang="en">
 
-    </head>
-    <body>
-        Hi Chris! TODO: Fixme.
-    </body>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>Sledge</title>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css"  />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+
+		<link rel="stylesheet" href="/css/judge.css" />
+	</head>
+
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+			<div class="container">
+				<a class="navbar-brand">Sledge</a>
+			</div>
+		</nav>
+
+		<!-- Page Content -->
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8">
+          <h1 class="my-4">You are Judge number <span class="judge-id">[Judge Id]</span></h1>
+
+          <!-- Hack Information -->
+					<div class="card mb-4">
+						<img class="card-img-top" src="/images/hackru.jpg" id="hackImage" alt="Card image cap">
+						<div class="card-body hack-info">
+              <h2 class="card-title"><span class="hack-name">[Name of Hack]</span></h2>
+              <span>Located at Table <span class="hack-location">[Location of Hack]</span></span>
+							<p class="card-text hack-description">[Hack Description]</p>
+						</div>
+            <ul class="pagination justify-content-center">
+              <li>
+                <a class="page-link" id="prevHackButton" href="javascript:void(0);">&larr; Previous Hack</a>
+              </li>
+              <li>
+                <a class="page-link" id="nextHackButton" href="javascript:void(0);">Next Hack &rarr;</a>
+              </li>
+            </ul>
+					</div>
+				</div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+          <div class="card my-4">
+            <h5 class="card-header" style="text-align: center">Other Hacks</h5>
+            <select id="hacksDropdown">
+              <option>[Select a Hack]</option>
+              <option>[First Judge's Hack in ABC order]</option>
+              <option>[Second Judge's Hack in ABC order]</option>
+            </select>
+          </div>
+
+          <div class="card my-4 rating-card">
+            <h5 class="card-header"  style="text-align: center;" >Overall Rating</h5>
+            <div id="overallRatingCategories"></div>
+            <div>
+              Currently Saved Rating:&nbsp;<b><span class="previous-rating">[Previous Rating]</span></b><br/>
+              New Rating:&nbsp;<b><span class="current-rating">[Current Rating]</span></b>
+            </div>
+            <em>Ratings aren't saved until you submit!</em>
+            <button id="ratingsSubmit" class="btn btn-primary">Submit</button>
+          </div>
+
+        </div>
+
+        <div class="col-md-12">
+          <div class="card my-4">
+            <h5 class="card-header" style="text-align: center;">Superlatives</h5>
+            <table id="superlativeTable" border=1>
+              <tr>
+                <td>Best Solo</td>
+                <td>
+                  <div class="sup-hack">Hack Name 1</div>
+                  <div class="sup-hack">Hack Name 2</div>
+                </td>
+                <td>
+                  <button class="btn">Set Current Hack as First</button>
+                  <button class="btn">Set Current Hack as Second</button>
+                  <button class="btn">Swap First and Second Place</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+				<!-- Bootstrap core JavaScript -->
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/popper.js@1.12.5/dist/umd/popper.js"></script>
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="/js/sledge.js"></script>
+        <script src="/js/judge.js"></script>
+
+	</body>
+
 </html>

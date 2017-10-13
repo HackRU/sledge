@@ -100,3 +100,28 @@ max-height: 300px;
 #help{
   color:red;
 }
+
+.rating-selected {
+  background: red;
+}
+
+.rating-selected:hover {
+  background: red;
+}
+
+.hack-info {
+  min-height: 150px;
+}
+
+.rubric-category {
+  margin-left: 30px;
+}
+
+.btn {
+  cursor: pointer;
+}
+
+#superlativeTable {
+  width: 100%;
+  text-align: center;
+}

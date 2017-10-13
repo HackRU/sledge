@@ -11,7 +11,7 @@ class Hack(Model):
     description = Column(Text, nullable=False)
     views = Column(Integer)
 
-hack_prize = Table('hack_prize', metadata,
+hack_prize = Table('hack_prize', Model.metadata,
         Column('hack_id', Integer, ForeignKey(Hack.id)),
         Column('prize_id', Integer, ForeignKey(Prize.id))
 )
