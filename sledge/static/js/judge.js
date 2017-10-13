@@ -123,7 +123,7 @@ function updateSuperlatives() {
         let actions_td = document.createElement("td");
         let actions_first = document.createElement("button");
         $(actions_first).addClass("btn");
-        $(actions_first).text("Set Current Hack as First");
+        $(actions_first).text("Set First");
         $(actions_first).click((sup => function () {
             sendAddSuperlative({
                 judgeId: state.myJudgeId,
@@ -136,7 +136,7 @@ function updateSuperlatives() {
         $(actions_td).append(actions_first);
         let actions_second = document.createElement("button");
         $(actions_second).addClass("btn");
-        $(actions_second).text("Set Current Hack as Second");
+        $(actions_second).text("Set Second");
         $(actions_second).click((sup => function () {
             sendAddSuperlative({
                 judgeId: state.myJudgeId,
@@ -149,7 +149,7 @@ function updateSuperlatives() {
         $(actions_td).append(actions_second);
         let actions_swap = document.createElement("button");
         $(actions_swap).addClass("btn");
-        $(actions_swap).text("Swap First and Second Place");
+        $(actions_swap).text("Swap");
         $(actions_swap).click((sup => function () {
             if (!state.superlativesAwarded[sup.id]) return;
             sendAddSuperlative({

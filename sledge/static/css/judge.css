@@ -125,3 +125,21 @@ max-height: 300px;
   width: 100%;
   text-align: center;
 }
+
+#overallRatingCategories {
+  padding: 10px 25px;
+}
+
+#superlativeTable span {
+  padding: 5px;
+}
+
+@media (max-width: 700px) {
+  #superlativeTable button {
+    width: 100%;
+  }
+}
+
+.select2 {
+  width: 100%;
+}

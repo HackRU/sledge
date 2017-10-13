@@ -1,45 +1,58 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Welcome to Sledge!</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-        <script
-                src="https://code.jquery.com/jquery-3.2.1.min.js"
-                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-                crossorigin="anonymous"></script>
-        <script src="../js/admin.js"></script>
+        <title>Sledge Admin Panel</title>
     </head>
     <body>
-        <h1> Judges </h1>
-        <form><!-- We can't use the normal "submitting stuff" since no HTTP -->
-            <label for="judge-name">Name:</label><input type="text" id="judge-name"></input>
-            <label for="judge-email">Email:</label><input type="text" id="judge-email"></input>
-            <input type="button" id="add-judge" value="Add Judge"></input>
-        </form>
-        <table id="judge-view">
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Start Loc</th>
-                <th>End Loc</th>
-                <th>Curr Loc</th>
-            </tr>
-        </table>
-        <h1> Prizes </h1>
-        <form><!-- We can't use the normal "submitting stuff" since no HTTP -->
-            <label for="prize-name">Name:</label>
-            <input type="text" id="prize-name"></input>
-            <label for="prize-type">Is Best Overall:</label>
-            <input type="checkbox" id="prize-type"></input>
-            <input type="button" id="add-prize" value="Add Prize"></input>
-        </form>
-        <table id="prize-view"></table>
-        <h1> Hacks </h1>
-        <input type="text" id="devpost-scrape" placeholder="Devpost URL"></input>
-        <input type="button" id="devpost-button" value="Scrape Devpost!"></input>
-        <table id="hack-view"></table>
-        <h2> Rankings </h2>
-        <table id="hack-overall-ranks"></table>
-        <table id="hack-superlative-ranks"></table>
+        <h1>Sledge Admin Panel</h1>
+
+        <h2>Admin Password</h2>
+
+        Admin Secret: <input id="adminSecret" type="password" /><br />
+        <button onclick="toggleShowPass();">Show/Hide Admin Secret</button>
+        <button onclick="init();">Initialize Admin Console</button><br/>
+
+        <em>Admin password will be saved when you click Initialize.</em>
+
+        <h2>Judges</h2>
+
+        <table id="judgesTable" border=1 style="min-width: 100px;min-height:100px;"></table>
+        <button id="queryJudgeButton">Query Judges</button>
+
+        <h3>Add Judge</h3>
+        <span>Name:</span><input id="judgeName" type="text" /><br/>
+        <span>Email:</span><input id="judgeEmail" type="text" /><br/>
+        <button id="addJudgeButton">Add Judge</button>
+
+        <h2>Hacks</h2>
+
+        <table id="hacksTable" border=1 style="min-width: 100px;min-height:100px;"></table>
+        <button id="queryHacksButton">Query Hacks</button>
+
+        <h3>Scrape Devpost</h3>
+        <span>Devpost URL:</span><input id="devpostURL" type="text" /><br/>
+        <button id="scrapeDevpostButton">Scrape Devpost</button>
+
+        <h2>Superlatives</h2>
+
+        <table id="supersTable" border=1 style="min-width: 100px;min-height:100px;"></table>
+        <button id="querySupersButton">Query Superlatives</button>
+
+        <h3>Add Superlative</h3>
+        <span>Name:</span><input id="judgeName" type="text" /><br/>
+        <span>Email:</span><input id="judgeEmail" type="text" /><br/>
+        <button id="addJudgeButton">Add Judge</button>
+
+        <h2>Winners</h2>
+
+        <h2>Debug Log</h2>
+
+        <textarea id="log" readonly style="width:100%;height:300px;"></textarea>
+
+        <!-- Javascript Mess -->
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="/js/sledge.js"></script>
+        <script src="/js/admin.js"></script>
     </body>
 </html>
