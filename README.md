@@ -1,141 +1,101 @@
-<img src="https://raw.githubusercontent.com/anishathalye/gavel/docs/banner.png" width="450" height="150" alt="Gavel banner">
+# Sledge
 
-**Gavel** is a project expo judging system.
+Sledge is the judging platform used for HackRU.
 
-It was originally built for HackMIT and first used at HackMIT 2015. It's been
-used at a number of other events since then.
+## Installation on Debian
 
-[![Join the chat at https://gitter.im/anishathalye/gavel](https://badges.gitter.im/anishathalye/gavel.svg)](https://gitter.im/anishathalye/gavel?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+These installation instructions are for installing Sledge on a fresh-installed
+Debian 9 server. Lasted tested 10/13/2017 from Debian 9.2.0 on netinstall ISO.
 
-## Demo
+### Install Necessary packages
 
-<p align="center">
-    <a href="http://www.anishathalye.com/2016/09/19/gavel-an-expo-judging-system/">
-        <img src="https://raw.githubusercontent.com/anishathalye/gavel/docs/screenshot.png" width="320" height="568" alt="Gavel screenshot">
-    </a>
-</p>
+These packages are necessary for later installation steps to work properly.
 
-See the demo video
-[here](http://www.anishathalye.com/2016/09/19/gavel-an-expo-judging-system/)!
+    # apt-get install nginx libsqlite3-dev libssl-dev libz-dev gcc make
 
-## Design
+These packages are not required, but this guide will assume you have them.
+Installation will likely be more complicated without these.
 
-Gavel is based on the method of pairwise comparisons. Before you use Gavel,
-it's *highly recommended* that you read about the philosophy behind the
-implementation as well as hints on how to use it in practice. Read [this blog
-post][blog-1] first, and then read [this blog post][blog-2].
+    # apt-get install sudo vim tmux git sqlite3 libreadline-dev python-pip
 
-## Status
+This guide assumes base packages are installed.
 
-Gavel is stable software. We've used it successfully at HackMIT, and a bunch of
-other hackathons and events have used it too.
+### Build Python 3.6
 
-Gavel is a pretty different way of doing judging. If you want to use this for
-your hackathon or event, we highly recommend that you:
+The easiest way to install Python 3.6+ on Debian is to build it. Note the
+`--enable-optimizations` flag is optional and causes the build to take
+significantly longer.
 
-* Deploy it and play around with it ahead of time to get a feel for how the
-  system works
-* Read the blog posts linked above to get an idea of how to structure the
-  judging process
+    # cd /usr/local/src
+    # wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz
+    # tar -xf Python-3.6.3.tgz
+    # cd Python-3.6.3
+    # ./configure --enable-loadable-sqlite-extensions --enable-optimizations
+    # make altinstall
 
-If you have any questions, feel free to [email me][email].
+### Create Sledge user account
 
-If you're able to contribute to making Gavel better, that would be **awesome**!
-We'd really appreciate any kind of input, especially pull requests.
+    # adduser sledge
 
-## Deployment
+Follow the prompts.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/anishathalye/gavel/tree/master)
+### Clone Sledge
 
-The latest stable version is the `master` branch (and it's signed and tagged).
-Development happens in the `develop` branch.
+Run these commands from the newly-created account. An archive could be used as
+an alternative to git.
 
-The web application is written in **Python 3** using Flask. It also uses NumPy
-and SciPy for math stuff. Doing a `pip install -r requirements.txt` should
-install all the dependencies.
+    $ cd ~
+    $ git clone https://github.com/HackRU/sledge.git
+    $ cd sledge
 
-The application uses Postgres for the database, so you need to have that on
-your server. You need to create a database, which you can do with `createdb
-gavel` (unless you're using a different database name). Before you use the app,
-you need to initialize the database by running `python initialize.py`. **Note
-that Gavel does not preserve database schema compatibility between versions.**
+### Create virtualenv Environment
 
-When testing, you can run the app with `python runserver.py`. In production,
-you should use something like [Gunicorn][gunicorn] to serve this. You can run
-the app with `gunicorn -b :<PORT> -w <number of workers> gavel:app`.
+We assume you have set added the `sledge` user to `/etc/sudoers` and are
+installing dependencies with pip.
 
-## Configuration
+    $ sudo pip install virtualenv
+    $ virtualenv -p python3.6 env
+    $ source env/bin/activate
+    (env) $ pip install -r requirements.txt
 
-Before starting the app, copy `config.template.yaml` to `config.yaml` and set
-all the required settings (the ones that don't have default values).
+### Setup nginx
 
-Most settings can either be set in `config.yaml` or set as environment
-variables. There's more detailed documentation in `config.template.yaml`.
+    $ cd ~/pip
+    $ sudo cp nginx.conf /etc/nginx/nginx.conf
 
-If you don't want to use the config file and use only environment variables,
-set the environment variable `IGNORE_CONFIG_FILE=true`.
+Edit nginx with required server details. Test the config and restart nginx.
 
-## Use
+    $ sudo vim /etc/nginx/nginx.conf
+    $ sudo nginx -t
+    $ sudo service nginx restart
 
-To set up the system, use the admin interface on `/admin`. Log in with the
-username `admin` and the password you set. Once you're logged in, you can input
-information for all the projects and judges.
+The nginx service will now be serving the static files, although websocket
+requests will fail.
 
-As you add judges, they'll automatically get emails with invitation links.
-After that, the judging and ranking process is fully automated - the judge will
-be able to read the welcome text, and then they'll be able to start judging.
+### Create an empty database
 
-The admin panel will rank projects in real time, ordered by their inferred
-quality (Mu).
+    $ cd ~/sledge/sledge
+    $ source ../env/bin/activate
+    (env) $ python make_db.py
+    (env) $ mv sledge.db ../
 
-### Admin Panel Features
+### Start Sledge
 
-* If you want to (temporarily) close the judging system, click the "Close"
-  button under "Global Settings"
-* If you need to force re-send the invite email, use the "Email" button for the
-  judge in the admin panel
-* If you need to manually give a judge a login link, direct them to
-  `/login/<secret>`
-* If you want to send the next available judge to a certain project, use the
-  "Prioritize" button
-* If you need to deactivate projects or judges at any point, use the "Disable"
-  button
-* If a project hasn't been judged yet, you can delete it using the "Delete"
-  button
-* If a judge hasn't started yet, you can delete them using the "Delete" button
-* If you need to see details for a project or judge, click on the item ID in
-  the admin panel
-    * If you need to edit a project (name, location, or description), you can
-      do so on the item detail page
-* If you want to sort the items in the admin panel, click on the table headers
+It is recommended you run these in a `tmux` or `screen` environment so the
+session is persistent.
 
-## Development
+    $ cd ~/sledge
+    $ source ../env/bin/activate
+    (env) $ sslmode=require python sledge/main.py
+    === Running on http://0.0.0.0:8080 ===
+    (Press CTRL+C to quit)
 
-Interested in hacking on Gavel? Awesome. See [DEVELOPMENT.md][development] for
-a dev setup guide.
+## Configuring Sledge
 
-## Notes
+In order for Sledge to be useful it must be configured. This can be done partly
+the `/html/admin.html` page, must some functionality requires the database to
+be edited manually, such as with the `sqlite3` command.
 
-If you do end up using this for your competition or hackathon, I would love to
-hear about how it goes.
+# License
 
-If anyone has questions, feel free to email Anish (me@anishathalye.com).
-
-## Contributing
-
-Do you have a feature request, bug report, or patch? Great! See
-[CONTRIBUTING.md][contributing] for information on what you can do about that.
-
-## License
-
-Copyright (c) 2015-2016 Anish Athalye. Released under AGPLv3. See
-[LICENSE.txt][license] for details.
-
-[blog-1]: http://www.anishathalye.com/2015/03/07/designing-a-better-judging-system/
-[blog-2]: http://www.anishathalye.com/2015/11/09/implementing-a-scalable-judging-system/
-[issues]: https://github.com/anishathalye/gavel/issues
-[contributing]: CONTRIBUTING.md
-[license]: LICENSE.txt
-[development]: DEVELOPMENT.md
-[email]: mailto:hemang@ndhi.ninja
-[gunicorn]: http://gunicorn.org/
+See `LICENSE` file.
