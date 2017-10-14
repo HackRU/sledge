@@ -20,7 +20,7 @@ function updateTable(table, items, rows) {
         let tr = document.createElement("tr");
         for (let item of items) {
             let td = document.createElement("td");
-            $(td).text(row[item.name].toString());
+            $(td).text(row[item.name]);
             $(tr).append(td);
         }
         $(tbody).append(tr);
