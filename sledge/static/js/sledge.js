@@ -162,7 +162,13 @@ function onHacksList(data) {
 
     // If this causes performance issues, change later
     let myself = sledgeState.judges[sledgeState.myJudgeId];
-    sledgeState.myHacks = hacks.filter(x => !!x && x.id >= myself.startLoc && x.id < myself.endLoc).sort( (x,y) => {
+    sledgeState.myHacks = hacks.filter(function (x) {
+        if (!x) return false;
+        if (myself.startLoc <= myself.endLoc )
+            return x.id >= myself.startLoc && x.id < myself.endLoc;
+        else
+            return x.id >= myself.startLoc || x.id < myself.endLoc;
+    }).sort( (x,y) => {
         let i=0,j=0;
         let n1 = x.name.toLowerCase(),
             n2 = y.name.toLowerCase();
