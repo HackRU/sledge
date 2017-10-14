@@ -16,7 +16,8 @@ sio.attach(app)
 
 staticdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static')
 
-tokens = ['test'] #for now
+tokens = []
+admin_pass = 'the-hash-admin-password'
 
 @sio.on('connect')
 async def do_connect(sid, env):
@@ -26,7 +27,7 @@ async def do_connect(sid, env):
     if 'admin' not in query or query['admin'] != 'true':
         return 'tok' in query and query['tok'] in tokens
     else:
-        return 'tok' in query and query['tok'] == 'the-hash-admin-password'
+        return 'tok' in query and query['tok'] == admin_pass
 
 #HELPERS
 async def list_all(db_obj, transformer, emit_event):
@@ -178,4 +179,10 @@ if __name__ == "__main__":
         # In production, use nginx
         app.router.add_get('/', lambda req: web.HTTPFound('/index.html'))
         app.router.add_static('/', path=staticdir)
+    if os.environ.get('ADMIN_PASS') is not None:
+        admin_pass = os.environ.get('ADMIN_PASS')
+    if os.environ.get('JUDGE_TOKEN') is not None:
+        tokens.append(os.environ.get('JUDGE_TOKEN'))
+    else:
+        tokens.append('test')
     web.run_app(app)
