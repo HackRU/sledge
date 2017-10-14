@@ -121,12 +121,42 @@ function init() {
             { name: "is_best_overall", heading: "Is Best Overall (unused)" }],
             supers);
     });
-    /*
-    socket.on("add-judge", onAddJudge);
-    socket.on("hacks-for-judge", onHacksForJudge);
-    socket.on("ratings-list", onRatingsList);
-    socket.on("superlatives-list", onSuperlativesList);
-    socket.on("prizes-list", onPrizesList);*/
+    socket.on("ratings-list", function (data) {
+        log("Got Event: ratings-list");
+        let ratings = JSON.parse(data);
+        let judgeTotal = [];
+        for (let rating of ratings) {
+            if (!judgeTotal[rating.judge_id]) judgeTotal[rating.judge_id] = 0;
+            judgeTotal[rating.judge_id] += rating.rating;
+        }
+        for (let i=0;i<judgeTotal.length;i++) {
+            // Theres problems if a judge rates all hacks zero
+            if (judgeTotal[i] === 0) judgeTotal[i] = 1;
+        }
+        let hackRatingsDenormal = [];
+        let hackJudges = [];
+        for (let rating of ratings) {
+            if (!hackRatingsDenormal[rating.hack_id]) hackRatingsDenormal[rating.hack_id] = 0;
+            if (!hackJudges[rating.hack_id]) hackJudges[rating.hack_id] = 0;
+            hackJudges[rating.hack_id]++;
+            hackRatingsDenormal[rating.hack_id] += rating.rating / judgeTotal[rating.judge_id];
+        }
+        let hackRatings = [];
+        for (let i=0;i<hackRatingsDenormal.length;i++) {
+            if (!hackRatingsDenormal[i]) continue;
+            hackRatings.push({
+                hack: i,
+                score: hackRatingsDenormal[i] / hackJudges[i]
+            });
+        }
+        let hackSorted = hackRatings.sort(function (a,b) {
+            return b.score-a.score;
+        });
+        updateTable($("#winnersTable"), [
+            { name: "hack", heading: "Hack Id" },
+            { name: "score", heading: "Hack Score" }],
+            hackSorted);
+    });
 }
 
 function log(txt) {
@@ -174,36 +204,9 @@ window.addEventListener("load", function () {
         log("Scraping Devpost. This is known to hold up the server.");
         socket.emit("devpost-scrape", $("#devpostURL").val());
     });
+    $("#queryWinnersButton").click(function () {
+        if (!socket) return;
+        log("Emitting list-ratings");
+        socket.emit("list-ratings");
+    });
 });
-
-var sortRatedHacks = function(hacks){
-    var aggregated = groupBy(hacks, function(rating){
-        return rating.hack_id;
-    });
-    var summed = [];
-    Object.keys(aggregated).map(function(hack_id){
-        var innerSum = sum(aggregated[hack_id].map(function(agg){
-            return parseInt(agg.rating);
-        }));
-        summed.push({
-            mean: innerSum / aggregated[hack_id].length,
-            hack_id: hack_id
-        });
-    });
-    var sorted = summed.sort(function(l , r){
-        return r.mean - l.mean;
-    });
-    return summed;
-}
-
-var groupBy = function(objs, key){
-    return objs.reduce(function (rv, next){
-        (rv[key(next)] = rv[key(next)] || []).push(next);
-    }, {});
-}
-
-var sum = function(arr){
-    return arr.reduce(function(acc, next){
-        return acc + next;
-    }, 0);
-}
