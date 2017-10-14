@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>List of Hacks</title>
+    <meta charset="utf-8" />
+  </head>
+
+  <body>
+    <h1>List of all Hacks and their Locations</h1>
+    <span id="status">Loading...</span><br /><br />
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody id="hacks">
+      </tbody>
+    </table>
+<script>
+var stat = document.getElementById("status");
+var hacks = document.getElementById("hacks");
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function () {
+  var date = new Date();
+
+  var n, l, tn, tl, tr, i, d;
+  if (this.readyState == 4) {
+    if (this.status == 200) {
+      d = JSON.parse(xhr.responseText);
+      for (let i=0;i<d.length;i++) {
+        n = document.createTextNode(d[i].name);
+        l = document.createTextNode(d[i].location);
+        tn = document.createElement("td");
+        tl = document.createElement("td");
+        tr = document.createElement("tr");
+        tn.appendChild(n);
+        tl.appendChild(l);
+        tr.appendChild(tn);
+        tr.appendChild(tl);
+        hacks.appendChild(tr);
+      }
+
+      stat.innerHTML = "Last updated "+date.toLocaleString()+".";
+    } else {
+      stat.innerHTML = "Error! Got Status "+this.status+". Refresh to try again.";
+    }
+  }
+};
+
+xhr.open("GET", "/hacks.json");
+xhr.send();
+</script>
+  </body>
+</html>

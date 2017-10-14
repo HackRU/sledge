@@ -161,7 +161,19 @@ async def scrape_devpost(sid, data):
     await list_hacks(sid)
     await list_prizes(sid)
 
+def serve_hacks_table(req):
+    c = sconn.cursor()
+    c.execute('SELECT name,location FROM hacks')
+    hs = []
+    for h in c.fetchall():
+        hs.append({
+            "name": h[0],
+            "location": h[1]
+            })
+    return web.Response(text=json.dumps(hs))
+
 if __name__ == "__main__":
+    app.router.add_get('/hacks.json', serve_hacks_table)
     if os.environ.get('DEBUG') == 'true':
         # In production, use nginx
         app.router.add_get('/', lambda req: web.HTTPFound('/index.html'))
