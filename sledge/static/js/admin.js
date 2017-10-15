@@ -2,6 +2,7 @@
 
 var socket = null
 var hasInit = false;
+var warn = false;
 
 function updateTable(table, items, rows) {
     $(table).html("");
@@ -27,6 +28,7 @@ function updateTable(table, items, rows) {
     }
     $(table).append(tbody);
 }
+
 
 function updateTables() {
     let state = getSledgeState();
@@ -57,6 +59,27 @@ function toggleShowPass() {
     } else {
         input.attr("type", "password");
     }
+}
+
+function initToggleButton(button, target) {
+    button.click(function () {
+        target.toggleClass("hidden");
+    });
+}
+
+function addCSS(css) {
+    let style = document.createElement("style");
+    style.innerHTML = css;
+    document.head.appendChild(style);
+}
+
+function initOption(checkbox, storage, act) {
+    let set = !!parseInt(localStorage.getItem(storage),2);
+    checkbox.prop("checked", set);
+    if (set) act();
+    checkbox.change(function () {
+        localStorage.setItem(storage, checkbox.prop("checked")?"1":"0");
+    });
 }
 
 function init() {
@@ -106,20 +129,56 @@ function init() {
             { name: "id", heading: "id" },
             { name: "name", heading: "Name" },
             { name: "location", heading: "Location" },
-            { name: "description", heading: "Description" },
-            { naem: "views", heading: "Views (unused)" }],
+            { name: "description", heading: "Description" }],
             hacks);
     });
     socket.on("prizes-list", function (data) {
-        log("Got Event: superlatives-list");
+        log("Got Event: prizes-list");
         let supers = JSON.parse(data);
         updateTable($("#supersTable"), [
             { name: "id", heading: "id" },
             { name: "name", heading: "Name" },
-            { name: "location", heading: "Location" },
-            { name: "description", heading: "Description" },
-            { name: "is_best_overall", heading: "Is Best Overall (unused)" }],
+            { name: "description", heading: "Description" }],
             supers);
+    });
+    socket.on("superlatives-list", function (data) {
+        log("Got Event: superlatives-list");
+        let prizes = [];
+        for (let srat of data) {
+            if (!prizes[srat.prize_id]) prizes[srat.prize_id] = [];
+            if (!prizes[srat.prize_id][srat.hack1]) prizes[srat.prize_id][srat.hack1] = 0;
+            if (!prizes[srat.prize_id][srat.hack2]) prizes[srat.prize_id][srat.hack2] = 0;
+
+            prizes[srat.prize_id][srat.hack1] += 2;
+            prizes[srat.prize_id][srat.hack2] += 1;
+        }
+
+        let prize_winners = [];
+        for (let i=0;i<prizes.length;i++) {
+            if (!prizes[i]) continue;
+
+            let winner = {
+                hack: -1,
+                score: -1,
+                superlative: i
+            };
+            for (let j=0;j<prizes[i].length;j++) {
+                if (prizes[i][j] && prizes[i][j] > winner.score) {
+                    winner = {
+                        hack: j,
+                        score: prizes[i][j],
+                        superlative: i
+                    };
+                }
+            }
+            prize_winners.push(winner);
+        }
+        updateTable($("#superWinnerTable"), [
+            { name: "superlative", heading: "Superlative Id"},
+            { name: "hack", heading: "Id of Winning Hack" },
+            { name: "score", heading: "Score of Winning Hack" }],
+            prize_winners);
+
     });
     socket.on("ratings-list", function (data) {
         log("Got Event: ratings-list");
@@ -193,20 +252,85 @@ window.addEventListener("load", function () {
 
     $("#addJudgeButton").click(function () {
         if (!socket) return;
+        if (!warn || confirm("Are you sure you want to add a judge?")) {
         log("Adding Judge");
-        socket.emit("add-judge", {
-            name: $("#judgeName").val(),
-            email: $("#judgeEmail").val()
-        });
+            socket.emit("add-judge", {
+                name: $("#judgeName").val(),
+                email: $("#judgeEmail").val()
+            });
+        }
     });
     $("#scrapeDevpostButton").click(function () {
         if (!socket) return;
-        log("Scraping Devpost. This is known to hold up the server.");
-        socket.emit("devpost-scrape", $("#devpostURL").val());
+        if (!warn || confirm("Are you sure you want to scrape devpost? This is known to cause the server to freeze.")) {
+            log("Scraping Devpost. This is known to hold up the server.");
+            socket.emit("devpost-scrape", $("#devpostURL").val());
+        }
     });
     $("#queryWinnersButton").click(function () {
         if (!socket) return;
         log("Emitting list-ratings");
         socket.emit("list-ratings");
+    });
+    $("#calcSuperButton").click(function () {
+        if (!socket) return;
+        log("Emitting list-superlatives");
+        socket.emit("list-superlatives");
+    });
+
+    $("#clearDebugLog").click(function () {
+        $("#log").val("");
+    });
+
+    initToggleButton($("#showHideJudges"), $("#judgesTable"));
+    initToggleButton($("#showHideHacksButton"), $("#hacksTable"));
+    initToggleButton($("#showHideSupersTable"), $("#supersTable"));
+    initToggleButton($("#showHideWinnersTable"), $("#winnersTable"));
+    initToggleButton($("#showHideSupersWinnersTable"), $("#superWinnerTable"));
+    initToggleButton($("#showHideDebugLog"), $("#log"));
+
+    initOption($("#optMil"), "optmil", function () {
+        let css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.type = "text/css";
+        css.href = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css";
+        document.head.appendChild(css);
+    });
+    initOption($("#optMin"), "optmin", function () {
+        let css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.type = "text/css";
+        css.href = "https://cdnjs.cloudflare.com/ajax/libs/mini.css/2.3.4/mini-default.min.css";
+        document.head.appendChild(css);
+    });
+    initOption($("#optMar"), "optmar", function () {
+        document.body.style.margin = "20px 40px";
+        addCSS("body {margin: 20px 40px;}");
+    });
+    initOption($("#optMon"), "optmon", function () {
+        addCSS("table {font-family: \"Courier New\", Courier, monospace}");
+    });
+    initOption($("#optHid"), "opthid", function () {
+        $("table").addClass("hidden");
+    });
+    initOption($("#optAlt"), "optalt", function () {
+        addCSS("tbody tr:nth-child(odd){background-color: #333;color: #fff;}");
+    });
+    initOption($("#optCen"), "optcen", function () {
+        addCSS("table {text-align:center;}");
+    });
+    initOption($("#optPad"), "optpad", function () {
+        addCSS("td {padding: 10px;}");
+    });
+    initOption($("#optDes"), "optdes", function () {
+        warn = true;
+    });
+    initOption($("#optSec"), "optsec", function () {
+        if (document.location.protocol == "http:") {
+            document.location.href = "https://"+document.location.host+document.location.pathname;
+        }
+    });
+    initOption($("#optHap"), "opthap", function () {
+        $("#hideableOpts").addClass("hidden");
     });
 });

@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Sledge Admin Panel</title>
+        <style>.hidden {display: none;}</style>
     </head>
     <body>
         <h1>Sledge Admin Panel</h1>
@@ -14,10 +15,30 @@
 
         <em>Admin password will be saved when you click Initialize.</em>
 
+        <h3>Misc options</h3>
+
+        <form>
+          <div id="hideableOpts">
+            <input type="checkbox" id="optMil"/><label for="optMil">Load Milligram CSS Framework</label><br />
+            <input type="checkbox" id="optMin"/><label for="optMin">Load MiniCSS Framework</label><br />
+            <input type="checkbox" id="optMar"/><label for="optMar">Add Margin to Body</label><br/>
+            <input type="checkbox" id="optMon"/><label for="optMon">Use Monospace Font within Tables</label><br/>
+            <input type="checkbox" id="optHid"/><label for="optHid">Hide Tables by Default</label><br/>
+            <input type="checkbox" id="optAlt"/><label for="optAlt">Alternate background of Table Rows</label><br/>
+            <input type="checkbox" id="optCen"/><label for="optCen">Center Text inside Tables</label><br/>
+            <input type="checkbox" id="optPad"/><label for="optPad">Add Large Padding within Tables</label><br/>
+            <input type="checkbox" id="optDes"/><label for="optDes">Warn on Possibly Destructive Actions</label><br/>
+            <input type="checkbox" id="optSec"/><label for="optSec">Autoredirect to HTTPS if HTTP detected</label><br/>
+          </div>
+          <input type="checkbox" id="optHap"/><label for="optHap">Hide all above Options</label><br/>
+          <em>Options will be saved automatically when set. Options will only take effect after refresh.</em>
+        </form>
+
         <h2>Judges</h2>
 
-        <table id="judgesTable" border=1 style="min-width: 100px;min-height:100px;"></table>
         <button id="queryJudgeButton">Query Judges</button>
+        <button id="showHideJudges">Show/Hide Judges Table</button>
+        <table id="judgesTable" border=1 style="min-width: 100px;min-height:100px;"></table>
 
         <h3>Add Judge</h3>
         <span>Name:</span><input id="judgeName" type="text" /><br/>
@@ -26,8 +47,9 @@
 
         <h2>Hacks</h2>
 
-        <table id="hacksTable" border=1 style="min-width: 100px;min-height:100px;"></table>
         <button id="queryHacksButton">Query Hacks</button>
+        <button id="showHideHacksButton">Show/Hide Hacks Table</button>
+        <table id="hacksTable" border=1 style="min-width: 100px;min-height:100px;"></table>
 
         <h3>Scrape Devpost</h3>
         <span>Devpost URL:</span><input id="devpostURL" type="text" /><br/>
@@ -35,19 +57,33 @@
 
         <h2>Superlatives</h2>
 
-        <table id="supersTable" border=1 style="min-width: 100px;min-height:100px;"></table>
         <button id="querySupersButton">Query Superlatives</button>
+        <button id="showHideSupersTable">Show/Hide Superlatives Table</button>
+        <table id="supersTable" border=1 style="min-width: 100px;min-height:100px;"></table>
 
         <h2>Winners</h2>
 
-        <table id="winnersTable" border=1 style="min-width: 100px;min-height:100px;"></table>
-        <button id="queryWinnersButton">Query Winners</button>
+        <h3>Overall Winner</h3>
 
-        <p>The algorithm for calculating winners is as follows: A hack's final rating is its average normalized rating, where the normalized rating of a hack given by a judge is the judge's rating over the sum of all ratings given by that judge.</p>
+        <button id="queryWinnersButton">Calculate Overall Winner</button>
+        <button id="showHideWinnersTable">Show/Hide Overall Winner Table</button>
+        <table id="winnersTable" border=1 style="min-width: 100px;min-height:100px;"></table>
+
+        <p>The algorithm for calculating the overall winner is as follows: A hack's final rating is its average normalized rating, where the normalized rating of a hack given by a judge is the judge's rating over the sum of all ratings given by that judge.</p>
+
+        <h3>Superlative Winners</h3>
+
+        <button id="calcSuperButton">Calculate Superlative Winners</button>
+        <button id="showHideSupersWinnersTable">Show/Hide Superlative Winners Table</button>
+        <table id="superWinnerTable" border=1 style="min-width: 100px;min-height:100px;"></table>
+
+        <p>The algorithm for calculating superlative winners is as follows: A hack recieves two points in its superlative category for each judge that rates it first and one point for each judge that rates it second.</p>
 
         <h2>Debug Log</h2>
 
-        <textarea id="log" readonly style="width:100%;height:300px;"></textarea>
+        <button id="clearDebugLog">Clear Debug Log</button>
+        <button id="showHideDebugLog">Show/Hide Debug Log</button><br />
+        <textarea id="log" readonly style="width:500px;height:300px;"></textarea>
 
         <!-- Javascript Mess -->
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
