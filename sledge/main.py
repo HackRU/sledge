@@ -39,6 +39,7 @@ async def list_all(db_obj, transformer, emit_event):
     venugopal.close()
     await sio.emit(emit_event, json.dumps(data))
 
+
 ###Lists
 @sio.on('list-judges')
 async def list_judges(sid, data = None):
@@ -146,9 +147,13 @@ async def view_hacks(sid, judge_data):
     j = session.query(Judge).get(judge_data.get('judge_id'))
     startl = j.start_loc
     endl = j.end_loc
+    if(startl > endl):
+        exText = "SELECT * FROM hacks WHERE (id > :start) OR (id < :end)"
+    else: 
+        exText = "SELECT * FROM hacks WHERE (id BETWEEN :start AND :end)"
     valid_hacks = session.execute(
-            sqlalchemy.text("SELECT * FROM hacks WHERE id BETWEEN :low AND :high"),
-            {"high": endl, "low": startl} )
+            sqlalchemy.text(exText),
+            {"start": startl, "end": endl} )
     jPrizes = session.query(judge_hack_prize).filter_by(judge_id=judge_data.get('judge_id'))
     hacks_for_judge = {	"judge_id":judge_data.get('judge_id'),
                 "hacks": [dict(x) for x in valid_hacks],
