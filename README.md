@@ -2,6 +2,14 @@
 
 Sledge is the judging platform used for HackRU.
 
+## Relationship to Gavel
+
+[Gavel][0] a judging system created for HackMIT and used in many hackathons
+since including previous HackRUs. Sledge is a fork of Gavel created after
+deciding that the system of pairwise comparisons used by Gavel wasn't the best
+option for HackRU. Due to differences in design philosophies and some stack
+changes, nearly none of the current code is shared with Gavel.
+
 ## Installation on Debian
 
 These installation instructions are for installing Sledge on a fresh-installed
@@ -99,3 +107,5 @@ be edited manually, such as with the `sqlite3` command.
 # License
 
 See `LICENSE` file.
+
+[0]: https://github.com/anishathalye/gavel "Gavel"
