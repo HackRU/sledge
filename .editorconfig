@@ -19,6 +19,3 @@ indent_size = 2
 
 [*.html]
 indent_size = 2
-
-[Vagrantfile]
-indent_size = 2
