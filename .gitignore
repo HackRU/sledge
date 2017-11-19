@@ -1,6 +1,7 @@
 config.yaml
 *.pyc
 env/
+data/
 .vagrant/
 venv/
 *.db
