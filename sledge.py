@@ -26,6 +26,11 @@ def init():
     sio.attach(app)
     aiohttp.web.run_app(app)
 
+    @sio.on('connect')
+    def do_connect(sid, env):
+        print('Client connected', sid)
+        sio.emit('fulldump', data={}, room=sid)
+
 def initdb():
     os.makedirs(datadir, exist_ok=True)
     sql = sqlite3.connect(os.path.join(datadir, 'sledge.db'))
