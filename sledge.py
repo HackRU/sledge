@@ -38,11 +38,20 @@ async def do_devpost_scrape(sid, data):
             print('Hacks present, refusing scrape')
             await sio.emit(
                     'devpost-scrape-response',
-                    data = { 'success': False },
+                    data = { 'success': False,
+                             'message': 'Hacks already present' },
                     room = sid )
             return
-
-    sledge.devpost.scrape_to_database(sql, url)
+    try:
+        sledge.devpost.scrape_to_database(sql, url)
+    except ValueError as e:
+        print('BAD VALUES FROM CLIENT!', e)
+        await sio.emit(
+                'devpost-scrape-response',
+                data = { 'success': False,
+                         'message': 'Bad Values: %s' % str(e) },
+                room = sid )
+        return
     await sio.emit(
             'devpost-scrape-response',
             data = { 'scuccess': True },
