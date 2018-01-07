@@ -22,7 +22,7 @@ sql = sqlite3.connect(os.path.join(datadir, 'sledge.db'))
 @sio.on('connect')
 async def do_connect(sid, env):
     print('Client connected', sid)
-    await sio.emit('update-full', data={}, room=sid)
+    await sio.emit('update-full', data=get_serialized_full(), room=sid)
 
 @sio.on('devpost-scrape')
 async def do_devpost_scrape(sid, data):
@@ -53,8 +53,94 @@ async def do_devpost_scrape(sid, data):
         return
     await sio.emit(
             'devpost-scrape-response',
-            data = { 'scuccess': True },
+            data = { 'success': True },
             room = sid )
+
+@sio.on('add-judge')
+async def dp_add_judge(sid, data):
+    name = data.get('name')
+    email = data.get('email')
+    c = sql.cursor()
+
+    c.execute(
+        'INSERT INTO judges ('
+            'name, email)'
+        'VALUES (?,?)',
+        [name, email])
+    sql.commit()
+
+    # TODO: Only create a partial response
+    await send_full_response()
+
+    await sio.emit(
+            'add-judge-response',
+            data = { 'success': True },
+            room = sid )
+
+def get_serialized_full():
+    c = sql.cursor()
+
+    hacks = []
+    c.execute('SELECT id,name,description,location FROM hacks;')
+    for hack in c.fetchall():
+        hacks.append({
+            'id': hack[0],
+            'name': hack[1],
+            'description': hack[2],
+            'location': hack[3] })
+
+    judges = []
+    c.execute('SELECT id,name,email FROM judges;')
+    for judge in c.fetchall():
+        judges.append({
+            'id': judge[0],
+            'name': judge[1],
+            'email': judge[2] })
+
+    judge_hacks = []
+    c.execute('SELECT id,judge_id,hack_id FROM judge_hacks;')
+    for judge_hack in c.fetchall():
+        judge_hacks.append({
+            'id': judge_hack[0],
+            'judge_id': judge_hack[1],
+            'hack_id': judge_hack[2] })
+
+    superlatives = []
+    c.execute('SELECT id,name FROM superlatives;')
+    for superlative in c.fetchall():
+        superlatives.append({
+            'id': superlative[0],
+            'name': superlative[1] })
+
+    superlative_placements = []
+    c.execute('SELECT id,judge_id,first_choice,second_choice FROM superlative_placements;')
+    for superlatives_placement in c.fetchall():
+        superlative_placements.append({
+            'id': superlative_placement[0],
+            'judge_id': superlative_placement[1],
+            'first_choice': superlative_placement[2],
+            'second_choice': superlative_placement[3] })
+
+    ratings = []
+    c.execute('SELECT id,judge_id,hack_id,rating FROM ratings;')
+    for rating in c.fetchall():
+        ratings.append({
+            'id': rating[0],
+            'judge_id': rating[1],
+            'hack_id': rating[2],
+            'rating': rating[3] })
+
+    return {
+        'hacks': hacks,
+        'judges': judges,
+        'judge_hacks': judge_hacks,
+        'superlatives': superlatives,
+        'superlativePlacements': superlative_placements,
+        'ratings': ratings
+    }
+
+async def send_full_response():
+    await sio.emit('update-full', data=get_serialized_full())
 
 def init():
     print('Static Directory: '+staticdir)

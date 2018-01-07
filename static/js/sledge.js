@@ -27,12 +27,37 @@ function onError(data) {
 }
 
 function onUpdateFull(data) {
-    console.log("TODO: Handle data full", data);
+    console.log(data);
+
+    tables.hacks.splice(0);
+    tables.judges.splice(0);
+    tables.judgeHacks.splice(0);
+    tables.superlatives.splice(0);
+    tables.superlativePlacements.splice(0);
+    tables.ratings.splice(0);
+
+    updateTables(data);
+    initialized = true;
+
+    sendChange({
+        trans: false,
+        type: "full"
+    });
 }
 
 function onUpdatePartial(data) {
-    console.log("TODO: Handle data partial", data);
+    console.log(data);
+    if ( !initialized ) return;
+    updateTables(data);
+
+    sendChange({
+        trans: false,
+        type: "partial"
+    });
 }
+
+// All responses are transient, however in some cases the server will also
+// send a non-transient response
 
 function onDevpostScrapeResponse(data) {
     console.log("Recieved devpost-scrape-response", data);
@@ -42,6 +67,31 @@ function onDevpostScrapeResponse(data) {
         type: "Devpost Scrape",
         data
     });
+}
+
+function onAddJudgeResponse(data) {
+    console.log("Recieved add-judge-response", data);
+
+    sendChange({
+        trans: true,
+        type: "Add Judge",
+        data
+    });
+}
+
+////////////////////
+// Helpers
+
+function updateTables(data) {
+    for ( let table of Object.keys(tables) ) {
+        if ( data[table] ) {
+            for ( let row of data[table] ) {
+                if ( row.id ) {
+                    tables[table][row.id] = row;
+                }
+            }
+        }
+    }
 }
 
 //////////////////
@@ -54,6 +104,13 @@ function sendRaw(evt, data) {
 function scrapeDevpost(url) {
     socket.emit("devpost-scrape", {
         url: url.toString(),
+    });
+}
+
+function addJudge(name, email) {
+    socket.emit("add-judge", {
+        name: name.toString(),
+        email: email.toString(),
     });
 }
 
@@ -80,6 +137,7 @@ function init() {
     socket.on("update-full", onUpdateFull);
     socket.on("update-partial", onUpdatePartial);
     socket.on("devpost-scrape-response", onDevpostScrapeResponse);
+    socket.on("add-judge-response", onAddJudgeResponse);
 }
 
 window.sledge = {
@@ -88,8 +146,11 @@ window.sledge = {
 
     sendRaw,
     scrapeDevpost,
+    addJudge,
 
     getDebugData,
+
+    _tables: tables,
 };
 
 })();

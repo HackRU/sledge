@@ -23,17 +23,17 @@ function printWrap(forward, txt, wrap=60) {
             if ( i === 0 && line.length === 0 ) break;
 
             let whitespace = (new Array(forward.length+1)).join(" ");
-            printLn( whitespace + line.splice(0,wrap - forward.length)
-                    .join(""));
+            let content = line.splice(0, Math.max(1, wrap - forward.length));
+            printLn( whitespace + content.join("") );
         } while ( line.length > 0 );
     }
 }
 
 function runCommand(txt) {
-    let args = txt.trim().split(" ");
-    let action = args[0].toLowerCase();
+    let args = splitCommand(txt);
+    let action = args.length===0?"":args[0].toLowerCase();
 
-    if ( action === "") {
+    if ( action === "" ) {
         return;
     } else if ( action === "send" ) {
         if ( !args[1] || !args[2] ) {
@@ -47,7 +47,7 @@ function runCommand(txt) {
         printWrap("Event: ", args[1]);
         printWrap("Data: ", JSON.stringify(json));
         printLn();
-        sledge.sendRaw(args[1], args[2]);
+        sledge.sendRaw(args[1], json);
     } else if ( action === "devpost" ) {
         if (!args[1]) {
             printLn("usage: devpost <url>");
@@ -56,13 +56,67 @@ function runCommand(txt) {
         }
 
         scrapeDevpost(args[1])
+    } else if ( action === "addjudge" ) {
+        if ( args.length !== 3 ) {
+            printLn("usage: addjudge <name> <email>");
+            printLn();
+            return;
+        }
+
+        addJudge(args[1], args[2]);
     } else {
-        printLn("Unknown command " + action + " in "+txt);
+        printWrap("Unknown command: ", action);
     }
 
-    if ( action != "") {
+    if ( action !== "" ) {
         lastCmd = txt;
     }
+}
+
+function splitCommand(txt) {
+    let tokens = txt.split("").reverse();
+    let args = [];
+
+    if ( tokens.length === 0 ) return [];
+    console.log(tokens);
+
+    let token = tokens.pop();
+    let peek = tokens.length>0?tokens.pop():null;
+    let next = () => { token=peek;peek=tokens.length>0?tokens.pop():null; };
+
+
+    while ( token !== null ) {
+        if ( token === " " ) {
+            next();
+        } else if ( token === "\"") {
+            let arg = "";
+            next();
+            while ( token !== null && token !== "\"" ) {
+                if ( token === "\\" && peek === "\"" ) {
+                    arg += "\"";
+                    next();
+                } else if ( token === "\\" && peek === "\\" ) {
+                    arg += "\\";
+                    next();
+                } else {
+                    arg += token;
+                }
+                next();
+            }
+
+            if ( arg !== "" ) args.push(arg);
+        } else {
+            let arg = token;
+            next();
+            while ( token !== null && token !== " " && token != "\"" ) {
+                arg += token;
+                next();
+            }
+            args.push(arg);
+        }
+    }
+
+    return args;
 }
 
 function onSledgeEvent(evt) {
@@ -101,7 +155,7 @@ window.addEventListener("load", init);
 // Stuff Admins can do
 
 function scrapeDevpost(url) {
-    printLn(" === Scrape Devpost === ");
+    printLn(" === Scrape Devpost ===");
     printWrap("Scraping: ", url);
     printLn("Warning: This may take a while. A message will be printed when ");
     printLn("         scrape is successful or fails.");
@@ -111,10 +165,22 @@ function scrapeDevpost(url) {
     sledge.scrapeDevpost(url);
 }
 
+function addJudge(name, email) {
+    printLn(" === Add Judge ===");
+    printWrap("Name: ", name);
+    printWrap("Email: ", email);
+    printLn();
+
+    sledge.addJudge(name, email);
+}
+
 window.admin = {
     printLn,
+    printWrap,
+    splitCommand,
 
     scrapeDevpost,
+
 };
 
 })();
