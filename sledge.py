@@ -4,6 +4,8 @@ import os
 import socketio
 import sqlite3
 
+import sledge.devpost
+
 staticdir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         'static' )
@@ -12,28 +14,50 @@ datadir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         'data' )
 
-sio = None
-app = None
-sql = None
+sio = socketio.AsyncServer()
+app = aiohttp.web.Application()
+sql = sqlite3.connect(os.path.join(datadir, 'sledge.db'))
+
+#TODO: Each of these handlers needs an auth check
+
+@sio.on('connect')
+async def do_connect(sid, env):
+    print('Client connected', sid)
+    await sio.emit('update-full', data={}, room=sid)
+
+@sio.on('devpost-scrape')
+async def do_devpost_scrape(sid, data):
+    url = data.get('url')
+    force = data.get('force')
+    c = sql.cursor()
+
+    # Refuse if hacks are already present
+    if not force:
+        c.execute('SELECT * FROM hacks')
+        if c.fetchone() != None:
+            print('Hacks present, refusing scrape')
+            await sio.emit(
+                    'devpost-scrape-response',
+                    data = { 'success': False },
+                    room = sid )
+            return
+
+    sledge.devpost.scrape_to_database(sql, url)
+    await sio.emit(
+            'devpost-scrape-response',
+            data = { 'scuccess': True },
+            room = sid )
 
 def init():
     print('Static Directory: '+staticdir)
     print('Data Directory: '+datadir)
     initdb()
-    sio = socketio.AsyncServer()
-    app = aiohttp.web.Application()
-    app.router.add_static('/', path=staticdir) # In prod, use nginx
     sio.attach(app)
+    app.router.add_static('/', path=staticdir) # In prod, use nginx
     aiohttp.web.run_app(app)
-
-    @sio.on('connect')
-    def do_connect(sid, env):
-        print('Client connected', sid)
-        sio.emit('fulldump', data={}, room=sid)
 
 def initdb():
     os.makedirs(datadir, exist_ok=True)
-    sql = sqlite3.connect(os.path.join(datadir, 'sledge.db'))
     c = sql.cursor()
     c.execute(
         # The hacks table is a all the hacks and the info needed to judge them

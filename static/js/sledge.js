@@ -3,10 +3,9 @@
 
 var socket = null;
 var subscribers = [];
+var initialized = false;
 
 var tables = {
-    initialized: false,
-
     hacks: [], // {id, name, description, location}
     judges: [], // {id, name, email}
     judgeHacks: [], // {id, judgeId, hackId}
@@ -15,42 +14,82 @@ var tables = {
     ratings: [], // {id, judgeId, hackId, rating}
 };
 
-function sendChange() {
-    for (sub of subscribers)
-        if (sub)
-            sub();
+function sendChange(content) {
+    for (let sub of subscribers)
+        if (sub) sub(content);
 }
 
-function onDataDump(data) {
-    console.log("Data Dump", data);
+////////////////////
+// Socket Handlers
+
+function onError(data) {
+    console.log("Error", data);
+}
+
+function onUpdateFull(data) {
+    console.log("TODO: Handle data full", data);
+}
+
+function onUpdatePartial(data) {
+    console.log("TODO: Handle data partial", data);
+}
+
+function onDevpostScrapeResponse(data) {
+    console.log("Recieved devpost-scrape-response", data);
+
+    sendChange({
+        trans: true,
+        type: "Devpost Scrape",
+        data
+    });
 }
 
 //////////////////
 // Exported functions
 
+function sendRaw(evt, data) {
+    socket.emit(evt, data);
+}
+
+function scrapeDevpost(url) {
+    socket.emit("devpost-scrape", {
+        url: url.toString(),
+    });
+}
+
 // Subscribe to notifications for changes
-function subscribeSledge(cb) {
+function subscribe(cb) {
     subscribers.push(cb);
 }
-window.subscribeSledge = subscribeSledge;
 
 // Returns the current state of sledge.js, for debugging only
-function getSledgeDebugData() {
+function getDebugData() {
     return {
         socket, tables, subscribers
     };
 }
-window.getSledgeDebugData = getSledgeDebugData;
 
-// Initializes the socket connection
-function initSledge() {
+function init() {
     if (socket) {
         throw new Error("Sledge: Socket already initialized!");
     }
 
     socket = io();
 
-    socket.on("datadump", onDataDump);
+    socket.on('error', onError);
+    socket.on("update-full", onUpdateFull);
+    socket.on("update-partial", onUpdatePartial);
+    socket.on("devpost-scrape-response", onDevpostScrapeResponse);
 }
-window.initSledge = initSledge;
+
+window.sledge = {
+    init,
+    subscribe,
+
+    sendRaw,
+    scrapeDevpost,
+
+    getDebugData,
+};
+
 })();
