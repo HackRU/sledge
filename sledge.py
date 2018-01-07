@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.6
-import sledge.main
+import server.main
 
 if __name__ == "__main__":
-    sledge.main.init()
+    server.main.init()
