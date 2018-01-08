@@ -27,8 +27,6 @@ function onError(data) {
 }
 
 function onUpdateFull(data) {
-    console.log(data);
-
     tables.hacks.splice(0);
     tables.judges.splice(0);
     tables.judgeHacks.splice(0);
@@ -46,7 +44,6 @@ function onUpdateFull(data) {
 }
 
 function onUpdatePartial(data) {
-    console.log(data);
     if ( !initialized ) return;
     updateTables(data);
 
@@ -119,6 +116,18 @@ function subscribe(cb) {
     subscribers.push(cb);
 }
 
+// Getting information
+//  (Returns from these functions should be treated as readonly)
+
+function isInitialized() {
+    return initialized;
+}
+
+function getJudgeHacks(judgeId) {
+    if (!initialized) throw new Error("getJudgeHacks: Data not initialized");
+    return tables.hacks;
+}
+
 function init() {
     if (socket) {
         throw new Error("Sledge: Socket already initialized!");
@@ -140,6 +149,9 @@ window.sledge = {
     sendRaw,
     scrapeDevpost,
     addJudge,
+
+    isInitialized,
+    getJudgeHacks,
 
     _tables: tables,
 };
