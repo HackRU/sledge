@@ -78,7 +78,6 @@ function splitCommand(txt) {
     let args = [];
 
     if ( tokens.length === 0 ) return [];
-    console.log(tokens);
 
     let token = tokens.pop();
     let peek = tokens.length>0?tokens.pop():null;
@@ -103,6 +102,7 @@ function splitCommand(txt) {
                 }
                 next();
             }
+            next();
 
             if ( arg !== "" ) args.push(arg);
         } else {

@@ -119,13 +119,6 @@ function subscribe(cb) {
     subscribers.push(cb);
 }
 
-// Returns the current state of sledge.js, for debugging only
-function getDebugData() {
-    return {
-        socket, tables, subscribers
-    };
-}
-
 function init() {
     if (socket) {
         throw new Error("Sledge: Socket already initialized!");
@@ -147,8 +140,6 @@ window.sledge = {
     sendRaw,
     scrapeDevpost,
     addJudge,
-
-    getDebugData,
 
     _tables: tables,
 };
