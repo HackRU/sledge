@@ -1,0 +1,72 @@
+/********************
+ * Overall
+ */
+
+.judge-container {
+  flex-direction: column;
+
+  border: solid 2px;
+  border-radius: 10px;
+}
+
+/********************
+ * Toolbar Component
+ */
+
+.toolbar-comp {
+  display: flex;
+
+  width: 100%;
+  padding: 20px;
+}
+
+.toolbar-title {
+  width: 30%;
+  text-align: center;
+  margin: auto auto;
+}
+
+.toolbar-title h1 {
+  font-family: Helvetica Neue, Helvetica;
+  font-size: 24px;
+}
+
+.toolbar-buttons {
+  width: 70%;
+}
+
+.toolbar-buttons button {
+  cursor: pointer;
+}
+
+.toolbar-prev {
+  width: 40%;
+}
+
+.toolbar-list {
+  width: 20%;
+}
+
+.toolbar-next {
+  width: 40%;
+}
+
+/********************
+ * Project Component
+ */
+
+.project-description {
+  text-indent: 10px;
+}
+
+/********************
+ * RatingBox Component
+ */
+
+.ratingbox-comp .btn-group-vertical {
+  width: 100%;
+}
+
+.ratingbox-comp button {
+  cursor: pointer;
+}

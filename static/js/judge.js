@@ -8,11 +8,14 @@ function init() {
     sledge.init();
 
     var appContainer = document.getElementById("app");
-    ReactDOM.render(e(App, null), appContainer);
+    ReactDOM.render(e(JudgeApp, null), appContainer);
 }
 window.addEventListener("load", init);
 
-class App extends React.Component {
+////////////////////
+// Toplevel Judge Component
+
+class JudgeApp extends React.Component {
     constructor() {
         super();
 
@@ -38,9 +41,17 @@ class App extends React.Component {
     }
 
     render() {
-        return e("div", { className: "container" },
+        let currentHack = this.getCurrentHack();
+
+        return e("div", { className: "container d-flex judge-container" },
             e(Toolbar, null),
-            e(FocusedProject, { hack: this.getCurrentHack() })
+            e(Project, {
+                name: currentHack.name,
+                description: currentHack.description,
+                location: currentHack.location
+            }),
+            e(RatingBox, null),
+            e(Superlatives, null)
         );
     }
 
@@ -57,53 +68,65 @@ class App extends React.Component {
     }
 }
 
-class FocusedProject extends React.Component {
-    render() {
-        return e("div", { className: "jumbotron" },
-            e("h1", { className: "display-4" },
-                this.props.name),
-            e("p", { className: "lead" },
-                this.props.description),
-            e("hr", null),
-            e(Score, { score: 1 })
-        );
-    }
-}
-
-class Score extends React.Component {
-    render() {
-        return e("div", { className: "btn-toolbar", role: "toolbar" },
-            e("span", { className: "btn-group", role: "group" },
-                this.scoreButtonGroup(0,  10),
-                this.scoreButtonGroup(11, 20)
-             ),
-        )
-    }
-
-    scoreButtonGroup(start, end) {
-        let buttons = [];
-        for (let i=start;i<=end;i++) {
-            buttons.push(
-                e("button", { className: "btn" }),
-                i.toString()
-            )
-        }
-
-        return e("span", { className: "btn-group", role: "group" },
-            ...buttons
-        );
-    }
-}
+////////////////////
+// Child Components
 
 class Toolbar extends React.Component {
     render() {
-        return e("div", { className: "bg-faded container-fluid" },
-            e("span", { className: "btn-group row", role: "group" },
-                e("button", { className: "btn btn-secondary" }, "previous"),
-                e("button", { className: "btn btn-secondary" }, "next"),
-                e("button", { className: "btn btn-secondary" }, "list")
-             )
+        return e("div", { className: "toolbar-comp" },
+            e("div", { className: "toolbar-title" },
+                e("h1", null,
+                    "SLEDGE" ) ),
+            e("div", { className: "btn-group toolbar-buttons" },
+                e("button", { className: "btn btn-primary toolbar-prev" }, "<--"),
+                e("button", { className: "btn btn-primary toolbar-list" }, "LIST"),
+                e("button", { className: "btn btn-primary toolbar-next" }, "-->") )
         );
+    }
+}
+
+class Project extends React.Component {
+    getNameAndLocation() {
+        return this.props.name + " (@"+this.props.location+")";
+    }
+
+    render() {
+        return e("div", null,
+            e("h2", { className: "project-title" },
+                this.getNameAndLocation() ),
+            e("p", { className: "project-description" },
+                this.props.description )
+        );
+    }
+}
+
+class RatingBox extends React.Component {
+    buttonGroup(a, b) {
+        let buttons = [];
+        for (let i=a;i<b;i++) {
+            buttons.push(
+                e("button", { className: "btn btn-secondary" },
+                    i.toString() )
+            );
+        }
+
+        return e("div", { className: "btn-group" },
+            ...buttons
+        );
+    }
+
+    render() {
+        return e("div", { className: "ratingbox-comp" },
+            e("div", { className: "btn-group-vertical" },
+                this.buttonGroup( 1, 11),
+                this.buttonGroup(11, 21) )
+        );
+    }
+}
+
+class Superlatives extends React.Component {
+    render() {
+        return e("div", null, "Superlatives");
     }
 }
 
