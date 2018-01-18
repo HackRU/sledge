@@ -125,7 +125,16 @@ function isInitialized() {
 
 function getJudgeHacks(judgeId) {
     if (!initialized) throw new Error("getJudgeHacks: Data not initialized");
-    return tables.hacks;
+
+    //TODO: Get only hacks by judge
+    let judgeHacks = [];
+    for ( let hack of tables.hacks ) {
+        if ( hack ) {
+            judgeHacks.push( hack );
+        }
+    }
+
+    return judgeHacks;
 }
 
 function init() {

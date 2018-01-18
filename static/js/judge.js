@@ -16,8 +16,8 @@ window.addEventListener("load", init);
 // Toplevel Judge Component
 
 class JudgeApp extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         sledge.subscribe(data => {
             if ( !data.trans && sledge.isInitialized() )
@@ -26,7 +26,7 @@ class JudgeApp extends React.Component {
 
         this.state = {
             judgeHacks: [],
-            currentHackId: 0,
+            currentHackPos: -1,
         };
 
         if ( sledge.isInitialized() )
@@ -34,9 +34,17 @@ class JudgeApp extends React.Component {
     }
 
     updateSledgeData() {
-        this.setState({
-            // TODO: Determine what judge we are
-            judgeHacks: sledge.getJudgeHacks(1),
+        this.setState( (prevState, props) => {
+            let currentHackPos = prevState.currentHackPos;
+            let judgeHacks = sledge.getJudgeHacks(1); // TODO: What judge?
+
+            if ( currentHackPos < 0 && judgeHacks.length > 0 )
+                currentHackPos = 0;
+
+            return {
+                judgeHacks,
+                currentHackPos
+            };
         });
     }
 
@@ -44,26 +52,47 @@ class JudgeApp extends React.Component {
         let currentHack = this.getCurrentHack();
 
         return e("div", { className: "container d-flex judge-container" },
-            e(Toolbar, null),
+            e(Toolbar, {
+                onPrev: () => {
+                    this.setState( (prevState, props) => {
+                        if ( prevState.currentHackPos-1 >= 0 )
+                            return { currentHackPos: prevState.currentHackPos-1 };
+                        else
+                            return {};
+                    });
+                },
+                onList: () => {},
+                onNext: () => {
+                    this.setState( (prevState, props) => {
+                        if ( prevState.currentHackPos+1 < prevState.judgeHacks.length )
+                            return { currentHackPos: prevState.currentHackPos+1 };
+                        else
+                            return {};
+                    });
+                },
+            }),
             e(Project, {
                 name: currentHack.name,
                 description: currentHack.description,
                 location: currentHack.location
             }),
-            e(RatingBox, null),
+            e(RatingBox, {
+                chosen: 1,
+                onSubmit: () => {}
+            }),
             e(Superlatives, null)
         );
     }
 
     getCurrentHack() {
-        if ( this.state.currentHackId === 0 ) {
+        if ( this.state.currentHackPos < 0 ) {
             return {
                 name: "[No Hacks Found]",
                 description: "[No Hacks Found]",
                 location: "?",
             }
         } else {
-            return this.state.judgeHacks[this.state.currentHackId];
+            return this.state.judgeHacks[this.state.currentHackPos];
         }
     }
 }
@@ -78,9 +107,18 @@ class Toolbar extends React.Component {
                 e("h1", null,
                     "SLEDGE" ) ),
             e("div", { className: "btn-group toolbar-buttons" },
-                e("button", { className: "btn btn-primary toolbar-prev" }, "<--"),
-                e("button", { className: "btn btn-primary toolbar-list" }, "LIST"),
-                e("button", { className: "btn btn-primary toolbar-next" }, "-->") )
+                e("button", {
+                    className: "btn btn-primary toolbar-prev",
+                    onClick: this.props.onPrev
+                }, "<--"),
+                e("button", {
+                    className: "btn btn-primary toolbar-list",
+                    onClick: this.props.onList
+                }, "LIST"),
+                e("button", {
+                    className: "btn btn-primary toolbar-next",
+                    onClick: this.props.onNext
+                }, "-->") )
         );
     }
 }
@@ -101,11 +139,37 @@ class Project extends React.Component {
 }
 
 class RatingBox extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            selected: props.chosen
+        };
+    }
+
+    select(i) {
+        this.setState({
+            selected: i
+        });
+    }
+
+    resetSelect() {
+        this.setState({
+            selected: this.props.chosen
+        });
+    }
+
     buttonGroup(a, b) {
         let buttons = [];
         for (let i=a;i<b;i++) {
+            let classes = "btn btn-secondary";
+            if ( i === 1 )  classes += " ratingbox-top-left";
+            if ( i === 20 ) classes += " ratingbox-bottom-right";
+            if ( this.state.selected === i ) classes += " ratingbox-selected";
+            if ( this.props.chosen === i ) classes += " ratingbox-chosen";
+
             buttons.push(
-                e("button", { className: "btn btn-secondary" },
+                e("button", { className: classes, onClick: () => this.select(i) },
                     i.toString() )
             );
         }
@@ -119,7 +183,14 @@ class RatingBox extends React.Component {
         return e("div", { className: "ratingbox-comp" },
             e("div", { className: "btn-group-vertical" },
                 this.buttonGroup( 1, 11),
-                this.buttonGroup(11, 21) )
+                this.buttonGroup(11, 21),
+                e("div", { className: "btn-group" },
+                    e("button", { className: "btn", onClick: () => this.resetSelect() },
+                        "RESET"),
+                    e("button", {
+                        className: "btn ratingbox-bottom-right",
+                        onClick: () => this.props.onSubmit( this.state.selected )
+                    }, "SUBMIT") ))
         );
     }
 }

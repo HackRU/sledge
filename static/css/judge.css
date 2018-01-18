@@ -69,4 +69,21 @@
 
 .ratingbox-comp button {
   cursor: pointer;
+  padding: 15px;
+}
+
+.ratingbox-top-left {
+  border-bottom-left-radius: 0px;
+}
+
+.ratingbox-bottom-right {
+  border-top-right-radius: 0px;
+}
+
+.ratingbox-selected, .ratingbox-selected:hover {
+  background: yellow;
+}
+
+.ratingbox-chosen, .ratingbox-chosen:hover {
+  background: green;
 }
