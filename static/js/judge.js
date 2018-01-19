@@ -27,6 +27,11 @@ class JudgeApp extends React.Component {
         this.state = {
             judgeHacks: [],
             currentHackPos: -1,
+            judge: {
+                id: 0,
+                name: "[Judge not found]",
+                email: "notfound@example.com"
+            }
         };
 
         if ( sledge.isInitialized() )
@@ -36,12 +41,14 @@ class JudgeApp extends React.Component {
     updateSledgeData() {
         this.setState( (prevState, props) => {
             let currentHackPos = prevState.currentHackPos;
+            let judge = sledge.getJudgeInfo(1);
             let judgeHacks = sledge.getJudgeHacks(1); // TODO: What judge?
 
             if ( currentHackPos < 0 && judgeHacks.length > 0 )
                 currentHackPos = 0;
 
             return {
+                judge,
                 judgeHacks,
                 currentHackPos
             };
@@ -70,6 +77,9 @@ class JudgeApp extends React.Component {
                             return {};
                     });
                 },
+            }),
+            e(JudgeInfo, {
+                name: this.state.judge.name
             }),
             e(Project, {
                 name: currentHack.name,
@@ -134,6 +144,17 @@ class Project extends React.Component {
                 this.getNameAndLocation() ),
             e("p", { className: "project-description" },
                 this.props.description )
+        );
+    }
+}
+
+class JudgeInfo extends React.Component {
+    render() {
+        return e("div", { className: "judgeinfo-comp" },
+            e("span", null,
+                e("span", null, "Hello, "),
+                e("span", { className: "judgeinfo-name" }, this.props.name),
+                e("span", null, "!") )
         );
     }
 }

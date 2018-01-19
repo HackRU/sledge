@@ -123,6 +123,12 @@ function isInitialized() {
     return initialized;
 }
 
+function getJudgeInfo(judgeId) {
+    if (!initialized) throw new Error("getJudgeInfo: Data not initialized");
+
+    return tables.judges[judgeId] || null;
+}
+
 function getJudgeHacks(judgeId) {
     if (!initialized) throw new Error("getJudgeHacks: Data not initialized");
 
@@ -160,6 +166,7 @@ window.sledge = {
     addJudge,
 
     isInitialized,
+    getJudgeInfo,
     getJudgeHacks,
 
     _tables: tables,
