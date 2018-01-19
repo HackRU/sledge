@@ -139,11 +139,13 @@ class Project extends React.Component {
     }
 
     render() {
-        return e("div", null,
+        return e("div", { className: "project-comp" },
             e("h2", { className: "project-title" },
                 this.getNameAndLocation() ),
             e("p", { className: "project-description" },
-                this.props.description )
+                this.props.description ),
+            e("button", { className: "btn btn-primary project-noshow" },
+                "Mark Hack as No Show" ),
         );
     }
 }
@@ -208,6 +210,8 @@ class RatingBox extends React.Component {
                 e("div", { className: "btn-group" },
                     e("button", { className: "btn", onClick: () => this.resetSelect() },
                         "RESET"),
+                    e("button", { className: "btn", onClick: () => {} },
+                        "RUBRIC"),
                     e("button", {
                         className: "btn ratingbox-bottom-right",
                         onClick: () => this.props.onSubmit( this.state.selected )
