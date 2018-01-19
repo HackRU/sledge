@@ -31,7 +31,8 @@ class JudgeApp extends React.Component {
                 id: 0,
                 name: "[Judge not found]",
                 email: "notfound@example.com"
-            }
+            },
+            superlatives: []
         };
 
         if ( sledge.isInitialized() )
@@ -43,6 +44,7 @@ class JudgeApp extends React.Component {
             let currentHackPos = prevState.currentHackPos;
             let judge = sledge.getJudgeInfo(1);
             let judgeHacks = sledge.getJudgeHacks(1); // TODO: What judge?
+            let superlatives = sledge.getSuperlatives();
 
             if ( currentHackPos < 0 && judgeHacks.length > 0 )
                 currentHackPos = 0;
@@ -50,7 +52,8 @@ class JudgeApp extends React.Component {
             return {
                 judge,
                 judgeHacks,
-                currentHackPos
+                currentHackPos,
+                superlatives
             };
         });
     }
@@ -90,7 +93,9 @@ class JudgeApp extends React.Component {
                 chosen: 1,
                 onSubmit: () => {}
             }),
-            e(Superlatives, null)
+            e(Superlatives, {
+                superlatives: this.state.superlatives
+            })
         );
     }
 
@@ -208,12 +213,12 @@ class RatingBox extends React.Component {
                 this.buttonGroup( 1, 11),
                 this.buttonGroup(11, 21),
                 e("div", { className: "btn-group" },
-                    e("button", { className: "btn", onClick: () => this.resetSelect() },
+                    e("button", { className: "btn ratingbox-border-right", onClick: () => this.resetSelect() },
                         "RESET"),
-                    e("button", { className: "btn", onClick: () => {} },
+                    e("button", { className: "btn ratingbox-border-left ratingbox-border-right", onClick: () => {} },
                         "RUBRIC"),
                     e("button", {
-                        className: "btn ratingbox-bottom-right",
+                        className: "btn ratingbox-bottom-right ratingbox-border-left",
                         onClick: () => this.props.onSubmit( this.state.selected )
                     }, "SUBMIT") ))
         );
@@ -221,8 +226,20 @@ class RatingBox extends React.Component {
 }
 
 class Superlatives extends React.Component {
+    superlativesList() {
+        let superElems = this.props.superlatives.map( s => {
+            return e("li", null, s.name);
+        });
+
+        return e("ul", null, ...superElems);
+    }
+
     render() {
-        return e("div", null, "Superlatives");
+        return e("div", { className: "superlatives-comp" },
+            e("h2", null, "Superlatives"),
+            e("div", { className: "superlatives-list" },
+                this.superlativesList() )
+        );
     }
 }
 

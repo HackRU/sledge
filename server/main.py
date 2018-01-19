@@ -57,7 +57,7 @@ async def do_devpost_scrape(sid, data):
             room = sid )
 
 @sio.on('add-judge')
-async def dp_add_judge(sid, data):
+async def do_add_judge(sid, data):
     name = data.get('name')
     email = data.get('email')
     c = sql.cursor()
@@ -74,6 +74,25 @@ async def dp_add_judge(sid, data):
 
     await sio.emit(
             'add-judge-response',
+            data = { 'success': True },
+            room = sid )
+
+@sio.on('add-superlative')
+async def do_add_superlative(sid, data):
+    name = data.get('name')
+    c = sql.cursor()
+
+    c.execute(
+        'INSERT INTO superlatives ('
+            'name)'
+        'VALUES (?)',
+        [name])
+    sql.commit()
+
+    await send_full_response()
+
+    await sio.emit(
+            'add-superlative-response',
             data = { 'success': True },
             room = sid )
 

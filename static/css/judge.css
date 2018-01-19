@@ -77,6 +77,7 @@
 
 .project-noshow {
   width: 100%;
+  cursor: pointer;
 }
 
 /********************
@@ -100,10 +101,35 @@
   border-top-right-radius: 0px;
 }
 
+
 .ratingbox-selected, .ratingbox-selected:hover {
   background: yellow;
 }
 
 .ratingbox-chosen, .ratingbox-chosen:hover {
   background: green;
+}
+
+.ratingbox-border-right, .ratingbox-border-left {
+  border: solid #000 0px;
+}
+
+.ratingbox-border-left {
+  border-left-width: 3px;
+}
+
+.ratingbox-border-right {
+  border-right-width: 3px;
+}
+
+/********************
+ * RatingBox Component
+ */
+
+.superlatives-comp {
+  margin: 15px;
+}
+
+.superlatives-comp h2 {
+  text-align: center;
 }

@@ -76,6 +76,16 @@ function onAddJudgeResponse(data) {
     });
 }
 
+function onAddSuperlativeResponse(data) {
+    console.log("Recieved add-superlative-response", data);
+
+    sendChange({
+        trans: true,
+        type: "Add Superlative",
+        data
+    });
+}
+
 ////////////////////
 // Helpers
 
@@ -111,6 +121,12 @@ function addJudge(name, email) {
     });
 }
 
+function addSuperlative(name) {
+    socket.emit("add-superlative", {
+        name: name.toString()
+    });
+}
+
 // Subscribe to notifications for changes
 function subscribe(cb) {
     subscribers.push(cb);
@@ -143,6 +159,19 @@ function getJudgeHacks(judgeId) {
     return judgeHacks;
 }
 
+function getSuperlatives() {
+    if (!initialized) throw new Error("getJudgeHacks: Data not initialized");
+
+    let superlatives = [];
+    for ( let superlative of tables.superlatives ) {
+        if ( superlative ) {
+            superlatives.push(superlative);
+        }
+    }
+
+    return superlatives;
+}
+
 function init() {
     if (socket) {
         throw new Error("Sledge: Socket already initialized!");
@@ -155,6 +184,7 @@ function init() {
     socket.on("update-partial", onUpdatePartial);
     socket.on("devpost-scrape-response", onDevpostScrapeResponse);
     socket.on("add-judge-response", onAddJudgeResponse);
+    socket.on("add-superlative-response", onAddSuperlativeResponse);
 }
 
 window.sledge = {
@@ -164,10 +194,12 @@ window.sledge = {
     sendRaw,
     scrapeDevpost,
     addJudge,
+    addSuperlative,
 
     isInitialized,
     getJudgeInfo,
     getJudgeHacks,
+    getSuperlatives,
 
     _tables: tables,
 };

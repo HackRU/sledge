@@ -64,6 +64,14 @@ function runCommand(txt) {
         }
 
         addJudge(args[1], args[2]);
+    } else if ( action === "addsuperlative" ) {
+        if ( args.length !== 2 ) {
+            printLn("usafe: addsuperlative <name>");
+            printLn();
+            return;
+        }
+
+        addSuperlative(args[1]);
     } else {
         printWrap("Unknown command: ", action);
     }
@@ -172,6 +180,14 @@ function addJudge(name, email) {
     printLn();
 
     sledge.addJudge(name, email);
+}
+
+function addSuperlative(name) {
+    printLn(" === Add Superlative ===");
+    printWrap("Name: ", name);
+    printLn();
+
+    sledge.addSuperlative(name);
 }
 
 window.admin = {
