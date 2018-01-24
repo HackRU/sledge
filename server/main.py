@@ -12,6 +12,7 @@ staticdir = os.path.join(
 datadir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         '../data' )
+os.makedirs(datadir, exist_ok=True)
 
 sio = socketio.AsyncServer()
 app = aiohttp.web.Application()
@@ -170,7 +171,6 @@ def init():
     aiohttp.web.run_app(app)
 
 def initdb():
-    os.makedirs(datadir, exist_ok=True)
     c = sql.cursor()
     c.execute(
         # The hacks table is a all the hacks and the info needed to judge them
