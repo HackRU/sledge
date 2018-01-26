@@ -20,6 +20,46 @@ The following dependencies are required for sledge:
 We are targeting only recent browsers. We want Sledge supported on latest
 Chrome, Firefox, Edge and Safari on both desktop and mobile.
 
+## Development
+
+Below is the recommended way to setup your development environment on Linux,
+assuming you already have the correct python and pip. Run these from the cloned
+sledge directory.
+
+    $ virtualenv -p python3.6 env
+    $ source env/bin/activate
+    $ pip install -r requirements.txt
+
+To run sledge,
+
+    $ source env/bin/activate
+    $ ./sledge.py
+
+To debug sledge, you'll need to load sample sample data and sample judges into
+the database via the admin console. Open the `/admin.html` page.
+
+### Development on WSL and iLabs
+
+The Rutgers iLabs and WSL do not have the correct python version to run Sledge,
+however it is easy to build locally.
+
+    $ mkdir -p $HOME/local/src
+    $ cd $HOME/local/src
+    $ wget https://www.sqlite.org/2018/sqlite-autoconf-3220000.tar.gz
+    $ tar -xf sqlite-autoconf-3220000.tar.gz
+    $ cd sqlite-autoconf-3220000
+    $ ./configure --prefix=$HOME/local
+    $ make
+    $ make install
+    $ wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
+    $ tar -xf Python-3.6.4.tgz
+    $ cd Python-3.6.4
+    $ ./configure --enable-loadable-sqlite-extensions --prefix=$HOME/local
+    $ make
+    $ make altinstall
+
+Then, append `$HOME/local/bin` to your shell's PATH.
+
 # License
 
 See `LICENSE` file.
