@@ -123,7 +123,7 @@
 }
 
 /********************
- * RatingBox Component
+ * Superlatives Component
  */
 
 .superlatives-comp {
@@ -132,4 +132,30 @@
 
 .superlatives-comp h2 {
   text-align: center;
+}
+
+.superlatives-name {
+  width: 38%;
+}
+
+.superlatives-chosen {
+  width: 62%;
+}
+
+.superlatives-item {
+  margin: 15px 10px;
+  padding: 10px;
+  border-left: 10px solid #000;
+}
+
+.superlatives-actions {
+  width: 100%;
+}
+
+.superlatives-actions .btn-group {
+  width: 100%;
+}
+
+.superlatives-actions .btn {
+  width: 25%;
 }

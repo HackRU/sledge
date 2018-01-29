@@ -122,8 +122,8 @@ def get_serialized_full():
     for judge_hack in c.fetchall():
         judge_hacks.append({
             'id': judge_hack[0],
-            'judge_id': judge_hack[1],
-            'hack_id': judge_hack[2] })
+            'judgeId': judge_hack[1],
+            'hackId': judge_hack[2] })
 
     superlatives = []
     c.execute('SELECT id,name FROM superlatives;')
@@ -133,27 +133,28 @@ def get_serialized_full():
             'name': superlative[1] })
 
     superlative_placements = []
-    c.execute('SELECT id,judge_id,first_choice,second_choice FROM superlative_placements;')
-    for superlatives_placement in c.fetchall():
+    c.execute('SELECT id,judge_id,superlative_id,first_choice,second_choice FROM superlative_placements;')
+    for superlative_placement in c.fetchall():
         superlative_placements.append({
             'id': superlative_placement[0],
-            'judge_id': superlative_placement[1],
-            'first_choice': superlative_placement[2],
-            'second_choice': superlative_placement[3] })
+            'judgeId': superlative_placement[1],
+            'superlativeId': superlative_placement[2],
+            'firstChoice': superlative_placement[3],
+            'secondChoice': superlative_placement[4] })
 
     ratings = []
     c.execute('SELECT id,judge_id,hack_id,rating FROM ratings;')
     for rating in c.fetchall():
         ratings.append({
             'id': rating[0],
-            'judge_id': rating[1],
-            'hack_id': rating[2],
+            'judgeId': rating[1],
+            'hackId': rating[2],
             'rating': rating[3] })
 
     return {
         'hacks': hacks,
         'judges': judges,
-        'judge_hacks': judge_hacks,
+        'judgeHacks': judge_hacks,
         'superlatives': superlatives,
         'superlativePlacements': superlative_placements,
         'ratings': ratings
@@ -213,8 +214,9 @@ def initdb():
         'CREATE TABLE IF NOT EXISTS superlative_placements ('
             'id INTEGER NOT NULL,'
             'judge_id INTEGER NOT NULL,'
-            'first_choice INTEGER NOT NULL,'
-            'second_choice INTEGER NOT NULL,'
+            'superlative_id INTEGER NOT NULL,'
+            'first_choice INTEGER,'
+            'second_choice INTEGER,'
             'FOREIGN KEY(judge_id) REFERENCES judges(id),'
             'FOREIGN KEY(first_choice) REFERENCES hacks(id),'
             'FOREIGN KEY(second_choice) REFERENCES hacks(id),'

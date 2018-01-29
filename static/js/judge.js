@@ -32,7 +32,8 @@ class JudgeApp extends React.Component {
                 name: "[Judge not found]",
                 email: "notfound@example.com"
             },
-            superlatives: []
+            superlatives: [],
+            chosenSuperlatives: [],
         };
 
         if ( sledge.isInitialized() )
@@ -41,21 +42,36 @@ class JudgeApp extends React.Component {
 
     updateSledgeData() {
         this.setState( (prevState, props) => {
+            let hacks = sledge.getHacksTable();
+
             let currentHackPos = prevState.currentHackPos;
             let judge = sledge.getJudgeInfo(1);
             let judgeHacks = sledge.getJudgeHacks(1); // TODO: What judge?
             let superlatives = sledge.getSuperlatives();
+            let chosenSuperlatives = sledge.getChosenSuperlatives(1);
 
             if ( currentHackPos < 0 && judgeHacks.length > 0 )
                 currentHackPos = 0;
 
             return {
+                hacks,
+
                 judge,
                 judgeHacks,
                 currentHackPos,
-                superlatives
+                superlatives,
+                chosenSuperlatives
             };
         });
+    }
+
+    calcSuperlatives() {
+        return this.state.superlatives.map( s => ({
+            name: s.name,
+            id: s.id,
+            chosenFirstId: this.state.chosenSuperlatives[s.id].first,
+            chosenSecondId: this.state.chosenSuperlatives[s.id].second
+        }));
     }
 
     render() {
@@ -94,7 +110,8 @@ class JudgeApp extends React.Component {
                 onSubmit: () => {}
             }),
             e(Superlatives, {
-                superlatives: this.state.superlatives
+                superlatives: this.calcSuperlatives(),
+                hacks: this.state.hacks
             })
         );
     }
@@ -227,11 +244,48 @@ class RatingBox extends React.Component {
 
 class Superlatives extends React.Component {
     superlativesList() {
-        let superElems = this.props.superlatives.map( s => {
-            return e("li", null, s.name);
-        });
+        let superElems = [];
+        for (let superlative of this.props.superlatives) {
+            superElems.push( this.superlativeViewer(superlative) );
+        }
 
-        return e("ul", null, ...superElems);
+        return e("div", null, ...superElems);
+    }
+
+    getHackName(def, id) {
+        if ( id < 1 ) {
+            return def;
+        } else {
+            return this.props.hacks[id].name;
+        }
+    }
+
+    superlativeViewer(s) {
+        let chosenFirstName = this.getHackName("[NO FIRST PLACE]", s.chosenFirstId);
+        let chosenSecondName = this.getHackName("[NO SECOND PLACE]", s.chosenSecondId);
+
+        return e("div", { className: "d-flex flex-column superlatives-item" },
+            e("div", null,
+                e("div", { className: "d-flex flex-row superlatives-info" },
+                    e("div", { className: "superlatives-name" },
+                        e("h3", null, s.name)),
+                    e("div", { className: "superlatives-chosen" },
+                        e("div", { className: "d-flex flex-column" },
+                            e("div", { className: "superlatives-first" },
+                                e("div", { className: "d-flex flex-row justify-content-end" },
+                                    e("span", { className: "superlatives-hack" }, chosenFirstName),
+                                    e("button", { className: "superlatives-remove" }, "X"))),
+                            e("div", { className: "d-flex flex-row justify-content-end" },
+                                e("div", { className: "superlatives-second" },
+                                    e("span", { className: "superlatives-hack" }, chosenSecondName),
+                                    e("button", { className: "superlative-remove" }, "X"))))))),
+            e("div", { className: "superlatives-actions" },
+                e("div", { className: "btn-group" },
+                    e("button", { className: "btn" }, "FIRST"),
+                    e("button", { className: "btn" }, "SECOND"),
+                    e("button", { className: "btn" }, "REVERT"),
+                    e("button", { className: "btn" }, "SUBMIT")))
+        );
     }
 
     render() {

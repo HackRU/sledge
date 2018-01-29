@@ -10,7 +10,7 @@ var tables = {
     judges: [], // {id, name, email}
     judgeHacks: [], // {id, judgeId, hackId}
     superlatives: [], // {id, name}
-    superlativePlacements: [], // {id, judgeId, firstChoice, secondChoice}
+    superlativePlacements: [], // {id, judgeId, superlativeId, firstChoice, secondChoice}
     ratings: [], // {id, judgeId, hackId, rating}
 };
 
@@ -139,6 +139,10 @@ function isInitialized() {
     return initialized;
 }
 
+function getHacksTable() {
+    return tables.hacks;
+}
+
 function getJudgeInfo(judgeId) {
     if (!initialized) throw new Error("getJudgeInfo: Data not initialized");
 
@@ -160,7 +164,7 @@ function getJudgeHacks(judgeId) {
 }
 
 function getSuperlatives() {
-    if (!initialized) throw new Error("getJudgeHacks: Data not initialized");
+    if (!initialized) throw new Error("getSuperlatives: Data not initialized");
 
     let superlatives = [];
     for ( let superlative of tables.superlatives ) {
@@ -170,6 +174,30 @@ function getSuperlatives() {
     }
 
     return superlatives;
+}
+
+function getChosenSuperlatives(judgeId) {
+    if (!initialized) throw new Error("getChosenSuperlatives: Data not initialized");
+
+    let chosen = [];
+
+    // Initialize to 0
+    for (let i=0;i<tables.superlatives.length;i++) {
+        chosen.push({
+            first: 0,
+            second: 0
+        });
+    }
+
+    // Find chosen
+    for ( let choice of tables.superlativePlacements ) {
+        if ( choice && choice.judgeId == judgeId ) {
+            chosen[choice.superlativeId].first = choice.firstChoice;
+            chosen[choice.superlativeId].second = choice.secondChoice;
+        }
+    }
+
+    return chosen;
 }
 
 function init() {
@@ -196,10 +224,13 @@ window.sledge = {
     addJudge,
     addSuperlative,
 
+    getHacksTable,
+
     isInitialized,
     getJudgeInfo,
     getJudgeHacks,
     getSuperlatives,
+    getChosenSuperlatives,
 
     _tables: tables,
 };
