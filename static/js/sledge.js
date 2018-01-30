@@ -86,6 +86,16 @@ function onAddSuperlativeResponse(data) {
     });
 }
 
+function onRankSuperlativeResponse(data) {
+    console.log("Recieved rank-superlative-response", data);
+
+    sendChange({
+        trans: true,
+        type: "Rank Superlative",
+        data
+    });
+}
+
 ////////////////////
 // Helpers
 
@@ -124,6 +134,12 @@ function addJudge(name, email) {
 function addSuperlative(name) {
     socket.emit("add-superlative", {
         name: name.toString()
+    });
+}
+
+function rankSuperlative(judgeId, superlativeId, firstChoiceId, secondChoiceId) {
+    socket.emit("rank-superlative", {
+        judgeId, superlativeId, firstChoiceId, secondChoiceId
     });
 }
 
@@ -213,6 +229,7 @@ function init() {
     socket.on("devpost-scrape-response", onDevpostScrapeResponse);
     socket.on("add-judge-response", onAddJudgeResponse);
     socket.on("add-superlative-response", onAddSuperlativeResponse);
+    socket.on("rank-superlative-response", onRankSuperlativeResponse);
 }
 
 window.sledge = {
@@ -223,6 +240,7 @@ window.sledge = {
     scrapeDevpost,
     addJudge,
     addSuperlative,
+    rankSuperlative,
 
     getHacksTable,
 

@@ -111,7 +111,11 @@ class JudgeApp extends React.Component {
             }),
             e(Superlatives, {
                 superlatives: this.calcSuperlatives(),
-                hacks: this.state.hacks
+                hacks: this.state.hacks,
+                currentHackId: currentHack.id,
+                onSubmit: (superId, choices) => {
+                    sledge.rankSuperlative(1, superId, choices.first, choices.second)
+                }
             })
         );
     }
@@ -119,6 +123,7 @@ class JudgeApp extends React.Component {
     getCurrentHack() {
         if ( this.state.currentHackPos < 0 ) {
             return {
+                id: 0,
                 name: "[No Hacks Found]",
                 description: "[No Hacks Found]",
                 location: "?",
@@ -243,6 +248,31 @@ class RatingBox extends React.Component {
 }
 
 class Superlatives extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            selected: []
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState( (prevState, prevProps) => {
+            let selected = prevState.selected.slice(0);
+
+            for ( let superlative of nextProps.superlatives ) {
+                if ( !selected[superlative.id] ) {
+                    selected[superlative.id] = {
+                        first: superlative.chosenFirstId,
+                        second: superlative.chosenSecondId
+                    };
+                }
+            }
+
+            return { selected };
+        });
+    }
+
     superlativesList() {
         let superElems = [];
         for (let superlative of this.props.superlatives) {
@@ -260,9 +290,97 @@ class Superlatives extends React.Component {
         }
     }
 
+    getSelectedFirstId(superlativeId) {
+        if ( this.state.selected[superlativeId] ) {
+            return this.state.selected[superlativeId].first;
+        } else {
+            return 0;
+        }
+    }
+
+    getSelectedSecondId(superlativeId) {
+        if ( this.state.selected[superlativeId] ) {
+            return this.state.selected[superlativeId].second;
+        } else {
+            return 0;
+        }
+    }
+
+    selectFirst(superlativeId) {
+        this.setState( (prevState, props) => {
+            let selected = prevState.selected.slice(0);
+
+            if ( props.currentHackId === selected[superlativeId].second ) {
+                selected[superlativeId].second = selected[superlativeId].first;
+                selected[superlativeId].first = props.currentHackId;
+            } else if ( props.currentHackId !== selected[superlativeId].first ) {
+                selected[superlativeId].second = selected[superlativeId].first;
+                selected[superlativeId].first = props.currentHackId;
+            }
+
+            return { selected };
+        });
+    }
+
+    selectSecond(superlativeId) {
+        this.setState( (prevState, props) => {
+            let selected = prevState.selected.slice(0);
+
+            if ( props.currentHackId === selected[superlativeId].first ) {
+                selected[superlativeId].first = selected[superlativeId].second;
+                selected[superlativeId].second = props.currentHackId;
+            } else {
+                selected[superlativeId].second = props.currentHackId;
+            }
+
+            return { selected };
+        });
+    }
+
+    removeFirst(superlativeId) {
+        this.setState( (prevState, props) => {
+            let selected = prevState.selected.slice(0);
+            selected[superlativeId].first = selected[superlativeId].second;
+            selected[superlativeId].second = 0;
+            return { selected };
+        });
+    }
+
+    removeSecond(superlativeId) {
+        this.setState( (prevState, props) => {
+            let selected = prevState.selected.slice(0);
+            selected[superlativeId].second = 0;
+            return { selected };
+        });
+    }
+
+    revert(superlativeId) {
+        this.setState( (prevState, props) => {
+            let selected = prevState.selected.slice(0);
+            let superlative = null;
+
+            for (let s of props.superlatives) {
+                if ( s.id === superlativeId ) superlative = s;
+            }
+
+            selected[superlativeId].first = superlative.chosenFirstId;
+            selected[superlativeId].second = superlative.chosenSecondId;
+        });
+    }
+
+    submit(superlativeId) {
+        this.props.onSubmit(superlativeId, this.state.selected[superlativeId]);
+    }
+
     superlativeViewer(s) {
-        let chosenFirstName = this.getHackName("[NO FIRST PLACE]", s.chosenFirstId);
-        let chosenSecondName = this.getHackName("[NO SECOND PLACE]", s.chosenSecondId);
+        let selectedFirstId = this.getSelectedFirstId(s.id);
+        let selectedSecondId = this.getSelectedSecondId(s.id);
+
+        let selectedFirstName = this.getHackName("[NO FIRST PLACE]", selectedFirstId);
+        let selectedSecondName = this.getHackName("[NO SECOND PLACE]", selectedSecondId);
+
+        let dirtyFirstClass = (selectedFirstId === s.chosenFirstId)?"":" superlatives-dirty";
+        let dirtySecondClass = (selectedSecondId === s.chosenSecondId)?"":" superlatives-dirty";
 
         return e("div", { className: "d-flex flex-column superlatives-item" },
             e("div", null,
@@ -271,20 +389,38 @@ class Superlatives extends React.Component {
                         e("h3", null, s.name)),
                     e("div", { className: "superlatives-chosen" },
                         e("div", { className: "d-flex flex-column" },
-                            e("div", { className: "superlatives-first" },
+                            e("div", { className: "superlatives-first"+dirtyFirstClass },
                                 e("div", { className: "d-flex flex-row justify-content-end" },
-                                    e("span", { className: "superlatives-hack" }, chosenFirstName),
-                                    e("button", { className: "superlatives-remove" }, "X"))),
+                                    e("span", { className: "superlatives-hack" }, selectedFirstName),
+                                    e("button", {
+                                        className: "superlatives-remove",
+                                        onClick: () => this.removeFirst(s.id)
+                                    }, "X"))),
                             e("div", { className: "d-flex flex-row justify-content-end" },
-                                e("div", { className: "superlatives-second" },
-                                    e("span", { className: "superlatives-hack" }, chosenSecondName),
-                                    e("button", { className: "superlative-remove" }, "X"))))))),
+                                e("div", { className: "superlatives-second"+dirtySecondClass },
+                                    e("span", { className: "superlatives-hack" }, selectedSecondName),
+                                    e("button", {
+                                        className: "superlative-remove",
+                                        onClick: () => this.removeSecond(s.id)
+                                    }, "X"))))))),
             e("div", { className: "superlatives-actions" },
                 e("div", { className: "btn-group" },
-                    e("button", { className: "btn" }, "FIRST"),
-                    e("button", { className: "btn" }, "SECOND"),
-                    e("button", { className: "btn" }, "REVERT"),
-                    e("button", { className: "btn" }, "SUBMIT")))
+                    e("button", {
+                        className: "btn superlatives-btn-first",
+                        onClick: () => this.selectFirst(s.id)
+                    }, "FIRST"),
+                    e("button", {
+                        className: "btn superlatives-btn-second",
+                        onClick: () => this.selectSecond(s.id)
+                    }, "SECOND"),
+                    e("button", {
+                        className: "btn superlatives-btn-revert",
+                        onClick: () => this.revert(s.id)
+                    }, "REVERT"),
+                    e("button", {
+                        className: "btn superlatives-btn-submit",
+                        onClick: () => this.submit(s.id)
+                    }, "SUBMIT")))
         );
     }
 

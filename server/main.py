@@ -57,6 +57,30 @@ async def do_devpost_scrape(sid, data):
             data = { 'success': True },
             room = sid )
 
+@sio.on('rank-superlative')
+async def do_rank_superlative(sid, data):
+    judgeid = data.get('judgeId')
+    superid = data.get('superlativeId')
+    firstid = data.get('firstChoiceId')
+    secondid = data.get('secondChoiceId')
+
+    c = sql.cursor()
+    c.execute(
+        'INSERT OR REPLACE INTO superlative_placements'
+            '(id, judge_id, superlative_id, first_choice, second_choice)'
+        'VALUES ('
+            '(SELECT id FROM superlative_placements WHERE judge_id=? AND superlative_id=?),'
+            '?, ?, ?, ?);',
+        [judgeid, superid, judgeid, superid, firstid, secondid])
+    sql.commit()
+
+    await send_full_response()
+
+    await sio.emit(
+            'rank-superlative-response',
+            data = { 'success': True },
+            room = sid )
+
 @sio.on('add-judge')
 async def do_add_judge(sid, data):
     name = data.get('name')

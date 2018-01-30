@@ -152,10 +152,15 @@
   width: 100%;
 }
 
+.superlatives-dirty {
+  font-style: italic;
+}
+
 .superlatives-actions .btn-group {
   width: 100%;
 }
 
 .superlatives-actions .btn {
   width: 25%;
+  cursor: pointer;
 }
