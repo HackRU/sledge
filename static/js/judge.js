@@ -13,6 +13,19 @@ function init() {
 window.addEventListener("load", init);
 
 ////////////////////
+// Utils
+
+function toggleClass(toggle, onClass, offClass) {
+    if ( toggle && onClass ) {
+        return " "+onClass;
+    } else if ( !toggle && offClass ) {
+        return " "+offClass;
+    } else {
+        return "";
+    }
+}
+
+////////////////////
 // Toplevel Judge Component
 
 class JudgeApp extends React.Component {
@@ -106,8 +119,9 @@ class JudgeApp extends React.Component {
                 location: currentHack.location
             }),
             e(RatingBox, {
-                chosen: 1,
-                onSubmit: () => {}
+                chosen: 0,
+                onSubmit: () => {},
+                hackId: currentHack.id
             }),
             e(Superlatives, {
                 superlatives: this.calcSuperlatives(),
@@ -193,56 +207,160 @@ class RatingBox extends React.Component {
         super(props);
 
         this.state = {
-            selected: props.chosen
+            // TODO: These should probably be loaded from somewhere
+            categories: [{
+                name: "Egregiousness",
+                selected: -1,
+                dirty: true,
+                id: 0
+            }, {
+                name: "Homeliness",
+                selected: -1,
+                dirty: true,
+                id: 1
+            }, {
+                name: "Abhorentness",
+                selected: -1,
+                dirty: true,
+                id: 2
+            }, {
+                name: "Inoperativeness",
+                selected: -1,
+                dirty: true,
+                id: 3
+            }]
         };
     }
 
-    select(i) {
-        this.setState({
-            selected: i
+    componentWillReceiveProps(newProps) {
+        // TODO: Is there a better way to do this? Maybe we shouldn't
+        //       be so reliant on stateful components?
+        if ( this.props.hackId !== newProps.hackId ) {
+            this.reset();
+        }
+    }
+
+    reset() {
+        this.setState( (prevState, props) => {
+            let cats = prevState.categories.slice(0);
+            for (let cat of cats) {
+                cat.dirty = true;
+                cat.selected = -1;
+            }
+            return { categories: cats };
         });
     }
 
-    resetSelect() {
-        this.setState({
-            selected: this.props.chosen
+    select(catId, score) {
+        this.setState( (prevState, props) => {
+            let cats = prevState.categories.slice(0);
+            cats[catId].selected = score;
+            cats[catId].dirty = true;
+            return { categories: cats };
         });
     }
 
-    buttonGroup(a, b) {
+    submit() {
+        let selected = this.getSelected();
+        if (!selected.valid) return;
+
+        this.setState( (prevState, props) => {
+            let cats = prevState.categories.slice(0);
+            for (let cat of cats) {
+                cat.dirty = false;
+            }
+            return { categories: cats };
+        });
+
+        this.props.onSubmit(selected.total);
+    }
+
+    getSelected() {
+        let total = 0;
+        let valid = true;
+
+        for (let cat of this.state.categories) {
+            if ( cat.selected >= 0 ) {
+                total += cat.selected;
+            } else {
+                valid = false;
+            }
+        }
+
+        if ( total <= 0 || 20 < total )
+            valid = false;
+
+        return { total, valid };
+    }
+
+    renderCategory(cat) {
         let buttons = [];
-        for (let i=a;i<b;i++) {
-            let classes = "btn btn-secondary";
-            if ( i === 1 )  classes += " ratingbox-top-left";
-            if ( i === 20 ) classes += " ratingbox-bottom-right";
-            if ( this.state.selected === i ) classes += " ratingbox-selected";
-            if ( this.props.chosen === i ) classes += " ratingbox-chosen";
-
+        for (let i=0;i<6;i++) {
+            let selectedClass = i==cat.selected?" ratingbox-selected":"";
             buttons.push(
-                e("button", { className: classes, onClick: () => this.select(i) },
-                    i.toString() )
+                e("button", {
+                    className: "btn"+selectedClass,
+                    onClick: () => this.select(cat.id, i)
+                }, i.toString())
             );
         }
 
-        return e("div", { className: "btn-group" },
-            ...buttons
+        let dirtyClass = cat.dirty?" ratingbox-dirty":"";
+        return e("div", { className: "ratingbox-category" },
+            e("div", { className: "ratingbox-catname" },
+                e("h3", null, cat.name)),
+            e("div", { className: "btn-group"+dirtyClass },
+                ...buttons)
         );
     }
 
+    renderSelected() {
+        let selected = this.getSelected();
+        let validClass = toggleClass(selected.valid,
+                "ratingbox-valid", "ratingbox-invalid");
+
+        return e("span", {
+            className: validClass
+        }, selected.total.toString());
+    }
+
+    renderChosen() {
+        let total = this.props.chosen;
+
+        let totalString;
+        let valid;
+        if ( total > 0 ) {
+            totalString = total.toString();
+            valid = true;
+        } else {
+            totalString = "unrated";
+            valid = false;
+        }
+
+        let validClass = toggleClass(valid,
+                "ratingbox-valid", "ratingbox-invalid");
+
+        return e("span", {
+            className: validClass
+        }, totalString);
+    }
+
     render() {
+        let cats = this.state.categories.map( c => this.renderCategory(c) );
+
         return e("div", { className: "ratingbox-comp" },
-            e("div", { className: "btn-group-vertical" },
-                this.buttonGroup( 1, 11),
-                this.buttonGroup(11, 21),
-                e("div", { className: "btn-group" },
-                    e("button", { className: "btn ratingbox-border-right", onClick: () => this.resetSelect() },
-                        "RESET"),
-                    e("button", { className: "btn ratingbox-border-left ratingbox-border-right", onClick: () => {} },
-                        "RUBRIC"),
+            e("div", null,
+                ...cats,
+                e("div", { className: "ratingbox-summary" },
+                    e("div", { className: "ratingbox-totalselected" },
+                        e("span", null, this.renderSelected())),
+                    e("div", { className: "ratingbox-totalchosen" },
+                        e("span", null, this.renderChosen()))),
+                e("div", { className: "ratingbox-submit" },
                     e("button", {
-                        className: "btn ratingbox-bottom-right ratingbox-border-left",
-                        onClick: () => this.props.onSubmit( this.state.selected )
-                    }, "SUBMIT") ))
+                        className: "btn",
+                        onClick: () => this.submit()
+                    }, "SUBMIT")))
         );
     }
 }

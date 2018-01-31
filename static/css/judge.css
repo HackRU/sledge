@@ -84,42 +84,56 @@
  * RatingBox Component
  */
 
-.ratingbox-comp .btn-group-vertical {
+.ratingbox-comp button {
+  height: 80px;
+  cursor: pointer;
+}
+
+.ratingbox-catname {
+  text-align: center;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.ratingbox-comp .btn-group {
+  padding: 10px;
   width: 100%;
 }
 
-.ratingbox-comp button {
-  cursor: pointer;
-  padding: 15px;
+.ratingbox-category button {
+  width: 16.66%;
 }
 
-.ratingbox-top-left {
-  border-bottom-left-radius: 0px;
-}
-
-.ratingbox-bottom-right {
-  border-top-right-radius: 0px;
-}
-
-
-.ratingbox-selected, .ratingbox-selected:hover {
-  background: yellow;
-}
-
-.ratingbox-chosen, .ratingbox-chosen:hover {
+.ratingbox-selected {
   background: green;
 }
 
-.ratingbox-border-right, .ratingbox-border-left {
-  border: solid #000 0px;
+.ratingbox-dirty .ratingbox-selected {
+  background: yellow;
 }
 
-.ratingbox-border-left {
-  border-left-width: 3px;
+.ratingbox-summary {
+  width: 100%;
+  font-size: 25px;
+  text-align: center;
 }
 
-.ratingbox-border-right {
-  border-right-width: 3px;
+.ratingbox-totalselected {
+  float: left;
+  width: 50%;
+}
+
+.ratingbox-totalchosen {
+  float: right;
+  width: 50%;
+}
+
+.ratingbox-totalselected .ratingbox-invalid {
+  color: red;
+}
+
+.ratingbox-submit button {
+  width: 100%;
 }
 
 /********************
