@@ -75,11 +75,6 @@
   text-indent: 10px;
 }
 
-.project-noshow {
-  width: 100%;
-  cursor: pointer;
-}
-
 /********************
  * RatingBox Component
  */
@@ -87,6 +82,14 @@
 .ratingbox-comp button {
   height: 80px;
   cursor: pointer;
+}
+
+.ratingbox-noshow {
+  text-align: center;
+}
+
+.ratingbox-noshow button {
+  width: 60%;
 }
 
 .ratingbox-catname {

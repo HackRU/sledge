@@ -96,6 +96,16 @@ function onRankSuperlativeResponse(data) {
     });
 }
 
+function onRateHackResponse(data) {
+    console.log("Recieved rate-hack-response", data);
+
+    sendChange({
+        trans: true,
+        type: "Rate Hack",
+        data
+    });
+}
+
 ////////////////////
 // Helpers
 
@@ -143,6 +153,12 @@ function rankSuperlative(judgeId, superlativeId, firstChoiceId, secondChoiceId) 
     });
 }
 
+function rateHack(judgeId, hackId, rating) {
+    socket.emit("rate-hack", {
+        judgeId, hackId, rating
+    });
+}
+
 // Subscribe to notifications for changes
 function subscribe(cb) {
     subscribers.push(cb);
@@ -177,6 +193,24 @@ function getJudgeHacks(judgeId) {
     }
 
     return judgeHacks;
+}
+
+function getJudgeRatings(judgeId) {
+    if (!initialized) throw new Error("getJudgeRatings: Data not initialized");
+
+    let ratings = [];
+
+    for (let i=0;i<tables.hacks.length;i++) {
+        ratings[i] = 0;
+    }
+
+    for (let rating of tables.ratings) {
+        if ( rating && rating.judgeId === judgeId ) {
+            ratings[rating.hackId] = rating.rating;
+        }
+    }
+
+    return ratings;
 }
 
 function getSuperlatives() {
@@ -230,6 +264,7 @@ function init() {
     socket.on("add-judge-response", onAddJudgeResponse);
     socket.on("add-superlative-response", onAddSuperlativeResponse);
     socket.on("rank-superlative-response", onRankSuperlativeResponse);
+    socket.on("rate-hack-response", onRateHackResponse);
 }
 
 window.sledge = {
@@ -241,6 +276,7 @@ window.sledge = {
     addJudge,
     addSuperlative,
     rankSuperlative,
+    rateHack,
 
     getHacksTable,
 
@@ -249,6 +285,7 @@ window.sledge = {
     getJudgeHacks,
     getSuperlatives,
     getChosenSuperlatives,
+    getJudgeRatings,
 
     _tables: tables,
 };

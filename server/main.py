@@ -102,6 +102,30 @@ async def do_add_judge(sid, data):
             data = { 'success': True },
             room = sid )
 
+@sio.on('rate-hack')
+async def do_rate_hack(sid, data):
+    judgeid = data.get('judgeId')
+    hackid = data.get('hackId')
+    rating = data.get('rating')
+
+    c = sql.cursor()
+
+    c.execute(
+        'INSERT OR REPLACE INTO ratings'
+            '(id, judge_id, hack_id, rating)'
+        'VALUES ('
+            '(SELECT id FROM ratings WHERE judge_id=? AND hack_id=?),'
+            '?, ?, ?);',
+        [judgeid, hackid, judgeid, hackid, rating])
+    sql.commit()
+
+    await send_full_response()
+
+    await sio.emit(
+            'rate-hack-response',
+            data = { 'success': True },
+            room = sid )
+
 @sio.on('add-superlative')
 async def do_add_superlative(sid, data):
     name = data.get('name')
