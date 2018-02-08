@@ -66,12 +66,38 @@ function runCommand(txt) {
         addJudge(args[1], args[2]);
     } else if ( action === "addsuperlative" ) {
         if ( args.length !== 2 ) {
-            printLn("usafe: addsuperlative <name>");
+            printLn("usage: addsuperlative <name>");
             printLn();
             return;
         }
 
         addSuperlative(args[1]);
+    } else if ( action === "addtoken" ) {
+        if ( args.length !== 3 ) {
+            printLn("usage: addtoken <judge id> <secret>");
+            printLn();
+            return;
+        }
+
+        addToken(args[1], args[2]);
+    } else if ( action === "token" ) {
+        if ( args.length === 2 && args[1] === "view" ) {
+            printLn(" === View Token ===");
+            printWrap("Your Current Token: ", localStorage.getItem("token"));
+            printLn();
+        } else if ( args.length === 3 && args[1] === "set" ) {
+            printLn(" === Set Token ===");
+            printWrap("Your Current Token: ", localStorage.getItem("token"));
+            localStorage.setItem("token", args[2]);
+            printWrap("Your New Token: ", localStorage.getItem("token"));
+            printLn("(Hint: Refresh to take effect)");
+            printLn();
+        } else {
+            printLn("usage: token view");
+            printLn("       token set <new token>");
+            printLn();
+            return;
+        }
     } else {
         printWrap("Unknown command: ", action);
     }
@@ -151,7 +177,9 @@ function init() {
         }
     });
 
-    sledge.init();
+    sledge.init({
+        token: localStorage.getItem("token")
+    });
     sledge.subscribe( onSledgeEvent );
 
     printLn("Admin Console Ready");
@@ -188,6 +216,14 @@ function addSuperlative(name) {
     printLn();
 
     sledge.addSuperlative(name);
+}
+
+function addToken(judgeId, secret) {
+    printLn(" === Add Token ===");
+    printWrap("judgeId: ", judgeId);
+    printWrap("secret: ", secret);
+
+    sledge.addToken(judgeId, secret);
 }
 
 window.admin = {

@@ -1,6 +1,8 @@
 import aiohttp.web
 import os
 import socketio
+import urllib.parse
+import random
 
 from . import devpost
 from . import db
@@ -17,10 +19,25 @@ os.makedirs(datadir, exist_ok=True)
 sio = socketio.AsyncServer()
 app = aiohttp.web.Application()
 
+# Map of sid to judge id
+auth = dict()
+
 @sio.on('connect')
 async def do_connect(sid, env):
-    print('Client connected', sid)
+    query = urllib.parse.parse_qs(env.get('QUERY_STRING'))
+    secret = query.get('secret')
+    if secret == None:
+        return False
+    if len(secret) != 1:
+        return
+
+    judgeid = db.find_judge({'secret': secret[0]})
+    if judgeid == None:
+        return False
+    auth[sid] = judgeid
+
     await sio.emit('update-full', data=get_serialized_full(), room=sid)
+    return True
 
 @sio.on('devpost-scrape')
 async def do_devpost_scrape(sid, data):
@@ -115,6 +132,23 @@ async def do_add_superlative(sid, data):
             data = { 'success': True },
             room = sid )
 
+@sio.on('add-token')
+async def do_add_token(sid, data):
+    try:
+        db.add_token(data)
+    except ValueError as e:
+        await sio.emit(
+                'add-token-response',
+                data = { 'success': False,
+                         'message': 'ValueError: %s' % str(e) },
+                room = sid )
+        return
+
+    await sio.emit(
+            'add-token-response',
+            data = { 'success': True },
+            room = sid )
+
 def get_serialized_full():
     return {
         'hacks': db.serialize_hacks(),
@@ -134,6 +168,14 @@ def init():
     db.initdb(datadir)
     sio.attach(app)
     app.router.add_static('/', path=staticdir) # In prod, use nginx
+
+    if not db.are_tokens_populated():
+        print('No tokens found. Generating first admin token...')
+        secret = ''.join(
+            random.choice('0123456789ABCDEFG') for _ in range(6))
+        db.add_token({'judgeId': 0, 'secret': secret})
+        print('ADMIN SECRET: ', secret)
+
     aiohttp.web.run_app(app)
 
 

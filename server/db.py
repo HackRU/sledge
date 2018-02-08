@@ -29,6 +29,16 @@ def initdb(datadir):
             'PRIMARY KEY(id)'
         ');')
     c.execute(
+        # The tokens table associates secrets with judges, whereas judge 0 is an
+        # admin with full privileges
+        'CREATE TABLE IF NOT EXISTS tokens ('
+            'id INTEGER NOT NULL,'
+            'secret TEXT NOT NULL,'
+            'judge_id INTEGER NOT NULL,'
+            'FOREIGN KEY(judge_id) REFERENCES judges(id),'
+            'PRIMARY KEY(id)'
+        ');')
+    c.execute(
         # The judge_hacks table records all hacks assigned to a judge
         'CREATE TABLE IF NOT EXISTS judge_hacks ('
             'id INTEGER NOT NULL,'
@@ -146,6 +156,37 @@ def add_superlative(superlative):
         'VALUES (?)',
         [name])
     sql.commit()
+
+def are_tokens_populated():
+    c = sql.cursor()
+    c.execute('SELECT * FROM tokens;')
+    return c.fetchone() != None
+
+def add_token(token):
+    judgeid = token.get('judgeId')
+    secret  = token.get('secret')
+
+    c = sql.cursor()
+    c.execute(
+        'INSERT INTO tokens ('
+            'judge_id, secret)'
+        'VALUES (?, ?)',
+        [judgeid, secret])
+    sql.commit()
+
+def find_judge(token):
+    secret = token.get('secret')
+
+    c = sql.cursor()
+    c.execute(
+        'SELECT judge_id FROM tokens WHERE secret=?;',
+        [secret])
+
+    judge = c.fetchone()
+    if judge == None:
+        return None
+    else:
+        return judge[0]
 
 # Serialization
 

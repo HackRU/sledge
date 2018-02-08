@@ -86,6 +86,16 @@ function onAddSuperlativeResponse(data) {
     });
 }
 
+function onAddTokenResponse(data) {
+    console.log("Recieved add-token-response", data);
+
+    sendChange({
+        trans: true,
+        type: "Add Token",
+        data
+    });
+}
+
 function onRankSuperlativeResponse(data) {
     console.log("Recieved rank-superlative-response", data);
 
@@ -144,6 +154,13 @@ function addJudge(name, email) {
 function addSuperlative(name) {
     socket.emit("add-superlative", {
         name: name.toString()
+    });
+}
+
+function addToken(judgeId, secret) {
+    socket.emit("add-token", {
+        judgeId: parseInt(judgeId),
+        secret: secret.toString()
     });
 }
 
@@ -250,12 +267,12 @@ function getChosenSuperlatives(judgeId) {
     return chosen;
 }
 
-function init() {
+function init(opts) {
     if (socket) {
         throw new Error("Sledge: Socket already initialized!");
     }
 
-    socket = io();
+    socket = io({query: "secret="+encodeURIComponent(opts.token)});
 
     socket.on('error', onError);
     socket.on("update-full", onUpdateFull);
@@ -263,6 +280,7 @@ function init() {
     socket.on("devpost-scrape-response", onDevpostScrapeResponse);
     socket.on("add-judge-response", onAddJudgeResponse);
     socket.on("add-superlative-response", onAddSuperlativeResponse);
+    socket.on("add-token-response", onAddTokenResponse);
     socket.on("rank-superlative-response", onRankSuperlativeResponse);
     socket.on("rate-hack-response", onRateHackResponse);
 }
