@@ -178,7 +178,7 @@ function init() {
     });
 
     sledge.init({
-        token: localStorage.getItem("token")
+        token: localStorage.getItem("token") || "test"
     });
     sledge.subscribe( onSledgeEvent );
 

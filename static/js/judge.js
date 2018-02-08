@@ -7,7 +7,8 @@ var judge = {};
 window.judge = judge;
 
 function init() {
-    sledge.init();
+    // TODO: Get Actual Token
+    sledge.init({token: "test"});
 
     var appContainer = document.getElementById("app");
     ReactDOM.render(e(JudgeApp, null), appContainer);

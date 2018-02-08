@@ -173,6 +173,8 @@ def init():
         print('No tokens found. Generating first admin token...')
         secret = ''.join(
             random.choice('0123456789ABCDEFG') for _ in range(6))
+        #TODO: This could be done better
+        db.add_token({'judgeId': 0, 'secret': 'test'})
         db.add_token({'judgeId': 0, 'secret': secret})
         print('ADMIN SECRET: ', secret)
 
