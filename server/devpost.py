@@ -4,21 +4,6 @@ import csv
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
-def scrape_to_database(sql, url):
-    print("Scraping to database", url)
-    c = sql.cursor()
-
-    hacks = get_hack_data(url)
-    print("Got %d hacks" % len(hacks))
-    for hack in hacks:
-        c.execute(
-            'INSERT INTO hacks ('
-                'name, description, location)'
-            'VALUES (?,?,?);',
-            [hack.get('hack_name'), hack.get('hack_description'), 0])
-
-    sql.commit()
-
 def get_prize_data(url):
     # get prize ID numbers
     prize_finder = BeautifulSoup(urlopen(url), 'html.parser')

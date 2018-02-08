@@ -1,9 +1,9 @@
 import aiohttp.web
 import os
 import socketio
-import sqlite3
 
 from . import devpost
+from . import db
 
 staticdir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
@@ -16,9 +16,6 @@ os.makedirs(datadir, exist_ok=True)
 
 sio = socketio.AsyncServer()
 app = aiohttp.web.Application()
-sql = sqlite3.connect(os.path.join(datadir, 'sledge.db'))
-
-#TODO: Each of these handlers needs an auth check
 
 @sio.on('connect')
 async def do_connect(sid, env):
@@ -29,29 +26,18 @@ async def do_connect(sid, env):
 async def do_devpost_scrape(sid, data):
     url = data.get('url')
     force = data.get('force')
-    c = sql.cursor()
 
-    # Refuse if hacks are already present
-    if not force:
-        c.execute('SELECT * FROM hacks')
-        if c.fetchone() != None:
-            print('Hacks present, refusing scrape')
-            await sio.emit(
-                    'devpost-scrape-response',
-                    data = { 'success': False,
-                             'message': 'Hacks already present' },
-                    room = sid )
-            return
-    try:
-        devpost.scrape_to_database(sql, url)
-    except ValueError as e:
-        print('BAD VALUES FROM CLIENT!', e)
+    if not force and db.are_hacks_populated():
         await sio.emit(
                 'devpost-scrape-response',
                 data = { 'success': False,
-                         'message': 'Bad Values: %s' % str(e) },
+                         'message': 'Hacks already present' },
                 room = sid )
-        return
+
+    for hack in get_hack_data(url):
+        db.add_hack(hack)
+
+    await send_full_response()
     await sio.emit(
             'devpost-scrape-response',
             data = { 'success': True },
@@ -59,23 +45,17 @@ async def do_devpost_scrape(sid, data):
 
 @sio.on('rank-superlative')
 async def do_rank_superlative(sid, data):
-    judgeid = data.get('judgeId')
-    superid = data.get('superlativeId')
-    firstid = data.get('firstChoiceId')
-    secondid = data.get('secondChoiceId')
-
-    c = sql.cursor()
-    c.execute(
-        'INSERT OR REPLACE INTO superlative_placements'
-            '(id, judge_id, superlative_id, first_choice, second_choice)'
-        'VALUES ('
-            '(SELECT id FROM superlative_placements WHERE judge_id=? AND superlative_id=?),'
-            '?, ?, ?, ?);',
-        [judgeid, superid, judgeid, superid, firstid, secondid])
-    sql.commit()
+    try:
+        db.add_superlative_ranking(data)
+    except ValueError as e:
+        await sio.emit(
+                'rank-superlative-response',
+                data = { 'success': False,
+                         'message': 'ValueError: %s' % str(e) },
+                room = sid )
+        return
 
     await send_full_response()
-
     await sio.emit(
             'rank-superlative-response',
             data = { 'success': True },
@@ -83,20 +63,17 @@ async def do_rank_superlative(sid, data):
 
 @sio.on('add-judge')
 async def do_add_judge(sid, data):
-    name = data.get('name')
-    email = data.get('email')
-    c = sql.cursor()
+    try:
+        db.add_judge(data)
+    except ValueError as e:
+        await sio.emit(
+                'add-judge-response',
+                data = { 'success': False,
+                         'message': 'ValueError: %s' % str(e) },
+                room = sid )
+        return
 
-    c.execute(
-        'INSERT INTO judges ('
-            'name, email)'
-        'VALUES (?,?)',
-        [name, email])
-    sql.commit()
-
-    # TODO: Only create a partial response
     await send_full_response()
-
     await sio.emit(
             'add-judge-response',
             data = { 'success': True },
@@ -104,23 +81,17 @@ async def do_add_judge(sid, data):
 
 @sio.on('rate-hack')
 async def do_rate_hack(sid, data):
-    judgeid = data.get('judgeId')
-    hackid = data.get('hackId')
-    rating = data.get('rating')
-
-    c = sql.cursor()
-
-    c.execute(
-        'INSERT OR REPLACE INTO ratings'
-            '(id, judge_id, hack_id, rating)'
-        'VALUES ('
-            '(SELECT id FROM ratings WHERE judge_id=? AND hack_id=?),'
-            '?, ?, ?);',
-        [judgeid, hackid, judgeid, hackid, rating])
-    sql.commit()
+    try:
+        db.add_rating(data)
+    except ValueError as e:
+        await sio.emit(
+                'rate-hack-response',
+                data = { 'success': False,
+                         'message': 'ValueError: %s' % str(e) },
+                room = sid )
+        return
 
     await send_full_response()
-
     await sio.emit(
             'rate-hack-response',
             data = { 'success': True },
@@ -128,84 +99,30 @@ async def do_rate_hack(sid, data):
 
 @sio.on('add-superlative')
 async def do_add_superlative(sid, data):
-    name = data.get('name')
-    c = sql.cursor()
-
-    c.execute(
-        'INSERT INTO superlatives ('
-            'name)'
-        'VALUES (?)',
-        [name])
-    sql.commit()
+    try:
+        db.add_superlative(data)
+    except ValueError as e:
+        await sio.emit(
+                'add-superlative-response',
+                data = { 'success': False,
+                         'message': 'ValueError: %s' % str(e) },
+                room = sid )
+        return
 
     await send_full_response()
-
     await sio.emit(
             'add-superlative-response',
             data = { 'success': True },
             room = sid )
 
 def get_serialized_full():
-    c = sql.cursor()
-
-    hacks = []
-    c.execute('SELECT id,name,description,location FROM hacks;')
-    for hack in c.fetchall():
-        hacks.append({
-            'id': hack[0],
-            'name': hack[1],
-            'description': hack[2],
-            'location': hack[3] })
-
-    judges = []
-    c.execute('SELECT id,name,email FROM judges;')
-    for judge in c.fetchall():
-        judges.append({
-            'id': judge[0],
-            'name': judge[1],
-            'email': judge[2] })
-
-    judge_hacks = []
-    c.execute('SELECT id,judge_id,hack_id FROM judge_hacks;')
-    for judge_hack in c.fetchall():
-        judge_hacks.append({
-            'id': judge_hack[0],
-            'judgeId': judge_hack[1],
-            'hackId': judge_hack[2] })
-
-    superlatives = []
-    c.execute('SELECT id,name FROM superlatives;')
-    for superlative in c.fetchall():
-        superlatives.append({
-            'id': superlative[0],
-            'name': superlative[1] })
-
-    superlative_placements = []
-    c.execute('SELECT id,judge_id,superlative_id,first_choice,second_choice FROM superlative_placements;')
-    for superlative_placement in c.fetchall():
-        superlative_placements.append({
-            'id': superlative_placement[0],
-            'judgeId': superlative_placement[1],
-            'superlativeId': superlative_placement[2],
-            'firstChoice': superlative_placement[3],
-            'secondChoice': superlative_placement[4] })
-
-    ratings = []
-    c.execute('SELECT id,judge_id,hack_id,rating FROM ratings;')
-    for rating in c.fetchall():
-        ratings.append({
-            'id': rating[0],
-            'judgeId': rating[1],
-            'hackId': rating[2],
-            'rating': rating[3] })
-
     return {
-        'hacks': hacks,
-        'judges': judges,
-        'judgeHacks': judge_hacks,
-        'superlatives': superlatives,
-        'superlativePlacements': superlative_placements,
-        'ratings': ratings
+        'hacks': db.serialize_hacks(),
+        'judges': db.serialize_judges(),
+        'judgeHacks': db.serialize_judge_hacks(),
+        'superlatives': db.serialize_superlatives(),
+        'superlativePlacements': db.serialize_superlative_placements(),
+        'ratings': db.serialize_ratings()
     }
 
 async def send_full_response():
@@ -214,74 +131,11 @@ async def send_full_response():
 def init():
     print('Static Directory: '+staticdir)
     print('Data Directory: '+datadir)
-    initdb()
+    db.initdb(datadir)
     sio.attach(app)
     app.router.add_static('/', path=staticdir) # In prod, use nginx
     aiohttp.web.run_app(app)
 
-def initdb():
-    c = sql.cursor()
-    c.execute(
-        # The hacks table is a all the hacks and the info needed to judge them
-        'CREATE TABLE IF NOT EXISTS hacks ('
-            'id INTEGER NOT NULL,'
-            'name TEXT NOT NULL,'
-            'description TEXT NOT NULL,'
-            'location INTEGER NOT NULL,'
-            'PRIMARY KEY(id)'
-        ');')
-    c.execute(
-        # The judges table is all the judges, what they need to authenticate,
-        # and how to contact them.
-        'CREATE TABLE IF NOT EXISTS judges ('
-            'id INTEGER NOT NULL,'
-            'name TEXT NOT NULL,'
-            'email TEXT NOT NULL,'
-            'PRIMARY KEY(id)'
-        ');')
-    c.execute(
-        # The judge_hacks table records all hacks assigned to a judge
-        'CREATE TABLE IF NOT EXISTS judge_hacks ('
-            'id INTEGER NOT NULL,'
-            'judge_id INTEGER NOT NULL,'
-            'hack_id INTEGER NOT NULL,'
-            'FOREIGN KEY(judge_id) REFERENCES judges(id),'
-            'FOREIGN KEY(hack_id) REFERENCES hacks(id),'
-            'PRIMARY KEY(id)'
-        ');')
-    c.execute(
-        # The superlatives table is all the superlatives
-        'CREATE TABLE IF NOT EXISTS superlatives ('
-            'id INTEGER NOT NULL,'
-            'name TEXT NOT NULL,'
-            'PRIMARY KEY(id)'
-        ');')
-    c.execute(
-        # The superlative_placements is the first and second choice of
-        # each judge for each superlative
-        'CREATE TABLE IF NOT EXISTS superlative_placements ('
-            'id INTEGER NOT NULL,'
-            'judge_id INTEGER NOT NULL,'
-            'superlative_id INTEGER NOT NULL,'
-            'first_choice INTEGER,'
-            'second_choice INTEGER,'
-            'FOREIGN KEY(judge_id) REFERENCES judges(id),'
-            'FOREIGN KEY(first_choice) REFERENCES hacks(id),'
-            'FOREIGN KEY(second_choice) REFERENCES hacks(id),'
-            'PRIMARY KEY(id)'
-        ');')
-    c.execute(
-        # The ratings table is the score given by each judge on a 0-20 scale
-        'CREATE TABLE IF NOT EXISTS ratings ('
-            'id INTEGER NOT NULL,'
-            'judge_id INTEGER NOT NULL,'
-            'hack_id INTEGER NOT NULL,'
-            'rating INTEGER NOT NULL,'
-            'FOREIGN KEY(judge_id) REFERENCES judges(id),'
-            'FOREIGN KEY(hack_id) REFERENCES hacks(id),'
-            'PRIMARY KEY(id)'
-        ');')
-    sql.commit()
 
 if __name__ == "__main__":
     init()
