@@ -5,7 +5,7 @@ sql = None
 
 # Initialization
 
-def initdb(datadir):
+def init(datadir):
     global sql
     sql = sqlite3.connect(os.path.join(datadir, 'sledge.db'))
 
