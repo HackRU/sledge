@@ -35,6 +35,17 @@ function runCommand(txt) {
 
     if ( action === "" ) {
         return;
+    } else if ( action === "help" ) {
+        printLn(" === Help ===");
+        printLn("Commands are listed below. Running a command without");
+        printLn("any arguments displays its usage.");
+        printLn(" send - Send a raw socketio request");
+        printLn(" devpost - Scrape devpost for hacks");
+        printLn(" addjudge - Add a judge");
+        printLn(" addsuperlative - Add a superlative");
+        printLn(" addtoken - Manually add an auth token (usually done automatically on signin)");
+        printLn(" token - View and set your token (must refresh see changes)");
+        printLn();
     } else if ( action === "send" ) {
         if ( !args[1] || !args[2] ) {
             printLn("usage: send <socketio event> <json>");
@@ -98,6 +109,8 @@ function runCommand(txt) {
             printLn();
             return;
         }
+    } else if ( action === "clear" ) {
+        log.value = "";
     } else {
         printWrap("Unknown command: ", action);
     }
@@ -177,13 +190,17 @@ function init() {
         }
     });
 
+    if ( !localStorage.getItem("token") ) {
+        localStorage.setItem("token", "test");
+    }
+
     sledge.init({
-        token: localStorage.getItem("token") || "test"
+        token: localStorage.getItem("token")
     });
     sledge.subscribe( onSledgeEvent );
 
     printLn("Admin Console Ready");
-    printLn(" All events will be logged here. See admin.js for commands.");
+    printLn(" All events will be logged here. Type help for commands.");
     printLn();
 }
 window.addEventListener("load", init);
