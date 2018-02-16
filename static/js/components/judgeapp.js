@@ -117,7 +117,7 @@ class JudgeApp extends React.Component {
             currentHackId: this.state.currentHackId,
             onSubmit: (superId, choices) => {
                 sledge.sendRankSuperlative({
-                    judgeId: this.state.myJudgeId,
+                    judgeId: this.props.myJudgeId,
                     superlativeId: superId,
                     firstChoiceId: choices.first,
                     secondChoiceId: choices.second

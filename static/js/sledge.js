@@ -167,7 +167,7 @@ function getHacksOrder({judgeId}) {
     return { order, positions };
 }
 
-function getJudgeRatings(judgeId) {
+function getJudgeRatings({judgeId}) {
     if (!initialized) throw new Error("getJudgeRatings: Data not initialized");
 
     let ratings = [];
@@ -198,7 +198,7 @@ function getSuperlatives() {
     return superlatives;
 }
 
-function getChosenSuperlatives(judgeId) {
+function getChosenSuperlatives({judgeId}) {
     if (!initialized) throw new Error("getChosenSuperlatives: Data not initialized");
 
     let chosen = [];

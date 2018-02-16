@@ -1,5 +1,5 @@
 (function () {
-"use info";
+"use strict";
 
 var e = React.createElement;
 
