@@ -3,7 +3,11 @@
 
 var socket = null;
 var subscribers = [];
+var handlers = [];
 var initialized = false;
+
+////////////////////
+// Global Tables
 
 var tables = {
     hacks: [], // {id, name, description, location}
@@ -14,17 +18,33 @@ var tables = {
     ratings: [], // {id, judgeId, hackId, rating}
 };
 
+////////////////////
+// Private Helpers
+
+function updateTables(data) {
+    for ( let table of Object.keys(tables) ) {
+        if ( data[table] ) {
+            for ( let row of data[table] ) {
+                if ( row.id ) {
+                    tables[table][row.id] = row;
+                }
+            }
+        }
+    }
+}
+
 function sendChange(content) {
     for (let sub of subscribers)
         if (sub) sub(content);
 }
 
 ////////////////////
-// Socket Handlers
+// Update Handlers
 
 function onError(data) {
     console.log("Error", data);
 }
+handlers.push({ name: "error", handler: onError });
 
 function onUpdateFull(data) {
     tables.hacks.splice(0);
@@ -42,6 +62,7 @@ function onUpdateFull(data) {
         type: "full"
     });
 }
+handlers.push({ name: "update-full", handler: onUpdateFull });
 
 function onUpdatePartial(data) {
     if ( !initialized ) return;
@@ -52,164 +73,98 @@ function onUpdatePartial(data) {
         type: "partial"
     });
 }
-
-// All responses are transient, however in some cases the server will also
-// send a non-transient response
-
-function onDevpostScrapeResponse(data) {
-    console.log("Recieved devpost-scrape-response", data);
-
-    sendChange({
-        trans: true,
-        type: "Devpost Scrape",
-        data
-    });
-}
-
-function onAddJudgeResponse(data) {
-    console.log("Recieved add-judge-response", data);
-
-    sendChange({
-        trans: true,
-        type: "Add Judge",
-        data
-    });
-}
-
-function onAddSuperlativeResponse(data) {
-    console.log("Recieved add-superlative-response", data);
-
-    sendChange({
-        trans: true,
-        type: "Add Superlative",
-        data
-    });
-}
-
-function onAddTokenResponse(data) {
-    console.log("Recieved add-token-response", data);
-
-    sendChange({
-        trans: true,
-        type: "Add Token",
-        data
-    });
-}
-
-function onRankSuperlativeResponse(data) {
-    console.log("Recieved rank-superlative-response", data);
-
-    sendChange({
-        trans: true,
-        type: "Rank Superlative",
-        data
-    });
-}
-
-function onRateHackResponse(data) {
-    console.log("Recieved rate-hack-response", data);
-
-    sendChange({
-        trans: true,
-        type: "Rate Hack",
-        data
-    });
-}
+handlers.push({ name: "update-partial", handler: onUpdatePartial });
 
 ////////////////////
-// Helpers
+// Requests and Transient Responses
 
-function updateTables(data) {
-    for ( let table of Object.keys(tables) ) {
-        if ( data[table] ) {
-            for ( let row of data[table] ) {
-                if ( row.id ) {
-                    tables[table][row.id] = row;
-                }
-            }
+function addTransientResponse(eventName) {
+    handlers.push({
+        name: eventName,
+        handler: data => {
+            sendChange({
+                trans: true,
+                type: eventName,
+                data
+            });
         }
-    }
-}
-
-//////////////////
-// Exported functions
-
-function sendRaw(evt, data) {
-    socket.emit(evt, data);
-}
-
-function scrapeDevpost(url) {
-    socket.emit("devpost-scrape", {
-        url: url.toString(),
     });
 }
 
-function addJudge(name, email) {
-    socket.emit("add-judge", {
-        name: name.toString(),
-        email: email.toString(),
-    });
+function sendScrapeDevpost({url}) {
+    socket.emit("devpost-scrape", {url});
 }
+addTransientResponse("devpost-scrape-response");
 
-function addSuperlative(name) {
-    socket.emit("add-superlative", {
-        name: name.toString()
-    });
+function sendAddJudge({name, email}) {
+    socket.emit("add-judge", {name, email});
 }
+addTransientResponse("add-judge-response");
 
-function addToken(judgeId, secret) {
-    socket.emit("add-token", {
-        judgeId: parseInt(judgeId),
-        secret: secret.toString()
-    });
+function sendAddSuperlative({name}) {
+    socket.emit("add-superlative", {name});
 }
+addTransientResponse("add-superlative-response");
 
-function rankSuperlative(judgeId, superlativeId, firstChoiceId, secondChoiceId) {
+function sendAddToken({judgeId, secret}) {
+    socket.emit("add-token", {judgeId, secret});
+}
+addTransientResponse("add-token-response");
+
+function sendRankSuperlative(data) {
     socket.emit("rank-superlative", {
-        judgeId, superlativeId, firstChoiceId, secondChoiceId
+        judgeId: data.judgeId,
+        superlativeId: data.superlativeId,
+        firstChoiceId: data.firstChoiceId,
+        secondChoiceId: data.secondChoiceId
     });
 }
+addTransientResponse("rank-superlative-response");
 
-function rateHack(judgeId, hackId, rating) {
+function sendRateHack({judgeId, hackId, rating}) {
     socket.emit("rate-hack", {
         judgeId, hackId, rating
     });
 }
+addTransientResponse("rate-hack-response");
 
-// Subscribe to notifications for changes
-function subscribe(cb) {
-    subscribers.push(cb);
-}
-
-// Getting information
-//  (Returns from these functions should be treated as readonly)
+////////////////////
+// Information Querying
 
 function isInitialized() {
     return initialized;
 }
 
-function getHacksTable() {
+function getAllHacks() {
+    if (!initialized) throw new Error("getAllHacks: Data not initialized");
+
     return tables.hacks;
 }
 
-function getJudgeInfo(judgeId) {
+function getJudgeInfo({judgeId}) {
     if (!initialized) throw new Error("getJudgeInfo: Data not initialized");
 
     return tables.judges[judgeId] || null;
 }
 
-function getJudgeHacks(judgeId) {
-    if (!initialized) throw new Error("getJudgeHacks: Data not initialized");
+function getHacksOrder({judgeId}) {
+    if (!initialized) throw new Error("getHacksOrder: Data not initialized");
 
-    //TODO: Get only hacks by judge
-    let judgeHacks = [];
-    for ( let hack of tables.hacks ) {
-        if ( hack ) {
-            judgeHacks.push( hack );
+    // TODO: Look through judgeHacks table,
+    //       instead of returning all hacks
+    // TODO: Order by location
+    let order     = [];
+    let positions = [];
+    for (let i=0,pos=0;i<tables.hacks.length;i++) {
+        if ( tables.hacks[i] ) {
+            positions[i] = pos;
+            order[pos++] = i;
         }
     }
 
-    return judgeHacks;
+    // order maps position to hackId
+    // positions maps hackId to position
+    return { order, positions };
 }
 
 function getJudgeRatings(judgeId) {
@@ -267,6 +222,13 @@ function getChosenSuperlatives(judgeId) {
     return chosen;
 }
 
+////////////////////
+// Other Exports
+
+function subscribe(cb) {
+    subscribers.push(cb);
+}
+
 function init(opts) {
     if (socket) {
         throw new Error("Sledge: Socket already initialized!");
@@ -274,38 +236,44 @@ function init(opts) {
 
     socket = io({query: "secret="+encodeURIComponent(opts.token)});
 
-    socket.on('error', onError);
-    socket.on("update-full", onUpdateFull);
-    socket.on("update-partial", onUpdatePartial);
-    socket.on("devpost-scrape-response", onDevpostScrapeResponse);
-    socket.on("add-judge-response", onAddJudgeResponse);
-    socket.on("add-superlative-response", onAddSuperlativeResponse);
-    socket.on("add-token-response", onAddTokenResponse);
-    socket.on("rank-superlative-response", onRankSuperlativeResponse);
-    socket.on("rate-hack-response", onRateHackResponse);
+    for (let h of handlers) {
+        socket.on(h.name, h.handler);
+    }
 }
 
 window.sledge = {
-    init,
-    subscribe,
-
-    sendRaw,
-    scrapeDevpost,
-    addJudge,
-    addSuperlative,
-    rankSuperlative,
-    rateHack,
-
-    getHacksTable,
-
-    isInitialized,
-    getJudgeInfo,
-    getJudgeHacks,
-    getSuperlatives,
-    getChosenSuperlatives,
-    getJudgeRatings,
+    _socket: () => socket,
+    _subscribers: subscribers,
+    _handlers: handlers,
+    _initialized: () => initialized,
 
     _tables: tables,
+
+    _updateTables: updateTables,
+    _sendChange: sendChange,
+
+    _onError: onError,
+    _onUpdateFull: onUpdateFull,
+    _onUpdatePartial: onUpdatePartial,
+
+    _addTransientResponse: addTransientResponse,
+    sendScrapeDevpost,
+    sendAddJudge,
+    sendAddSuperlative,
+    sendAddToken,
+    sendRankSuperlative,
+    sendRateHack,
+
+    isInitialized,
+    getAllHacks,
+    getJudgeInfo,
+    getHacksOrder,
+    getJudgeRatings,
+    getSuperlatives,
+    getChosenSuperlatives,
+
+    subscribe,
+    init
 };
 
 })();
