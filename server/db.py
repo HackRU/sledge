@@ -188,6 +188,20 @@ def find_judge(token):
     else:
         return judge[0]
 
+def find_judge_id(data):
+    email = data.get('email')
+
+    c = sql.cursor()
+    c.execute(
+        'SELECT id FROM judges WHERE email=?;',
+        [email])
+
+    judge = c.fetchone()
+    if judge is None:
+        return None
+    else:
+        return judge[0]
+
 # Serialization
 
 def serialize_hacks():

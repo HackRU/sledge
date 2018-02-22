@@ -1,12 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Sledge</title>
+    <meta charset="utf-8">
+    <title>Login | Sledge</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/index.css" />
   </head>
 
   <body>
-    <h1>Sledge</h1>
+    <h1>Login to Sledge</h1>
 
-    <p>To use the Sledge judging platform please follow the URL given by your Sledge administrator.</p>
+    <div id="loginForm">
+
+      <div id="loginInputs">
+        <div class="form-group row">
+          <label for="emailInput">Email:</label>
+          <input class="form-control" type="email" id="emailInput">
+        </div>
+
+        <div class="form-group row">
+          <label for="passInput">Password:</label>
+          <input class="form-control" type="password" id="passInput">
+        </div>
+      </div>
+
+      <button id="loginButton" type="submit" class="btn btn-primary">Login</button>
+      <button id="logoutButton" class="btn btn-primary">Logout</button>
+      <button id="judgeButton" class="btn btn-primary">Start Judging (must be logged in first)</button>
+
+    </div>
+
+    <div id="message">
+      <span id="messageText">Loading...</span>
+    </div>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/sledge.js"></script>
+    <script src="/js/index.js"></script>
   </body>
 </html>
