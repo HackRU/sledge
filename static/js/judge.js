@@ -2,14 +2,26 @@
 "use strict";
 
 // TODO: Get actual judge id
-var myJudgeId = 1;
+var myJudgeId = null;
 
 var judge = {};
 window.judge = judge;
 
 function init() {
-    // TODO: Get Actual Token
-    sledge.init({token: "test"});
+    let token = localStorage.getItem("token");
+    let judgeId = parseInt(localStorage.getItem("judgeId"));
+
+    if ( !token || isNaN(judgeId) ) {
+        document.getElementById("app").appendChild(
+            document.createTextNode("Bad token or Judge Id. Redirecting to login page..."));
+        setTimeout(function () {
+            window.location.href = "/index.html";
+        }, 1500);
+        return;
+    }
+
+    sledge.init({token});
+    myJudgeId = judgeId;
 
     var appContainer = document.getElementById("app");
     ReactDOM.render(

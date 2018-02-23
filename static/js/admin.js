@@ -94,18 +94,30 @@ function runCommand(txt) {
     } else if ( action === "token" ) {
         if ( args.length === 2 && args[1] === "view" ) {
             printLn(" === View Token ===");
-            printWrap("Your Current Token: ", localStorage.getItem("token"));
+            printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
+            printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
             printLn();
-        } else if ( args.length === 3 && args[1] === "set" ) {
+        } else if ( args.length === 4 && args[1] === "set" ) {
             printLn(" === Set Token ===");
-            printWrap("Your Current Token: ", localStorage.getItem("token"));
+            printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
+            printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
             localStorage.setItem("token", args[2]);
-            printWrap("Your New Token: ", localStorage.getItem("token"));
+            localStorage.setItem("judgeId", args[3]);
+            printWrap("Your New Token:    ", localStorage.getItem("token"));
+            printWrap("Your New Judge Id: ", localStorage.getItem("judgeId"));
             printLn("(Hint: Refresh to take effect)");
+            printLn();
+        } else if ( args.length === 2 && args[1] === "remove" ) {
+            printLn(" === Reset Token ===");
+            printWrap("Your Previous Token:    ", localStorage.getItem("token")||"[NOT SET]");
+            printWrap("Your Previous Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
+            localStorage.clear();
+            printLn("These have been reset. Refershing will reset to default admin.");
             printLn();
         } else {
             printLn("usage: token view");
-            printLn("       token set <new token>");
+            printLn("       token remove");
+            printLn("       token set <new judge id> <new token>");
             printLn();
             return;
         }
@@ -192,6 +204,7 @@ function init() {
 
     if ( !localStorage.getItem("token") ) {
         localStorage.setItem("token", "test");
+        localStorage.setItem("judgeId", "0");
     }
 
     sledge.init({
