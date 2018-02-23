@@ -5,7 +5,7 @@ var e = React.createElement;
 
 class Project extends React.Component {
     getNameAndLocation() {
-        return this.props.name + " (@"+this.props.location+")";
+        return this.props.name + " (Position "+this.props.location+")";
     }
 
     render() {
