@@ -24,6 +24,9 @@ function init() {
     logoutButton.disabled = false;
     judgeButton.disabled = false;
 
+    emailInput.addEventListener("keypress", onTextKeyPress);
+    passInput.addEventListener("keypress", onTextKeyPress);
+
     loginButton.addEventListener("click", onLogin);
     logoutButton.addEventListener("click", onLogout);
     judgeButton.addEventListener("click", onJudge);
@@ -58,6 +61,13 @@ function setMessage(txt) {
     messageText.appendChild(txtNode);
 }
 
+function onTextKeyPress(evt) {
+    if (evt.key === "Enter") {
+        onLogin(null);
+        evt.preventDefault();
+    }
+}
+
 function onLogin(evt) {
     setMessage("Verifying login information...");
 
@@ -67,7 +77,8 @@ function onLogin(evt) {
     let xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
         if (xhr.status != 200) {
-            setMessage("Failed with Error: "+xhr.responseText);
+            let printableMessage = xhr.responseText.replace(/\<[^>]{1,}\>/g,"\t");
+            setMessage("Failed with Error: " + printableMessage);
 
             loginInputs.classList.remove("hidden");
             loginButton.disabled = false;

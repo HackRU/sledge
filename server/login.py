@@ -1,6 +1,7 @@
 import aiohttp
 import requests
 import json
+import hashlib
 
 from . import db
 
@@ -9,6 +10,8 @@ def init():
 
 async def handle_login(req):
     req_json = await req.json()
+    if req_json.get('password') is not None:
+        req_json['password'] = hash(req_json['password'])
     res = requests.post('https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/test/authorize', json=req_json)
     res_json = res.json()
     if res_json.get('statusCode') != 200:
@@ -33,3 +36,7 @@ async def handle_login(req):
         'judgeId': judgeid,
         'token': secret
         })
+
+def hash(p):
+    m = hashlib.md5(p.encode('ascii'))
+    return m.hexdigest()
