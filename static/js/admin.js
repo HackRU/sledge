@@ -3,7 +3,7 @@
 
 var log, cmd;
 var lastCmd = "";
-
+var sledge=window.sledge;
 function printLn(txt="") {
     let timestr = (new Date()).toLocaleString();
     let logstr = "[" + timestr  + "] " + txt + "\n";
@@ -101,8 +101,8 @@ function runCommand(txt) {
             printLn(" === Set Token ===");
             printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
             printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
-            localStorage.setItem("token", args[2]);
-            localStorage.setItem("judgeId", args[3]);
+            localStorage.setItem("token", args[3]);
+            localStorage.setItem("judgeId", args[2]);
             printWrap("Your New Token:    ", localStorage.getItem("token"));
             printWrap("Your New Judge Id: ", localStorage.getItem("judgeId"));
             printLn("(Hint: Refresh to take effect)");
@@ -228,7 +228,7 @@ function scrapeDevpost(url) {
     printLn("         In the meantime, the server will be unresponsive.");
     printLn();
 
-    sledge.scrapeDevpost(url);
+    sledge.sendScrapeDevpost({url});
 }
 
 function addJudge(name, email) {
@@ -237,7 +237,7 @@ function addJudge(name, email) {
     printWrap("Email: ", email);
     printLn();
 
-    sledge.addJudge(name, email);
+    sledge.sendAddJudge({name, email});
 }
 
 function addSuperlative(name) {
@@ -245,7 +245,7 @@ function addSuperlative(name) {
     printWrap("Name: ", name);
     printLn();
 
-    sledge.addSuperlative(name);
+    sledge.sendAddSuperlative({name});
 }
 
 function addToken(judgeId, secret) {
@@ -253,7 +253,7 @@ function addToken(judgeId, secret) {
     printWrap("judgeId: ", judgeId);
     printWrap("secret: ", secret);
 
-    sledge.addToken(judgeId, secret);
+    sledge.sendAddToken(judgeId, secret);
 }
 
 window.admin = {
