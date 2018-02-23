@@ -85,7 +85,7 @@ async def do_devpost_scrape(sid, data):
     url = data.get('url')
     force = data.get('force')
 
-    for hack in get_hack_data(url):
+    for hack in devpost.get_hack_data(url):
         db.add_hack(hack)
 
     await send_full_response()
