@@ -11,7 +11,7 @@ def init():
         print('No Tokens Found! Generating Admin Token.')
         admin_secret = secrets.token_hex(8)
         db.add_token({'judgeId': 0, 'secret': admin_secret})
-        print('ADMIN SECRET: ', secret)
+        print('ADMIN SECRET: ', admin_secret)
 
         # TODO: This should be removed in prod
         print('ADDING TEST TOKEN FOR CONVIENENCE!!!')
