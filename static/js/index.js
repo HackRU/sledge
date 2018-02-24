@@ -37,7 +37,7 @@ function init() {
 
     token = localStorage.getItem("token") || "";
     if (token) {
-        setMessage("Connecting to Sledge...");
+        setMessage("Connecting to Sledge... (Note: failure to connect may indicate bad credentials)");
 
         loginInputs.classList.add("hidden");
         loginButton.disabled = true;
@@ -48,7 +48,11 @@ function init() {
                 let judgeId = parseInt(localStorage.getItem("judgeId"));
                 let info = sledge.getJudgeInfo({judgeId});
 
-                setMessage("You are logged in as "+info.name+" <"+info.email+"> (ID: "+info.id+").");
+                if (info) {
+                    setMessage("You are logged in as "+info.name+" <"+info.email+"> (ID: "+info.id+").");
+                } else {
+                    setMessage("You are logged in, but we do not recognize Judge ID "+localStorage.getItem("judgeId")+"!");
+                }
             }
         });
         sledge.init({token: localStorage.getItem("token")});
