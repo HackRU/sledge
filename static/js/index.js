@@ -7,6 +7,7 @@ var passInput;
 var loginButton;
 var logoutButton;
 var judgeButton;
+var testButton;
 var messageText;
 
 var token = "";
@@ -18,11 +19,13 @@ function init() {
     loginButton  = document.getElementById("loginButton");
     logoutButton = document.getElementById("logoutButton");
     judgeButton  = document.getElementById("judgeButton");
+    testButton  = document.getElementById("testButton");
     messageText  = document.getElementById("messageText");
 
     loginButton.disabled = false;
     logoutButton.disabled = false;
     judgeButton.disabled = false;
+    testButton.disabled = false;
 
     emailInput.addEventListener("keypress", onTextKeyPress);
     passInput.addEventListener("keypress", onTextKeyPress);
@@ -30,6 +33,7 @@ function init() {
     loginButton.addEventListener("click", onLogin);
     logoutButton.addEventListener("click", onLogout);
     judgeButton.addEventListener("click", onJudge);
+    testButton.addEventListener("click", onTest);
 
     token = localStorage.getItem("token") || "";
     if (token) {
@@ -37,6 +41,7 @@ function init() {
 
         loginInputs.classList.add("hidden");
         loginButton.disabled = true;
+        testButton.disabled = true;
 
         sledge.subscribe(function (xx) {
             if (sledge.isInitialized()) {
@@ -112,6 +117,12 @@ function onLogout(evt) {
 
 function onJudge(evt) {
     window.location.href = "/judge.html";
+}
+
+function onTest(evt) {
+    localStorage.setItem("judgeId", 1);
+    localStorage.setItem("token", "test");
+    window.location.href = window.location.href;
 }
 
 window.login = {
