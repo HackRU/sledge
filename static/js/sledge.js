@@ -228,6 +228,34 @@ function getSuperlatives() {
     return superlatives;
 }
 
+function getAllSuperlativePlacements() {
+    if (!initialized) throw new Error("getAllSuperlatives: Data not initialized");
+
+    let supers = [];
+    for (let i=0;i<tables.hacks.length;i++) {
+        supers[i] = [];
+        for (let j=0;j<tables.superlatives.length;j++) {
+            supers[i][j] = {
+                first: [],
+                second: []
+            };
+        }
+    }
+
+    for (let s of tables.superlativePlacements) {
+        if (s) {
+            if (s.firstChoice > 0) {
+                supers[s.firstChoice][s.superlativeId].first.push(s.judgeId);
+            }
+            if (s.secondChoice > 0) {
+                supers[s.secondChoice][s.superlativeId].second.push(s.judgeId);
+            }
+        }
+    }
+
+    return supers;
+}
+
 function getChosenSuperlatives({judgeId}) {
     if (!initialized) throw new Error("getChosenSuperlatives: Data not initialized");
 
@@ -303,6 +331,7 @@ window.sledge = {
     getAllRatings,
     getJudgeRatings,
     getSuperlatives,
+    getAllSuperlativePlacements,
     getChosenSuperlatives,
 
     subscribe,

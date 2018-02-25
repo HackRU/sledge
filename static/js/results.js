@@ -2,9 +2,11 @@
 "use strict";
 
 var winnersTable;
+var superlativesTable;
 
 function init() {
     winnersTable = document.getElementById("winnersTable");
+    superlativesTable = document.getElementById("superlativesTable");
 
     sledge.init({
         token: localStorage.getItem("token")
@@ -16,6 +18,7 @@ window.addEventListener("load", init);
 function onSledgeEvent(evt) {
     if (sledge.isInitialized()) {
         renderWinnersTable();
+        renderSuperlativesTable();
     }
 }
 
@@ -94,6 +97,60 @@ function calcAverages(ratings) {
         } else {
             return total / raters;
         }
+    });
+}
+
+function renderSuperlativesTable() {
+    let scores = calcSuperScores();
+    console.log(scores);
+
+    let ce = document.createElement.bind(document);
+    let ct = document.createTextNode.bind(document);
+
+    function th(name) {
+        let th = ce("th");
+        th.appendChild(ct(name));
+        return th;
+    }
+    function td(name) {
+        let td = ce("td");
+        td.appendChild(ct(name));
+        return td;
+    }
+
+    let hacks = sledge.getAllHacks();
+    let ss = sledge.getSuperlatives();
+
+    let thead = ce("thead");
+    let thead_tr = ce("tr");
+    thead_tr.appendChild(th("Hack Name"));
+    for (let i=1;i<ss.length;i++) {
+        thead_tr.appendChild(th(ss[i].name));
+    }
+    thead.appendChild(thead_tr);
+
+    let tbody = ce("tbody");
+    for (let i=1;i<hacks.length;i++) {
+        let tr = ce("tr");
+        tr.appendChild(td(hacks[i].name));
+        for (let j=1;j<ss.length;j++) {
+            tr.appendChild(td(scores[i][j]));
+        }
+        tbody.appendChild(tr);
+    }
+
+    superlativesTable.innerHTML = "";
+    superlativesTable.appendChild(thead);
+    superlativesTable.appendChild(tbody);
+}
+
+function calcSuperScores() {
+    let placements = sledge.getAllSuperlativePlacements();
+    return placements.map(function (s) {
+        return s.map(function (o) {
+            return "F:"+o.first.length+"/S:"+o.second.length+" = "
+                + (o.first.length*2+o.second.length);
+        });
     });
 }
 
