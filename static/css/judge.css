@@ -82,6 +82,7 @@
 .ratingbox-comp button {
   height: 80px;
   cursor: pointer;
+  background: #f0f0f0;
 }
 
 .ratingbox-noshow {
@@ -181,4 +182,36 @@
   width: 25%;
   height: 80px;
   cursor: pointer;
+}
+
+/********************
+ * Media Query Misc
+ */
+
+/* TODO: We're fighting Bootstrap with these 'important' tags,
+ *       maybe it would be better to not use Bootstrap classes
+ *       tagged w/ important.
+ */
+@media (max-width: 420px) {
+  .toolbar-title {
+    display: none;
+  }
+
+  .toolbar-buttons {
+    width: 100%;
+  }
+
+  .superlatives-info {
+    flex-direction: column !important;
+  }
+
+  .superlatives-first div, .superlatives-second {
+    display: flex;
+    flex-direction: row-reverse !important;
+    justify-content: space-between !important;
+  }
+
+  .superlatives-chosen {
+    width: 100%;
+  }
 }
