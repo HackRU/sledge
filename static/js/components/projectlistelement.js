@@ -5,8 +5,12 @@ var e = React.createElement;
 
 class ProjectListElement extends React.Component {
     render(){
-	return e("li", {className: "list-item"}, 
-	    this.props.projectName);
+	return e("li", {
+	    className: "list-item", 
+	    onClick: this.props.updateHackId
+	    }, 
+	    this.props.projectName
+	);
     }
 }
 
