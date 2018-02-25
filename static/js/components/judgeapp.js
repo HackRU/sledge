@@ -71,7 +71,9 @@ class JudgeApp extends React.Component {
     getToolbarProps() {
         let prevHackId = this.getPrevHackId();
         let nextHackId = this.getNextHackId();
-
+	let pos = this.props.hackPositions[this.state.currentHackId];
+	let last = pos == this.props.hackOrdering.length-1;
+	let first = pos==0;
         return {
             onPrev: () => {
                 if (prevHackId) this.setState({currentHackId: prevHackId});
@@ -81,7 +83,9 @@ class JudgeApp extends React.Component {
 	    },
             onNext: () => {
                 if (nextHackId) this.setState({currentHackId: nextHackId});
-            }
+            },
+	    last,
+	    first
         };
     }
 
