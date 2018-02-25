@@ -6,8 +6,9 @@ var e = React.createElement;
 class JudgeApp extends React.Component {
     constructor(props) {
         super(props);
-
+	
         this.state = this.updateStateFromProps(null, props);
+	this.state.listViewActive = false;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -46,7 +47,6 @@ class JudgeApp extends React.Component {
         }
     }
 
-
     getNextHackId() {
         let pos = this.props.hackPositions[this.state.currentHackId];
         if ( pos+1 >= this.props.hackOrdering.length ) {
@@ -76,7 +76,9 @@ class JudgeApp extends React.Component {
             onPrev: () => {
                 if (prevHackId) this.setState({currentHackId: prevHackId});
             },
-            onList: () => {},
+            onList: () => {
+		this.setState({listViewActive: !this.state.listViewActive})
+	    },
             onNext: () => {
                 if (nextHackId) this.setState({currentHackId: nextHackId});
             }
@@ -126,16 +128,33 @@ class JudgeApp extends React.Component {
         };
     }
 
+    getProjectListProps() {
+	function setHackId (hackId) {
+	    this.setState({currentHackId: hackId,listViewActive:false});
+	}
+	return {
+	    hacks: this.props.hacks,
+	    setHackId: setHackId.bind(this)
+	};
+    }
+
     render() {
         let currentHack = this.getCurrentHack();
-
-        return e("div", { className: "container d-flex judge-container" },
-            e(judge.Toolbar, this.getToolbarProps()),
-            e(judge.JudgeInfo, this.getJudgeProps()),
-            e(judge.Project, this.getProjectProps()),
-            e(judge.RatingBox, this.getRatingBoxProps()),
-            e(judge.Superlatives, this.getSuperlativeProps())
-        );
+	if ( this.state.listViewActive ) {
+	    return e("div", { className: "container d-flex judge-container" },
+                e(judge.Toolbar, this.getToolbarProps()),
+                e(judge.JudgeInfo, this.getJudgeProps()),
+                e(judge.ProjectList, this.getProjectListProps())
+	    );
+	} else {
+            return e("div", { className: "container d-flex judge-container" },
+                e(judge.Toolbar, this.getToolbarProps()),
+                e(judge.JudgeInfo, this.getJudgeProps()),
+                e(judge.Project, this.getProjectProps()),
+                e(judge.RatingBox, this.getRatingBoxProps()),
+                e(judge.Superlatives, this.getSuperlativeProps())
+            );
+	}
     }
 
 }
