@@ -144,6 +144,12 @@ function getAllHacks() {
     return tables.hacks;
 }
 
+function getAllJudges() {
+    if (!initialized) throw new Error("getAllJudges: Data not initialized");
+
+    return tables.judges;
+}
+
 function getJudgeInfo({judgeId}) {
     if (!initialized) throw new Error("getJudgeInfo: Data not initialized");
 
@@ -168,6 +174,27 @@ function getHacksOrder({judgeId}) {
     // order maps position to hackId
     // positions maps hackId to position
     return { order, positions };
+}
+
+function getAllRatings() {
+    if (!initialized) throw new Error("getAllRatings: Data not initialized");
+
+    let ratings = [];
+    for (let i=0;i<tables.hacks.length;i++) {
+        let hackRatings = [];
+        for (let j=0;j<tables.judges.length;j++) {
+            hackRatings[j] = 0;
+        }
+        ratings[i] = hackRatings;
+    }
+
+    for (let rating of tables.ratings) {
+        if (rating) {
+            ratings[rating.hackId][rating.judgeId] = rating.rating;
+        }
+    }
+
+    return ratings;
 }
 
 function getJudgeRatings({judgeId}) {
@@ -199,6 +226,34 @@ function getSuperlatives() {
     }
 
     return superlatives;
+}
+
+function getAllSuperlativePlacements() {
+    if (!initialized) throw new Error("getAllSuperlatives: Data not initialized");
+
+    let supers = [];
+    for (let i=0;i<tables.hacks.length;i++) {
+        supers[i] = [];
+        for (let j=0;j<tables.superlatives.length;j++) {
+            supers[i][j] = {
+                first: [],
+                second: []
+            };
+        }
+    }
+
+    for (let s of tables.superlativePlacements) {
+        if (s) {
+            if (s.firstChoice > 0) {
+                supers[s.firstChoice][s.superlativeId].first.push(s.judgeId);
+            }
+            if (s.secondChoice > 0) {
+                supers[s.secondChoice][s.superlativeId].second.push(s.judgeId);
+            }
+        }
+    }
+
+    return supers;
 }
 
 function getChosenSuperlatives({judgeId}) {
@@ -270,10 +325,13 @@ window.sledge = {
 
     isInitialized,
     getAllHacks,
+    getAllJudges,
     getJudgeInfo,
     getHacksOrder,
+    getAllRatings,
     getJudgeRatings,
     getSuperlatives,
+    getAllSuperlativePlacements,
     getChosenSuperlatives,
 
     subscribe,
