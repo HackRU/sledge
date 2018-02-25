@@ -228,7 +228,6 @@
 
   .superlatives-first div, .superlatives-second div {
     display: flex;
-    flex-direction: row-reverse !important;
     justify-content: space-between !important;
   }
 
