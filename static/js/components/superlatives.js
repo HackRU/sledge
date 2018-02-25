@@ -158,8 +158,8 @@ class Superlatives extends React.Component {
                                         className: "superlatives-remove",
                                         onClick: () => this.removeFirst(s.id)
                                     }, "X"))),
-                            e("div", { className: "d-flex flex-row justify-content-end" },
-                                e("div", { className: "superlatives-second"+dirtySecondClass },
+			    e("div", { className: "superlatives-second"+dirtySecondClass },
+                                e("div", { className: "d-flex flex-row justify-content-end" },
                                     e("span", { className: "superlatives-hack" }, selectedSecondName),
                                     e("button", {
                                         className: "superlative-remove",

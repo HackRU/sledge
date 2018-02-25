@@ -5,7 +5,7 @@ var e = React.createElement;
 
 class Toolbar extends React.Component {
     buttonClassName(disable) {
-	if (first) {
+	if (disable) {
 	    return  "btn btn-primary toolbar-prev disabled toolbar-no-text"
 	} else {
 	    return "btn btn-primary toolbar-prev"

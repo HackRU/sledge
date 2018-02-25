@@ -17,3 +17,16 @@ body {
 .hidden {
   display: none;
 }
+
+/********************
+ * Colors (●＾o＾●)(＾ｖ＾)(＾ｕ＾)(＾◇＾) ( ^)o(^ )(^O^)(^o^)(^○^))^o^( (*^▽^*)(✿◠‿◠)
+ */
+.sledge-primary {
+    color: white;
+    background-color: #80935e;
+}
+
+.sledge-secondary {
+    color: #80935e;
+    background-color: #dbd9b1;
+}

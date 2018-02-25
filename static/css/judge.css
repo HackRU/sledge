@@ -186,7 +186,25 @@
   height: 80px;
   cursor: pointer;
 }
+/********************
+ * Colors (●＾o＾●)(＾ｖ＾)(＾ｕ＾)(＾◇＾) ( ^)o(^ )(^O^)(^o^)(^○^))^o^( (*^▽^*)(✿◠‿◠)
+ */
+.sledge-primary {
+    border-color: #80935e;
+    color: white;
+    background-color: #80935e;
+}
 
+.sledge-secondary {
+    border-color: #dbd9b1;
+    color: #80935e;
+    background-color: #dbd9b1;
+}/*
+.sledge-secondary:hover {
+    border-color: #dbd9b1;
+    color: #80935e;
+    background-color: #dbd9b1;
+}*/
 /********************
  * Media Query Misc
  */
@@ -208,7 +226,7 @@
     flex-direction: column !important;
   }
 
-  .superlatives-first div, .superlatives-second {
+  .superlatives-first div, .superlatives-second div {
     display: flex;
     flex-direction: row-reverse !important;
     justify-content: space-between !important;
@@ -218,3 +236,4 @@
     width: 100%;
   }
 }
+
