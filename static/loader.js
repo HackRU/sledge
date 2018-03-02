@@ -102,7 +102,11 @@ function loadAll(cb) {
     let loadIndex = 0;
     function load() {
         if (loadIndex >= allScripts.length) {
-            if (cb) cb();
+            if ( document.readyState === "complete" && cb ) {
+                cb();
+            } else if (cb) {
+                window.addEventListener("load", () => cb());
+            }
         } else {
             loadJavascript(allScripts[loadIndex], function () {
                 loadIndex++;
