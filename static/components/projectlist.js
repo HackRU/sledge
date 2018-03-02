@@ -5,7 +5,7 @@ var e = React.createElement;
 
 class ProjectList extends React.Component {
     createListItem(hack) {
-	return e(window.judge.ProjectListElement, {
+	return e(ProjectListElement, {
 	    projectName: hack.name,
 	    updateHackId: () => this.props.setHackId(hack.id)
 	});
