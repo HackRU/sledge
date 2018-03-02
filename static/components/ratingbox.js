@@ -1,4 +1,4 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
@@ -175,7 +175,6 @@ class RatingBox extends React.Component {
         );
     }
 }
+comps.RatingBox = RatingBox;
 
-window.judge.RatingBox = RatingBox;
-
-})();
+})(window.comps || (window.comps = {}));

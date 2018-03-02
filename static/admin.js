@@ -1,9 +1,9 @@
-(function () {
+(function (adminPage) {
 "use strict";
 
 var log, cmd;
 var lastCmd = "";
-var sledge=window.sledge;
+
 function printLn(txt="") {
     let timestr = (new Date()).toLocaleString();
     let logstr = "[" + timestr  + "] " + txt + "\n";
@@ -13,6 +13,7 @@ function printLn(txt="") {
 
     log.scrollTo(0, log.scrollHeight);
 }
+adminPage.printLn = printLn;
 
 function printWrap(forward, txt, wrap=60) {
     let lines = txt.split("\n").map( l => l.split(""));
@@ -28,6 +29,7 @@ function printWrap(forward, txt, wrap=60) {
         } while ( line.length > 0 );
     }
 }
+adminPage.printWrap = printWrap;
 
 function runCommand(txt) {
     let args = splitCommand(txt);
@@ -131,6 +133,7 @@ function runCommand(txt) {
         lastCmd = txt;
     }
 }
+adminPage.runCommand = runCommand;
 
 function splitCommand(txt) {
     let tokens = txt.split("").reverse();
@@ -177,6 +180,7 @@ function splitCommand(txt) {
 
     return args;
 }
+adminPage.splitCommand = splitCommand;
 
 function onSledgeEvent(evt) {
     if ( evt.trans ) {
@@ -186,6 +190,7 @@ function onSledgeEvent(evt) {
         printLn("Recieved Non-Transient Event: " + evt.type);
     }
 }
+adminPage._onSledgeEvent = onSledgeEvent;
 
 function init() {
     log = document.getElementById("log");
@@ -216,8 +221,10 @@ function init() {
     printLn(" All events will be logged here. Type help for commands.");
     printLn();
 }
+adminPage.init = init;
 
-// Stuff Admins can do
+////////////////////
+// Admin Actions
 
 function scrapeDevpost(url) {
     printLn(" === Scrape Devpost ===");
@@ -229,6 +236,7 @@ function scrapeDevpost(url) {
 
     sledge.sendScrapeDevpost({url});
 }
+adminPage.scrapeDevpost = scrapeDevpost;
 
 function addJudge(name, email) {
     printLn(" === Add Judge ===");
@@ -238,6 +246,7 @@ function addJudge(name, email) {
 
     sledge.sendAddJudge({name, email});
 }
+adminPage.addJudge = addJudge;
 
 function addSuperlative(name) {
     printLn(" === Add Superlative ===");
@@ -246,6 +255,7 @@ function addSuperlative(name) {
 
     sledge.sendAddSuperlative({name});
 }
+adminPage.addSuperlative = addSuperlative;
 
 function addToken(judgeId, secret) {
     printLn(" === Add Token ===");
@@ -254,15 +264,6 @@ function addToken(judgeId, secret) {
 
     sledge.sendAddToken(judgeId, secret);
 }
+adminPage.addToken = addToken;
 
-window.admin = {
-    printLn,
-    printWrap,
-    splitCommand,
-
-    scrapeDevpost,
-
-    init
-};
-
-})();
+})(window.adminPage || (window.adminPage = {}));

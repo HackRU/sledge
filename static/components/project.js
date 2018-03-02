@@ -1,4 +1,4 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
@@ -17,7 +17,6 @@ class Project extends React.Component {
         );
     }
 }
+comps.Project = Project;
 
-window.judge.Project = Project;
-
-})();
+})(window.comps || (window.comps = {}));

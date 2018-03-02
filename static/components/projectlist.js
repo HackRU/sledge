@@ -1,4 +1,4 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
@@ -6,7 +6,7 @@ var e = React.createElement;
 class ProjectList extends React.Component {
     createListItem(hack) {
 	return e(window.judge.ProjectListElement, {
-	    projectName: hack.name, 
+	    projectName: hack.name,
 	    updateHackId: () => this.props.setHackId(hack.id)
 	});
     }
@@ -18,7 +18,18 @@ class ProjectList extends React.Component {
 	        ...elements));
     }
 }
+comps.ProjectList = ProjectList;
 
-window.judge.ProjectList = ProjectList;
+class ProjectListElement extends React.Component {
+    render(){
+	return e("li", {
+	    className: "list-item",
+	    onClick: this.props.updateHackId
+	    },
+	    this.props.projectName
+	);
+    }
+}
+comps.ProjectListElement = ProjectListElement;
 
-})();
+})(window.comps || (window.comps = {}));

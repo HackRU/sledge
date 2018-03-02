@@ -1,4 +1,4 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
@@ -13,7 +13,6 @@ class JudgeInfo extends React.Component {
         );
     }
 }
+comps.JudgeInfo = JudgeInfo;
 
-window.judge.JudgeInfo = JudgeInfo;
-
-})();
+})(window.comps || (window.comps = {}));

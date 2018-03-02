@@ -1,4 +1,4 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
@@ -32,7 +32,6 @@ class Toolbar extends React.Component {
         );
     }
 }
+comps.Toolbar = Toolbar;
 
-window.judge.Toolbar = Toolbar;
-
-})();
+})(window.comps || (window.comps = {}));

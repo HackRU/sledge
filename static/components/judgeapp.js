@@ -1,12 +1,13 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
 
+//TODO: This indentation is a mess
 class JudgeApp extends React.Component {
     constructor(props) {
         super(props);
-	
+
         this.state = this.updateStateFromProps(null, props);
 	this.state.listViewActive = false;
     }
@@ -146,23 +147,22 @@ class JudgeApp extends React.Component {
         let currentHack = this.getCurrentHack();
 	if ( this.state.listViewActive ) {
 	    return e("div", { className: "container d-flex judge-container" },
-                e(judge.Toolbar, this.getToolbarProps()),
-                e(judge.JudgeInfo, this.getJudgeProps()),
-                e(judge.ProjectList, this.getProjectListProps())
+                e(comps.Toolbar, this.getToolbarProps()),
+                e(comps.JudgeInfo, this.getJudgeProps()),
+                e(comps.ProjectList, this.getProjectListProps())
 	    );
 	} else {
             return e("div", { className: "container d-flex judge-container" },
-                e(judge.Toolbar, this.getToolbarProps()),
-                e(judge.JudgeInfo, this.getJudgeProps()),
-                e(judge.Project, this.getProjectProps()),
-                e(judge.RatingBox, this.getRatingBoxProps()),
-                e(judge.Superlatives, this.getSuperlativeProps())
+                e(comps.Toolbar, this.getToolbarProps()),
+                e(comps.JudgeInfo, this.getJudgeProps()),
+                e(comps.Project, this.getProjectProps()),
+                e(comps.RatingBox, this.getRatingBoxProps()),
+                e(comps.Superlatives, this.getSuperlativeProps())
             );
 	}
     }
 
 }
+comps.JudgeApp = JudgeApp;
 
-window.judge.JudgeApp = JudgeApp;
-
-})();
+})(window.comps || (window.comps = {}));

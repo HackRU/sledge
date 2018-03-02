@@ -3,14 +3,12 @@
   <head>
     <meta charset="utf-8">
     <title>Results | Sledge</title>
-    <style>table,tr,td{border: 1px solid black;}</style>
-    <style>td{text-align: center;}</style>
-    <style>table{margin: 25px;}</style>
 
     <script type="text/javascript" src="/loader.js"></script>
+    <script>loader.loadAll(() => resultsPage.init());</script>
   </head>
 
-  <body onload="loader.loadAll(() => results.init());">
+  <body>
     <h1>Sledge Results</h1>
 
     <table id="winnersTable">

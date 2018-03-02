@@ -1,11 +1,7 @@
-(function () {
+(function (judgePage) {
 "use strict";
 
-// TODO: Get actual judge id
 var myJudgeId = null;
-
-var judge = {};
-window.judge = judge;
 
 function init() {
     let token = localStorage.getItem("token");
@@ -28,7 +24,7 @@ function init() {
         React.createElement(
             JudgeAppWrapper, null), appContainer);
 }
-judge.init = init;
+judgePage.init = init;
 
 function getSledgeData() {
     if (sledge.isInitialized()) {
@@ -65,6 +61,7 @@ function getSledgeData() {
         };
     }
 }
+judgePage.getSledgeData = getSledgeData;
 
 ////////////////////
 // Toplevel Component
@@ -93,12 +90,13 @@ class JudgeAppWrapper extends React.Component {
     render() {
         if (this.state.sledge.initialized) {
             return React.createElement(
-                    judge.JudgeApp, this.state.sledge);
+                    comps.JudgeApp, this.state.sledge);
         } else {
             return React.createElement(
                     "span", null, "Loading...");
         }
     }
 }
+judgePage.JudgeAppWrapper = JudgeAppWrapper;
 
-})();
+})(window.judgePage || (window.judgePage = {}));

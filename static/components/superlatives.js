@@ -1,4 +1,4 @@
-(function () {
+(function (comps) {
 "use strict";
 
 var e = React.createElement;
@@ -194,7 +194,6 @@ class Superlatives extends React.Component {
         );
     }
 }
+comps.Superlatives = Superlatives;
 
-window.judge.Superlatives = Superlatives;
-
-})();
+})(window.comps || (window.comps = {}));

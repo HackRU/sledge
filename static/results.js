@@ -1,4 +1,4 @@
-(function () {
+(function (resultsPage) {
 "use strict";
 
 var winnersTable;
@@ -13,6 +13,7 @@ function init() {
     });
     sledge.subscribe(onSledgeEvent);
 }
+resultsPage.init = init;
 
 function onSledgeEvent(evt) {
     if (sledge.isInitialized()) {
@@ -20,6 +21,7 @@ function onSledgeEvent(evt) {
         renderSuperlativesTable();
     }
 }
+resultsPage.onSledgeEvent = onSledgeEvent;
 
 function renderWinnersTable() {
     let ratings = sledge.getAllRatings();
@@ -69,6 +71,7 @@ function renderWinnersTable() {
     winnersTable.appendChild(thead);
     winnersTable.appendChild(tbody);
 }
+resultsPage.renderWinnersTable = renderWinnersTable;
 
 function ratingString(rating) {
     if ( rating < 0 ) {
@@ -79,6 +82,7 @@ function ratingString(rating) {
         return rating.toString(10);
     }
 }
+resultsPage.ratingString = ratingString;
 
 function calcAverages(ratings) {
     return ratings.map(function (rs) {
@@ -98,6 +102,7 @@ function calcAverages(ratings) {
         }
     });
 }
+resultsPage.calcAverages = calcAverages;
 
 function renderSuperlativesTable() {
     let scores = calcSuperScores();
@@ -142,6 +147,7 @@ function renderSuperlativesTable() {
     superlativesTable.appendChild(thead);
     superlativesTable.appendChild(tbody);
 }
+resultsPage.renderSuperlativesTable = renderSuperlativesTable;
 
 function calcSuperScores() {
     let placements = sledge.getAllSuperlativePlacements();
@@ -152,10 +158,6 @@ function calcSuperScores() {
         });
     });
 }
+resultsPage.calcSuperScores = calcSuperScores;
 
-window.results = {
-    init,
-    onSledgeEvent
-};
-
-})();
+})(window.resultsPage || (window.resultsPage = {}));

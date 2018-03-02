@@ -1,7 +1,3 @@
-/*
- * loader.js
- */
-
 (function (loader) {
 "use strict";
 
@@ -19,7 +15,7 @@ let allScripts = [
     "/sledge.js",
     "/utils.js",
 
-    "/index.js",
+    "/login.js",
     "/judge.js",
     "/results.js",
     "/admin.js",
@@ -37,7 +33,7 @@ loader.allScripts = allScripts;
 let allStylesheets = [
     "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css",
 
-    "/index.css",
+    "/login.css",
     "/judge.css",
 
     "/components/judgeapp.css",

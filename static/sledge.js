@@ -1,4 +1,4 @@
-(function () {
+(function (sledge) {
 "use strict";
 
 var socket = null;
@@ -17,6 +17,7 @@ var tables = {
     superlativePlacements: [], // {id, judgeId, superlativeId, firstChoice, secondChoice}
     ratings: [], // {id, judgeId, hackId, rating}
 };
+sledge._tables = tables;
 
 ////////////////////
 // Private Helpers
@@ -32,11 +33,13 @@ function updateTables(data) {
         }
     }
 }
+sledge._updateTables = updateTables;
 
 function sendChange(content) {
     for (let sub of subscribers)
         if (sub) sub(content);
 }
+sledge._sendChange = sendChange;
 
 ////////////////////
 // Update Handlers
@@ -45,6 +48,7 @@ function onError(data) {
     console.log("Error", data);
 }
 handlers.push({ name: "error", handler: onError });
+sledge._onError = onError;
 
 function onUpdateFull(data) {
     tables.hacks.splice(0);
@@ -63,6 +67,7 @@ function onUpdateFull(data) {
     });
 }
 handlers.push({ name: "update-full", handler: onUpdateFull });
+sledge._onUpdateFull = onUpdateFull;
 
 function onUpdatePartial(data) {
     if ( !initialized ) return;
@@ -74,6 +79,7 @@ function onUpdatePartial(data) {
     });
 }
 handlers.push({ name: "update-partial", handler: onUpdatePartial });
+sledge._onUpdatePartial = onUpdatePartial;
 
 ////////////////////
 // Requests and Transient Responses
@@ -90,29 +96,37 @@ function addTransientResponse(eventName) {
         }
     });
 }
+sledge._addTransientResponse = addTransientResponse;
 
 function sendScrapeDevpost({url}) {
     socket.emit("devpost-scrape", {url});
 }
 addTransientResponse("devpost-scrape-response");
+sledge.sendScrapeDevpost = sendScrapeDevpost;
 
 function sendAddJudge({name, email}) {
     socket.emit("add-judge", {name, email});
 }
 addTransientResponse("add-judge-response");
+sledge.sendAddJudge = sendAddJudge;
 
 function sendAddSuperlative({name}) {
     socket.emit("add-superlative", {name});
 }
 addTransientResponse("add-superlative-response");
+sledge.sendAddSuperlative = sendAddSuperlative;
 
 function sendAddToken({judgeId, secret}) {
     socket.emit("add-token", {judgeId, secret});
 }
+addTransientResponse("add-token-response");
+sledge.sendAddToken = sendAddToken;
+
 function sendRaw({eventName, json}) {
     socket.emit(eventName, json);
 }
 addTransientResponse("add-token-response");
+sledge.sendRaw = sendRaw;
 
 function sendRankSuperlative(data) {
     socket.emit("rank-superlative", {
@@ -123,6 +137,7 @@ function sendRankSuperlative(data) {
     });
 }
 addTransientResponse("rank-superlative-response");
+sledge.sendRankSuperlative = sendRankSuperlative;
 
 function sendRateHack({judgeId, hackId, rating}) {
     socket.emit("rate-hack", {
@@ -130,6 +145,7 @@ function sendRateHack({judgeId, hackId, rating}) {
     });
 }
 addTransientResponse("rate-hack-response");
+sledge.sendRateHack = sendRateHack;
 
 ////////////////////
 // Information Querying
@@ -137,24 +153,28 @@ addTransientResponse("rate-hack-response");
 function isInitialized() {
     return initialized;
 }
+sledge.isInitialized = isInitialized;
 
 function getAllHacks() {
     if (!initialized) throw new Error("getAllHacks: Data not initialized");
 
     return tables.hacks;
 }
+sledge.getAllHacks = getAllHacks;
 
 function getAllJudges() {
     if (!initialized) throw new Error("getAllJudges: Data not initialized");
 
     return tables.judges;
 }
+sledge.getAllJudges = getAllJudges;
 
 function getJudgeInfo({judgeId}) {
     if (!initialized) throw new Error("getJudgeInfo: Data not initialized");
 
     return tables.judges[judgeId] || null;
 }
+sledge.getJudgeInfo = getJudgeInfo;
 
 function getHacksOrder({judgeId}) {
     if (!initialized) throw new Error("getHacksOrder: Data not initialized");
@@ -175,6 +195,7 @@ function getHacksOrder({judgeId}) {
     // positions maps hackId to position
     return { order, positions };
 }
+sledge.getHacksOrder = getHacksOrder;
 
 function getAllRatings() {
     if (!initialized) throw new Error("getAllRatings: Data not initialized");
@@ -196,6 +217,7 @@ function getAllRatings() {
 
     return ratings;
 }
+sledge.getAllRatings = getAllRatings;
 
 function getJudgeRatings({judgeId}) {
     if (!initialized) throw new Error("getJudgeRatings: Data not initialized");
@@ -214,6 +236,7 @@ function getJudgeRatings({judgeId}) {
 
     return ratings;
 }
+sledge.getJudgeRatings = getJudgeRatings;
 
 function getSuperlatives() {
     if (!initialized) throw new Error("getSuperlatives: Data not initialized");
@@ -227,6 +250,7 @@ function getSuperlatives() {
 
     return superlatives;
 }
+sledge.getSuperlatives = getSuperlatives;
 
 function getAllSuperlativePlacements() {
     if (!initialized) throw new Error("getAllSuperlatives: Data not initialized");
@@ -255,6 +279,7 @@ function getAllSuperlativePlacements() {
 
     return supers;
 }
+sledge.getAllSuperlativePlacements = getAllSuperlativePlacements;
 
 function getChosenSuperlatives({judgeId}) {
     if (!initialized) throw new Error("getChosenSuperlatives: Data not initialized");
@@ -279,6 +304,7 @@ function getChosenSuperlatives({judgeId}) {
 
     return chosen;
 }
+sledge.getChosenSuperlatives = getChosenSuperlatives;
 
 ////////////////////
 // Other Exports
@@ -286,6 +312,7 @@ function getChosenSuperlatives({judgeId}) {
 function subscribe(cb) {
     subscribers.push(cb);
 }
+sledge.subscribe = subscribe;
 
 function init(opts) {
     if (socket) {
@@ -298,44 +325,6 @@ function init(opts) {
         socket.on(h.name, h.handler);
     }
 }
+sledge.init = init;
 
-window.sledge = {
-    _socket: () => socket,
-    _subscribers: subscribers,
-    _handlers: handlers,
-    _initialized: () => initialized,
-
-    _tables: tables,
-
-    _updateTables: updateTables,
-    _sendChange: sendChange,
-
-    _onError: onError,
-    _onUpdateFull: onUpdateFull,
-    _onUpdatePartial: onUpdatePartial,
-
-    _addTransientResponse: addTransientResponse,
-    sendScrapeDevpost,
-    sendAddJudge,
-    sendAddSuperlative,
-    sendAddToken,
-    sendRankSuperlative,
-    sendRateHack,
-    sendRaw,
-
-    isInitialized,
-    getAllHacks,
-    getAllJudges,
-    getJudgeInfo,
-    getHacksOrder,
-    getAllRatings,
-    getJudgeRatings,
-    getSuperlatives,
-    getAllSuperlativePlacements,
-    getChosenSuperlatives,
-
-    subscribe,
-    init
-};
-
-})();
+})(window.sledge || (window.sledge = {}));
