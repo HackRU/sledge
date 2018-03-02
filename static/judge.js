@@ -29,7 +29,6 @@ function init() {
             JudgeAppWrapper, null), appContainer);
 }
 judge.init = init;
-window.addEventListener("load", init);
 
 function getSledgeData() {
     if (sledge.isInitialized()) {

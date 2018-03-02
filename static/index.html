@@ -4,11 +4,10 @@
     <meta charset="utf-8">
     <title>Login | Sledge</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/index.css" />
+    <script type="text/javascript" src="/loader.js"></script>
   </head>
 
-  <body class="sledge-primary">
+    <body onload="loader.loadAll(() => index.init())">
     <h1>Login to Sledge</h1>
 
     <div id="loginForm">
@@ -35,10 +34,5 @@
     <div id="message">
       <span id="messageText">Loading...</span>
     </div>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/sledge.js"></script>
-    <script src="/js/index.js"></script>
   </body>
 </html>

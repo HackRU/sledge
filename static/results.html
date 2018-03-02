@@ -6,9 +6,11 @@
     <style>table,tr,td{border: 1px solid black;}</style>
     <style>td{text-align: center;}</style>
     <style>table{margin: 25px;}</style>
+
+    <script type="text/javascript" src="/loader.js"></script>
   </head>
 
-  <body>
+  <body onload="loader.loadAll(() => results.init());">
     <h1>Sledge Results</h1>
 
     <table id="winnersTable">
@@ -16,10 +18,5 @@
 
     <table id="superlativesTable">
     </table>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/sledge.js"></script>
-    <script src="/js/results.js"></script>
   </body>
 </html>

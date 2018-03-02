@@ -13,7 +13,6 @@ function init() {
     });
     sledge.subscribe(onSledgeEvent);
 }
-window.addEventListener("load", init);
 
 function onSledgeEvent(evt) {
     if (sledge.isInitialized()) {

@@ -1,0 +1,60 @@
+/********************
+ * Overall
+ */
+
+.judge-container {
+  flex-direction: column;
+
+  border: solid 2px;
+  border-radius: 10px;
+}
+
+/********************
+ * Colors
+ */
+.sledge-primary {
+    border-color: #80935e;
+    color: white;
+    background-color: #80935e;
+}
+
+.sledge-secondary {
+    border-color: #dbd9b1;
+    color: #80935e;
+    background-color: #dbd9b1;
+}/*
+.sledge-secondary:hover {
+    border-color: #dbd9b1;
+    color: #80935e;
+    background-color: #dbd9b1;
+}*/
+/********************
+ * Media Query Misc
+ */
+
+/* TODO: We're fighting Bootstrap with these 'important' tags,
+ *       maybe it would be better to not use Bootstrap classes
+ *       tagged w/ important.
+ */
+@media (max-width: 420px) {
+  .toolbar-title {
+    display: none;
+  }
+
+  .toolbar-buttons {
+    width: 100%;
+  }
+
+  .superlatives-info {
+    flex-direction: column !important;
+  }
+
+  .superlatives-first div, .superlatives-second div {
+    display: flex;
+    justify-content: space-between !important;
+  }
+
+  .superlatives-chosen {
+    width: 100%;
+  }
+}

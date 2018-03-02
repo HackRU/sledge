@@ -1,4 +1,4 @@
-(function () {
+(function (index) {
 "use strict";
 
 var loginInputs;
@@ -62,7 +62,7 @@ function init() {
         judgeButton.disabled = true;
     }
 }
-window.addEventListener("load", init);
+index.init = init;
 
 function setMessage(txt) {
     messageText.innerHTML = "";
@@ -129,8 +129,4 @@ function onTest(evt) {
     window.location.href = window.location.href;
 }
 
-window.login = {
-    init
-};
-
-})();
+})(this.index || (this.index = {}));

@@ -7,24 +7,9 @@
     <meta http-equiv="X-UA-Compatable" content="ie=edge">
     <title>Judge's Corner | Sledge</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/judge.css" />
+    <script type="text/javascript" src="/loader.js"></script>
   </head>
-  <body>
+  <body onload="loader.loadAll(() => judge.init());">
     <div id="app"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.development.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/sledge.js"></script>
-    <script src="js/judge.js"></script>
-    <script src="js/components/judgeapp.js"></script>
-    <script src="js/components/judgeinfo.js"></script>
-    <script src="js/components/project.js"></script>
-    <script src="js/components/ratingbox.js"></script>
-    <script src="js/components/superlatives.js"></script>
-    <script src="js/components/toolbar.js"></script>
-    <script src="js/components/projectlist.js"></script>
-    <script src="js/components/projectlistelement.js"></script>
   </body>
 </html>
