@@ -22,6 +22,7 @@ let allScripts = [
     "/index.js",
     "/judge.js",
     "/results.js",
+    "/admin.js",
 
     "/components/judgeapp.js",
     "/components/judgeinfo.js",

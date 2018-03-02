@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset="UTF-8">
-
     <title>Control Panel | Sledge</title>
 <style>
 #console {
@@ -15,9 +14,10 @@
   height: 250px;
 }
 </style>
+  <script type="text/javascript" src="/loader.js"></script>
   </head>
 
-  <body>
+  <body onload="loader.loadAll(() => admin.init())">
     <h1>Admin Control Panel</h1>
 
     <h2>Console</h2>
@@ -26,9 +26,5 @@
       <textarea id="log" readonly></textarea><br/>
       <input id="cmd" type="text"></input>
     </div>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script type="text/javascript" src="js/sledge.js"></script>
-    <script type="text/javascript" src="js/admin.js"></script>
   </body>
 </html>

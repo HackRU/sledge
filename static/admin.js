@@ -216,7 +216,6 @@ function init() {
     printLn(" All events will be logged here. Type help for commands.");
     printLn();
 }
-window.addEventListener("load", init);
 
 // Stuff Admins can do
 
@@ -263,6 +262,7 @@ window.admin = {
 
     scrapeDevpost,
 
+    init
 };
 
 })();
