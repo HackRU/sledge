@@ -83,6 +83,18 @@ function onLogin(evt) {
     loginInputs.classList.add("hidden");
     loginButton.disabled = true;
 
+    if (emailInput.value.trim() == "admin") {
+        setMessage("Logging in as admin");
+        localStorage.setItem("judgeId", "0");
+        localStorage.setItem("token", passInput.value);
+
+        setTimeout(function () {
+            window.location.href = window.location.href;
+        }, 500);
+
+        return;
+    }
+
     let xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
         if (xhr.status != 200) {

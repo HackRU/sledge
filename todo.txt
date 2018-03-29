@@ -1,0 +1,11 @@
+== TODO ==
+
+Backend
+    - Server should generate partial updates on small changes
+    - Allocate judges
+
+Frontend
+    - Add check to already rated hacks
+    - Style list tree view
+    - Style with HackRU colors
+    - Results Page

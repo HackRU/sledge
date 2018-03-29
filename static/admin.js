@@ -4,6 +4,8 @@
 var log, cmd;
 var lastCmd = "";
 
+var commands = [];
+
 function printLn(txt="") {
     let timestr = (new Date()).toLocaleString();
     let logstr = "[" + timestr  + "] " + txt + "\n";
@@ -15,7 +17,7 @@ function printLn(txt="") {
 }
 adminPage.printLn = printLn;
 
-function printWrap(forward, txt, wrap=60) {
+function printWrap(forward, txt, wrap=80) {
     let lines = txt.split("\n").map( l => l.split(""));
     printLn( forward + lines[0].splice(0, wrap-forward.length).join("") );
     for (let i=0;i<lines.length;i++) {
@@ -37,101 +39,24 @@ function runCommand(txt) {
 
     if ( action === "" ) {
         return;
-    } else if ( action === "help" ) {
-        printLn(" === Help ===");
-        printLn("Commands are listed below. Running a command without");
-        printLn("any arguments displays its usage.");
-        printLn(" send - Send a raw socketio request");
-        printLn(" devpost - Scrape devpost for hacks");
-        printLn(" addjudge - Add a judge");
-        printLn(" addsuperlative - Add a superlative");
-        printLn(" addtoken - Manually add an auth token (usually done automatically on signin)");
-        printLn(" token - View and set your token (must refresh see changes)");
-        printLn();
-    } else if ( action === "send" ) {
-        if ( !args[1] || !args[2] ) {
-            printLn("usage: send <socketio event> <json>");
-            printLn();
-            return;
-        }
-
-        let json = JSON.parse(args[2]);
-        printLn(" === Sending Raw Socketio Event ===");
-        printWrap("Event: ", args[1]);
-        printWrap("Data: ", JSON.stringify(json));
-        printLn();
-        sledge.sendRaw(args[1], json);
-    } else if ( action === "devpost" ) {
-        if (!args[1]) {
-            printLn("usage: devpost <url>");
-            printLn();
-            return;
-        }
-
-        scrapeDevpost(args[1])
-    } else if ( action === "addjudge" ) {
-        if ( args.length !== 3 ) {
-            printLn("usage: addjudge <name> <email>");
-            printLn();
-            return;
-        }
-
-        addJudge(args[1], args[2]);
-    } else if ( action === "addsuperlative" ) {
-        if ( args.length !== 2 ) {
-            printLn("usage: addsuperlative <name>");
-            printLn();
-            return;
-        }
-
-        addSuperlative(args[1]);
-    } else if ( action === "addtoken" ) {
-        if ( args.length !== 3 ) {
-            printLn("usage: addtoken <judge id> <secret>");
-            printLn();
-            return;
-        }
-
-        addToken(args[1], args[2]);
-    } else if ( action === "token" ) {
-        if ( args.length === 2 && args[1] === "view" ) {
-            printLn(" === View Token ===");
-            printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
-            printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
-            printLn();
-        } else if ( args.length === 4 && args[1] === "set" ) {
-            printLn(" === Set Token ===");
-            printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
-            printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
-            localStorage.setItem("token", args[3]);
-            localStorage.setItem("judgeId", args[2]);
-            printWrap("Your New Token:    ", localStorage.getItem("token"));
-            printWrap("Your New Judge Id: ", localStorage.getItem("judgeId"));
-            printLn("(Hint: Refresh to take effect)");
-            printLn();
-        } else if ( args.length === 2 && args[1] === "remove" ) {
-            printLn(" === Reset Token ===");
-            printWrap("Your Previous Token:    ", localStorage.getItem("token")||"[NOT SET]");
-            printWrap("Your Previous Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
-            localStorage.clear();
-            printLn("These have been reset. Refershing will reset to default admin.");
-            printLn();
-        } else {
-            printLn("usage: token view");
-            printLn("       token remove");
-            printLn("       token set <new judge id> <new token>");
-            printLn();
-            return;
-        }
-    } else if ( action === "clear" ) {
-        log.value = "";
-    } else {
-        printWrap("Unknown command: ", action);
     }
 
-    if ( action !== "" ) {
-        lastCmd = txt;
+    lastCmd = txt;
+
+    let command = null;
+    for (let cmd of commands) {
+        if (cmd && cmd.name === action) {
+            command = cmd;
+            break;
+        }
     }
+
+    if ( !command ) {
+        printLn("Command not found: " + action);
+        return;
+    }
+
+    command.run(args);
 }
 adminPage.runCommand = runCommand;
 
@@ -182,6 +107,10 @@ function splitCommand(txt) {
 }
 adminPage.splitCommand = splitCommand;
 
+function registerCommand(name, description, run) {
+    commands.push({name, description, run});
+}
+
 function onSledgeEvent(evt) {
     if ( evt.trans ) {
         printLn("Recieved Transient Event: " + evt.type);
@@ -224,46 +153,117 @@ function init() {
 adminPage.init = init;
 
 ////////////////////
-// Admin Actions
+// Commands
 
-function scrapeDevpost(url) {
+registerCommand("help", "Print this help", function (args) {
+    printLn(" === Help ===");
+    printLn("Running a command without any arguments prints its usage");
+    for (let cmd of commands) {
+        printWrap(" "+cmd.name+" - ", cmd.description);
+    }
+    printLn();
+});
+
+registerCommand("devpost", "Scrape devpost", function (args) {
     printLn(" === Scrape Devpost ===");
-    printWrap("Scraping: ", url);
-    printLn("Warning: This may take a while. A message will be printed when ");
+    if ( args.length !== 2 ) {
+        printLn("usage: devpost <url>");
+        printLn();
+        return;
+    }
+
+    printLn("WARNING: This may take a while. A message will be printed when");
     printLn("         scrape is successful or fails.");
     printLn("         In the meantime, the server will be unresponsive.");
-    printLn();
 
-    sledge.sendScrapeDevpost({url});
-}
-adminPage.scrapeDevpost = scrapeDevpost;
+    sledge.sendScrapeDevpost({
+        url: args[1]
+    });
+});
 
-function addJudge(name, email) {
+registerCommand("addjudge", "Add a judge", function (args) {
     printLn(" === Add Judge ===");
-    printWrap("Name: ", name);
-    printWrap("Email: ", email);
+    if ( args.length !== 3 ) {
+        printLn("usage: addjudge <name> <email>");
+        printLn();
+        return;
+    }
+
+    printWrap("Name:  ", args[1]);
+    printWrap("Email: ", args[2]);
     printLn();
 
-    sledge.sendAddJudge({name, email});
-}
-adminPage.addJudge = addJudge;
+    sledge.sendAddJudge({
+        name: args[1],
+        email: args[2]
+    });
+});
 
-function addSuperlative(name) {
+registerCommand("addsuperlative", "Add a superlative", function (args) {
     printLn(" === Add Superlative ===");
-    printWrap("Name: ", name);
-    printLn();
+    if ( args.length !== 2 ) {
+        printLn("usage: addsuperlative <name>");
+        printLn();
+        return;
+    }
 
-    sledge.sendAddSuperlative({name});
-}
-adminPage.addSuperlative = addSuperlative;
+    printWrap("Name: ", args[1]);
 
-function addToken(judgeId, secret) {
+    sledge.sendAddSuperlative({
+        name: args[1]
+    });
+});
+
+registerCommand("addtoken", "Manually add an auth token (usually done automatically on signin)", function (args) {
     printLn(" === Add Token ===");
-    printWrap("judgeId: ", judgeId);
-    printWrap("secret: ", secret);
+    if ( args.length !== 3 ) {
+        printLn("usage: addtoken <Judge ID> <secret>");
+        printLn();
+        return;
+    }
 
-    sledge.sendAddToken(judgeId, secret);
-}
-adminPage.addToken = addToken;
+    printWrap("Judge Id: ", args[1]);
+    printWrap("Secret:   ", args[2]);
+
+    sledge.sendAddToken({
+        judgeId: args[1],
+        secret: args[2]
+    });
+});
+
+registerCommand("token", "View and set your token (must refresh to see changes)", function (args) {
+    printLn(" === My Token ===");
+
+    let subaction = args.length>1 ? args[0] : null;
+
+    if ( subaction === "view" && args.length === 2 ) {
+        printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
+        printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
+        printLn();
+    } else if ( subactoin === "remove" && args.length === 2 ) {
+        printWrap("Your Previous Token:    ", localStorage.getItem("token")||"[NOT SET]");
+        printWrap("Your Previous Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
+        localStorage.clear();
+        printLn("These have been reset. Refershing will reset to default admin.");
+        printLn();
+    } else if ( subaction === "set" && args.length === 4 ) {
+        printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
+        printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
+        localStorage.setItem("token", args[3]);
+        localStorage.setItem("judgeId", args[2]);
+        printWrap("Your New Token:    ", localStorage.getItem("token"));
+        printWrap("Your New Judge Id: ", localStorage.getItem("judgeId"));
+        printLn("(Hint: Refresh to take effect)");
+        printLn();
+    } else {
+        printLn("usage: token view");
+        printLn("       token remove");
+        printLn("       token set <new judge id> <new token>");
+    }
+});
+
+registerCommand("clear", "Clear the command log", function (args) {
+    log.value = "";
+});
 
 })(window.adminPage || (window.adminPage = {}));

@@ -35,6 +35,7 @@ let allStylesheets = [
 
     "/login.css",
     "/judge.css",
+    "/admin.css",
 
     "/components/judgeapp.css",
     "/components/judgeinfo.css",
