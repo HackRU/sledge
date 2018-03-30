@@ -83,9 +83,9 @@ function onLogin(evt) {
     loginInputs.classList.add("hidden");
     loginButton.disabled = true;
 
-    if (emailInput.value.trim() == "admin") {
+    if ( emailInput.value === "admin" || (/admin:[0-9]{1,}/).test(emailInput.value) ) {
         setMessage("Logging in as admin");
-        localStorage.setItem("judgeId", "0");
+        localStorage.setItem("judgeId", emailInput.value === "admin" ? "0" : emailInput.value.split(":")[1]);
         localStorage.setItem("token", passInput.value);
 
         setTimeout(function () {
