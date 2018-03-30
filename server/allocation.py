@@ -2,7 +2,7 @@
 import math
 import copy
 
-def allocate_judges(judges, hacks, judges_per_hack):
+def allocate_judges_tables(judges, hacks, judges_per_hack):
     '''
     returns ranges of which hack should goto which judge
     so that each hack gets judges_per_hack amount of judges
@@ -25,7 +25,7 @@ def allocate_judges(judges, hacks, judges_per_hack):
         if theif==len(partitions)-1:
             theif=0
         victim=theif + 1
-        
+
     allocations=[]
     for i in range(0,judges):
         for j in range(i, i + partitions_per_judge):
@@ -33,6 +33,16 @@ def allocate_judges(judges, hacks, judges_per_hack):
                 allocations[i]+=partitions[j % len(partitions)]
             except Exception as e:
                 allocations.append(copy.deepcopy(partitions[j % len(partitions)]))
+    return allocations
+
+def allocate_judges_presentation(judges, hacks):
+    allocations = []
+    for j in range(0,judges):
+        judge = []
+        for h in range(0,hacks):
+            judge.append(h)
+        allocations.append(judge)
+
     return allocations
 
 def partition(nums, partition_size):

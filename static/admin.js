@@ -262,6 +262,49 @@ registerCommand("token", "View and set your token (must refresh to see changes)"
     }
 });
 
+registerCommand("allocate", "Allocate judges", function (args) {
+    printLn(" === Allocate Judges ===");
+    if ( args.length < 2 ) {
+        printLn("usage: allocate <method> [method-specific options]");
+        printLn("       allocate tables <Judges Per Hack>");
+        printLn("       allocate presentation");
+        printLn();
+        return;
+    }
+
+    if ( args[1] === "tables" ) {
+        if ( args.length !== 3 ) {
+            printLn("Bad args, see usage");
+            printLn();
+            return;
+        }
+
+        sledge.sendAllocateJudges({
+            method: "tables",
+            judgesPerHack: parseInt(args[2])
+        });
+
+        printWrap("Method: ", args[1]);
+        printWrap("Judges Per Hack: ", parseInt(args[2]).toString());
+        printLn();
+    } else if ( args[1] === "presentation" ) {
+        if ( args.length !== 2 ) {
+            printLn("Bad args, see usage");
+            printLn();
+            return;
+        }
+
+        sledge.sendAllocateJudges({
+            method: "presentation"
+        });
+
+        printWrap("Method: ", args[1]);
+        printLn();
+    } else {
+        printLn("Unknown allocation method: "+args[1]);
+    }
+});
+
 registerCommand("clear", "Clear the command log", function (args) {
     log.value = "";
 });

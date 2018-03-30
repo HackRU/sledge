@@ -110,6 +110,14 @@ function sendAddJudge({name, email}) {
 addTransientResponse("add-judge-response");
 sledge.sendAddJudge = sendAddJudge;
 
+function sendAllocateJudges(opts) {
+    if (!opts.method) throw new Error("allocateJudgeHacks: method must exist");
+
+    socket.emit("allocate-judges", opts);
+}
+addTransientResponse("allocate-judges-response");
+sledge.sendAllocateJudges = sendAllocateJudges;
+
 function sendAddSuperlative({name}) {
     socket.emit("add-superlative", {name});
 }

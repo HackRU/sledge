@@ -202,6 +202,32 @@ def find_judge_id(data):
     else:
         return judge[0]
 
+def add_judge_hack(data):
+    judgeid  = data.get('judgeId')
+    hackid   = data.get('hackId')
+    priority = data.get('priority')
+
+    c = sql.cursor()
+    c.execute(
+        'INSERT OR REPLACE INTO judge_hacks'
+            '(id, judge_id, hack_id, priority)'
+        'VALUES ('
+            '(SELECT id FROM judge_hacks WHERE judge_id=? AND hack_id=?),'
+            '?, ?, ?);',
+        [judgeid, hackid, judgeid, hackid, priority])
+
+    sql.commit()
+
+def count_judges():
+    c = sql.cursor()
+    c.execute('SELECT count(*) FROM judges;')
+    return c.fetchone()[0]
+
+def count_hacks():
+    c = sql.cursor()
+    c.execute('SELECT count(*) FROM hacks;')
+    return c.fetchone()[0]
+
 # Serialization
 
 def serialize_hacks():

@@ -5,6 +5,7 @@ import functools
 from . import devpost
 from . import db
 from . import auth
+from . import allocation
 
 sio = None
 
@@ -38,6 +39,10 @@ def init():
             'add-token',
             'add_token-response',
             do_add_token )
+    add_handler(
+            'allocate-judges',
+            'allocate-judges-response',
+            do_allocate_judges )
 
 async def do_connect(sid, env):
     query = urllib.parse.parse_qs(env.get('QUERY_STRING'))
@@ -114,6 +119,32 @@ async def do_add_superlative(sid, data):
 
 async def do_add_token(sid, data):
     db.add_token(data)
+    return None
+
+async def do_allocate_judges(sid, data):
+    allocations = None
+    total_judges = db.count_judges()
+    total_hacks = db.count_hacks()
+
+    method = data.get('method')
+    if method == 'table':
+        allocations = allocation.allocate_judges_table(
+                total_judges, total_hacks,
+                data.get('judgesPerHack') )
+    elif method == 'presentation':
+        allocations = allocation.allocate_judges_presentation(
+                total_judges, total_hacks )
+    else:
+        return 'Unknown allocation method %s' % method
+
+    for j in range(len(allocations)):
+        a = allocations[j]
+        for p in range(len(a)):
+            db.add_judge_hack({
+                'judgeId': j+1,
+                'hackId':  a[p],
+                'priority': p })
+
     return None
 
 def get_serialized_full():
