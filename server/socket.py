@@ -65,6 +65,7 @@ def add_handler(req_name, res_name, logic):
         try:
             msg = await logic(sid, env)
         except ValueError as e:
+            print('Bad data sent: %s' % str(e))
             await sio.emit(
                     res_name,
                     data = { 'success': False,
@@ -80,7 +81,7 @@ def add_handler(req_name, res_name, logic):
         else:
             await sio.emit(
                     res_name,
-                    res_name = { 'success': False,
+                    data = { 'success': False,
                                  'message': msg },
                     room = sid )
     sio.on(req_name, handler=handler)
@@ -127,8 +128,8 @@ async def do_allocate_judges(sid, data):
     total_hacks = db.count_hacks()
 
     method = data.get('method')
-    if method == 'table':
-        allocations = allocation.allocate_judges_table(
+    if method == 'tables':
+        allocations = allocation.allocate_judges_tables(
                 total_judges, total_hacks,
                 data.get('judgesPerHack') )
     elif method == 'presentation':

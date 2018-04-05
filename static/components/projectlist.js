@@ -12,7 +12,8 @@ class ProjectList extends React.Component {
     }
     render(){
 	//TODO: make list button switch to this view (modal)
-	var elements=this.props.hacks.map(this.createListItem.bind(this))
+	var elements=this.props.hackOrdering.map( hid =>
+        this.createListItem(this.props.hacks[hid]) )
 	return e("div", {className: "list-view"},
 	    e("ul", null,
 	        ...elements));

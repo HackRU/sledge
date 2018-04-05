@@ -108,13 +108,12 @@ class JudgeApp extends React.Component {
     }
 
     getProjectListProps() {
-	function setHackId (hackId) {
-	    this.setState({currentHackId: hackId,listViewActive:false});
-	}
-	return {
-	    hacks: this.props.hacks,
-	    setHackId: setHackId.bind(this)
-	};
+        return {
+            hacks: this.props.hacks,
+            hackOrdering: this.props.hackOrdering,
+            setHackId: hid =>
+                this.setState({currentHackId: hid, listViewActive: false})
+        };
     }
 
     render() {
