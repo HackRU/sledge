@@ -142,7 +142,7 @@ async def do_allocate_judges(sid, data):
         for p in range(len(a)):
             db.add_judge_hack({
                 'judgeId': j+1,
-                'hackId':  a[p],
+                'hackId':  a[p]+1,
                 'priority': p })
 
     return None

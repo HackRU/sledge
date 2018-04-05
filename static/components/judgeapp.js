@@ -8,44 +8,18 @@ class JudgeApp extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = this.updateStateFromProps(null, props);
-	this.state.listViewActive = false;
-    }
-
-    componentWillReceiveProps(nextProps) {
-        let updatedState = this.updateStateFromProps(this.state, nextProps);
-        if ( updatedState !== this.state ) {
-            this.setState(updatedState);
+        if ( props.hackOrdering.length === 0 ) {
+            throw new Error("JudgeApp: Hackordering cannot be empty!");
         }
-    }
 
-    updateStateFromProps(state, props) {
-        if ( state === null || state.currentHackId < 0 ) {
-            if ( props.hackOrdering.length > 0 ) {
-                return {
-                    currentHackId: props.hackOrdering[0]
-                };
-            } else {
-                return {
-                    currentHackId: -1
-                };
-            }
-        } else {
-            return state;
-        }
+        this.state = {
+            currentHackId: props.hackOrdering[0],
+            listViewActive: false
+        };
     }
 
     getCurrentHack() {
-        if ( this.state.currentHackId < 0 ) {
-            return {
-                id: 0,
-                name: "[No Hacks Found]",
-                description: "[No Hacks Found]",
-                location: "?",
-            }
-        } else {
-            return this.props.hacks[this.state.currentHackId];
-        }
+        return this.props.hacks[this.state.currentHackId];
     }
 
     getNextHackId() {
