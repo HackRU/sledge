@@ -12,7 +12,7 @@ var initialized = false;
 var tables = {
     hacks: [], // {id, name, description, location}
     judges: [], // {id, name, email}
-    judgeHacks: [], // {id, judgeId, hackId}
+    judgeHacks: [], // {id, judgeId, hackId, priority}
     superlatives: [], // {id, name}
     superlativePlacements: [], // {id, judgeId, superlativeId, firstChoice, secondChoice}
     ratings: [], // {id, judgeId, hackId, rating}
@@ -187,16 +187,14 @@ sledge.getJudgeInfo = getJudgeInfo;
 function getHacksOrder({judgeId}) {
     if (!initialized) throw new Error("getHacksOrder: Data not initialized");
 
-    // TODO: Look through judgeHacks table,
-    //       instead of returning all hacks
-    // TODO: Order by location
-    let order     = [];
+    let order = tables.judgeHacks
+        .filter( h => h.judgeId == judgeId )
+        .sort( (jh1, jh2) => jh1.priority - jh2.priority )
+        .map( jh => jh.hackId );
+
     let positions = [];
-    for (let i=0,pos=0;i<tables.hacks.length;i++) {
-        if ( tables.hacks[i] ) {
-            positions[i] = pos;
-            order[pos++] = i;
-        }
+    for (let i=0;i<order.length;i++) {
+        positions[order[i]] = i;
     }
 
     // order maps position to hackId

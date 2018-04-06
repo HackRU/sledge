@@ -257,14 +257,15 @@ def serialize_judges():
 
 def serialize_judge_hacks():
     c = sql.cursor()
-    c.execute('SELECT id,judge_id,hack_id FROM judge_hacks;')
+    c.execute('SELECT id,judge_id,hack_id,priority FROM judge_hacks;')
 
     judge_hacks = []
     for judge_hack in c.fetchall():
         judge_hacks.append({
             'id': judge_hack[0],
             'judgeId': judge_hack[1],
-            'hackId': judge_hack[2] })
+            'hackId': judge_hack[2],
+            'priority': judge_hack[3]})
     return judge_hacks
 
 def serialize_superlatives():
