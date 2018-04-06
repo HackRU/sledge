@@ -44,6 +44,7 @@ def init(datadir):
             'id INTEGER NOT NULL,'
             'judge_id INTEGER NOT NULL,'
             'hack_id INTEGER NOT NULL,'
+            'priority INTEGER NOT NULL,'
             'FOREIGN KEY(judge_id) REFERENCES judges(id),'
             'FOREIGN KEY(hack_id) REFERENCES hacks(id),'
             'PRIMARY KEY(id)'
