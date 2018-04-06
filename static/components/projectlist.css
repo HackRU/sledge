@@ -1,3 +1,13 @@
 /*
  * projectlist.css
  */
+.list-view {
+    margin: 15px;
+}
+.list-view ul{
+    padding: 0;
+    list-style-type: none;
+}
+.list-item {
+    margin: 0px 0px 5px 0px;
+}

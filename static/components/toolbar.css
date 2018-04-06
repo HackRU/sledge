@@ -21,7 +21,7 @@
 }
 
 .toolbar-buttons {
-  width: 70%;
+  /*width: 70%;*/
 }
 
 .toolbar-buttons button {
@@ -29,15 +29,15 @@
 }
 
 .toolbar-prev {
-  width: 40%;
+  /*width: 40%;*/
 }
 
 .toolbar-list {
-  width: 20%;
+  /*width: 20%;*/
 }
 
 .toolbar-next {
-  width: 40%;
+  /*width: 40%;*/
 }
 
 .toolbar-no-text {

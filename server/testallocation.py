@@ -1,6 +1,6 @@
 import allocation
 def test(judges,hacks,judges_per_hack):
-    the_allocation=allocation.allocate_judges(judges,hacks,judges_per_hack)
+    the_allocation=allocation.allocate_judges_tables(judges,hacks,judges_per_hack)
     # maybe check for std deviation to make sure distribution is "fair"
     # maybe check range instead
     assert len(the_allocation)==judges

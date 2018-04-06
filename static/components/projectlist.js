@@ -23,7 +23,7 @@ comps.ProjectList = ProjectList;
 class ProjectListElement extends React.Component {
     render(){
 	return e("li", {
-	    className: "list-item",
+	    className: "list-item btn-primary",
 	    onClick: this.props.updateHackId
 	    },
 	    this.props.projectName
