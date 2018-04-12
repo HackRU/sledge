@@ -11,7 +11,7 @@ function init() {
         document.getElementById("app").appendChild(
             document.createTextNode("Bad token or Judge Id. Redirecting to login page..."));
         setTimeout(function () {
-            window.location.href = "/index.html";
+            window.location.href = "/login.html";
         }, 1500);
         return;
     }
