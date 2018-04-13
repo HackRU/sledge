@@ -12,7 +12,12 @@
 }
 
 .ratingbox-noshow button {
-  width: 60%;
+    	width: 180 px;
+}
+@media screen and (min-width:400px){
+    .ratingbox-noshow button {
+	width: 60%;
+    }
 }
 
 .ratingbox-catname {

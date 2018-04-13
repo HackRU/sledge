@@ -166,23 +166,25 @@ class Superlatives extends React.Component {
                                         onClick: () => this.removeSecond(s.id)
                                     }, "X"))))))),
             e("div", { className: "superlatives-actions" },
-                e("div", { className: "btn-group" },
-                    e("button", {
-                        className: "btn superlatives-btn-first",
-                        onClick: () => this.selectFirst(s.id)
-                    }, "FIRST"),
-                    e("button", {
-                        className: "btn superlatives-btn-second",
-                        onClick: () => this.selectSecond(s.id)
-                    }, "SECOND"),
-                    e("button", {
-                        className: "btn superlatives-btn-revert",
-                        onClick: () => this.revert(s.id)
-                    }, "REVERT"),
-                    e("button", {
-                        className: "btn superlatives-btn-submit",
-                        onClick: () => this.submit(s.id)
-                    }, "SUBMIT")))
+	        e("div", { className: "row" },
+                    e("div", { className: "btn-group col-md-6 btn-group-justified" },
+                        e("button", {
+                            className: "btn superlatives-btn-first",
+                            onClick: () => this.selectFirst(s.id)
+			}, "FIRST"),
+                        e("button", {
+                            className: "btn superlatives-btn-second",
+                            onClick: () => this.selectSecond(s.id)
+			}, "SECOND")),
+	            e("div", { className: "btn-group col-md-6 btn-group-justified" },
+                        e("button", {
+                            className: "btn superlatives-btn-revert",
+                            onClick: () => this.revert(s.id)
+			}, "REVERT"),
+                        e("button", {
+                            className: "btn superlatives-btn-submit",
+                            onClick: () => this.submit(s.id)
+			}, "SUBMIT"))))
         );
     }
 

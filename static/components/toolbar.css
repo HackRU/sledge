@@ -21,7 +21,6 @@
 }
 
 .toolbar-buttons {
-  /*width: 70%;*/
 }
 
 .toolbar-buttons button {
@@ -29,17 +28,17 @@
 }
 
 .toolbar-prev {
-  /*width: 40%;*/
 }
 
 .toolbar-list {
-  /*width: 20%;*/
 }
 
 .toolbar-next {
-  /*width: 40%;*/
 }
 
 .toolbar-no-text {
-  text-indent: -1000%;
+    color: #007bff;
+}
+.toolbar-no-text:hover {
+    color: #007bff;
 }
