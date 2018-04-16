@@ -26,7 +26,7 @@ function updateTables(data) {
     for ( let table of Object.keys(tables) ) {
         if ( data[table] ) {
             for ( let row of data[table] ) {
-                if ( row.id ) {
+                if ( row && row.id ) {
                     tables[table][row.id] = row;
                 }
             }
@@ -332,5 +332,20 @@ function init(opts) {
     }
 }
 sledge.init = init;
+
+function initWithTestData(testdata) {
+    updateTables(testdata);
+    console.log(tables);
+
+    setTimeout(function () {
+        initialized = true;
+
+        sendChange({
+            trans: false,
+            type: "full"
+        });
+    }, 200);
+}
+sledge.initWithTestData = initWithTestData;
 
 })(window.sledge || (window.sledge = {}));
