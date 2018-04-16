@@ -16,7 +16,12 @@ function init() {
         return;
     }
 
-    sledge.init({token});
+    if (window.location.hash == "#local") {
+        sledge.initWithTestData(localTestData);
+    } else {
+        sledge.init({token});
+    }
+
     myJudgeId = judgeId;
 
     var appContainer = document.getElementById("app");
