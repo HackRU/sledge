@@ -5,8 +5,11 @@
 .judge-container {
   flex-direction: column;
 
-  border: solid 2px;
-  border-radius: 10px;
+  border: solid 5px;
+  border-radius: 5px;
+  border-color: black;
+  background-color: #19194d;
+  color: white;
 }
 
 /********************

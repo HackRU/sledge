@@ -4,8 +4,12 @@
 
 .project-comp {
   margin: 15px;
+  color: white;
+  	text-shadow: 2px 2px #000000;
+  text-align: center;
 }
 
 .project-description {
   text-indent: 10px;
+  color: white
 }

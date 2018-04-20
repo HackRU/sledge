@@ -8,10 +8,17 @@
 
 .superlatives-comp h2 {
   text-align: center;
+  color: #ffffff;
 }
 
 .superlatives-name {
     width: 110px;
+	color: #ffffff;
+}
+@media screen and (max-width:420px) and (min-screen:0px){
+	.superlatives-name {
+	font-size:30px;
+	}
 }
 @media screen and (min-width:484px){
     width: 38%;
@@ -34,6 +41,7 @@
 .superlatives-dirty {
   font-style: italic;
 }
+	
 
 .superlatives-actions .btn-group {
   width: 100%;
