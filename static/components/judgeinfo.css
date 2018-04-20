@@ -19,3 +19,45 @@
   font-size: 100px;
 }
 
+@media screen and (min-width:468px) and (max-width:768px) {
+	
+	.judgeinfo-comp {
+		font-size: 50px;
+		
+	}
+	
+	.judgeinfo-name {
+		font-size: 50px;
+		
+	}
+	
+}
+
+@media screen and (min-width:200px) and (max-width:467px){
+	
+	.judgeinfo-comp {
+		font-size: 25px;
+		
+	}
+	
+	.judgeinfo-name {
+		font-size: 25px;
+		
+	}
+	
+}
+
+
+@media screen and (min-width:0px) and (max-width:199px){
+	
+	.judgeinfo-comp {
+		font-size: 25px;
+		
+	}
+	
+	.judgeinfo-name {
+		font-size: 25px;
+		
+	}
+	
+}

@@ -27,3 +27,14 @@ body {
     color: #80935e;
     background-color: #dbd9b1;
 }
+@media screen and (max-width:468px){
+.start {
+	display:none;
+}
+}
+
+#message {
+	color:white;
+	text-shadow: 0.5px 0.5px #000000
+	
+}
