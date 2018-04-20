@@ -69,7 +69,9 @@ class JudgeApp extends React.Component {
     }
 
     getProjectProps() {
-        return this.getCurrentHack();
+	let rated = this.props.ratings[this.state.currentHackId]!==0;
+        let props = Object.assign({rated},this.getCurrentHack());
+	return props;
     }
 
     getRatingBoxProps() {
@@ -110,6 +112,7 @@ class JudgeApp extends React.Component {
     getProjectListProps() {
         return {
             hacks: this.props.hacks,
+	    ratings: this.props.ratings,
             hackOrdering: this.props.hackOrdering,
             setHackId: hid =>
                 this.setState({currentHackId: hid, listViewActive: false})
