@@ -5,7 +5,7 @@ var e = React.createElement;
 
 class Project extends React.Component {
     getNameAndLocation() {
-        let nameAndLocation = this.props.name + " (Position "+this.props.location+")";
+        let nameAndLocation = this.props.name + " (Position "+this.props.id+")";
 	if(this.props.rated){
 	    nameAndLocation += " is rated";
 	}
