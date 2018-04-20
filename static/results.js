@@ -29,6 +29,28 @@ function renderWinnersTable() {
     let judges = sledge.getAllJudges();
     let averages = calcAverages(ratings);
 
+    //sort hacks
+    let len = averages.length;
+    for (let i = 1; i < len; i++) {
+	let tmp = averages[i]; //Copy of the current element.
+	let tmpRating = ratings[i];
+	let tmpHack = hacks[i];
+	//Check through the sorted part and compare with the number in tmp.
+	//maybe i should work out a way to not use var here, but whatever
+	for (var j = i - 1; j > 0 && (averages[j] <= tmp); j--) {
+	    //Shift the number
+	    averages[j + 1] = averages[j];
+	    ratings[j + 1] = ratings[j];
+	    hacks[j + 1] = hacks[j];
+	    
+	}
+	//Insert the copied number at the correct position
+	//in sorted part.
+	averages[j + 1] = tmp;
+	ratings[j + 1] = tmpRating;
+	hacks[j + 1] = tmpHack;
+    }
+
     let ce = document.createElement.bind(document);
     let ct = document.createTextNode.bind(document);
 
@@ -106,7 +128,6 @@ resultsPage.calcAverages = calcAverages;
 
 function renderSuperlativesTable() {
     let scores = calcSuperScores();
-    console.log(scores);
 
     let ce = document.createElement.bind(document);
     let ct = document.createTextNode.bind(document);
@@ -128,7 +149,7 @@ function renderSuperlativesTable() {
     let thead = ce("thead");
     let thead_tr = ce("tr");
     thead_tr.appendChild(th("Hack Name"));
-    for (let i=1;i<ss.length;i++) {
+    for (let i=0;i<ss.length;i++) {
         thead_tr.appendChild(th(ss[i].name));
     }
     thead.appendChild(thead_tr);
@@ -137,7 +158,7 @@ function renderSuperlativesTable() {
     for (let i=1;i<hacks.length;i++) {
         let tr = ce("tr");
         tr.appendChild(td(hacks[i].name));
-        for (let j=1;j<ss.length;j++) {
+        for (let j=0;j<ss.length;j++) {
             tr.appendChild(td(scores[i][j]));
         }
         tbody.appendChild(tr);
@@ -153,7 +174,7 @@ function calcSuperScores() {
     let placements = sledge.getAllSuperlativePlacements();
     return placements.map(function (s) {
         return s.map(function (o) {
-            return "F:"+o.first.length+"/S:"+o.second.length+" = "
+            return "First:"+o.first.length+" / Second:"+o.second.length+" = "
                 + (o.first.length*2+o.second.length);
         });
     });

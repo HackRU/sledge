@@ -131,7 +131,7 @@ class RatingBox extends React.Component {
 
         return e("span", {
             className: validClass
-        }, selected.total>=0?selected.total.toString():"no show");
+        }, selected.total >= 0 ? "Selected: " + selected.total.toString() : "no show");
     }
 
     renderChosen() {
@@ -139,7 +139,7 @@ class RatingBox extends React.Component {
 
         let totalString;
         if ( total > 0 ) {
-            totalString = total.toString();
+            totalString = "Current: " + total.toString();
         } else if ( total < 0 ) {
             totalString = "no show";
         } else {
