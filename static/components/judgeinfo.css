@@ -4,8 +4,60 @@
 
 .judgeinfo-comp {
   margin: 10px auto;
+  color: white;
+  font-weight: bold;
+  text-shadow: 2px 2px #000000;
+  text-align: center;
+  font-size: 40px;
 }
 
 .judgeinfo-name {
   font-weight: bold;
+    color: white;
+	text-shadow: 2px 2px #000000;
+  text-align: center;
+  font-size: 40px;
+}
+
+@media screen and (min-width:468px) and (max-width:768px) {
+	
+	.judgeinfo-comp {
+		font-size: 50px;
+		
+	}
+	
+	.judgeinfo-name {
+		font-size: 50px;
+		
+	}
+	
+}
+
+@media screen and (min-width:200px) and (max-width:467px){
+	
+	.judgeinfo-comp {
+		font-size: 25px;
+		
+	}
+	
+	.judgeinfo-name {
+		font-size: 25px;
+		
+	}
+	
+}
+
+
+@media screen and (min-width:0px) and (max-width:199px){
+	
+	.judgeinfo-comp {
+		font-size: 25px;
+		
+	}
+	
+	.judgeinfo-name {
+		font-size: 25px;
+		
+	}
+	
 }

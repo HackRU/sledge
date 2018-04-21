@@ -24,6 +24,7 @@
   text-align: center;
   font-weight: bold;
   font-size: 30px;
+  color: white;
 }
 
 .ratingbox-comp .btn-group {
@@ -61,6 +62,7 @@
 
 .ratingbox-totalselected .ratingbox-invalid {
   color: red;
+  text-shadow: 1px 1px #000000;
 }
 
 .ratingbox-submit button {

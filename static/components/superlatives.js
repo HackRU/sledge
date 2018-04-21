@@ -169,20 +169,20 @@ class Superlatives extends React.Component {
 	        e("div", { className: "row" },
                     e("div", { className: "btn-group col-md-6 btn-group-justified" },
                         e("button", {
-                            className: "btn superlatives-btn-first",
+                            className: "btn btn-primary superlatives-btn-first",
                             onClick: () => this.selectFirst(s.id)
 			}, "FIRST"),
                         e("button", {
-                            className: "btn superlatives-btn-second",
+                            className: "btn btn-primary superlatives-btn-second",
                             onClick: () => this.selectSecond(s.id)
 			}, "SECOND")),
 	            e("div", { className: "btn-group col-md-6 btn-group-justified" },
                         e("button", {
-                            className: "btn superlatives-btn-revert",
+                            className: "btn btn-primary superlatives-btn-revert",
                             onClick: () => this.revert(s.id)
 			}, "REVERT"),
                         e("button", {
-                            className: "btn superlatives-btn-submit",
+                            className: "btn btn-primary superlatives-btn-submit",
                             onClick: () => this.submit(s.id)
 			}, "SUBMIT"))))
         );
