@@ -11,9 +11,10 @@ def init():
 async def handle_login(req):
     req_json = await req.json()
     if req_json.get('password') is not None:
-        req_json['password'] = hash(req_json['password'])
-    res = requests.post('https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/test/authorize', json=req_json)
+        req_json['password'] = req_json['password']
+    res = requests.post('https://m7cwj1fy7c.execute-api.us-west-2.amazonaws.com/mlhtest/authorize', json=req_json)
     res_json = res.json()
+    print(res_json)
     if res_json.get('statusCode') != 200:
         return aiohttp.web.json_response({
             'success': False,
