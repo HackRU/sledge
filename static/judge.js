@@ -10,9 +10,11 @@ function init() {
     if ( !token || isNaN(judgeId) ) {
         document.getElementById("app").appendChild(
             document.createTextNode("Bad token or Judge Id. Redirecting to login page..."));
-        setTimeout(function () {
-            window.location.href = "/login.html";
-        }, 1500);
+	if (window.location.hash != "#local") {
+            setTimeout(function () {
+		window.location.href = "/login.html";
+            }, 1500);
+	}
         return;
     }
 

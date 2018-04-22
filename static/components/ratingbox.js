@@ -109,7 +109,7 @@ class RatingBox extends React.Component {
             let selectedClass = i==cat.selected?" ratingbox-selected":"";
             buttons.push(
                 e("button", {
-                    className: "btn"+selectedClass,
+                    className: "btn btn-primary"+selectedClass,
                     onClick: () => this.select(cat.id, i)
                 }, i.toString())
             );
@@ -158,7 +158,7 @@ class RatingBox extends React.Component {
             e("div", null,
                 e("div", { className: "ratingbox-noshow" },
                     e("button", {
-                        className: "btn",
+                        className: "btn btn-primary",
                         onClick: () => this.setState( (prevState, props) => ({ noshow: !prevState.noshow }) )
                     }, this.state.noshow?"Mark Hack as Present":"Mark Hack as No Show")),
                 ...cats,
@@ -169,7 +169,7 @@ class RatingBox extends React.Component {
                         e("span", null, this.renderChosen()))),
                 e("div", { className: "ratingbox-submit" },
                     e("button", {
-                        className: "btn",
+                        className: "btn btn-primary",
                         onClick: () => this.submit()
                     }, "SUBMIT")))
         );

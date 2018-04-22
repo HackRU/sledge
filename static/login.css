@@ -1,5 +1,11 @@
 #loginForm {
   margin: 10px;
+  border: solid 5px;
+  border-radius: 5px;
+  border-color: black;
+  background-color: #19C0E7;
+  color: white;
+  padding: 15px;
 }
 
 body {
@@ -26,4 +32,15 @@ body {
 .sledge-secondary {
     color: #80935e;
     background-color: #dbd9b1;
+}
+@media screen and (max-width:468px){
+.start {
+	display:none;
+}
+}
+
+#message {
+	color:white;
+	text-shadow: 0.5px 0.5px #000000;
+	
 }
