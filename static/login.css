@@ -1,10 +1,12 @@
 #loginForm {
   margin: 10px;
+  color: white;
+}
+.login-container {
   border: solid 5px;
   border-radius: 5px;
   border-color: black;
   background-color: #19C0E7;
-  color: white;
   padding: 15px;
 }
 
