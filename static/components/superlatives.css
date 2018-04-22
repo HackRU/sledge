@@ -20,14 +20,20 @@
 	font-size:30px;
 	}
 }
-@media screen and (min-width:484px){
+/*@media screen and (min-width:484px){
     width: 38%;
-}
+}*/
 
 .superlatives-chosen {
   width: 62%;
 }
 
+@media screen and (max-width: 425px){
+	.superlatives-chosen{
+	width:38%;
+	}
+	
+}
 .superlatives-item {
   margin: 15px 10px;
   padding: 10px;
