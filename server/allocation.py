@@ -11,24 +11,18 @@ def allocate_judges_tables(judges, hacks, judges_per_hack):
     partitions_per_judge = judges_per_hack
     hack_nums=list(range(0,hacks))
     partitions=partition(hack_nums, partition_size)
-    # partitions go around in a circle stealing elements
-    # from eachother until the list has as many partitions
-    # as judges
+    #keep sifting forward to distributed end thoughout the sublists
     theif=0
-    victim=1
     while len(partitions) > judges:
-        partitions[theif].append(copy.deepcopy(partitions[victim][0]))
-        del partitions[victim][0]
-        if len(partitions[victim]) == 0:
-            del partitions[victim]
-        theif+=1
-        if theif==len(partitions)-1:
-            theif=0
-        victim=theif + 1
+        #print(partitions)
+        sift_front(partitions,theif)
+        theif=(theif+1)%len(partitions)
+        
 
     allocations=[]
     for i in range(0,judges):
         for j in range(i, i + partitions_per_judge):
+            #print(allocations)
             try:
                 allocations[i]+=partitions[j % len(partitions)]
             except Exception as e:
@@ -57,3 +51,14 @@ def partition(nums, partition_size):
     for i in range(0, num_partitions*partition_size, partition_size):
         partitions.append(copy.deepcopy(nums[i:i+partition_size]))
     return partitions
+
+def sift_front(the_list, theif):
+    '''
+    shifts inner list elements form list to list from the last sublist to the theif list
+    '''
+    # reverse traversal from last elem to dest before destination
+    for i in range(len(the_list)-1,theif+1,-1):
+        the_list[i-1].append(copy.deepcopy(the_list[i][0]))
+        del the_list[i][0]
+        if len(the_list[i]) == 0:
+            del the_list[i]
