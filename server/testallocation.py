@@ -1,3 +1,4 @@
+from random import randint
 import allocation
 def test(judges,hacks,judges_per_hack):
     the_allocation=allocation.allocate_judges_tables(judges,hacks,judges_per_hack)
@@ -16,8 +17,18 @@ def test(judges,hacks,judges_per_hack):
         judge_num+=1
     for times_judged in judgings:
         assert times_judged==judges_per_hack
-    max_hacks_per_judge=max(hacks_per_judge)
-    min_hacks_per_judge=min(hacks_per_judge)
-    print("min: "+str(min_hacks_per_judge)+" max: "+str(max_hacks_per_judge))
-    print("range: "+str(max_hacks_per_judge-min_hacks_per_judge))
-    print(hacks_per_judge)
+    _max=max(hacks_per_judge)
+    _min=min(hacks_per_judge)
+    _range=_max-_min
+    avg=sum(hacks_per_judge)/len(hacks_per_judge)
+    print("(",judges,",",hacks,",",judges_per_hack,")")
+    print("min: ",_min," max: ",_max," range: ",_range," avg: ",avg)
+    #print(hacks_per_judge)
+
+if __name__=="__main__":
+    for i in range(0,20):
+        judges=randint(8,20)
+        hacks=randint(30,90)
+        jph=randint(2,5)
+        test(judges,hacks,jph)
+
