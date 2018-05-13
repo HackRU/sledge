@@ -6,3 +6,5 @@ data/
 venv/
 *.db
 *.swp
+dist/
+node_modules/
