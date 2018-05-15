@@ -101,7 +101,7 @@ export class DatabaseConnection {
             "INSERT INTO hacks(name, description, location)"
             +"VALUES (?,?,?);");
 
-        stmt.run([hack.name, hack.description]);
+        stmt.run([hack.name, hack.description, hack.location]);
     }
 
     areHacksPopulated() : Boolean {
@@ -130,40 +130,84 @@ export class DatabaseConnection {
 
         stmt.run([judge.name, judge.email]);
     }
+
+    addRating(rating : Rating) {
+        throw new Error("NYI");
+    }
+
+    getSerialized() : any {
+        let hacksStmt = this.sql.prepare("SELECT * FROM hacks;");
+        let hacks = hacksStmt.all();
+
+        let judgesStmt = this.sql.prepare("SELECT * FROM judges;");
+        let judges = judgesStmt.all();
+
+        let judgeHacksStmt = this.sql.prepare("SELECT * FROM judge_hacks;");
+        let judgeHacks = judgeHacksStmt.all().map(jh => ({
+            id: jh.id,
+            judgeId: jh.judge_id,
+            hackId: jh.hack_id,
+            priority: jh.priority
+        }));
+
+        let superlativesStmt = this.sql.prepare("SELECT * FROM superlatives;");
+        let superlatives = superlativesStmt.all();
+
+        let superlativePlacementsStmt = this.sql.prepare("SELECT * FROM superlative_placements");
+        let superlativePlacements = superlativePlacementsStmt.all().map(sp => ({
+            id: sp.id,
+            judgeId: sp.judge_id,
+            superlativeId: sp.superlative_id,
+            firstChoice: sp.first_choice,
+            secondChoice: sp.second_choice
+        }));
+
+        let ratingsStmt = this.sql.prepare("SELECT * FROM ratings;");
+        let ratings = ratingsStmt.all().map(r => ({
+            id: r.id,
+            judgeId: r.judge_id,
+            hackId: r.hack_id,
+            rating: r.rating
+        }));
+
+        return {
+            hacks, judges, judgeHacks, superlatives, superlativePlacements, ratings
+        };
+    }
 }
 
-interface Hack {
+export interface Hack {
     id?: number;
     name: string;
     description: string;
     location: number;
 }
 
-interface Judge {
+export interface Judge {
     id?: number;
     name: string;
     email: string;
 }
 
-interface Token {
+export interface Token {
     id?: number;
     secret: string;
     judgeId: number;
 }
 
-interface JudgeHack {
+export interface JudgeHack {
     id?: number;
     judgeId: number;
     hackId: number;
     priority: number;
 }
 
-interface Superlative {
+export interface Superlative {
     id?: number;
     name: string;
 }
 
-interface SuperlativePlacement {
+export interface SuperlativePlacement {
     id?: number;
     judgeId: number;
     superlativeId: number;
@@ -171,7 +215,7 @@ interface SuperlativePlacement {
     secondChoiceId: number;
 }
 
-interface Rating {
+export interface Rating {
     id?: number;
     judgeId: number;
     hackId: number;

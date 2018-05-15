@@ -6,6 +6,11 @@ var subscribers = [];
 var handlers = [];
 var initialized = false;
 
+sledge._socket = () => socket;
+sledge._subscribers = subscribers;
+sledge._handlers = handlers;
+sledge._initialized = () => initialized;
+
 ////////////////////
 // Global Tables
 

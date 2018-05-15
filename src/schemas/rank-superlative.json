@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "judgeId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "superId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "firstId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "secondId": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+
+  "additionalProperties": false,
+  "required": ["judgeId", "superId", "firstId", "secondId"]
+}

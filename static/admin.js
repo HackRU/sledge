@@ -146,6 +146,8 @@ function init() {
     });
     sledge.subscribe( onSledgeEvent );
 
+    sledge._socket().on("transient-response", data => console.log(data));
+
     printLn("Admin Console Ready");
     printLn(" All events will be logged here. Type help for commands.");
     printLn();

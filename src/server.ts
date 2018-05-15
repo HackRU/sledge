@@ -18,7 +18,7 @@ export function main(argv) {
     let db = new persistence.DatabaseConnection(datadir);
     let app = express();
     let server = new http.Server(app);
-    let sockcomm = new socket.SocketCommunication(server);
+    let sockcomm = new socket.SocketCommunication(server, db);
 
 
     app.use(express.static("static"));

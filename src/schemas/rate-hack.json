@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "judgeId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hackId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rating": {
+      "type": "integer"
+    }
+  },
+
+  "additionalProperties": false,
+  "required": ["judgeId", "hackId", "rating"]
+}

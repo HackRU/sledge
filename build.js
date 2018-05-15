@@ -20,28 +20,49 @@ function watchOnce(fname) {
 
 shell.env["PATH"] = path.resolve(__dirname, "node_modules/.bin") + ":" + shell.env["PATH"];
 
+function compile() {
+    let err;
+
+    err = shell.rm("-rf", "dist");
+    if (err.code) {
+        return err;
+    }
+
+    err = shell.cp("-R", "src", "dist/");
+    if (err.code) {
+        return err;
+    }
+
+    err = shell.exec("tsc");
+    if (err.code) {
+        return err;
+    }
+
+    return null;
+}
+
 let err;
 let argv = process.argv;
 if ( argv.length <= 2 ) {
-    err = shell.exec("tsc");
-    if (err.code) {
+    err = compile();
+    if (err) {
         shell.echo("Error: tsc failed");
         shell.exit(1);
     }
 } else if ( argv.length === 3 && argv[2] === "watch" ) {
     let timeout = 500;
 
-    let compile = () => {
-        shell.echo("Recompiling...");
-        err = shell.exec("tsc");
-        shell.echo(" ======= (%d)\n", err.code);
+    let c = () => {
+        shell.echo("\nRecompiling...");
+        err = compile();
+        shell.echo(" ======= (%d)", err ? err.code : 0);
 
         setTimeout( () => {
-            watchOnce("./src").then(compile);
+            watchOnce("./src").then(c);
         }, timeout);
     };
 
-    compile();
+    c();
 } else {
     shell.echo("Bad args");
     shell.exit(1);
