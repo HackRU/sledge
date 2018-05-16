@@ -58,7 +58,7 @@ gulp.task("build-client", function () {
 
     return gulp.src("src/")
         .pipe( wp )
-        .pipe( gulp.dest("dist") );
+        .pipe( gulp.dest("lib/") );
 });
 
 gulp.task("build", ["build-server", "build-client"]);
