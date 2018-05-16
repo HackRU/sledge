@@ -8,13 +8,12 @@ export class DatabaseConnection {
 
     constructor(datadir: string) {
         this.datadir = datadir;
-        let dbpath = path.resolve(datadir, "sledge.db");
-
-        this.sql = new sqlite3(dbpath);
         this.initDatabase();
     }
 
     initDatabase() {
+        let dbpath = path.resolve(this.datadir, "sledge.db");
+
 		try {
             fs.mkdirSync(this.datadir);
 		} catch (err) {
@@ -22,6 +21,8 @@ export class DatabaseConnection {
                 throw err;
             }
         }
+
+        this.sql = new sqlite3(dbpath);
 
 		this.sql.exec(
 			// The hacks table is a all the hacks and the info needed to judge them

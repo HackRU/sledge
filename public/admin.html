@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Control Panel | Sledge</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.development.js"></script>
+
+    <script type="text/javascript" src="/bundle.js"></script>
+  </head>
+
+  <body id="adminPage" onload="adminPage.init()">
+    <h1>Admin Control Panel</h1>
+
+    <h2>Console</h2>
+
+    <div id="console">
+      <textarea id="log" readonly></textarea><br/>
+      <input id="cmd" type="text"></input>
+    </div>
+
+  </body>
+</html>

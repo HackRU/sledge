@@ -2,7 +2,7 @@ import socketio     from "socket.io";
 import jsonschema   from "jsonschema";
 
 import * as persistence from "./persistence";
-import * as protocol   from "./protocol";
+import * as protocol   from "../protocol/protocol";
 
 export class SocketCommunication {
     sio : socketio.Server;

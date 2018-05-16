@@ -7,12 +7,15 @@ import * as socket      from "./socket";
 
 let port = 8080;
 
-let staticdir = path.resolve(__dirname, "../static");
-let datadir = path.resolve(__dirname, "../data");
+let publicdir = path.resolve(__dirname, "../../public");
+let distdir = path.resolve(__dirname, "../../dist");
+
+let datadir = path.resolve(process.cwd(), "data");
 
 
-export function main(argv) {
-    console.log("Static Directory: %s", staticdir);
+export function start() {
+    console.log("Public Directory: %s", publicdir);
+    console.log("Dist Directory: %s", distdir);
     console.log("Data Directory: %s", datadir);
 
     let db = new persistence.DatabaseConnection(datadir);
@@ -20,8 +23,9 @@ export function main(argv) {
     let server = new http.Server(app);
     let sockcomm = new socket.SocketCommunication(server, db);
 
+    app.use(express.static(publicdir));
+    app.use(express.static(distdir));
 
-    app.use(express.static("static"));
     server.listen(port);
     console.log(`Running at http://localhost:${port}`);
 }
