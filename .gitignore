@@ -3,4 +3,5 @@ data/
 *.db
 *.swp
 lib/
+dist/
 node_modules/

@@ -1,25 +1,36 @@
+var child_process = require("child_process");
 var gulp = require("gulp");
 var path = require("path");
 var shelljs = require("shelljs");
-var sourcemaps = require("gulp-sourcemaps");
-var typescript = require("gulp-typescript");
-var webpack = require("webpack-stream");
 
 let basePath = __dirname;
+let binPath = path.resolve(basePath, "node_modules/.bin");
+
+function runCommand(cmd) {
+    return new Promise( (resolve, reject) => {
+        child_process.execFile(cmd[0], cmd.slice(1), function (error, stdout, stderr) {
+
+            console.log("Command: " + cmd.join(" "));
+
+            process.stdout.write(stdout);
+            process.stdout.write(stderr);
+
+            if (error) {
+                console.log("Exit Status: " + error.code.toString());
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
 
 gulp.task("build-server-typescript", function () {
-    let ts = typescript.createProject("tsconfig.json", {
-        module: "commonjs",
-        esModuleInterop: true,
-        target: "es6",
-        moduleResolution: "node",
-    });
-
-    return gulp.src(["src/**/*.ts"])
-        .pipe( sourcemaps.init() )
-        .pipe( ts() )
-        .pipe( sourcemaps.write() )
-        .pipe( gulp.dest("lib") );
+    return runCommand([
+        path.resolve(binPath, "tsc"),
+        "--pretty",
+        "--project", "tsconfig-server.json"
+    ]);
 });
 
 gulp.task("build-server-json", function () {
@@ -30,42 +41,15 @@ gulp.task("build-server-json", function () {
 gulp.task("build-server", ["build-server-typescript", "build-server-json"]);
 
 gulp.task("build-client", function () {
-    let wp = webpack({
-        devtool: "inline-source-map",
-        entry: ["./src/client/entry.ts", "./src/client/global.scss"],
-
-        module: {
-            rules: [{
-                test: /\.tsx?$/,
-                loader: "ts-loader",
-                include: path.resolve(basePath, "src"),
-                options: {
-                    compilerOptions: {
-                        target: "es6"
-                    }
-                }
-            }, {
-                test: /\.scss?$/,
-                use: ["style-loader", "css-loader", "sass-loader"],
-                include: path.resolve(basePath, "src")
-            }]
-        },
-
-        output: {
-            filename: "bundle.js"
-        }
-    });
-
-    return gulp.src("src/")
-        .pipe( wp )
-        .pipe( gulp.dest("lib/") );
+    return runCommand([
+        path.resolve(binPath, "tsc"),
+        "--pretty",
+        "--project", "tsconfig-client.json"
+    ]);
 });
 
 gulp.task("build", ["build-server", "build-client"]);
 
 gulp.task("start", ["build"], function () {
-    let err = shelljs.exec("./bin/sledge.js");
-    if (err.code) {
-        throw new Error("./bin/sledge.js exited with status "+err.code.toString(10));
-    }
+    shelljs.exec(path.resolve(".", "bin/sledge.js"))
 });

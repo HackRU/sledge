@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "outDir": "./lib/",
+    "sourceMap": true,
+
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
@@ -10,6 +13,7 @@
     }
   },
   "include": [
-    "src/**/*"
+    "src/server/**/*",
+    "src/protocol/**/*"
   ]
 }
