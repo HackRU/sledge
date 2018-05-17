@@ -2,7 +2,7 @@
 
 All communication between the client and server uses the protocol described
 here, which runs on top of socket.io. When reading this document, you should
-reference the [src/protocol/events.ts][../src/protocol/events.md] file which
+reference the [src/protocol/events.ts](../src/protocol/events.md) file which
 includes the exact format of each event.
 
 When a client connects to sledge, it connects on the default namespace and, if
