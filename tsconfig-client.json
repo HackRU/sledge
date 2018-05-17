@@ -3,6 +3,7 @@
     "outDir": "public/",
     "sourceMap": true,
 
+    "jsx": "react",
     "module": "system",
     "moduleResolution": "node",
     "target": "es5",

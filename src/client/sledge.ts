@@ -1,320 +1,100 @@
-import io from "socket.io-client";
+import * as io from "socket.io-client";
 
-var socket = null;
-var subscribers = [];
-var handlers = [];
-var initialized = false;
+import * as evts from "../protocol/events.js";
 
-////////////////////
-// Global Tables
+export class SledgeClient {
+  socket : SocketIOClient.Socket;
+  subscribers : Array<Subscriber>;
+  initialized : boolean;
+  store : TableStore;
 
-var tables = {
-    hacks: [], // {id, name, description, location}
-    judges: [], // {id, name, email}
-    judgeHacks: [], // {id, judgeId, hackId, priority}
-    superlatives: [], // {id, name}
-    superlativePlacements: [], // {id, judgeId, superlativeId, firstChoice, secondChoice}
-    ratings: [], // {id, judgeId, hackId, rating}
+  constructor(opts : SledgeOptions) {
+    this.store = {
+      hacks: [],
+      judges: [],
+      judgeHacks: [],
+      superlatives: [],
+      superlativePlacements: []
+    };
+
+    this.socket = io(opts.host);
+
+    this.socket.on("protocol-error",
+      (data:evts.ProtocolError) => this.onProtocolError(data) );
+  }
+
+  private updateTables(data : TableStore) {
+    let unsafeStore = <any>this.store;
+
+    let tables = ["hacks", "judges", "judgeHacks", "superlatives", "superlativePlacements"];
+    for (let table of tables) {
+      let rows : LocalTable<{ id : number | undefined }> = unsafeStore[table];
+      for (let row of rows) {
+        if (row && row.id) {
+          unsafeStore[table][row.id] = row;
+        }
+      }
+    }
+  }
+
+  private sendChange(evt : SledgeEvent) {
+    for (let sub of this.subscribers) {
+      sub.notify(evt);
+    }
+  }
+
+  private onProtocolError(data : evts.ProtocolError) {
+    alert(data.message);
+  }
 };
 
-////////////////////
-// Private Helpers
+export interface SledgeOptions {
+  host : string;
+};
 
-function updateTables(data) {
-    for ( let table of Object.keys(tables) ) {
-        if ( data[table] ) {
-            for ( let row of data[table] ) {
-                if ( row && row.id ) {
-                    tables[table][row.id] = row;
-                }
-            }
-        }
-    }
-}
+export interface SledgeEvent {
+};
 
-function sendChange(content) {
-    for (let sub of subscribers)
-        if (sub) sub(content);
-}
+interface Subscriber {
+  notify : (e:SledgeEvent) => void;
+};
 
-////////////////////
-// Update Handlers
+class LocalDatabase {
+  store : TableStore;
 
-function onError(data) {
-    console.log("Error", data);
-}
-handlers.push({ name: "error", handler: onError });
+  constructor() {
+  }
+};
 
-function onUpdateFull(data) {
-    tables.hacks.splice(0);
-    tables.judges.splice(0);
-    tables.judgeHacks.splice(0);
-    tables.superlatives.splice(0);
-    tables.superlativePlacements.splice(0);
-    tables.ratings.splice(0);
+interface TableStore {
+  hacks : LocalTable<{
+    id : number,
+    name : string,
+    description : string,
+    location : number
+  }>;
+  judges : LocalTable<{
+    id : number,
+    name : string,
+    email : string
+  }>;
+  judgeHacks : LocalTable<{
+    id : number,
+    judgeId : number,
+    hackId : number,
+    priority : number
+  }>;
+  superlatives : LocalTable<{
+    id : number,
+    name : string
+  }>;
+  superlativePlacements : LocalTable<{
+    id : number,
+    judgeId : number,
+    superlativeId : number,
+    firstChoiceId : number,
+    secondChoiceId : number
+  }>;
+};
 
-    updateTables(data);
-    initialized = true;
-
-    sendChange({
-        trans: false,
-        type: "full"
-    });
-}
-handlers.push({ name: "update-full", handler: onUpdateFull });
-
-function onUpdatePartial(data) {
-    if ( !initialized ) return;
-    updateTables(data);
-
-    sendChange({
-        trans: false,
-        type: "partial"
-    });
-}
-handlers.push({ name: "update-partial", handler: onUpdatePartial });
-
-////////////////////
-// Requests and Transient Responses
-
-function addTransientResponse(eventName) {
-    handlers.push({
-        name: eventName,
-        handler: data => {
-            sendChange({
-                trans: true,
-                type: eventName,
-                data
-            });
-        }
-    });
-}
-
-export function sendScrapeDevpost({url}) {
-    socket.emit("devpost-scrape", {url});
-}
-addTransientResponse("devpost-scrape-response");
-
-export function sendAddJudge({name, email}) {
-    socket.emit("add-judge", {name, email});
-}
-addTransientResponse("add-judge-response");
-
-export function sendAllocateJudges(opts) {
-    if (!opts.method) throw new Error("allocateJudgeHacks: method must exist");
-
-    socket.emit("allocate-judges", opts);
-}
-addTransientResponse("allocate-judges-response");
-
-export function sendAddSuperlative({name}) {
-    socket.emit("add-superlative", {name});
-}
-addTransientResponse("add-superlative-response");
-
-export function sendAddToken({judgeId, secret}) {
-    socket.emit("add-token", {judgeId, secret});
-}
-addTransientResponse("add-token-response");
-
-export function sendRaw({eventName, json}) {
-    socket.emit(eventName, json);
-}
-addTransientResponse("add-token-response");
-
-export function sendRankSuperlative(data) {
-    socket.emit("rank-superlative", {
-        judgeId: data.judgeId,
-        superlativeId: data.superlativeId,
-        firstChoiceId: data.firstChoiceId,
-        secondChoiceId: data.secondChoiceId
-    });
-}
-addTransientResponse("rank-superlative-response");
-
-export function sendRateHack({judgeId, hackId, rating}) {
-    socket.emit("rate-hack", {
-        judgeId, hackId, rating
-    });
-}
-addTransientResponse("rate-hack-response");
-
-////////////////////
-// Information Querying
-
-export function isInitialized() {
-    return initialized;
-}
-
-export function getAllHacks() {
-    if (!initialized) throw new Error("getAllHacks: Data not initialized");
-
-    return tables.hacks;
-}
-
-export function getAllJudges() {
-    if (!initialized) throw new Error("getAllJudges: Data not initialized");
-
-    return tables.judges;
-}
-
-export function getJudgeInfo({judgeId}) {
-    if (!initialized) throw new Error("getJudgeInfo: Data not initialized");
-
-    return tables.judges[judgeId] || null;
-}
-
-export function getHacksOrder({judgeId}) {
-    if (!initialized) throw new Error("getHacksOrder: Data not initialized");
-
-    let order = tables.judgeHacks
-        .filter( h => h.judgeId == judgeId )
-        .sort( (jh1, jh2) => jh1.priority - jh2.priority )
-        .map( jh => jh.hackId );
-
-    let positions = [];
-    for (let i=0;i<order.length;i++) {
-        positions[order[i]] = i;
-    }
-
-    // order maps position to hackId
-    // positions maps hackId to position
-    return { order, positions };
-}
-
-export function getAllRatings() {
-    if (!initialized) throw new Error("getAllRatings: Data not initialized");
-
-    let ratings = [];
-    for (let i=0;i<tables.hacks.length;i++) {
-        let hackRatings = [];
-        for (let j=0;j<tables.judges.length;j++) {
-            hackRatings[j] = 0;
-        }
-        ratings[i] = hackRatings;
-    }
-
-    for (let rating of tables.ratings) {
-        if (rating) {
-            ratings[rating.hackId][rating.judgeId] = rating.rating;
-        }
-    }
-
-    return ratings;
-}
-
-export function getJudgeRatings({judgeId}) {
-    if (!initialized) throw new Error("getJudgeRatings: Data not initialized");
-
-    let ratings = [];
-
-    for (let i=0;i<tables.hacks.length;i++) {
-        ratings[i] = 0;
-    }
-
-    for (let rating of tables.ratings) {
-        if ( rating && rating.judgeId === judgeId ) {
-            ratings[rating.hackId] = rating.rating;
-        }
-    }
-
-    return ratings;
-}
-
-export function getSuperlatives() {
-    if (!initialized) throw new Error("getSuperlatives: Data not initialized");
-
-    let superlatives = [];
-    for ( let superlative of tables.superlatives ) {
-        if ( superlative ) {
-            superlatives.push(superlative);
-        }
-    }
-
-    return superlatives;
-}
-
-export function getAllSuperlativePlacements() {
-    if (!initialized) throw new Error("getAllSuperlatives: Data not initialized");
-
-    let supers = [];
-    for (let i=0;i<tables.hacks.length;i++) {
-        supers[i] = [];
-        for (let j=0;j<tables.superlatives.length;j++) {
-            supers[i][j] = {
-                first: [],
-                second: []
-            };
-        }
-    }
-
-    for (let s of tables.superlativePlacements) {
-        if (s) {
-            if (s.firstChoice > 0) {
-                supers[s.firstChoice][s.superlativeId].first.push(s.judgeId);
-            }
-            if (s.secondChoice > 0) {
-                supers[s.secondChoice][s.superlativeId].second.push(s.judgeId);
-            }
-        }
-    }
-
-    return supers;
-}
-
-export function getChosenSuperlatives({judgeId}) {
-    if (!initialized) throw new Error("getChosenSuperlatives: Data not initialized");
-
-    let chosen = [];
-
-    // Initialize to 0
-    for (let i=0;i<tables.superlatives.length;i++) {
-        chosen.push({
-            first: 0,
-            second: 0
-        });
-    }
-
-    // Find chosen
-    for ( let choice of tables.superlativePlacements ) {
-        if ( choice && choice.judgeId == judgeId ) {
-            chosen[choice.superlativeId].first = choice.firstChoice;
-            chosen[choice.superlativeId].second = choice.secondChoice;
-        }
-    }
-
-    return chosen;
-}
-
-////////////////////
-// Other Exports
-
-export function subscribe(cb) {
-    subscribers.push(cb);
-}
-
-export function init(opts) {
-    if (socket) {
-        throw new Error("Sledge: Socket already initialized!");
-    }
-
-    socket = io({query: "secret="+encodeURIComponent(opts.token)});
-
-    for (let h of handlers) {
-        socket.on(h.name, h.handler);
-    }
-}
-
-export function initWithTestData(testdata) {
-    updateTables(testdata);
-    console.log(tables);
-
-    setTimeout(function () {
-        initialized = true;
-
-        sendChange({
-            trans: false,
-            type: "full"
-        });
-    }, 200);
-}
+type LocalTable<T> = Array<T | undefined>;

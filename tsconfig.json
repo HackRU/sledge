@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
+    "jsx": "preserve",
 
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+
+    "outDir": "/tmp/ignore",
     "baseUrl": ".",
     "paths": {
       "*": [ "src/*", "node_modules/*" ]
