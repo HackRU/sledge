@@ -1,39 +1,31 @@
-(function (judgePage) {
-"use strict";
+import * as React     from "react";
+import * as ReactDOM  from "react-dom";
+
+import * as sledge  from "../sledge.js";
+import {JudgeApp}   from "../components/judgeapp.js";
 
 var myJudgeId = null;
 
-function init() {
-    let token = localStorage.getItem("token");
-    let judgeId = parseInt(localStorage.getItem("judgeId"));
+export function init() {
+  let token = localStorage.getItem("token");
+  let judgeId = parseInt(localStorage.getItem("judgeId"));
 
-    if ( !token || isNaN(judgeId) ) {
-        document.getElementById("app").appendChild(
-            document.createTextNode("Bad token or Judge Id. Redirecting to login page..."));
-	if (window.location.hash != "#local") {
-            setTimeout(function () {
-		window.location.href = "/login.html";
-            }, 1500);
-	}
-        return;
-    }
+  if ( !token || isNaN(judgeId) ) {
+    document.getElementById("app").appendChild(
+    document.createTextNode("Bad token or Judge Id. Redirecting to login page..."));
+  }
 
-    if (window.location.hash == "#local") {
-        sledge.initWithTestData(localTestData);
-    } else {
-        sledge.init({token});
-    }
+  sledge.init({token});
 
-    myJudgeId = judgeId;
+  myJudgeId = judgeId;
 
-    var appContainer = document.getElementById("app");
-    ReactDOM.render(
-        React.createElement(
-            JudgeAppWrapper, null), appContainer);
+  var appContainer = document.getElementById("app");
+  ReactDOM.render(
+    React.createElement(
+      JudgeAppWrapper, null), appContainer);
 }
-judgePage.init = init;
 
-function getSledgeData() {
+export function getSledgeData() {
     if (sledge.isInitialized()) {
         let hacks = sledge.getAllHacks();
         let judgeInfo = sledge.getJudgeInfo({
@@ -68,12 +60,12 @@ function getSledgeData() {
         };
     }
 }
-judgePage.getSledgeData = getSledgeData;
 
 ////////////////////
 // Toplevel Component
 
-class JudgeAppWrapper extends React.Component {
+export class JudgeAppWrapper extends React.Component {
+  state : any;
     constructor(props) {
         super(props);
 
@@ -97,13 +89,10 @@ class JudgeAppWrapper extends React.Component {
     render() {
         if (this.state.sledge.initialized) {
             return React.createElement(
-                    comps.JudgeApp, this.state.sledge);
+                    JudgeApp, this.state.sledge);
         } else {
             return React.createElement(
                     "span", null, "Loading...");
         }
     }
 }
-judgePage.JudgeAppWrapper = JudgeAppWrapper;
-
-})(window.judgePage || (window.judgePage = {}));

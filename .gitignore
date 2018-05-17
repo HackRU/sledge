@@ -3,5 +3,5 @@ data/
 *.db
 *.swp
 lib/
-dist/
+public/
 node_modules/

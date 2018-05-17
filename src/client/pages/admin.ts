@@ -1,12 +1,11 @@
-(function (adminPage) {
-"use strict";
+import * as sledge from "../sledge.js";
 
 var log, cmd;
 var lastCmd = "";
 
 var commands = [];
 
-function printLn(txt="") {
+export function printLn(txt="") {
     let timestr = (new Date()).toLocaleString();
     let logstr = "[" + timestr  + "] " + txt + "\n";
 
@@ -15,9 +14,8 @@ function printLn(txt="") {
 
     log.scrollTo(0, log.scrollHeight);
 }
-adminPage.printLn = printLn;
 
-function printWrap(forward, txt, wrap=80) {
+export function printWrap(forward, txt, wrap=80) {
     let lines = txt.split("\n").map( l => l.split(""));
     printLn( forward + lines[0].splice(0, wrap-forward.length).join("") );
     for (let i=0;i<lines.length;i++) {
@@ -31,9 +29,8 @@ function printWrap(forward, txt, wrap=80) {
         } while ( line.length > 0 );
     }
 }
-adminPage.printWrap = printWrap;
 
-function runCommand(txt) {
+export function runCommand(txt) {
     let args = splitCommand(txt);
     let action = args.length===0?"":args[0].toLowerCase();
 
@@ -58,9 +55,8 @@ function runCommand(txt) {
 
     command.run(args);
 }
-adminPage.runCommand = runCommand;
 
-function splitCommand(txt) {
+export function splitCommand(txt) {
     let tokens = txt.split("").reverse();
     let args = [];
 
@@ -105,13 +101,12 @@ function splitCommand(txt) {
 
     return args;
 }
-adminPage.splitCommand = splitCommand;
 
-function registerCommand(name, description, run) {
+export function registerCommand(name, description, run) {
     commands.push({name, description, run});
 }
 
-function onSledgeEvent(evt) {
+export function onSledgeEvent(evt) {
     if ( evt.trans ) {
         printLn("Recieved Transient Event: " + evt.type);
         printWrap(" data: ", JSON.stringify(evt.data));
@@ -119,9 +114,8 @@ function onSledgeEvent(evt) {
         printLn("Recieved Non-Transient Event: " + evt.type);
     }
 }
-adminPage._onSledgeEvent = onSledgeEvent;
 
-function init() {
+export function init() {
     log = document.getElementById("log");
     cmd = document.getElementById("cmd");
 
@@ -146,13 +140,12 @@ function init() {
     });
     sledge.subscribe( onSledgeEvent );
 
-    sledge._socket().on("transient-response", data => console.log(data));
+    //sledge._socket().on("transient-response", data => console.log(data));
 
     printLn("Admin Console Ready");
     printLn(" All events will be logged here. Type help for commands.");
     printLn();
 }
-adminPage.init = init;
 
 ////////////////////
 // Commands
@@ -242,7 +235,7 @@ registerCommand("token", "View and set your token (must refresh to see changes)"
         printWrap("Your Current Token:    ", localStorage.getItem("token")||"[NOT SET]");
         printWrap("Your Current Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
         printLn();
-    } else if ( subactoin === "remove" && args.length === 2 ) {
+    } else if ( subaction === "remove" && args.length === 2 ) {
         printWrap("Your Previous Token:    ", localStorage.getItem("token")||"[NOT SET]");
         printWrap("Your Previous Judge Id: ", localStorage.getItem("judgeId")||"[NOT SET]");
         localStorage.clear();
@@ -310,5 +303,3 @@ registerCommand("allocate", "Allocate judges", function (args) {
 registerCommand("clear", "Clear the command log", function (args) {
     log.value = "";
 });
-
-})(window.adminPage || (window.adminPage = {}));

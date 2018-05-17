@@ -13,6 +13,7 @@
     }
   },
   "include": [
+    "src/index.ts",
     "src/server/**/*",
     "src/protocol/**/*"
   ]

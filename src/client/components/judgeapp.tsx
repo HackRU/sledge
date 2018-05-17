@@ -1,10 +1,12 @@
-(function (comps) {
-"use strict";
+import * as React from "react";
 
 var e = React.createElement;
 
 //TODO: This indentation is a mess
 class JudgeApp extends React.Component {
+  state : any;
+  props : any;
+
     constructor(props) {
         super(props);
 
@@ -123,22 +125,20 @@ class JudgeApp extends React.Component {
         let currentHack = this.getCurrentHack();
 	if ( this.state.listViewActive ) {
 	    return e("div", { className: "container d-flex judge-container" },
-                e(comps.Toolbar, this.getToolbarProps()),
-                e(comps.JudgeInfo, this.getJudgeProps()),
-                e(comps.ProjectList, this.getProjectListProps())
+                e(Toolbar, this.getToolbarProps()),
+                e(JudgeInfo, this.getJudgeProps()),
+                e(ProjectList, this.getProjectListProps())
 	    );
 	} else {
             return e("div", { className: "container d-flex judge-container" },
-                e(comps.Toolbar, this.getToolbarProps()),
-                e(comps.JudgeInfo, this.getJudgeProps()),
-                e(comps.Project, this.getProjectProps()),
-                e(comps.RatingBox, this.getRatingBoxProps()),
-                e(comps.Superlatives, this.getSuperlativeProps())
+                e(Toolbar, this.getToolbarProps()),
+                e(JudgeInfo, this.getJudgeProps()),
+                e(Project, this.getProjectProps()),
+                e(RatingBox, this.getRatingBoxProps()),
+                e(Superlatives, this.getSuperlativeProps())
             );
 	}
     }
 
 }
 comps.JudgeApp = JudgeApp;
-
-})(window.comps || (window.comps = {}));
