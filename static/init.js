@@ -8,7 +8,7 @@
     SystemJS.config({
       map: {
         "socket.io-client": "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js",
-        "react": "https://cdnjs.cloudflare.com/ajax/libs/react/16.3.2/cjs/react.development.js",
+        "react": "https://cdnjs.cloudflare.com/ajax/libs/react/16.3.2/umd/react.development.js",
         "react-dom": "https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.3.2/umd/react-dom.development.js"
       }
     });

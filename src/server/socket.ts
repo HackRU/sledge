@@ -1,43 +1,54 @@
-import http         from "http";
-import jsonschema   from "jsonschema";
-import socketio     from "socket.io";
+import http                                   from "http";
+import jsonschema                             from "jsonschema";
+import {default as socketio, Server, Socket}  from "socket.io";
 
 import * as evts            from "../protocol/events";
 import {DatabaseConnection} from "./persistence";
 import {ServerEventWrapper} from "./serverevents";
 
 export class SocketCommunication {
-  private sio : socketio.Server;
+  private sio : Server;
   private events : ServerEventWrapper;
 
   constructor(private server : http.Server, private db : DatabaseConnection) {
     this.sio = socketio(server);
 
     let handlers = {
-      addHackHandler: (s,d) => this.handleAddHack(s,d),
-      addJudgeHandler: (s,d) => this.handleAddJudge(s,d),
-      addSuperlativeHandler: (s,d) => this.handleAddSuperlative(s,d),
-      rankSuperlativeHandler: (s,d) => this.handleRankSuperlative(s,d),
-      rateHackHandler: (s,d) => this.handleRateHack(s,d)
+      addHackHandler: this.handleAddHack,
+      addJudgeHandler: this.handleAddJudge,
+      addSuperlativeHandler: this.handleAddSuperlative,
+      authenticateHandler : this.handleAuthenticate,
+      loginHandler : this.handleLogin,
+      rankSuperlativeHandler: this.handleRankSuperlative,
+      rateHackHandler: this.handleRateHack,
+      subscribeDatabaseHandler : this.handleSubscribeDatabase
     };
     this.events = new ServerEventWrapper(this.sio, handlers);
   }
 
-  handleAddHack(s : socketio.Socket, data : evts.AddHack) {
+  public handleAddHack = (s : Socket, data : evts.AddHack) => {
     this.db.addHack(data);
     this.sendFullUpdate();
   }
 
-  handleAddJudge(s : socketio.Socket, data : evts.AddJudge) {
+  public handleAddJudge = (s : Socket, data : evts.AddJudge) => {
     this.db.addJudge(data);
     this.sendFullUpdate();
   }
 
-  handleAddSuperlative(s : socketio.Socket, data : evts.AddSuperlative) {
+  public handleAddSuperlative = (s : Socket, data : evts.AddSuperlative) => {
     throw new Error("NYI");
   }
 
-  handleRankSuperlative(s : socketio.Socket, data : evts.RankSuperlative) {
+  public handleAuthenticate = (s : Socket, data : evts.Authenticate) => {
+    throw new Error("NYI");
+  }
+
+  public handleLogin = (s : Socket, data : evts.Login) => {
+    throw new Error("NYI");
+  }
+
+  public handleRankSuperlative = (s : Socket, data : evts.RankSuperlative) => {
     let placement = {
         judgeId: data.judgeId,
         superlativeId: data.superId,
@@ -48,9 +59,13 @@ export class SocketCommunication {
     this.sendFullUpdate();
   }
 
-  handleRateHack(s : socketio.Socket, data : evts.RateHack) {
+  public handleRateHack = (s : Socket, data : evts.RateHack) => {
     this.db.addRating(data);
     this.sendFullUpdate();
+  }
+
+  public handleSubscribeDatabase = (s : Socket, data : evts.SubscribeDatabase) => {
+    throw new Error("NYI");
   }
 
   sendFullUpdate() {

@@ -16,10 +16,16 @@ export class ServerEventWrapper {
         evts.addJudgeSchema, this.handlers.addJudgeHandler);
       this.registerHandler(s, "add-superlative",
         evts.addSuperlativeSchema, this.handlers.addSuperlativeHandler);
+      this.registerHandler(s, "authenticate",
+        evts.authenticateSchema, this.handlers.authenticateHandler);
+      this.registerHandler(s, "login",
+        evts.loginSchema, this.handlers.loginHandler);
       this.registerHandler(s, "rank-superlative",
         evts.rankSuperlativeSchema, this.handlers.rankSuperlativeHandler);
       this.registerHandler(s, "rate-hack",
         evts.rateHackSchema, this.handlers.rateHackHandler);
+      this.registerHandler(s, "subscribe-database",
+        evts.subscribeDatabaseSchema, this.handlers.subscribeDatabaseHandler);
     });
   };
 
@@ -41,8 +47,20 @@ export class ServerEventWrapper {
     });
   }
 
-  emitProtocolError(room:string, data : evts.ProtocolError) {
+  emitLoginResponse(room : string, data : evts.LoginResponse) {
+    this.sio.to(room).emit("login-response", data);
+  }
+
+  emitProtocolError(room : string, data : evts.ProtocolError) {
     this.sio.to(room).emit("protocol-error", data);
+  }
+
+  emitUpdateFull(room : string, data : evts.UpdateFull) {
+    this.sio.to(room).emit("update-full", data);
+  }
+
+  emitUpdatePartial(room : string, data : evts.UpdatePartial) {
+    this.sio.to(room).emit("update-partial", data);
   }
 };
 
@@ -50,6 +68,9 @@ export interface ServerEventHandlers {
   addHackHandler : (s:Socket,e:evts.AddHack) => void;
   addJudgeHandler : (s:Socket,e:evts.AddJudge) => void;
   addSuperlativeHandler : (s:Socket,e:evts.AddSuperlative) => void;
-  rankSuperlativeHandler : (s:Socket,e:evts.RankSuperlative) => void;
+  authenticateHandler : (s:Socket,e:evts.Authenticate) => void;
+  loginHandler : (s:Socket,e:evts.Login) => void;
   rateHackHandler : (s:Socket,e:evts.RateHack) => void;
+  rankSuperlativeHandler : (s:Socket,e:evts.RankSuperlative) => void;
+  subscribeDatabaseHandler : (s:Socket,e:evts.SubscribeDatabase) => void;
 };

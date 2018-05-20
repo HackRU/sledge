@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "public/",
+    "outDir": "public/lib/",
     "sourceMap": true,
 
     "jsx": "react",
@@ -10,7 +10,8 @@
     "lib": ["es5", "es6", "dom"],
     "baseUrl": ".",
     "paths": {
-      "*": [ "src/types/*" ]
+      "lib/*": [ "src/*" ],
+      "*": [ "node_modules/types/*", "node_modules/*" ]
     }
   },
   "include": [

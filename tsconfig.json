@@ -5,11 +5,13 @@
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
+    "lib": ["es5", "es6", "dom"],
 
     "outDir": "/tmp/ignore",
     "baseUrl": ".",
     "paths": {
-      "*": [ "src/*", "node_modules/*" ]
+      "lib/*": [ "src/*" ],
+      "*": [ "node_modules/*" ]
     }
   },
   "include": [

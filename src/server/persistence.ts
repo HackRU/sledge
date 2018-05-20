@@ -1,6 +1,8 @@
-import fs		from "fs";
+import fs		    from "fs";
 import path     from "path";
 import sqlite3  from "better-sqlite3";
+
+import {Hack, Judge, Rating, SuperlativePlacement}  from "lib/protocol/database.js";
 
 export class DatabaseConnection {
   private sql : sqlite3;

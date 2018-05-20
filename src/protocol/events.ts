@@ -1,3 +1,9 @@
+import { DataStore } from "./database.js";
+
+//
+// Client-Server events
+//
+
 /**
  * For client-server "add-hack" events
  */
@@ -68,6 +74,79 @@ export const addSuperlativeSchema = {
 };
 
 /**
+ * For client-server "authenticate" events
+ */
+export interface Authenticate {
+  secret : string,
+  userId : number
+};
+
+export const authenticateSchema = {
+  "type": "object",
+  "properties": {
+    "secret": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "integer"
+    }
+  },
+
+  "additionalProperties": false,
+  "required": ["secret", "userId"]
+};
+
+/**
+ * For client-server "login" events
+ */
+export interface Login {
+  judgeId : number,
+  loginCode : string
+};
+
+export const loginSchema = {
+  "type": "object",
+  "properties": {
+    "judgeId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "loginCode": {
+      "type": "string"
+    }
+  }
+};
+
+/**
+ * For client-server "rate-hack" events
+ */
+export interface RateHack {
+  judgeId : number;
+  hackId : number;
+  rating : number;
+};
+
+export const rateHackSchema = {
+  "type": "object",
+  "properties": {
+    "judgeId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hackId": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rating": {
+      "type": "integer"
+    }
+  },
+
+  "additionalProperties": false,
+  "required": ["judgeId", "hackId", "rating"]
+};
+
+/**
  * For client-server "rank-superlative" events
  */
 export interface RankSuperlative {
@@ -103,32 +182,32 @@ export const rankSuperlativeSchema = {
 };
 
 /**
- * For client-server "rate-hack" events
+ * For client-server "subscribe-database" events
+ *
+ * Note: There is no data associated with this event, so the client should
+ *       send an empty object
  */
-export interface RateHack {
-  judgeId : number;
-  hackId : number;
-  rating : number;
+export interface SubscribeDatabase {
 };
 
-export const rateHackSchema = {
+export const subscribeDatabaseSchema = {
   "type": "object",
-  "properties": {
-    "judgeId": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "hackId": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "rating": {
-      "type": "integer"
-    }
-  },
+  "maxProperties": 0
+};
 
-  "additionalProperties": false,
-  "required": ["judgeId", "hackId", "rating"]
+//
+// Server-Client events
+//
+// Note: Since the client doesn't check schemas, we don't maintain schemas for
+//       server-client events.
+//
+
+/**
+ * For server-client "login-response" events
+ */
+export interface LoginResponse {
+  secret : string,
+  userId : number
 };
 
 /**
@@ -139,17 +218,16 @@ export interface ProtocolError {
   message : string;
 };
 
-export const protocolErrorSchema = {
-  "type": "object",
-  "properties": {
-    "original": {
-        "type": "string"
-    },
-    "message": {
-        "type": "string"
-    }
-  },
+/**
+ * For server-client "update-full" events
+ */
+export interface UpdateFull {
+  database : DataStore;
+};
 
-  "additionalProperties": false,
-  "required": ["judgeId", "hackId", "rating"]
+/**
+ * For server-client "update-partial" events
+ */
+export interface UpdatePartial {
+  diff : DataStore;
 };

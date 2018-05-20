@@ -65,9 +65,17 @@ export interface RatingRow extends Rating {
   id : number;
 }
 
-type TablePart<T> = Array<T | undefined>;
+export const emptyStore : DataStore = {
+  hacks: [],
+  judges: [],
+  judgeHacks: [],
+  superlatives: [],
+  superlativePlacements: []
+};
 
-interface DataStore {
+export type TablePart<T> = Array<T | undefined>;
+
+export interface DataStore {
   hacks : TablePart<HackRow>;
   judges : TablePart<JudgeRow>;
   judgeHacks : TablePart<JudgeHackRow>;
