@@ -2,9 +2,9 @@ import {createElement, Component} from "react";
 import {render}                   from "react-dom";
 import {Store, createStore}       from "redux";
 
-import {SledgeClient}         from "lib/client/sledge.js";
-import {JudgeApp}             from "lib/client/components/judgeapp.js";
-import {JudgeStore, reducer}  from "lib/client/reducers/judgeapp.js"
+import {SledgeClient}               from "lib/client/sledge";
+import {JudgeApp}                   from "lib/client/components/judgeapp";
+import {JudgeStore, Type, reducer}  from "lib/client/reducers/judgeapp"
 
 let client : SledgeClient;
 let store : Store<JudgeStore>;
@@ -22,10 +22,9 @@ export function init() {
 
   // Update the store whenever sledge has updates
   client.subscribe(evt => {
-    console.log(evt);
     store.dispatch({
-      type: "DATABASE_UPDATE",
-      database: client.getData()
+      type: Type.SledgeUpdate,
+      sledgeData: client.getData()
     });
   });
 

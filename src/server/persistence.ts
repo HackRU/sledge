@@ -2,7 +2,7 @@ import fs        from "fs";
 import path     from "path";
 import sqlite3  from "better-sqlite3";
 
-import {Hack, Judge, Rating, DataStore, SuperlativePlacement}  from "lib/protocol/database.js";
+import {Hack, Judge, Rating, DataStore, SuperlativePlacement}  from "lib/protocol/database";
 
 export class DatabaseConnection {
   private sql : sqlite3;

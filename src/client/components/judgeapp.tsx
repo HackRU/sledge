@@ -1,6 +1,8 @@
 import React from "react";
 
-import {JudgeStore, JudgeAction} from "lib/client/reducers/judgeapp.js";
+import {Mode} from "lib/client/reducers/judgeapp";
+
+import {JudgeStore, JudgeAction} from "lib/client/reducers/judgeapp";
 
 export class JudgeApp extends React.Component<Props, {}> {
   constructor(props : Props) {
@@ -8,8 +10,12 @@ export class JudgeApp extends React.Component<Props, {}> {
   }
 
   render() {
+    let message : string = this.props.mode;
+    if (this.props.sledgeData) {
+      message += " " + this.props.sledgeData.connectionStatus;
+    }
     return (
-      <span>{"TODO"}</span>
+      <span>{message}</span>
     );
   }
 }

@@ -1,18 +1,19 @@
-(function (comps) {
-"use strict";
+import {Component} from "react";
 
-var e = React.createElement;
-
-class JudgeInfo extends React.Component {
+class JudgeInfo extends Component<Props> {
     render() {
-        return e("div", { className: "judgeinfo-comp" },
-            e("span", null,
-                e("span", null, "Hello, "),
-                e("span", { className: "judgeinfo-name" }, this.props.name),
-                e("span", null, "!") )
-        );
+      return (
+        <div className="judgeInfo-comp">
+          <span>
+            <span>{"Hello, "}</span>
+            <span>{this.props.name}</span>
+            <span>{"!"}</span>
+          </span>
+        </div>
+      );
     }
 }
-comps.JudgeInfo = JudgeInfo;
 
-})(window.comps || (window.comps = {}));
+export interface Props {
+  name : string;
+}

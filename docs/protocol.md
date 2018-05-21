@@ -43,8 +43,8 @@ Adds a superlative to the database.
 Asks the server to mark the client as an admin or a particular judge, given a
 `secret` with correct privileges. If the `userId` is a positive integer, the
 server will attempt to mark the client as the judge with that id. A `userId` of
-0 indicates an admin (full privileges). A failure to authenticate will lead to
-`protocol-error` being sent back.
+0 indicates an admin (full privileges). An `authenticate-response` will be sent
+back indicating success or failure.
 
 ### `login`
 
@@ -76,6 +76,12 @@ database changes. After subscribing the client will be sent an `update-full`
 event.
 
 ## Server-Client events
+
+### `authenticate-response`
+
+Indicates if a request to authenticate was successful. If `successful` is true,
+`userId` should match the `userId` sent to the server, otherwise it should be
+ignored.
 
 ### `login-response`
 

@@ -11,7 +11,7 @@ export interface AddHack {
   name : string;
   description : string;
   location : number;
-};
+}
 
 export const addHackSchema = {
   "type": "object",
@@ -37,7 +37,7 @@ export const addHackSchema = {
 export interface AddJudge {
   name : string;
   email : string;
-};
+}
 
 export const addJudgeSchema = {
   "type": "object",
@@ -59,7 +59,7 @@ export const addJudgeSchema = {
  */
 export interface AddSuperlative {
   name : string;
-};
+}
 
 export const addSuperlativeSchema = {
   "type": "object",
@@ -79,7 +79,7 @@ export const addSuperlativeSchema = {
 export interface Authenticate {
   secret : string,
   userId : number
-};
+}
 
 export const authenticateSchema = {
   "type": "object",
@@ -102,7 +102,7 @@ export const authenticateSchema = {
 export interface Login {
   judgeId : number,
   loginCode : string
-};
+}
 
 export const loginSchema = {
   "type": "object",
@@ -124,7 +124,7 @@ export interface RateHack {
   judgeId : number;
   hackId : number;
   rating : number;
-};
+}
 
 export const rateHackSchema = {
   "type": "object",
@@ -154,7 +154,7 @@ export interface RankSuperlative {
   superId : number;
   firstId : number;
   secondId : number;
-};
+}
 
 export const rankSuperlativeSchema = {
   "type": "object",
@@ -203,12 +203,21 @@ export const subscribeDatabaseSchema = {
 //
 
 /**
+ * For server-client "authenticate-response" events
+ */
+export interface AuthenticateResponse {
+  success : boolean;
+  userId : number;
+  judgeId : number;
+}
+
+/**
  * For server-client "login-response" events
  */
 export interface LoginResponse {
-  secret : string,
-  userId : number
-};
+  secret : string;
+  userId : number;
+}
 
 /**
  * For server-client "protocol-error" events
@@ -216,18 +225,18 @@ export interface LoginResponse {
 export interface ProtocolError {
   original : string;
   message : string;
-};
+}
 
 /**
  * For server-client "update-full" events
  */
 export interface UpdateFull {
   database : DataStore;
-};
+}
 
 /**
  * For server-client "update-partial" events
  */
 export interface UpdatePartial {
   diff : DataStore;
-};
+}

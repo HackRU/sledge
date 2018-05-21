@@ -30,6 +30,13 @@
 
   script.addEventListener("load", function () {
     SystemJS.config({
+      packages: {
+        "lib": {
+          format: "system",
+          defaultExtension: "js"
+        }
+      },
+
       map: {
         "socket.io-client": "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js",
         "_react": "https://cdnjs.cloudflare.com/ajax/libs/react/16.3.2/umd/react.development.js",

@@ -1,4 +1,4 @@
-import {SledgeClient}  from "../sledge.js";
+import {SledgeClient}  from "../sledge";
 
 let log, cmd;
 let client : SledgeClient;

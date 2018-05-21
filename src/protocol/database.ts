@@ -69,14 +69,16 @@ export const tableNames : Array<string> = [
   "hacks", "judges", "judgeHacks", "ratings", "superlatives", "superlativePlacements"
 ];
 
-export const emptyStore : DataStore = {
-  hacks: [],
-  judges: [],
-  judgeHacks: [],
-  ratings: [],
-  superlatives: [],
-  superlativePlacements: []
-};
+export function getEmptyStore() : DataStore {
+  return {
+    hacks: [],
+    judges: [],
+    judgeHacks: [],
+    ratings: [],
+    superlatives: [],
+    superlativePlacements: []
+  };
+}
 
 export type TablePart<T> = Array<T | undefined>;
 

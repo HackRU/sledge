@@ -56,6 +56,11 @@ export class SocketCommunication {
   public handleAuthenticate = (s : Socket, data : evts.Authenticate) => {
     // TODO: Check if they have permission to authenticate
     this.auth.setUserId(s.id, data.userId);
+    this.events.emitAuthenticateResponse(s.id, {
+      success: true,
+      userId: data.userId,
+      judgeId: data.userId>0 ? data.userId : 0
+    });
   }
 
   public handleLogin = (s : Socket, data : evts.Login) => {

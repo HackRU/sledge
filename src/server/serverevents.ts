@@ -49,6 +49,10 @@ export class ServerEventWrapper {
     });
   }
 
+  emitAuthenticateResponse(room : string, data : evts.AuthenticateResponse) {
+    this.sio.to(room).emit("authenticate-response", data);
+  }
+
   emitLoginResponse(room : string, data : evts.LoginResponse) {
     this.sio.to(room).emit("login-response", data);
   }
