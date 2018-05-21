@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 import {JudgeStore, JudgeAction} from "lib/client/reducers/judgeapp.js";
 

@@ -1,22 +1,15 @@
-import * as io  from "socket.io-client";
+import io from "socket.io-client";
 
-import * as evts                from "lib/protocol/events.js";
-import {DataStore, TablePart}   from "lib/protocol/database.js";
+import * as evts                                      from "lib/protocol/events.js";
+import {DataStore, TablePart, emptyStore, tableNames} from "lib/protocol/database.js";
 
 export class SledgeClient {
+  store : DataStore;
   socket : SocketIOClient.Socket;
   subscribers : Array<Subscriber>;
-  initialized : boolean;
-  store : DataStore;
 
   constructor(opts : SledgeOptions) {
-    this.store = {
-      hacks: [],
-      judges: [],
-      judgeHacks: [],
-      superlatives: [],
-      superlativePlacements: []
-    };
+    this.store = emptyStore;
 
     this.socket = io(opts.host);
 
@@ -24,14 +17,24 @@ export class SledgeClient {
     this.socket.on("protocol-error", this.handleProtocolError);
     this.socket.on("update-full", this.handleUpdateFull);
     this.socket.on("update-partial", this.handleUpdatePartial);
+
+    this.subscribers = [];
+  }
+
+  private resetTables() {
+    let unsafeStore = <any>this.store;
+
+    for (let table of tableNames) {
+      unsafeStore[table].length = 0;
+    }
   }
 
   private updateTables(data : DataStore) {
     let unsafeStore = <any>this.store;
+    let unsafeData = <any>data;
 
-    let tables = ["hacks", "judges", "judgeHacks", "superlatives", "superlativePlacements"];
-    for (let table of tables) {
-      let rows : TablePart<{ id : number | undefined }> = unsafeStore[table];
+    for (let table of tableNames) {
+      let rows : TablePart<{ id : number | undefined }> = unsafeData[table];
       for (let row of rows) {
         if (row && row.id) {
           unsafeStore[table][row.id] = row;
@@ -45,6 +48,7 @@ export class SledgeClient {
       hacks: this.store.hacks.map(shallowCopy),
       judges: this.store.judges.map(shallowCopy),
       judgeHacks: this.store.judgeHacks.map(shallowCopy),
+      ratings: this.store.ratings.map(shallowCopy),
       superlatives: this.store.superlatives.map(shallowCopy),
       superlativePlacements: this.store.superlativePlacements.map(shallowCopy)
     };
@@ -62,18 +66,26 @@ export class SledgeClient {
   }
 
   public handleProtocolError = (data : evts.ProtocolError) => {
-    console.log(data);
-    alert(data.message);
+    console.warn("Protocol Error from %s!\n%s", data.original, data.message);
   }
 
   public handleUpdateFull = (data : evts.UpdateFull) => {
-    console.log(data);
-    throw new Error("NYI");
+    this.resetTables();
+    this.updateTables(data.database);
+
+    this.sendChange({
+      trans: false,
+      message: "Full Update"
+    });
   }
 
   public handleUpdatePartial = (data : evts.UpdatePartial) => {
-    console.log(data);
-    throw new Error("NYI");
+    this.updateTables(data.diff);
+
+    this.sendChange({
+      trans: false,
+      message: "Partial Update"
+    });
   }
 
   public emitAddHack(data : evts.AddHack) {
@@ -104,18 +116,14 @@ export class SledgeClient {
     this.socket.emit("rank-superlative", data);
   }
 
-  public emitSubscribeDatabase(data : evts.SubscribeDatabase) {
-    this.socket.emit("subscribe-database", data);
+  public emitSubscribeDatabase() {
+    this.socket.emit("subscribe-database", {});
   }
 
   private sendChange(evt : SledgeEvent) {
     for (let sub of this.subscribers) {
       sub.notify(evt);
     }
-  }
-
-  private onProtocolError(data : evts.ProtocolError) {
-    alert(data.message);
   }
 };
 

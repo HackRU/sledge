@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "public/lib/",
     "sourceMap": true,
+    "inlineSources": true,
 
     "jsx": "react",
     "module": "system",

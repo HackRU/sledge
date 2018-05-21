@@ -2,28 +2,38 @@ import http                                   from "http";
 import jsonschema                             from "jsonschema";
 import {default as socketio, Server, Socket}  from "socket.io";
 
-import * as evts            from "../protocol/events";
-import {DatabaseConnection} from "./persistence";
-import {ServerEventWrapper} from "./serverevents";
+import * as evts                from "../protocol/events";
+import {DatabaseConnection}     from "./persistence";
+import {ServerEventWrapper}     from "./serverevents";
+import {AuthenticationManager}  from "./authentication";
 
 export class SocketCommunication {
   private sio : Server;
   private events : ServerEventWrapper;
+  private auth : AuthenticationManager;
 
   constructor(private server : http.Server, private db : DatabaseConnection) {
     this.sio = socketio(server);
 
     let handlers = {
+      connectHandler: this.handleConnect,
+
       addHackHandler: this.handleAddHack,
       addJudgeHandler: this.handleAddJudge,
       addSuperlativeHandler: this.handleAddSuperlative,
-      authenticateHandler : this.handleAuthenticate,
-      loginHandler : this.handleLogin,
+      authenticateHandler: this.handleAuthenticate,
+      loginHandler: this.handleLogin,
       rankSuperlativeHandler: this.handleRankSuperlative,
       rateHackHandler: this.handleRateHack,
-      subscribeDatabaseHandler : this.handleSubscribeDatabase
+      subscribeDatabaseHandler: this.handleSubscribeDatabase
     };
     this.events = new ServerEventWrapper(this.sio, handlers);
+
+    this.auth = new AuthenticationManager();
+  }
+
+  public handleConnect = (s : Socket) => {
+    this.auth.registerClient(s.id);
   }
 
   public handleAddHack = (s : Socket, data : evts.AddHack) => {
@@ -37,15 +47,22 @@ export class SocketCommunication {
   }
 
   public handleAddSuperlative = (s : Socket, data : evts.AddSuperlative) => {
-    throw new Error("NYI");
+    this.events.emitProtocolError(s.id, {
+      original: "add-superlative",
+      message: "Not Yet Implemented"
+    });
   }
 
   public handleAuthenticate = (s : Socket, data : evts.Authenticate) => {
-    throw new Error("NYI");
+    // TODO: Check if they have permission to authenticate
+    this.auth.setUserId(s.id, data.userId);
   }
 
   public handleLogin = (s : Socket, data : evts.Login) => {
-    throw new Error("NYI");
+    this.events.emitProtocolError(s.id, {
+      original: "handle-login",
+      message: "Not Yet Implemented"
+    });
   }
 
   public handleRankSuperlative = (s : Socket, data : evts.RankSuperlative) => {
@@ -65,10 +82,20 @@ export class SocketCommunication {
   }
 
   public handleSubscribeDatabase = (s : Socket, data : evts.SubscribeDatabase) => {
-    throw new Error("NYI");
+    if (!this.auth.hasPermission(s.id, 0)) {
+      this.events.emitProtocolError(s.id, {
+        original: "subscribe-database",
+        message: "You must be authenticated to use subscribe-database"
+      });
+    }
+
+    s.join("database-updates");
+    this.sendFullUpdate(s.id);
   }
 
-  sendFullUpdate() {
-    this.sio.emit("update-full", this.db.getSerialized());
+  sendFullUpdate(room = "database-updates") {
+    this.events.emitUpdateFull(room, {
+      database: this.db.getSerialized()
+    });
   }
 };

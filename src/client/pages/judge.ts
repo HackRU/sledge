@@ -1,10 +1,10 @@
-import * as React           from "react";
-import * as ReactDOM        from "react-dom";
-import {Store, createStore} from "redux";
+import {createElement, Component} from "react";
+import {render}                   from "react-dom";
+import {Store, createStore}       from "redux";
 
-import {SledgeClient}   from "lib/client/sledge.js";
-import {JudgeApp}       from "lib/client/components/judgeapp.js";
-import {JudgeStore}     from "lib/client/reducers/judgeapp.js"
+import {SledgeClient}         from "lib/client/sledge.js";
+import {JudgeApp}             from "lib/client/components/judgeapp.js";
+import {JudgeStore, reducer}  from "lib/client/reducers/judgeapp.js"
 
 let client : SledgeClient;
 let store : Store<JudgeStore>;
@@ -14,30 +14,38 @@ export function init() {
     host: document.location.host
   });
 
+  store = createStore(reducer);
+
   // TODO: Get code and userId from localStorage
   let secret = "TEST";
   let userId = 1;
 
   // Update the store whenever sledge has updates
   client.subscribe(evt => {
+    console.log(evt);
     store.dispatch({
       type: "DATABASE_UPDATE",
       database: client.getData()
     });
   });
 
+  // For Debugging
+  client.subscribe(evt => {
+    console.log(evt);
+  });
+
   // Immediately Authenticate and start recieving updates
   client.emitAuthenticate({secret, userId});
-  client.emitSubscribeDatabase({});
+  client.emitSubscribeDatabase();
 
   let container = document.getElementById("app");
-  let topElement = React.createElement(JudgeAppWrapper, null)
-  ReactDOM.render(topElement, container);
+  let topElement = createElement(JudgeAppWrapper, null)
+  render(topElement, container);
 }
 
-class JudgeAppWrapper extends React.Component<{}, JudgeStore> {
-  constructor() {
-    super({});
+class JudgeAppWrapper extends Component<{}, JudgeStore> {
+  constructor(props : {}) {
+    super(props);
 
     this.state = store.getState();
 
@@ -50,7 +58,7 @@ class JudgeAppWrapper extends React.Component<{}, JudgeStore> {
   }
 
   render() {
-    return React.createElement(JudgeApp, {
+    return createElement(JudgeApp, {
       ...this.state,
       dispatch: store.dispatch
     });

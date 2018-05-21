@@ -65,10 +65,15 @@ export interface RatingRow extends Rating {
   id : number;
 }
 
+export const tableNames : Array<string> = [
+  "hacks", "judges", "judgeHacks", "ratings", "superlatives", "superlativePlacements"
+];
+
 export const emptyStore : DataStore = {
   hacks: [],
   judges: [],
   judgeHacks: [],
+  ratings: [],
   superlatives: [],
   superlativePlacements: []
 };
@@ -79,6 +84,7 @@ export interface DataStore {
   hacks : TablePart<HackRow>;
   judges : TablePart<JudgeRow>;
   judgeHacks : TablePart<JudgeHackRow>;
+  ratings : TablePart<RatingRow>;
   superlatives : TablePart<SuperlativeRow>;
   superlativePlacements : TablePart<SuperlativePlacementRow>;
 };

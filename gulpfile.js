@@ -25,6 +25,12 @@ function runCommand(cmd) {
   });
 }
 
+gulp.task("clean", function () {
+  return runCommand(
+    ["rm", "-rf", "lib", "public"]
+  );
+});
+
 gulp.task("build-server", function () {
   return runCommand([
     path.resolve(binPath, "tsc"),

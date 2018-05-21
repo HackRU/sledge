@@ -1,8 +1,8 @@
-import fs		    from "fs";
+import fs        from "fs";
 import path     from "path";
 import sqlite3  from "better-sqlite3";
 
-import {Hack, Judge, Rating, SuperlativePlacement}  from "lib/protocol/database.js";
+import {Hack, Judge, Rating, DataStore, SuperlativePlacement}  from "lib/protocol/database.js";
 
 export class DatabaseConnection {
   private sql : sqlite3;
@@ -15,7 +15,7 @@ export class DatabaseConnection {
     let dbpath = path.resolve(this.datadir, "sledge.db");
     try {
       fs.mkdirSync(this.datadir);
-		} catch (err) {
+    } catch (err) {
       if (err.code !== "EEXIST") {
         throw err;
       }
@@ -24,33 +24,33 @@ export class DatabaseConnection {
     this.sql = new sqlite3(dbpath);
 
     this.sql.exec(
-			// The hacks table is a all the hacks and the info needed to judge them
-			"CREATE TABLE IF NOT EXISTS hacks ("
-				+"id INTEGER NOT NULL,"
-				+"name TEXT NOT NULL,"
-				+"description TEXT NOT NULL,"
-				+"location INTEGER NOT NULL,"
-				+"PRIMARY KEY(id)"
-			+");");
+      // The hacks table is a all the hacks and the info needed to judge them
+      "CREATE TABLE IF NOT EXISTS hacks ("
+        +"id INTEGER NOT NULL,"
+        +"name TEXT NOT NULL,"
+        +"description TEXT NOT NULL,"
+        +"location INTEGER NOT NULL,"
+        +"PRIMARY KEY(id)"
+      +");");
     this.sql.exec(
-			// The judges table is all the judges, what they need to authenticate,
-			// and how to contact them.
-			"CREATE TABLE IF NOT EXISTS judges ("
-				+"id INTEGER NOT NULL,"
-				+"name TEXT NOT NULL,"
-				+"email TEXT NOT NULL,"
-				+"PRIMARY KEY(id)"
-			+");");
-		this.sql.exec(
-			// The tokens table associates secrets with judges, whereas judge 0 is an
-			// admin with full privileges
-			"CREATE TABLE IF NOT EXISTS tokens ("
-				+"id INTEGER NOT NULL,"
-				+"secret TEXT NOT NULL,"
-				+"judge_id INTEGER NOT NULL,"
-				+"FOREIGN KEY(judge_id) REFERENCES judges(id),"
-				+"PRIMARY KEY(id)"
-			+");");
+      // The judges table is all the judges, what they need to authenticate,
+      // and how to contact them.
+      "CREATE TABLE IF NOT EXISTS judges ("
+        +"id INTEGER NOT NULL,"
+        +"name TEXT NOT NULL,"
+        +"email TEXT NOT NULL,"
+        +"PRIMARY KEY(id)"
+      +");");
+    this.sql.exec(
+      // The tokens table associates secrets with judges, whereas judge 0 is an
+      // admin with full privileges
+      "CREATE TABLE IF NOT EXISTS tokens ("
+        +"id INTEGER NOT NULL,"
+        +"secret TEXT NOT NULL,"
+        +"judge_id INTEGER NOT NULL,"
+        +"FOREIGN KEY(judge_id) REFERENCES judges(id),"
+        +"PRIMARY KEY(id)"
+      +");");
     this.sql.exec(
       // The judge_hacks table records all hacks assigned to a judge
       "CREATE TABLE IF NOT EXISTS judge_hacks ("
@@ -135,7 +135,7 @@ export class DatabaseConnection {
     throw new Error("NYI");
   }
 
-  getSerialized() : any {
+  getSerialized() : DataStore {
     let hacksStmt = this.sql.prepare("SELECT * FROM hacks;");
     let hacks = hacksStmt.all();
 
@@ -158,8 +158,8 @@ export class DatabaseConnection {
       id: sp.id,
       judgeId: sp.judge_id,
       superlativeId: sp.superlative_id,
-      firstChoice: sp.first_choice,
-      secondChoice: sp.second_choice
+      firstChoiceId: sp.first_choice,
+      secondChoiceId: sp.second_choice
     }));
 
     let ratingsStmt = this.sql.prepare("SELECT * FROM ratings;");

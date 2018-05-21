@@ -26,6 +26,8 @@ export class ServerEventWrapper {
         evts.rateHackSchema, this.handlers.rateHackHandler);
       this.registerHandler(s, "subscribe-database",
         evts.subscribeDatabaseSchema, this.handlers.subscribeDatabaseHandler);
+
+      this.handlers.connectHandler(s);
     });
   };
 
@@ -33,7 +35,7 @@ export class ServerEventWrapper {
     socket.on(evt, data => {
       let val = this.validator.validate(data, schema);
       if (val.errors.length > 0) {
-        let message = "You send a malformed \"" + evt + "\" request.\n";
+        let message = "You sent a malformed \"" + evt + "\" request.\n";
         for (let err of val.errors) {
           message = message + " - " + err.message + "\n";
         }
@@ -65,6 +67,8 @@ export class ServerEventWrapper {
 };
 
 export interface ServerEventHandlers {
+  connectHandler : (s:Socket) => void;
+
   addHackHandler : (s:Socket,e:evts.AddHack) => void;
   addJudgeHandler : (s:Socket,e:evts.AddJudge) => void;
   addSuperlativeHandler : (s:Socket,e:evts.AddSuperlative) => void;
