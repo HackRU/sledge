@@ -50,16 +50,10 @@ gulp.task("build-client-typescript", function () {
 gulp.task("build-client-scss", function () {
   return runCommand([
     path.resolve(binPath, "sass"),
+    "--embed-sources",
     "src/client/global.scss",
-    "public/client/global.css"
-  ]).then(function () {
-    return runCommand([
-      path.resolve(binPath, "sass"),
-      "--embed-sources", "--embed-source-map",
-      "src/client/global.scss",
-      "public/client/global.dev.css"
-    ]);
-  });
+    "public/global.css"
+  ]);
 });
 
 gulp.task("build-client-static", function () {

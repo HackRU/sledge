@@ -42,6 +42,7 @@
         "_react": "https://cdnjs.cloudflare.com/ajax/libs/react/16.3.2/umd/react.development.js",
         "_react-dom": "https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.3.2/umd/react-dom.development.js",
         "redux": "https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.0/redux.js",
+        "reactstrap": "https://cdnjs.cloudflare.com/ajax/libs/reactstrap/6.0.1/reactstrap.full.js"
       },
       meta: {
         "socket.io-client": { format: "amd" },
@@ -59,6 +60,7 @@
 
   window.init = function (modulepath) {
     return SystemJS.import(modulepath).then(function (m) {
+      window.page = m;
       m.init();
     });
   }

@@ -2,7 +2,7 @@ import http                                   from "http";
 import jsonschema                             from "jsonschema";
 import {default as socketio, Server, Socket}  from "socket.io";
 
-import * as evts                from "../protocol/events";
+import * as evts                from "lib/protocol/events";
 import {DatabaseConnection}     from "./persistence";
 import {ServerEventWrapper}     from "./serverevents";
 import {AuthenticationManager}  from "./authentication";

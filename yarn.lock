@@ -65,6 +65,12 @@
   dependencies:
     csstype "^2.2.0"
 
+"@types/reactstrap@^5.0.26":
+  version "5.0.26"
+  resolved "https://registry.yarnpkg.com/@types/reactstrap/-/reactstrap-5.0.26.tgz#102455239b095dca348a441ce9039d3cb2b30792"
+  dependencies:
+    "@types/react" "*"
+
 "@types/serve-static@*":
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.13.2.tgz#f5ac4d7a6420a99a6a45af4719f4dcd8cd907a48"

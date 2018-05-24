@@ -1,37 +1,48 @@
-(function (comps) {
-"use strict";
+import React from "react";
+import {Button, ButtonGroup} from "reactstrap";
 
-var e = React.createElement;
+import {Props} from "./judgeapp";
 
-class Toolbar extends React.Component {
-    buttonClassName(disable) {
-	if (disable) {
-	    return  "btn btn-primary toolbar-prev disabled toolbar-no-text"
-	} else {
-	    return "btn btn-primary toolbar-prev"
-	}
-    }
-    render() {
-        return e("div", { className: "toolbar-comp" },
-            e("div", { className: "toolbar-title" },
-                e("h1", null,
-                    "SLEDGE" ) ),
-            e("div", { className: "btn-group toolbar-buttons"},
-                e("button", {
-                    className: this.buttonClassName(this.props.first),
-                    onClick: this.props.onPrev
-                }, "<--"),
-                e("button", {
-                    className: "btn btn-primary toolbar-list",
-                    onClick: this.props.onList
-                }, "LIST"),
-                e("button", {
-                    className: this.buttonClassName(this.props.last),
-                    onClick: this.props.onNext
-                }, "-->") )
-        );
-    }
+export class Toolbar extends React.Component<Props, {}> {
+  constructor(props : Props) {
+    super(props);
+  }
+
+  render() {
+    return presentation({
+      prevButtonEnabled: true,
+      listButtonEnabled: true,
+      nextButtonEnabled: true,
+
+      onPrev: () => {},
+      onList: () => {},
+      onNext: () => {}
+    });
+  }
 }
-comps.Toolbar = Toolbar;
 
-})(window.comps || (window.comps = {}));
+export function presentation(p : PresentationProps) {
+  let pf = "toolbar";
+
+  return (
+    <div className={`${pf}-comp`}>
+      <div className={`${pf}-title`}>
+        <h1>{"SLEDGE"}</h1>
+      </div>
+      <ButtonGroup className={`${pf}-buttons`}>
+        <Button disabled={!p.prevButtonEnabled} onClick={p.onPrev}>{"\u2190"}</Button>
+        <Button disabled={!p.listButtonEnabled} onClick={p.onList}>{"LIST"}</Button>
+        <Button disabled={!p.nextButtonEnabled} onClick={p.onNext}>{"\u2192"}</Button>
+      </ButtonGroup>
+    </div>
+  );
+}
+
+export interface PresentationProps {
+  prevButtonEnabled : boolean;
+  listButtonEnabled : boolean;
+  nextButtonEnabled : boolean;
+  onPrev : () => void;
+  onList : () => void;
+  onNext : () => void;
+}

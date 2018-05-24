@@ -2,7 +2,9 @@
  * ratingbox.css
  */
 
-.ratingbox-comp button {
+$pf: ratingbox;
+
+.#{$pf}-comp button {
   height: 80px;
   cursor: pointer;
 }
