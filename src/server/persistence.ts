@@ -2,7 +2,7 @@ import fs        from "fs";
 import path     from "path";
 import sqlite3  from "better-sqlite3";
 
-import {Hack, Judge, Rating, DataStore, SuperlativePlacement}  from "lib/protocol/database";
+import {Hack, Judge, Rating, DataStore, SuperlativePlacement, Token}  from "lib/protocol/database";
 
 export class DatabaseConnection {
   private sql : sqlite3;
@@ -132,7 +132,17 @@ export class DatabaseConnection {
   }
 
   addRating(rating : Rating) {
-    throw new Error("NYI");
+    let stmt = this.sql.prepare(
+      "INSERT INTO ratings"
+        +"(id, judge_id, hack_id, rating)"
+      +"VALUES ("
+        +"(SELECT id FROM ratings WHERE judge_id=? AND hack_id=?),"
+        +"?, ?, ?)"
+    );
+
+    stmt.run(
+      [rating.judgeId, rating.hackId, rating.judgeId, rating.hackId, rating.rating]
+    );
   }
 
   getSerialized() : DataStore {
@@ -173,6 +183,15 @@ export class DatabaseConnection {
     return {
       hacks, judges, judgeHacks, superlatives, superlativePlacements, ratings
     };
+  }
+
+  addToken(token : Token) {
+    let stmt = this.sql.prepare(
+      "INSERT INTO tokens(judge_id, secret)"
+        +"VALUES (?,?);"
+    );
+
+    stmt.run([token.judgeId, token.secret]);
   }
 }
 

@@ -61,6 +61,10 @@ export class ServerEventWrapper {
     this.sio.to(room).emit("protocol-error", data);
   }
 
+  emitTransientResponse(room : string, data : evts.TransientResponse) {
+    this.sio.to(room).emit("transient-response", data);
+  }
+
   emitUpdateFull(room : string, data : evts.UpdateFull) {
     this.sio.to(room).emit("update-full", data);
   }

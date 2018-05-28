@@ -26,6 +26,7 @@ export class SledgeClient {
     this.socket.on("authenticate-response", this.handleAuthenticateResponse);
     this.socket.on("login-response", this.handleLoginResponse);
     this.socket.on("protocol-error", this.handleProtocolError);
+    this.socket.on("transient-response", this.handleTransientResponse);
     this.socket.on("update-full", this.handleUpdateFull);
     this.socket.on("update-partial", this.handleUpdatePartial);
 
@@ -165,6 +166,10 @@ export class SledgeClient {
 
   public handleProtocolError = (data : evts.ProtocolError) => {
     console.warn("Protocol Error from %s!\n%s", data.original, data.message);
+  }
+
+  public handleTransientResponse = (data : evts.TransientResponse) => {
+    console.info("Transient Response from %s.\n%s", data.original, data.message);
   }
 
   public handleUpdateFull = (data : evts.UpdateFull) => {

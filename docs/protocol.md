@@ -24,19 +24,20 @@ These are events sent from the client to the server.
 
 Must be sent by an admin.
 
-Adds a hack to the database.
+Adds a hack to the database. A `transient-response` is sent on completion.
 
 ### `add-judge`
 
 Must be sent by an admin.
 
-Adds a judge to the database.
+Adds a judge to the database. A `transient-response` is sent on completion.
 
 ### `add-superlative`
 
 Must be sent by an admin.
 
-Adds a superlative to the database.
+Adds a superlative to the database. A `transient-response` is sent on
+completion.
 
 ### `authenticate`
 
@@ -54,18 +55,20 @@ and `loginCode` server's global login code. If the `judgeId` is invalid a
 `protocol-error` is sent back, otherwise a `login-response` is sent indicating
 if the code was valid and, if so, the generated secret.
 
-### `rate-hack`
-
-Must be sent by an admin or a judge with id `judgeId`.
-
-Adds a rating from 1 to 20 for how much a judge likes a particular hack.
-
 ### `rank-superlative`
 
 Must be sent by an admin or a judge with id `judgeId`.
 
 Adds a ranking for a judge's top two hacks for a given superlative. A `firstId`
-or `secondId` of 0 indicates the judge has not chosen a first or second place.
+or `secondId` of 0 indicates the judge has not chosen a first or second place. A
+`transient-response` is sent on completion.
+
+### `rate-hack`
+
+Must be sent by an admin or a judge with id `judgeId`.
+
+Adds a rating from 1 to 20 for how much a judge likes a particular hack. A
+`transient-response` is sent on completion.
 
 ### `subscribe-database`
 
@@ -76,6 +79,8 @@ database changes. After subscribing the client will be sent an `update-full`
 event.
 
 ## Server-Client events
+
+These are events from the server to the client.
 
 ### `authenticate-response`
 
@@ -99,6 +104,14 @@ wrong is sent as `message`.
 
 This event exists to make debugging easier. A well-behaved client should never
 be sent a `protocol-error`.
+
+### `transient-response`
+
+This event is for debugging purposes, and isn't generally processed by the
+client. After a certain client-server events succeed a `transient-response` will
+be sent back, where `original` is the original name of the event and `message`
+is a human-readable message relating to what was successful (often just
+"success").
 
 ### `update-full`
 

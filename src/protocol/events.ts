@@ -228,6 +228,14 @@ export interface ProtocolError {
 }
 
 /**
+ * For server-client "transient-response" events
+ */
+export interface TransientResponse {
+  original : string;
+  message : string;
+}
+
+/**
  * For server-client "update-full" events
  */
 export interface UpdateFull {

@@ -29,7 +29,7 @@ export class SocketCommunication {
     };
     this.events = new ServerEventWrapper(this.sio, handlers);
 
-    this.auth = new AuthenticationManager();
+    this.auth = new AuthenticationManager(db);
   }
 
   public handleConnect = (s : Socket) => {
@@ -39,6 +39,11 @@ export class SocketCommunication {
   public handleAddHack = (s : Socket, data : evts.AddHack) => {
     this.db.addHack(data);
     this.sendFullUpdate();
+
+    this.events.emitTransientResponse(s.id, {
+      original: "add-hack",
+      message: "success"
+    });
   }
 
   public handleAddJudge = (s : Socket, data : evts.AddJudge) => {
@@ -79,11 +84,21 @@ export class SocketCommunication {
     };
     this.db.addSuperlativePlacement(placement);
     this.sendFullUpdate();
+
+    this.events.emitTransientResponse(s.id, {
+      original: "rank-superlative",
+      message: "success"
+    });
   }
 
   public handleRateHack = (s : Socket, data : evts.RateHack) => {
     this.db.addRating(data);
     this.sendFullUpdate();
+
+    this.events.emitTransientResponse(s.id, {
+      original: "rate-hack",
+      message: "success"
+    });
   }
 
   public handleSubscribeDatabase = (s : Socket, data : evts.SubscribeDatabase) => {

@@ -1,7 +1,11 @@
+import {randomFillSync} from "crypto";
+
+import {DatabaseConnection} from "./persistence";
+
 export class AuthenticationManager {
   clients : Map<string, ClientAuthData>;
 
-  constructor() {
+  constructor(private db : DatabaseConnection) {
     this.clients = new Map();
   }
 
@@ -36,8 +40,23 @@ export class AuthenticationManager {
       (userId === actionUserId)
     );
   }
+
+  generateToken(userId : number) : string {
+    let token = randomHexToken(10);
+    this.db.addToken({
+      judgeId: userId,
+      secret: token
+    });
+    return token;
+  }
 }
 
 interface ClientAuthData {
   userId : number;
+}
+
+function randomHexToken(size : number) : string {
+  const buffer = Buffer.alloc(size);
+  randomFillSync(buffer);
+  return buffer.toString("hex");
 }

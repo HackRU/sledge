@@ -43,7 +43,7 @@ the Express server, and files from `public` are served via Nginx's own (more
 efficient) static routing.
 
 All persistent data is stored with [SQLite][sqlite], a structured database,
-using asynchronous bindings from the [better-sqlite3][bettersqlite3] library.
+using synchronous bindings from the [better-sqlite3][bettersqlite3] library.
 
 ## Client
 
