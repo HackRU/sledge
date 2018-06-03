@@ -64,13 +64,17 @@ managed by redux.
 
 
 React components and their associated SCSS are stored in
-`src/client/components`. All these components should be stateless. Within each
-component should be a container part which is exported and a presentation part
-which generates the structure to be rendered. These should follow the philosophy
-described in [Redux: Usage with React][reduxphil] (except we don't use
-providers). For instance, the container part will be passed the same props as
-its parent component and create a "simplified" version that's passed to the
-presentation part.
+`src/client/components`. Each component should be split into two: the main part
+which will get the same props as every other component and is possibly stateful,
+and a stateless part handling all the presentational aspects. The idea is that
+the main component will try to calculate what information the presentation
+component needs so the presentation component only has to worry about
+presentation. The main component's render method should only calculate the props
+for presentation and return the presentation part. See `ratingbox.ts` for an
+example. Ideally, all of `JudgeApp` would be stateless and run off a single
+Redux store based on the principles of [Redux: Usage with React][reduxphil], but
+that will take additional effort since it's not compatible with how things are
+in the javascript version. See `RatingBox` for an example.
 
 All client pages use [Bootstrap v4][bootstrap] with Bootstrap Grid. The
 [reactstrap][reactstrap] library is used for Bootstrap components, and should

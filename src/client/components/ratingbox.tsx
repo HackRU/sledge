@@ -1,6 +1,9 @@
-import * as React from "react";
+import React from "react";
+import {Button, ButtonGroup} from "reactstrap";
 
-class RatingBox extends React.Component<Props, State> {
+import {Props} from "./judgeapp";
+
+export class RatingBox extends React.Component<Props, State> {
   constructor(props : Props) {
     super(props);
 
@@ -160,43 +163,52 @@ class RatingBox extends React.Component<Props, State> {
 
       return (
         <div className="ratingbox-comp">
-          <div>
-
-            <div className="ratingbox-noshow">
-              <button
-                className="btn btn-primary"
-                onClick={() => this.setState( (prevState, props) => ({ noshow: !prevState.noshow }) )}
-              >{this.state.noshow ? "Mark Hack as Present" : "Mark Hack as No Show"}</button>
-            </div>
-
-            ...cats,
-
-            <div className="ratingbox-summary">
-              <div className="ratingbox-totalselected">
-                <span>{this.renderSelected()}</span>
-              </div>
-              <div className="ratingbox-totalchosen">
-                <span>{this.renderChosen()}</span>
-              </div>
-            </div>
-
-            <div className="ratingbox-submit">
-              <button
-                className="btn btn-primary"
-                onClick={() => this.submit()}
-              >{"SUBMIT"}</button>
-            </div>
-
-          </div>
         </div>
       );
     }
 }
 
-export interface Props {
-  hackId : number;
-  chosen : number;
-  onSubmit : (n:number) => void;
+export function RatingBoxPresentation(props : PresentationProps) {
+  let pf = "ratingbox";
+
+  return (
+    <div className=`${pf}-comp`>
+      <div>
+
+        <div className=`${pf}-noshow`>
+          <Button
+            onClick = {props.noshowSelected ? props.markPresent : props.markNoshow}
+          >{props.noshow ? "Mark Hack as Present" : "Mark Hack as No Show"}</button>
+        </div>
+
+        ...(props.cats.map(c => <RenderCategory cat=c onSelect={() => props.onSelect(c.id)} />)),
+
+        <div className=`${pf}-summary`>
+          <RenderTotalSelected
+            valid = props.validSelection
+            total = props.totalSelected
+            noshow = props.noshowSelected
+          />
+          <RenderTotalChosen
+            total = props.totalSelected
+            noshow = props.noshowChosen
+          />
+        </div>
+
+        <div className=`${pf}-submit`>
+          <Button onClick=props.onSubmit>{"SUBMIT"}</Button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export interface PresentationProps {
+  cats : Array<Category>;
+
+  noshowSelected : boolean;
+  noshowChosen : boolean;
 }
 
 interface State {
@@ -207,6 +219,6 @@ interface State {
 interface Category {
   name : string;
   selected : number;
-  dirty : boolean;
+  chosen : number;
   id : number;
 }
