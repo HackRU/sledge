@@ -1,3 +1,5 @@
+import * as db from "./database";
+
 // This file describes the interface of how the Sledge client and server
 // communicate. All communication runs atop Socket.io on the default namespace.
 // If there's enough server resources, all clients will be allowed to connect.
@@ -21,14 +23,33 @@
 //  given a privilege of -1. An admin is privileged to perform administrative
 //  actions and act as any judge.
 // Synchronized Data
-//  Hacks, judges and superlatives are considered synchronized data. This means
-//  this information, stored in the server's database, is unprivileged (ie.
-//  anyone should be allowed to access it) and clients that are judging need to
-//  have an up-to-date copy.
+//  Hacks, judges and superlatives and categories are considered synchronized
+//  data. This means this information, stored in the server's database, is
+//  unprivileged (ie.  anyone should be allowed to access it) and clients that
+//  are judging need to have an up-to-date copy. Any client can request to be
+//  updated any time this data changes.
 // Requests and Responses
 //  Each request (except those met by ProtocolError) will send back a single
 //  corresponding response. Each request and response will have a returnId,
 //  chosen by the client, which will be equal when they correspond.
+// Reconnection
+//  By default, the socket.io client will automatically attempt to reconnect to
+//  the server if a connection is lost, and resend any lost events.
+//  Unfortunately, socket.io does not (always) keep track of clients after
+//  they're disconnected so to the server it appears like a new client. This is
+//  problematic if these resent events require the client to be privileged.
+//  Therefore, on reconnect the client should ensure socket.io reconnects with
+//  proper query parameters.
+// Query Parameters
+//  If the "secret" query parameter is present the server will, immediately upon
+//  connection, attempt to authenticate the client as though the server was sent
+//  an Authenticate request. The server will not send back a response and will
+//  disconnect the client if there's an issue authenticating.
+//  If the "synchronize" query parameter is present and set to a nonempty value
+//  the server will act as though it was sent a SetSynchronize event with
+//  sync=true and will send Synchronize updates to the client. Unlike the
+//  request, the server will not send back a response and will disconnect if
+//  this can't be done successfully.
 
 // TODO: If a schema is null the server will ignore it, possibly causing it to
 //       accept bad data and crash.
@@ -46,9 +67,7 @@ export interface Request {
  * Add a hack. Must be sent by an admin. A GenericResponse is sent back.
  */
 export interface AddHack extends Request {
-  name : string;
-  description : string;
-  location : number;
+  hack : db.Hack;
 }
 
 export const addHack : Schema = null;
@@ -57,8 +76,7 @@ export const addHack : Schema = null;
  * Add a judge. Must be sent by an admin. A GenericResponse is sent back.
  */
 export interface AddJudge extends Request {
-  name : string;
-  email : string;
+  judge : db.Judge;
 }
 
 export const addJudge : Schema = null;
@@ -67,7 +85,7 @@ export const addJudge : Schema = null;
  * Add a superlative. Must be sent by an admin. A GenericResponse is sent back.
  */
 export interface AddSuperlative extends Request {
-  name : string;
+  superlative : db.Superlative;
 }
 
 export const addSuperlative : Schema = null;

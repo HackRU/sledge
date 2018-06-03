@@ -37,6 +37,10 @@ export class ServerEventWrapper {
         h.onRankSuperlative);
       reg(s, "SetSynchronize", "GenericResponse", evts.setSynchronize,
         h.onSetSynchronize);
+
+      h.onConnect(s.id);
+
+      //TODO: onDisconnect
     });
   };
 
@@ -57,6 +61,7 @@ export class ServerEventWrapper {
           original: data
         });
       } else {
+        //TODO: If promise is resolved on return, respond immediately
         handler(socket.id, data).then((response) => {
           let unsafeResponse = response as any;
           this.sio.emit(res, {
@@ -77,13 +82,16 @@ export class ServerEventWrapper {
 };
 
 export interface ServerEventHandlers {
+  onConnect : (sid : string) => void;
+  onDisconnect : (sid : string) => void;
+
   onAddHack : RequestHandler<AddHack, GenericResponse>;
   onAddJudge : RequestHandler<AddJudge, GenericResponse>;
   onAddSuperlative : RequestHandler<AddSuperlative, GenericResponse>;
   onAuthenticate : RequestHandler<Authenticate, AuthenticateResponse>;
   onLogin : RequestHandler<Login, LoginResponse>;
   onRateHack : RequestHandler<RateHack, GenericResponse>;
-  onRankSuperlative : RequestHandler<RateHack, GenericResponse>;
+  onRankSuperlative : RequestHandler<RankSuperlative, GenericResponse>;
   onSetSynchronize : RequestHandler<SetSynchronize, GenericResponse>;
 };
 
