@@ -1,6 +1,3 @@
-// Make sure to keep initTables() in server/persistence/database.ts up to date
-// with this file.
-
 // Each interface corresponds to a table stored by the server. With the
 // exception of the column id, all members should correspond to columns in the
 // given table. The type Row<TableName> is a complete representation of a table

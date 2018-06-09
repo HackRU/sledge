@@ -1,16 +1,22 @@
-import * as db from "./database";
+import {
+  Hack,
+  Judge,
+  Superlative,
+  Category,
+  Row
+} from "./database";
 
-// This file describes the interface of how the Sledge client and server
+// This file describes the protocol of how the Sledge client and server
 // communicate. All communication runs atop Socket.io on the default namespace.
 // If there's enough server resources, all clients will be allowed to connect.
 // The server only sends events at the client's request so once initially
 // connected the client will not receive any events.
 //
 // Events
-//  Each hack has an interface here describing it. Events are split into three
-//  types: requests (client to server), responses (server to client) and updates
-//  (server to client). Events can only be sent in one direction and the event
-//  name will match the name of the interface.
+//  Each event has a unique name and goes in a single direction.Events are split
+//  into three types: requests (client to server), responses (server to client)
+//  and updates (server to client). For each event, this file includes a written
+//  description, an interface, and a meta object.
 // Errors
 //  All client-server events have schemas that correspond to their interface. A
 //  ProtocolError event is sent back to the client if the interface does not
@@ -51,13 +57,25 @@ import * as db from "./database";
 //  request, the server will not send back a response and will disconnect if
 //  this can't be done successfully.
 
-// TODO: If a schema is null the server will ignore it, possibly causing it to
-//       accept bad data and crash.
+export interface EventMeta {
+  name : string;
+  /* If not defined, any value is accepted */
+  schema? : Schema;
+}
 
-type Schema = any;
+/**
+ * Object representing a JSON schema.
+ */
+type Schema = object;
+
+//TODO: Schemas for each event
 
 ////////////////////
 // Requests
+
+export interface RequestMeta extends EventMeta {
+  response : string;
+}
 
 export interface Request {
   returnId : string;
@@ -67,28 +85,37 @@ export interface Request {
  * Add a hack. Must be sent by an admin. A GenericResponse is sent back.
  */
 export interface AddHack extends Request {
-  hack : db.Hack;
+  hack : Hack;
 }
 
-export const addHack : Schema = null;
+export const addHack : RequestMeta = {
+  name: "AddHack",
+  response: "GenericResponse"
+};
 
 /**
  * Add a judge. Must be sent by an admin. A GenericResponse is sent back.
  */
 export interface AddJudge extends Request {
-  judge : db.Judge;
+  judge : Judge;
 }
 
-export const addJudge : Schema = null;
+export const addJudge : RequestMeta = {
+  name: "AddJudge",
+  response: "GenericResponse"
+};
 
 /**
  * Add a superlative. Must be sent by an admin. A GenericResponse is sent back.
  */
 export interface AddSuperlative extends Request {
-  superlative : db.Superlative;
+  superlative : Superlative;
 }
 
-export const addSuperlative : Schema = null;
+export const addSuperlative : RequestMeta = {
+  name: "AddSuperlative",
+  response: "GenericResponse"
+};
 
 /**
  * Ask the server to change a client's privilege to the one corresponding to the
@@ -99,7 +126,10 @@ export interface Authenticate extends Request {
   secret : string
 }
 
-export const authenticate : Schema = null;
+export const authenticate : RequestMeta = {
+  name: "Authenticate",
+  response: "AuthenticateResponse"
+}
 
 /**
  * Ask the server to generate a secret that can be used with Authenticate which
@@ -111,7 +141,10 @@ export interface Login extends Request {
   loginCode : string
 }
 
-export const login : Schema = null;
+export const login : RequestMeta = {
+  name: "Login",
+  response: "LoginResponse"
+}
 
 /**
  * Ask the server to rate a hack for each category from a certain judge. Client
@@ -123,7 +156,10 @@ export interface RateHack extends Request {
   ratings : number[];
 }
 
-export const rateHack : Schema = null;
+export const rateHack : RequestMeta = {
+  name: "RateHack",
+  response: "GenericResponse"
+}
 
 /**
  * Ask the server to rank the first and second place of a superlative for a
@@ -137,7 +173,10 @@ export interface RankSuperlative extends Request {
   secondHackId : number;
 }
 
-export const rankSuperlative : Schema = null;
+export const rankSuperlative : RequestMeta = {
+  name: "RankSuperlative",
+  response: "GenericResponse"
+}
 
 /**
  * Asks the server to start or stop synchronizing data with the client. If sync
@@ -148,12 +187,17 @@ export const rankSuperlative : Schema = null;
  */
 export interface SetSynchronize extends Request {
   sync : boolean;
-};
+}
 
-export const setSynchronize : Schema = null;
+export const setSynchronize : RequestMeta = {
+  name: "SetSynchronize",
+  response: "GenericResponse"
+}
 
 ////////////////////
 // Responses
+
+export type ResponseMeta = EventMeta;
 
 export interface Response {
   /** This isn't optional when sent, but there are points in the program where
@@ -174,6 +218,10 @@ export interface AuthenticateResponse extends Response {
   privilege : number;
 }
 
+export const authenticateResponse : ResponseMeta = {
+  name: "AuthenticateResponse"
+}
+
 /**
  * A generic response used for requests that either fail or succeed. The message
  * member is a human-readable description of what why the request failed, or how
@@ -182,6 +230,10 @@ export interface AuthenticateResponse extends Response {
 export interface GenericResponse extends Response {
   success : boolean;
   message : string;
+}
+
+export const genericResponse : ResponseMeta = {
+  name: "GenericResponse"
 }
 
 /**
@@ -198,8 +250,14 @@ export interface LoginResponse extends Response {
   secret : string;
 }
 
+export const loginResponse : ResponseMeta = {
+  name: "LoginResponse"
+}
+
 ////////////////////
 // Updates
+
+export type UpdateMeta = EventMeta;
 
 /**
  * A ProtocolError is sent back when the client sends a malformed event. The
@@ -215,5 +273,20 @@ export interface ProtocolError {
   original? : any;
 }
 
+export const protocolError : UpdateMeta = {
+  name: "ProtocolError"
+}
+
+/**
+ * A Synchronize sends the current state of synchronized data to the client
+ */
 export interface Synchronize {
+  hacks : Array<Row<Hack>>;
+  judges : Array<Row<Judge>>;
+  superlatives : Array<Row<Superlative>>;
+  categories : Array<Row<Category>>;
+}
+
+export const synchronize : UpdateMeta = {
+  name: "Synchronize"
 }

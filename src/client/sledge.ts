@@ -21,9 +21,9 @@ export class SledgeClient {
     this.responseResolvers = new Map();
     this.synchronizeSubscribers = [];
 
-    this.setupResolverDispatch("AuthenticateResponse");
-    this.setupResolverDispatch("GenericResponse");
-    this.setupResolverDispatch("LoginResponse");
+    this.setupResolverDispatch(evts.authenticateResponse);
+    this.setupResolverDispatch(evts.genericResponse);
+    this.setupResolverDispatch(evts.loginResponse);
 
     this.socket.on("ProtocolError", (e:evts.ProtocolError) => {
       console.warn("ProtocolError for %s\n%s", e.eventName, e.message);
@@ -37,8 +37,8 @@ export class SledgeClient {
     });
   }
 
-  private setupResolverDispatch(eventName : string) {
-    this.socket.on(eventName, (data:evts.Response) => {
+  private setupResolverDispatch(meta : evts.ResponseMeta) {
+    this.socket.on(meta.name, (data:evts.Response) => {
       let resolver = this.responseResolvers.get(data.returnId);
       if (resolver) {
         resolver(data);
@@ -50,11 +50,16 @@ export class SledgeClient {
   }
 
   private sendAndAwait(eventName : string, data : evts.Request) : Promise<any> {
-    let returnId = Date.now().toString(16);
+    let returnId = this.generateUniqueReturnId();
     this.socket.emit(eventName, {...data, returnId});
     return new Promise( (resolve, reject) => {
       this.responseResolvers.set(returnId, resolve);
     });
+  }
+
+  private generateUniqueReturnId() {
+    let entropy = (Date.now() & ~0xFF) + Math.floor(Math.random()*256);
+    return entropy.toString(16);
   }
 
   sendAddHack(data : evts.AddHack) : Promise<evts.GenericResponse> {

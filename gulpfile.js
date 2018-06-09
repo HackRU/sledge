@@ -1,11 +1,14 @@
 var child_process = require("child_process");
-var gulp = require("gulp");
 var path = require("path");
-var shelljs = require("shelljs");
+
+var clean = require("gulp-clean");
+var gulp = require("gulp");
+var shell = require("shelljs");
 
 let basePath = __dirname;
 let binPath = path.resolve(basePath, "node_modules/.bin");
 
+// TODO: Prefer programmatic APIs to commands
 function runCommand(cmd) {
   return new Promise( (resolve, reject) => {
     child_process.execFile(cmd[0], cmd.slice(1), function (error, stdout, stderr) {
@@ -25,19 +28,25 @@ function runCommand(cmd) {
   });
 }
 
-gulp.task("clean", function () {
-  return runCommand(
-    ["rm", "-rf", "lib", "public"]
-  );
-});
+gulp.task("default", ["build"]);
 
-gulp.task("build-server", function () {
+gulp.task("build", ["build-server", "build-client"]);
+
+gulp.task("build-server", ["build-server-typescript", "build-server-schemas"]);
+
+gulp.task("build-server-typescript", function () {
   return runCommand([
     path.resolve(binPath, "tsc"),
     "--pretty",
     "--project", "tsconfig-server.json"
   ]);
 });
+
+gulp.task("build-server-schemas", function () {
+  // TODO
+});
+
+gulp.task("build-client", ["build-client-typescript", "build-client-scss", "build-client-static"]);
 
 gulp.task("build-client-typescript", function () {
   return runCommand([
@@ -60,10 +69,11 @@ gulp.task("build-client-static", function () {
   return gulp.src(["static/**/*"]).pipe(gulp.dest("public"));
 });
 
-gulp.task("build-client", ["build-client-typescript", "build-client-scss", "build-client-static"]);
-
-gulp.task("build", ["build-server", "build-client"]);
-
 gulp.task("start", ["build"], function () {
   shelljs.exec(path.resolve(".", "bin/sledge.js"))
+});
+
+gulp.task("clean", function () {
+  return gulp.src(["lib", "public"], {read: false})
+    .pipe(clean());
 });

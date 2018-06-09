@@ -2,6 +2,7 @@ data/
 .vagrant/
 *.db
 *.swp
+*.log
 lib/
 public/
 node_modules/

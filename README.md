@@ -2,12 +2,14 @@
 
 Sledge is the judging platform used for HackRU.
 
+Sledge is undergoing major changes and is not stable at this point.
+
 ## Quick Start
 
 ```
 $ git clone https://github.com/HackRU/sledge.git && cd sledge
 $ yarn install
-$ ./runtask.sh start
+$ ./gulp start
 ```
 
 ## Building and Running Sledge
@@ -23,10 +25,10 @@ download, build (if needed) and locally install dependencies. Using npm *should*
 also work, but keep in mind npm will not take into account yarn's lock file.
 
 After downloading dependencies, build tasks are managed by [gulp][gulp]. For
-convenience, `./runtask.sh` will forward its arguments to the locally installed
-gulp so you don't have to install gulp globally. A full list of build tasks can
-be found with `./runtask.sh -T`. Of importance, `build` builds the entire
-project and `start` builds then runs the server.
+convenience, `./gulp` will forward its arguments to the locally installed gulp
+so you don't have to install gulp globally. A full list of build tasks can be
+found with `./gulp -T`. Of importance, `build` builds the entire project and
+`start` builds then runs the server.
 
 [gulp]: https://github.com/gulpjs/gulp "Gulp"
 [yarn]: https://github.com/yarnpkg/yarn "Yarn"
@@ -45,10 +47,10 @@ sledge
 ├── data          Persistent data and configuration (eg database)
 ├── lib           Compiled server files
 └── public        Public files, including static and compiled
+    ├── lib         Compiled client files
+    └── src         Original contents of src directory
 ```
 
 # License
 
 See `LICENSE` file.
-
-[0]: https://github.com/anishathalye/gavel "Gavel"

@@ -5,7 +5,6 @@ import {default as socketio, Server, Socket}  from "socket.io";
 import * as evts from "lib/protocol/events";
 import {DatabaseConnection} from "./persistence/database";
 import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper";
-import {AuthenticationManager} from "./authentication";
 
 export class SocketCommunication {
   private sio : Server;

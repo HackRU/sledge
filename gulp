@@ -1,0 +1,2 @@
+#!/bin/sh
+node "`dirname "$0"`/node_modules/gulp/bin/gulp.js" "$@"
