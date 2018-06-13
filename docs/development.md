@@ -54,27 +54,11 @@ loads, and will first load then configure [SystemJS][systemjs], which handles
 all client-side module loading, then use SystemJS to load the requested module,
 and finally calls the `init()` function exported from the module.
 
-The module associated with the judging page is `src/client/pages/judge.ts`. This
-page is managed by [React][react], and the current state of the page is managed
-with a [Redux][redux] store, which is passed into the toplevel component. Note
-react-redux is not used. The redux store is setup to listen and change to in
-response to events from the Sledge client. The client has a store of the current
-database state, which is kept in sync with the server, but this store is not
-managed by redux.
-
-
-React components and their associated SCSS are stored in
-`src/client/components`. Each component should be split into two: the main part
-which will get the same props as every other component and is possibly stateful,
-and a stateless part handling all the presentational aspects. The idea is that
-the main component will try to calculate what information the presentation
-component needs so the presentation component only has to worry about
-presentation. The main component's render method should only calculate the props
-for presentation and return the presentation part. See `ratingbox.ts` for an
-example. Ideally, all of `JudgeApp` would be stateless and run off a single
-Redux store based on the principles of [Redux: Usage with React][reduxphil], but
-that will take additional effort since it's not compatible with how things are
-in the javascript version. See `RatingBox` for an example.
+The judging page uses react-redux based on the principles in [Redux: Usage with
+React][reduxphil]. Each module of judging components should have a container
+component, and the presentational components that go under them. Each module
+will also have an `scss` file. A variable `pf` in the module and `$p` in the
+scss will define a prefix for classes to prevent naming conflicts.
 
 All client pages use [Bootstrap v4][bootstrap] with Bootstrap Grid. The
 [reactstrap][reactstrap] library is used for Bootstrap components, and should
@@ -100,8 +84,8 @@ component. Components generally should not attempt to style their subcomponents.
    specify module type (usually amd).
  - Use [Definitely Typed][definitelytyped] to find types
    for client libraries, and include them using Yarn.
- - Avoid imports, if possible (the exception is React with tsx). For instance,
-   `import * as X from Y` not `import X from Y`. Never export default.
+ - Avoid default imports, if possible (the exception is React with tsx). For
+   instance, `import * as X from Y` not `import X from Y`. Never export default.
  - Code should be formatted according to the `.editorconfig` file. See
    [editorconfig.org][editorconfig]. Code should be encoded as UTF8, but only
    use ASCII characters. For instance, write `"\u{1f603}"` instead of `"😃"`.

@@ -1,15 +1,17 @@
-import {createElement, Component} from "react";
-import {render} from "react-dom";
 import {Store, createStore} from "redux";
+import {createElement, Component} from "react";
+import {Provider} from "react-redux";
+import {render} from "react-dom";
 
-import {SledgeClient} from "lib/client/sledge";
-import {JudgeApp} from "lib/client/components/judgeapp";
-import {Session, getSession} from "lib/client/session";
+import {reduce} from "./reducer";
+import {JudgeApp} from "../components/JudgeApp.js";
 
 export function init() {
-  let session = getSession();
+  let store = createStore(reduce);
 
   let container = document.getElementById("app");
-  let topElement = createElement("span", {}, "Not Yet Implemented");
+  let topElement = createElement(Provider, {store},
+    createElement(JudgeApp)
+  );
   render(topElement, container);
 }

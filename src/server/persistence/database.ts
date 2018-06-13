@@ -5,7 +5,7 @@ import Sqlite3 from "better-sqlite3";
 import {
   Hack, Judge, Token, JudgeHack, Superlative, SuperlativeHack,
   SuperlativePlacement, HackNoshow, Category, Rating, Row
-} from "lib/protocol/database";
+} from "../../protocol/database.js";
 
 export class DatabaseConnection {
   private sql : Sqlite3;

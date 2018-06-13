@@ -70,7 +70,7 @@ gulp.task("build-client-static", function () {
 });
 
 gulp.task("start", ["build"], function () {
-  shelljs.exec(path.resolve(".", "bin/sledge.js"))
+  shell.exec(path.resolve(".","sledge"))
 });
 
 gulp.task("clean", function () {

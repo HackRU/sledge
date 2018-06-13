@@ -117,3 +117,9 @@ export interface Rating {
 }
 
 export type Row<T> = T & { id : number };
+
+/**
+ * A PartialTable<TableName> represents a locally stored version of a table,
+ * mapping each id to the full row.
+ */
+export type PartialTable<T> = Array<Row<T> | undefined>;

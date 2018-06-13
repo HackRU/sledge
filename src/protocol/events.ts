@@ -4,7 +4,7 @@ import {
   Superlative,
   Category,
   Row
-} from "./database";
+} from "./database.js";
 
 // This file describes the protocol of how the Sledge client and server
 // communicate. All communication runs atop Socket.io on the default namespace.

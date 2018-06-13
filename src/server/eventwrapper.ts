@@ -2,14 +2,14 @@ import {Server, Socket} from "socket.io";
 import {Validator, ValidatorResult} from "jsonschema";
 
 import {
-  Request, AddHack, AddJudge, AddSuperlative, Authenticate, Login, RateHack,
-  RankSuperlative, SetSynchronize,
+  Request, AddHack, addHack, AddJudge, addJudge, AddSuperlative, addSuperlative,
+  Authenticate, authenticate, Login, login, RateHack, rateHack, RankSuperlative,
+  rankSuperlative, SetSynchronize, setSynchronize,
 
-  Response, AuthenticateResponse, GenericResponse, LoginResponse,
+  Response, AuthenticateResponse, GenericResponse, LoginResponse, RequestMeta,
 
   ProtocolError, Synchronize
-} from "lib/protocol/events";
-import * as evts from "lib/protocol/events";
+} from "../protocol/events.js";
 
 /**
  * This class acts a wrapper around SocketIO events providing:
@@ -25,14 +25,14 @@ export class ServerEventWrapper {
     let h = handlers;
     let reg = this.registerRequestHandler;
     sio.on("connect", s => {
-      reg(s, evts.addHack, h.onAddHack);
-      reg(s, evts.addJudge, h.onAddJudge);
-      reg(s, evts.addSuperlative, h.onAddSuperlative);
-      reg(s, evts.authenticate, h.onAuthenticate);
-      reg(s, evts.login, h.onLogin);
-      reg(s, evts.rateHack, h.onRateHack);
-      reg(s, evts.rankSuperlative, h.onRankSuperlative);
-      reg(s, evts.setSynchronize, h.onSetSynchronize);
+      reg(s, addHack, h.onAddHack);
+      reg(s, addJudge, h.onAddJudge);
+      reg(s, addSuperlative, h.onAddSuperlative);
+      reg(s, authenticate, h.onAuthenticate);
+      reg(s, login, h.onLogin);
+      reg(s, rateHack, h.onRateHack);
+      reg(s, rankSuperlative, h.onRankSuperlative);
+      reg(s, setSynchronize, h.onSetSynchronize);
       s.on("disconnect", h.onDisconnect);
 
       h.onConnect(s.id);
@@ -40,7 +40,7 @@ export class ServerEventWrapper {
   };
 
   private registerRequestHandler = <E extends Request, R extends Response>(
-    socket:Socket, meta:evts.RequestMeta, handler:RequestHandler<E,R>
+    socket:Socket, meta:RequestMeta, handler:RequestHandler<E,R>
   ) => {
     socket.on(meta.name, data => {
       // Ensure request matches schema

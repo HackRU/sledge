@@ -2,9 +2,9 @@ import http from "http";
 import {randomFillSync} from "crypto";
 import {default as socketio, Server, Socket}  from "socket.io";
 
-import * as evts from "lib/protocol/events";
-import {DatabaseConnection} from "./persistence/database";
-import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper";
+import * as evts from "../protocol/events.js";
+import {DatabaseConnection} from "./persistence/database.js";
+import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper.js";
 
 export class SocketCommunication {
   private sio : Server;

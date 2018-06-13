@@ -31,16 +31,14 @@
   script.addEventListener("load", function () {
     SystemJS.config({
       packages: {
-        "lib": {
-          format: "system",
-          defaultExtension: "js"
-        }
+        "lib": { format: "system" }
       },
 
       map: {
         "socket.io-client": "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js",
         "_react": "https://cdnjs.cloudflare.com/ajax/libs/react/16.3.2/umd/react.development.js",
         "_react-dom": "https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.3.2/umd/react-dom.development.js",
+        "react-redux": "https://cdnjs.cloudflare.com/ajax/libs/react-redux/5.0.7/react-redux.js",
         "redux": "https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.0/redux.js",
         "reactstrap": "https://cdnjs.cloudflare.com/ajax/libs/reactstrap/6.0.1/reactstrap.full.js"
       },
@@ -48,6 +46,7 @@
         "socket.io-client": { format: "amd" },
         "_react": { format: "amd" },
         "_react-dom": { format: "amd" },
+        "react-redux": { format: "amd" },
         "redux": { format: "amd" }
       },
 

@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
-import * as evts from "lib/protocol/events";
-import * as db from "lib/protocol/database";
+import * as evts from "../protocol/events.js";
+import * as db from "../protocol/database.js";
 
 /**
  * A SledgeClient wraps the regular SocketIO client to make a sledge-specific
