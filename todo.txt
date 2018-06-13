@@ -1,9 +1,5 @@
 TODO
 
-Notes
- - If better-sqlite3 fails to build: https://github.com/JoshuaWise/better-sqlite3/issues/130
-   See k2s's solution
-
 Immediate
  - Clean up client until it compiles
 
@@ -26,7 +22,6 @@ Can wait
  - Theming
  - Unit and integration tests (Jest, Vagrant, enzyme)
  - Integrate tslint
- - Continuous Integration
  - Compile with --strict
 
 Nice to have

@@ -11,7 +11,7 @@
     "@types/reactstrap": "^5.0.26",
     "@types/socket.io": "^1.4.33",
     "@types/socket.io-client": "^1.4.32",
-    "better-sqlite3": "^4.1.0",
+    "better-sqlite3": "^4.1.4",
     "express": "^4.16.3",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.4.0",
