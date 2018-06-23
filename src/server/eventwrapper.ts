@@ -2,9 +2,10 @@ import {Server, Socket} from "socket.io";
 import {Validator, ValidatorResult} from "jsonschema";
 
 import {
-  Request, AddHack, addHack, AddJudge, addJudge, AddSuperlative, addSuperlative,
-  Authenticate, authenticate, Login, login, RateHack, rateHack, RankSuperlative,
-  rankSuperlative, SetSynchronize, setSynchronize,
+  Request, AddCategory, addCategory, AddHack, addHack, AddJudge, addJudge,
+  AddSuperlative, addSuperlative, Authenticate, authenticate, Login, login,
+  RateHack, rateHack, RankSuperlative, rankSuperlative, SetSynchronize,
+  setSynchronize,
 
   Response, AuthenticateResponse, GenericResponse, LoginResponse, RequestMeta,
 
@@ -25,6 +26,7 @@ export class ServerEventWrapper {
     let h = handlers;
     let reg = this.registerRequestHandler;
     sio.on("connect", s => {
+      reg(s, addCategory, h.onAddCategory);
       reg(s, addHack, h.onAddHack);
       reg(s, addJudge, h.onAddJudge);
       reg(s, addSuperlative, h.onAddSuperlative);
@@ -86,6 +88,7 @@ export interface ServerEventHandlers {
   onConnect : (sid : string) => void;
   onDisconnect : (sid : string) => void;
 
+  onAddCategory: RequestHandler<AddCategory, GenericResponse>;
   onAddHack : RequestHandler<AddHack, GenericResponse>;
   onAddJudge : RequestHandler<AddJudge, GenericResponse>;
   onAddSuperlative : RequestHandler<AddSuperlative, GenericResponse>;

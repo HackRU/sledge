@@ -52,6 +52,7 @@ export class DatabaseConnection {
         +"id INTEGER NOT NULL,"
         +"name TEXT NOT NULL,"
         +"email TEXT NOT NULL,"
+        +"active INTEGER NOT NULL,"
         +"PRIMARY KEY(id)"
       +");");
     this.sql.exec(

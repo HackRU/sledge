@@ -3,15 +3,14 @@ import {createElement, Component} from "react";
 import {Provider} from "react-redux";
 import {render} from "react-dom";
 
-import {reduce} from "./reducer.js";
-import {JudgeApp} from "./JudgeApp.js";
+import {SetupApp} from "./SetupApp.js";
 
 export function init() {
-  let store = createStore(reduce);
+  let store = createStore(x => ({}));
 
   let container = document.getElementById("app");
   let topElement = createElement(Provider, {store},
-    createElement(JudgeApp)
+    createElement(SetupApp)
   );
   render(topElement, container);
 }

@@ -3,7 +3,7 @@ import React from "react";
 import {Container} from "reactstrap";
 
 import {JudgeState, InterfaceMode} from "../judge/state.js";
-import {connect} from "../judge/helpers.js";
+import {connect} from "./helpers.js";
 import {Toolbar} from "./Toolbar.js";
 
 export interface StateProps {

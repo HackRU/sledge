@@ -78,8 +78,20 @@ export interface RequestMeta extends EventMeta {
 }
 
 export interface Request {
-  returnId : string;
+  returnId? : string;
 }
+
+/**
+ * Add a Category. Must be sent by an admin. A GenericResponse is sent back.
+ */
+export interface AddCategory extends Request {
+  category: Category;
+}
+
+export const addCategory: RequestMeta = {
+  name: "AddCategory",
+  response: "GenericResponse"
+};
 
 /**
  * Add a hack. Must be sent by an admin. A GenericResponse is sent back.

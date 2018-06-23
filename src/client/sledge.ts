@@ -62,6 +62,10 @@ export class SledgeClient {
     return entropy.toString(16);
   }
 
+  sendAddCategory(data: evts.AddCategory): Promise<evts.GenericResponse> {
+    return this.sendAndAwait("AddCategory", data);
+  }
+
   sendAddHack(data : evts.AddHack) : Promise<evts.GenericResponse> {
     return this.sendAndAwait("AddHack", data);
   }

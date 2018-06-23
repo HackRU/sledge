@@ -2,8 +2,8 @@ import React from "react";
 
 import {Button, ButtonGroup} from "reactstrap";
 
-import {InterfaceMode} from "../judge/state.js";
-import {connect} from "../judge/helpers.js";
+import {InterfaceMode} from "./state.js";
+import {connect} from "./helpers.js";
 import {prevHack, openList, nextHack} from "../judge/actions.js";
 
 const pf = "toolbar";

@@ -14,6 +14,7 @@ export class SocketCommunication {
   constructor(private server : http.Server, private db : DatabaseConnection) {
     this.sio = socketio(server);
     this.events = new ServerEventWrapper(this.sio, this.handlers);
+    this.clients = new Map<string, ClientInfo>();
   }
 
   public handlers : ServerEventHandlers = {
@@ -24,6 +25,10 @@ export class SocketCommunication {
 
     onDisconnect: (sid : string) => {
       this.clients.delete(sid);
+    },
+
+    onAddCategory: (sid: string, data: evts.AddCategory) => {
+      return this.nyi(sid, "AddCategory");
     },
 
     onAddHack: (sid : string, data : evts.AddHack) => {
@@ -39,7 +44,22 @@ export class SocketCommunication {
     },
 
     onAuthenticate: (sid : string, data : evts.Authenticate) => {
-      return this.nyi(sid, "Authenticate");
+      let clientData = this.clients.get(sid);
+      // TODO: Check database
+      if (data.secret === "badsecret") {
+        clientData.privilege = 0;
+        return Promise.resolve({
+          success: true,
+          message: "success",
+          privilege: 0
+        });
+      } else {
+        return Promise.resolve({
+          success: false,
+          message: "Bad secret (hint: test secret is badsecret)",
+          privilege: clientData.privilege
+        });
+      }
     },
 
     onLogin: (sid : string, data : evts.Login) => {
