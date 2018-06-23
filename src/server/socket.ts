@@ -20,7 +20,10 @@ export class SocketCommunication {
   public handlers : ServerEventHandlers = {
 
     onConnect: (sid : string) => {
-      this.clients.set(sid, { privilege: -1 });
+      this.clients.set(sid, {
+        privilege: -1,
+        synced: false
+      });
     },
 
     onDisconnect: (sid : string) => {
@@ -54,7 +57,14 @@ export class SocketCommunication {
     onAuthenticate: (sid : string, data : e.Authenticate) => {
       let clientData = this.clients.get(sid);
       // TODO: Check database
-      if (data.secret === "badsecret") {
+      if (data.secret === "") {
+        clientData.privilege = -1;
+        return Promise.resolve({
+          success: true,
+          message: "success",
+          privilege: -1
+        });
+      } else if (data.secret === "badsecret") {
         clientData.privilege = 0;
         return Promise.resolve({
           success: true,
@@ -83,9 +93,37 @@ export class SocketCommunication {
     },
 
     onSetSynchronize: (sid : string, data : e.SetSynchronize) => {
-      return this.nyi(sid, "SetSynchronize");
+      return new Promise(resolve => {
+        process.nextTick(() => {
+          this.events.sendSynchronize(sid, this.getSyncData());
+          this.clients.get(sid).synced = data.sync;
+          resolve({
+            success: true,
+            message: "success"
+          });
+        });
+      });
     }
 
+  }
+
+  private getSyncData(): e.Synchronize {
+    return {
+      hacks: this.db.getAllHacks(),
+      judges: this.db.getAllJudges(),
+      superlatives: this.db.getAllSuperlatives(),
+      superlativeHacks: this.db.getAllSuperlativeHacks(),
+      categories: this.db.getAllCategories()
+    };
+  }
+
+  private dispatchSync() {
+    let syncData = this.getSyncData();
+    this.clients.forEach((v, k) => {
+      if (v.synced) {
+        this.events.sendSynchronize(k, syncData);
+      }
+    });
   }
 
   /**
@@ -133,6 +171,7 @@ export class SocketCommunication {
   private genericAdd = (sid: string, action: () => {id: number}) => {
     if (this.can(sid, 0)) {
       let result = action();
+      this.dispatchSync();
       return Promise.resolve({
         success: true,
         message: "success",
@@ -158,5 +197,6 @@ export class SocketCommunication {
 }
 
 export interface ClientInfo {
-  privilege : number;
+  privilege: number;
+  synced: boolean;
 }

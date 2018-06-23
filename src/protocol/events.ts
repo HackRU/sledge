@@ -31,11 +31,11 @@ import {
 //  given a privilege of -1. An admin is privileged to perform administrative
 //  actions and act as any judge.
 // Synchronized Data
-//  Hacks, judges and superlatives and categories are considered synchronized
-//  data. This means this information, stored in the server's database, is
-//  unprivileged (ie.  anyone should be allowed to access it) and clients that
-//  are judging need to have an up-to-date copy. Any client can request to be
-//  updated any time this data changes.
+//  Certain tables in the database are considered shared and can be given to any
+//  client that requests it regardless of their privilege. All judges should
+//  have a copy of this data and keep their copy synchronized with the server.
+//  The following tables are considered shared:
+//    Hacks, Judges, Superlatives, SuperlativeHacks, Categories
 // Requests and Responses
 //  Each request (except those met by ProtocolError) will send back a single
 //  corresponding response. Each request and response will have a returnId,
@@ -335,6 +335,7 @@ export interface Synchronize {
   hacks: Array<Row<Hack>>;
   judges: Array<Row<Judge>>;
   superlatives: Array<Row<Superlative>>;
+  superlativeHacks: Array<Row<SuperlativeHack>>;
   categories: Array<Row<Category>>;
 }
 

@@ -35,17 +35,14 @@ export const openList : GA = d => ({
 export interface Synchronize {
   type : Type.Synchronize;
 
-  hacks : Array<Row<Hack>>;
-  judges : Array<Row<Judge>>;
-  superlatives : Array<Row<Superlative>>;
-  categories : Array<Row<Category>>;
+  update: SyncEvent
 }
 
 export function syncFromEvent(syncEvent : SyncEvent) : GA {
   return d => d({
     type: Type.Synchronize,
 
-    ...syncEvent
+    update: syncEvent
   });
 }
 

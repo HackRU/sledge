@@ -32,6 +32,9 @@ export class SetupApp extends React.Component<any, any> {
     sledge = new SledgeClient({
       host: document.location.host
     });
+    sledge.subscribeSynchronize(function (evt) {
+      console.log(evt);
+    });
     (window as any).sledge = sledge;
 
     let session = getSession();
@@ -48,9 +51,6 @@ export class SetupApp extends React.Component<any, any> {
   }
 
   sendAuth() {
-    sledge.subscribeSynchronize(function (evt) {
-      console.log(evt);
-    });
     logPromise(sledge.sendAuthenticate({
       secret: this.state.secret
     }));

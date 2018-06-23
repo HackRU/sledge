@@ -257,6 +257,44 @@ export class DatabaseConnection {
   }
 
   ////////////////////
+  // Getting Tables
+
+  getAllHacks(): Array<Row<Hack>> {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Hack;");
+
+    return stmt.all();
+  }
+
+  getAllJudges(): Array<Row<Judge>> {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Judge;");
+
+    return stmt.all();
+  }
+
+  getAllSuperlatives(): Array<Row<Superlative>> {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Superlative;");
+
+    return stmt.all();
+  }
+
+  getAllSuperlativeHacks(): Array<Row<SuperlativeHack>> {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM SuperlativeHack;");
+
+    return stmt.all();
+  }
+
+  getAllCategories(): Array<Row<Category>> {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Category;");
+
+    return stmt.all();
+  }
+
+  ////////////////////
   // Table Population
 
   areHacksPopulated() : Boolean {
