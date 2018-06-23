@@ -132,46 +132,69 @@ export class DatabaseConnection {
   ////////////////////
   // Adding Rows
 
-  // TODO: AddX should probably return Row<X> with the generated id filled out
-
-  addHack(hack : Hack) {
+  addHack(hack : Hack): Row<Hack> {
     let stmt = this.sql.prepare(
       "INSERT INTO Hack(name, description, location, active)"
         +"VALUES (?,?,?,?);");
 
-    stmt.run([hack.name, hack.description, hack.location, hack.active]);
+    let r = stmt.run([hack.name, hack.description, hack.location, hack.active]);
+
+    return {
+      ...hack,
+      id: r.lastInsertROWID as number
+    };
   }
 
-  addJudge(judge : Judge) {
+  addJudge(judge : Judge): Row<Judge> {
     let stmt = this.sql.prepare(
       "INSERT INTO Judge(name, email, active)"
         +"VALUES (?,?,?);");
 
-    stmt.run([judge.name, judge.email, judge.active]);
+    let r = stmt.run([judge.name, judge.email, judge.active]);
+
+    return {
+      ...judge,
+      id: r.lastInsertROWID as number
+    };
   }
 
-  addToken(token : Token) {
+  addToken(token : Token): Row<Token> {
     let stmt = this.sql.prepare(
       "INSERT INTO Token(secret, privilege)"
         +"VALUES (?,?);");
 
-    stmt.run([token.secret, token.privilege])
+    let r = stmt.run([token.secret, token.privilege]);
+
+    return {
+      ...token,
+      id: r.lastInsertROWID as number
+    };
   }
 
-  addSuperlative(superlative : Superlative) {
+  addSuperlative(superlative : Superlative): Row<Superlative> {
     let stmt = this.sql.prepare(
       "INSERT INTO Superlative(name)"
         +"VALUES (?);");
 
-    stmt.run([superlative.name]);
+    let r = stmt.run([superlative.name]);
+
+    return {
+      ...superlative,
+      id: r.lastInsertROWID as number
+    };
   }
 
-  addCategory(category : Category) {
+  addCategory(category : Category): Row<Category> {
     let stmt = this.sql.prepare(
       "INSERT INTO Category(name)"
         +"VALUES (?);");
 
-    stmt.run([category.name]);
+    let r = stmt.run([category.name]);
+
+    return {
+      ...category,
+      id: r.lastInsertROWID as number
+    };
   }
 
   ////////////////////

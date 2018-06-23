@@ -74,15 +74,15 @@ type Schema = object;
 // Requests
 
 export interface RequestMeta extends EventMeta {
-  response : string;
+  response: string;
 }
 
 export interface Request {
-  returnId? : string;
+  returnId?: string;
 }
 
 /**
- * Add a Category. Must be sent by an admin. A GenericResponse is sent back.
+ * Add a category. Must be sent by an admin.
  */
 export interface AddCategory extends Request {
   category: Category;
@@ -90,23 +90,23 @@ export interface AddCategory extends Request {
 
 export const addCategory: RequestMeta = {
   name: "AddCategory",
-  response: "GenericResponse"
+  response: "AddRowResponse"
 };
 
 /**
- * Add a hack. Must be sent by an admin. A GenericResponse is sent back.
+ * Add a hack. Must be sent by an admin.
  */
 export interface AddHack extends Request {
-  hack : Hack;
+  hack: Hack;
 }
 
 export const addHack : RequestMeta = {
   name: "AddHack",
-  response: "GenericResponse"
+  response: "AddRowResponse"
 };
 
 /**
- * Add a judge. Must be sent by an admin. A GenericResponse is sent back.
+ * Add a judge. Must be sent by an admin.
  */
 export interface AddJudge extends Request {
   judge : Judge;
@@ -114,11 +114,11 @@ export interface AddJudge extends Request {
 
 export const addJudge : RequestMeta = {
   name: "AddJudge",
-  response: "GenericResponse"
+  response: "AddRowResponse"
 };
 
 /**
- * Add a superlative. Must be sent by an admin. A GenericResponse is sent back.
+ * Add a superlative. Must be sent by an admin.
  */
 export interface AddSuperlative extends Request {
   superlative : Superlative;
@@ -126,7 +126,7 @@ export interface AddSuperlative extends Request {
 
 export const addSuperlative : RequestMeta = {
   name: "AddSuperlative",
-  response: "GenericResponse"
+  response: "AddRowResponse"
 };
 
 /**
@@ -135,7 +135,7 @@ export const addSuperlative : RequestMeta = {
  * AuthenticateResponse is sent back.
  */
 export interface Authenticate extends Request {
-  secret : string
+  secret: string;
 }
 
 export const authenticate : RequestMeta = {
@@ -149,8 +149,8 @@ export const authenticate : RequestMeta = {
  * loginCode. A LoginResponse is sent back.
  */
 export interface Login extends Request {
-  judgeId : number,
-  loginCode : string
+  judgeId: number,
+  loginCode: string
 }
 
 export const login : RequestMeta = {
@@ -163,9 +163,9 @@ export const login : RequestMeta = {
  * must be privileged as the judge or an admin. A GenericResponse is sent back.
  */
 export interface RateHack extends Request {
-  judgeId : number;
-  hackId : number;
-  ratings : number[];
+  judgeId: number;
+  hackId: number;
+  ratings: number[];
 }
 
 export const rateHack : RequestMeta = {
@@ -179,10 +179,10 @@ export const rateHack : RequestMeta = {
  * GenericResponse is sent back.
  */
 export interface RankSuperlative extends Request {
-  judgeId : number;
-  superlativeId : number;
-  firstHackId : number;
-  secondHackId : number;
+  judgeId: number;
+  superlativeId: number;
+  firstHackId: number;
+  secondHackId: number;
 }
 
 export const rankSuperlative : RequestMeta = {
@@ -198,7 +198,7 @@ export const rankSuperlative : RequestMeta = {
  * back before any updates.
  */
 export interface SetSynchronize extends Request {
-  sync : boolean;
+  sync: boolean;
 }
 
 export const setSynchronize : RequestMeta = {
@@ -214,7 +214,28 @@ export type ResponseMeta = EventMeta;
 export interface Response {
   /** This isn't optional when sent, but there are points in the program where
       this won't be filled out */
-  returnId? : string;
+  returnId?: string;
+
+  /** Indicates if the request was successful */
+  success: boolean;
+  /**
+   * A human-readable description of why the request failed or how it succeeded
+   * (usually just "success" on success).
+   */
+  message: string;
+}
+
+/**
+ * Indicates the result of adding a row and, if so, what the id of the newly
+ * created row is. If successful, newRowId will be the id of the new row,
+ * otherwise it should be ignored.
+ */
+export interface AddRowResponse extends Response {
+  newRowId: number;
+}
+
+export const addRowResponse: ResponseMeta = {
+  name: "AddRowResponse"
 }
 
 /**
@@ -225,9 +246,7 @@ export interface Response {
  * should be ignored.
  */
 export interface AuthenticateResponse extends Response {
-  success : boolean;
-  message : string;
-  privilege : number;
+  privilege: number;
 }
 
 export const authenticateResponse : ResponseMeta = {
@@ -235,13 +254,9 @@ export const authenticateResponse : ResponseMeta = {
 }
 
 /**
- * A generic response used for requests that either fail or succeed. The message
- * member is a human-readable description of what why the request failed, or how
- * it succeeded (usually just "success" on success).
+ * A generic response used for requests that either fail or succeed.
  */
 export interface GenericResponse extends Response {
-  success : boolean;
-  message : string;
 }
 
 export const genericResponse : ResponseMeta = {
@@ -256,10 +271,8 @@ export const genericResponse : ResponseMeta = {
  * that judge. If unsuccessful, judgeId and secret should be ignored.
  */
 export interface LoginResponse extends Response {
-  success : boolean;
-  message : string;
-  judgeId : number;
-  secret : string;
+  judgeId: number;
+  secret: string;
 }
 
 export const loginResponse : ResponseMeta = {
@@ -277,8 +290,8 @@ export type UpdateMeta = EventMeta;
  * meant for use in debugging.
  */
 export interface ProtocolError {
-  eventName : string;
-  message : string;
+  eventName: string;
+  message: string;
 
   /** Optionally, the server may send back the entirety of the original event.
       This should probably be disabled in prod though. */
@@ -293,10 +306,10 @@ export const protocolError : UpdateMeta = {
  * A Synchronize sends the current state of synchronized data to the client
  */
 export interface Synchronize {
-  hacks : Array<Row<Hack>>;
-  judges : Array<Row<Judge>>;
-  superlatives : Array<Row<Superlative>>;
-  categories : Array<Row<Category>>;
+  hacks: Array<Row<Hack>>;
+  judges: Array<Row<Judge>>;
+  superlatives: Array<Row<Superlative>>;
+  categories: Array<Row<Category>>;
 }
 
 export const synchronize : UpdateMeta = {

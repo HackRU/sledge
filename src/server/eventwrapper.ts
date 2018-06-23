@@ -1,16 +1,7 @@
 import {Server, Socket} from "socket.io";
 import {Validator, ValidatorResult} from "jsonschema";
 
-import {
-  Request, AddCategory, addCategory, AddHack, addHack, AddJudge, addJudge,
-  AddSuperlative, addSuperlative, Authenticate, authenticate, Login, login,
-  RateHack, rateHack, RankSuperlative, rankSuperlative, SetSynchronize,
-  setSynchronize,
-
-  Response, AuthenticateResponse, GenericResponse, LoginResponse, RequestMeta,
-
-  ProtocolError, Synchronize
-} from "../protocol/events.js";
+import * as e from "../protocol/events.js";
 
 /**
  * This class acts a wrapper around SocketIO events providing:
@@ -26,23 +17,23 @@ export class ServerEventWrapper {
     let h = handlers;
     let reg = this.registerRequestHandler;
     sio.on("connect", s => {
-      reg(s, addCategory, h.onAddCategory);
-      reg(s, addHack, h.onAddHack);
-      reg(s, addJudge, h.onAddJudge);
-      reg(s, addSuperlative, h.onAddSuperlative);
-      reg(s, authenticate, h.onAuthenticate);
-      reg(s, login, h.onLogin);
-      reg(s, rateHack, h.onRateHack);
-      reg(s, rankSuperlative, h.onRankSuperlative);
-      reg(s, setSynchronize, h.onSetSynchronize);
+      reg(s, e.addCategory, h.onAddCategory);
+      reg(s, e.addHack, h.onAddHack);
+      reg(s, e.addJudge, h.onAddJudge);
+      reg(s, e.addSuperlative, h.onAddSuperlative);
+      reg(s, e.authenticate, h.onAuthenticate);
+      reg(s, e.login, h.onLogin);
+      reg(s, e.rateHack, h.onRateHack);
+      reg(s, e.rankSuperlative, h.onRankSuperlative);
+      reg(s, e.setSynchronize, h.onSetSynchronize);
       s.on("disconnect", h.onDisconnect);
 
       h.onConnect(s.id);
     });
   };
 
-  private registerRequestHandler = <E extends Request, R extends Response>(
-    socket:Socket, meta:RequestMeta, handler:RequestHandler<E,R>
+  private registerRequestHandler = <E extends e.Request, R extends e.Response>(
+    socket:Socket, meta:e.RequestMeta, handler:RequestHandler<E,R>
   ) => {
     socket.on(meta.name, data => {
       // Ensure request matches schema
@@ -75,11 +66,11 @@ export class ServerEventWrapper {
     return message;
   }
 
-  sendProtocolError(room : string, protocolError : ProtocolError) {
+  sendProtocolError(room : string, protocolError : e.ProtocolError) {
     this.sio.to(room).emit("ProtocolError", protocolError);
   }
 
-  sendSynchronize(room : string, synchronize : Synchronize) {
+  sendSynchronize(room : string, synchronize : e.Synchronize) {
     this.sio.to(room).emit("Synchronize", synchronize);
   }
 }
@@ -88,15 +79,15 @@ export interface ServerEventHandlers {
   onConnect : (sid : string) => void;
   onDisconnect : (sid : string) => void;
 
-  onAddCategory: RequestHandler<AddCategory, GenericResponse>;
-  onAddHack : RequestHandler<AddHack, GenericResponse>;
-  onAddJudge : RequestHandler<AddJudge, GenericResponse>;
-  onAddSuperlative : RequestHandler<AddSuperlative, GenericResponse>;
-  onAuthenticate : RequestHandler<Authenticate, AuthenticateResponse>;
-  onLogin : RequestHandler<Login, LoginResponse>;
-  onRateHack : RequestHandler<RateHack, GenericResponse>;
-  onRankSuperlative : RequestHandler<RankSuperlative, GenericResponse>;
-  onSetSynchronize : RequestHandler<SetSynchronize, GenericResponse>;
+  onAddCategory: RequestHandler<e.AddCategory, e.AddRowResponse>;
+  onAddHack : RequestHandler<e.AddHack, e.AddRowResponse>;
+  onAddJudge : RequestHandler<e.AddJudge, e.AddRowResponse>;
+  onAddSuperlative : RequestHandler<e.AddSuperlative, e.AddRowResponse>;
+  onAuthenticate : RequestHandler<e.Authenticate, e.AuthenticateResponse>;
+  onLogin : RequestHandler<e.Login, e.LoginResponse>;
+  onRateHack : RequestHandler<e.RateHack, e.GenericResponse>;
+  onRankSuperlative : RequestHandler<e.RankSuperlative, e.GenericResponse>;
+  onSetSynchronize : RequestHandler<e.SetSynchronize, e.GenericResponse>;
 }
 
 /*
@@ -104,5 +95,5 @@ export interface ServerEventHandlers {
  * promise which will be used to respond. The returnId of the response returned
  * by the promise will be overwritten before sending.
  */
-export type RequestHandler<E extends Request, R extends Response> =
-  (sid:string, e:E) => Promise<R>;
+export type RequestHandler<E extends e.Request, R extends e.Response> =
+  (sid:string, ev:E) => Promise<R>;

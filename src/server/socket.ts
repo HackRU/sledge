@@ -2,7 +2,7 @@ import http from "http";
 import {randomFillSync} from "crypto";
 import {default as socketio, Server, Socket}  from "socket.io";
 
-import * as evts from "../protocol/events.js";
+import * as e from "../protocol/events.js";
 import {DatabaseConnection} from "./persistence/database.js";
 import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper.js";
 
@@ -27,23 +27,23 @@ export class SocketCommunication {
       this.clients.delete(sid);
     },
 
-    onAddCategory: (sid: string, data: evts.AddCategory) => {
-      return this.nyi(sid, "AddCategory");
+    onAddCategory: (sid: string, data: e.AddCategory) => {
+      return this.genericAdd(sid, () => this.db.addCategory(data.category));
     },
 
-    onAddHack: (sid : string, data : evts.AddHack) => {
-      return this.genericPriv(sid, 0, () => { this.db.addHack(data.hack) });
+    onAddHack: (sid : string, data : e.AddHack) => {
+      return this.genericAdd(sid, () => this.db.addHack(data.hack));
     },
 
-    onAddJudge: (sid : string, data : evts.AddJudge) => {
-      return this.genericPriv(sid, 0, () => { this.db.addJudge(data.judge) });
+    onAddJudge: (sid : string, data : e.AddJudge) => {
+      return this.genericAdd(sid, () => this.db.addJudge(data.judge));
     },
 
-    onAddSuperlative: (sid : string, data : evts.AddSuperlative) => {
-      return this.genericPriv(sid, 0, () => { this.db.addSuperlative(data.superlative) });
+    onAddSuperlative: (sid : string, data : e.AddSuperlative) => {
+      return this.genericAdd(sid, () => this.db.addSuperlative(data.superlative));
     },
 
-    onAuthenticate: (sid : string, data : evts.Authenticate) => {
+    onAuthenticate: (sid : string, data : e.Authenticate) => {
       let clientData = this.clients.get(sid);
       // TODO: Check database
       if (data.secret === "badsecret") {
@@ -62,19 +62,19 @@ export class SocketCommunication {
       }
     },
 
-    onLogin: (sid : string, data : evts.Login) => {
+    onLogin: (sid : string, data : e.Login) => {
       return this.nyi(sid, "Login");
     },
 
-    onRateHack: (sid : string, data : evts.RateHack) => {
+    onRateHack: (sid : string, data : e.RateHack) => {
       return this.nyi(sid, "RateHack");
     },
 
-    onRankSuperlative: (sid : string, data : evts.RankSuperlative) => {
+    onRankSuperlative: (sid : string, data : e.RankSuperlative) => {
       return this.nyi(sid, "RankSuperlative");
     },
 
-    onSetSynchronize: (sid : string, data : evts.SetSynchronize) => {
+    onSetSynchronize: (sid : string, data : e.SetSynchronize) => {
       return this.nyi(sid, "SetSynchronize");
     }
 
@@ -98,13 +98,13 @@ export class SocketCommunication {
    * client is of a certain privilege an action is performed and
    * GenericResponse is returned, otherwise an appropriate error is returned.
    */
-  private genericPriv = (sid : string, testPrivilege : number, action : () => void) => {
+  private privliged = <R extends e.Response>(
+    sid: string,
+    testPrivilege: number,
+    action: () => Promise<R>
+  ): Promise<R> => {
     if (this.can(sid, testPrivilege)) {
-      action();
-      return Promise.resolve({
-        success: true,
-        message: "success"
-      });
+      return action();
     } else {
       let message;
       if (testPrivilege === 0)  {
@@ -115,6 +115,26 @@ export class SocketCommunication {
 
       return Promise.resolve({
         success: false, message
+      } as R);
+    }
+  }
+
+  /**
+   * Factors out adding rows
+   */
+  private genericAdd = (sid: string, action: () => {id: number}) => {
+    if (this.can(sid, 0)) {
+      let result = action();
+      return Promise.resolve({
+        success: true,
+        message: "success",
+        newRowId: result.id
+      });
+    } else {
+      return Promise.resolve({
+        success: false,
+        message: "Only admins can do that.",
+        newRowId: -1
       });
     }
   }

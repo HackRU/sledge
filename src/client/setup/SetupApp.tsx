@@ -18,16 +18,21 @@ import {getSession, setSession} from "../session.js";
 import {SledgeClient} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
 
-let sledge : SledgeClient;
-
-
 function logPromise(p : Promise<any>) {
     p.then(r => console.log(r));
 }
 
+let sledge : SledgeClient;
+
 export class SetupApp extends React.Component<any, any> {
+
   constructor(props:any) {
     super(props)
+
+    sledge = new SledgeClient({
+      host: document.location.host
+    });
+    (window as any).sledge = sledge;
 
     let session = getSession();
 
@@ -43,14 +48,6 @@ export class SetupApp extends React.Component<any, any> {
   }
 
   sendAuth() {
-    if (sledge) {
-      console.warn("Sledge already started. Refresh if you want to use an updated secret.");
-      return;
-    }
-
-    sledge = new SledgeClient({
-      host: document.location.host
-    });
     sledge.subscribeSynchronize(function (evt) {
       console.log(evt);
     });

@@ -21,6 +21,7 @@ export class SledgeClient {
     this.responseResolvers = new Map();
     this.synchronizeSubscribers = [];
 
+    this.setupResolverDispatch(evts.addRowResponse);
     this.setupResolverDispatch(evts.authenticateResponse);
     this.setupResolverDispatch(evts.genericResponse);
     this.setupResolverDispatch(evts.loginResponse);
@@ -62,19 +63,19 @@ export class SledgeClient {
     return entropy.toString(16);
   }
 
-  sendAddCategory(data: evts.AddCategory): Promise<evts.GenericResponse> {
+  sendAddCategory(data: evts.AddCategory): Promise<evts.AddRowResponse> {
     return this.sendAndAwait("AddCategory", data);
   }
 
-  sendAddHack(data : evts.AddHack) : Promise<evts.GenericResponse> {
+  sendAddHack(data : evts.AddHack) : Promise<evts.AddRowResponse> {
     return this.sendAndAwait("AddHack", data);
   }
 
-  sendAddJudge(data : evts.AddJudge) : Promise<evts.GenericResponse> {
+  sendAddJudge(data : evts.AddJudge) : Promise<evts.AddRowResponse> {
     return this.sendAndAwait("AddJudge", data);
   }
 
-  sendAddSuperlative(data : evts.AddSuperlative) : Promise<evts.GenericResponse> {
+  sendAddSuperlative(data : evts.AddSuperlative) : Promise<evts.AddRowResponse> {
     return this.sendAndAwait("AddSuperlative", data);
   }
 
