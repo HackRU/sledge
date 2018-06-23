@@ -59,7 +59,8 @@ export class SledgeClient {
   }
 
   private generateUniqueReturnId() {
-    let entropy = (Date.now() & ~0xFF) + Math.floor(Math.random()*256);
+    const randomness = 16;
+    let entropy = (Date.now() << randomness) + Math.floor(Math.random()*Math.pow(2,randomness));
     return entropy.toString(16);
   }
 
@@ -75,8 +76,16 @@ export class SledgeClient {
     return this.sendAndAwait("AddJudge", data);
   }
 
+  sendAddJudgeHack(data: evts.AddJudgeHack): Promise<evts.AddRowResponse> {
+    return this.sendAndAwait("AddJudgeHack", data);
+  }
+
   sendAddSuperlative(data : evts.AddSuperlative) : Promise<evts.AddRowResponse> {
     return this.sendAndAwait("AddSuperlative", data);
+  }
+
+  sendAddSuperlativeHack(data: evts.AddSuperlativeHack): Promise<evts.AddRowResponse> {
+    return this.sendAndAwait("AddSuperlativeHack", data);
   }
 
   sendAuthenticate(data : evts.Authenticate) : Promise<evts.AuthenticateResponse> {

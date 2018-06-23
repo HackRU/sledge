@@ -5,13 +5,65 @@ import {SledgeClient} from "../sledge.js";
 export function importDevpostData(client: SledgeClient, csvContent: string) {
   let extracted = extractDevpostData(csvContent);
   if (!extracted) {
-    return;
+    throw new Error("Extracion gave null");
   }
 
+  console.log("Printing extracted data from devpost");
   console.log(extracted);
 
-  //TODO: The protocol needs to be updated before supporting the import
-  console.warn("Devpost Import: Not Yet Implemented");
+  // First, Add all hacks and superlatives
+  let superlativesAddResults = extracted.superlatives.map(s => client.sendAddSuperlative({
+    superlative: { name: s }
+  }));
+  let hacksAddResults = extracted.hacks.map(h => client.sendAddHack({
+    hack: {
+      name: h.name,
+      description: h.description,
+      location: 0,
+      active: 1
+    }
+  }));
+
+  // Wait until both are complete before associating hacks with superlatives
+  return Promise.all([
+    Promise.all(superlativesAddResults),
+    Promise.all(hacksAddResults)
+  ]).then(([supResults, hackResults]) => {
+    // Ensure everything happened successfully
+    for (let r of supResults.concat(hackResults)) {
+      if (!r.success) {
+        console.warn("Aborting import devpost: At least one request failed");
+        console.log(r);
+        throw new Error();
+      }
+    }
+
+    // Now, associate all hacks with their superlatives
+    let superHackResults = [];
+    for (let hackIdx in extracted.hacks) {
+      for (let supIdx of extracted.hacks[hackIdx].superlatives) {
+        superHackResults.push(client.sendAddSuperlativeHack({
+          superlativeHack: {
+            hackId: hackResults[hackIdx].newRowId,
+            superlativeId: supResults[supIdx].newRowId
+          }
+        }));
+      }
+    }
+
+    return Promise.all(superHackResults);
+  }).then(supHackResults => {
+    // Make sure everything happened successfully
+    for (let r of supHackResults) {
+      if (!r.success) {
+        console.warn("Aborting import devpost: At least one request failed");
+        console.log(r);
+        throw new Error();
+      }
+    }
+
+    console.log("Import successful!");
+  });
 }
 
 export function extractDevpostData(csvContent: string): DevpostData | undefined {
@@ -71,7 +123,7 @@ export function extractDevpostData(csvContent: string): DevpostData | undefined 
       name,
       description: des,
       superlatives: parsedSups.data.length == 1 ?
-        (parsedSups.data[0] as string[]) : [""]
+        parsedSups.data[0].map((s:string) => s.trim()) : []
     };
   }).filter(r => !!r);
 
@@ -85,7 +137,7 @@ export function extractDevpostData(csvContent: string): DevpostData | undefined 
   let superlatives = Array.from(supsSet).filter(s => !!s);
 
   return {
-    superlatives: superlatives.map(s => s.trim()),
+    superlatives,
     hacks: extractedRows.map(r => ({
       name: r.name,
       description: r.description,

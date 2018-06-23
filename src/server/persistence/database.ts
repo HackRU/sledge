@@ -158,6 +158,19 @@ export class DatabaseConnection {
     };
   }
 
+  addJudgeHack(judgeHack: JudgeHack): Row<JudgeHack> {
+    let stmt = this.sql.prepare(
+      "INSERT INTO JudgeHack(judgeId, hackId, priority)"
+        +"VALUES (?,?,?);");
+
+    let r = stmt.run([judgeHack.judgeId, judgeHack.hackId, judgeHack.priority]);
+
+    return {
+      ...judgeHack,
+      id: r.lastInsertROWID as number
+    };
+  }
+
   addToken(token : Token): Row<Token> {
     let stmt = this.sql.prepare(
       "INSERT INTO Token(secret, privilege)"
@@ -180,6 +193,19 @@ export class DatabaseConnection {
 
     return {
       ...superlative,
+      id: r.lastInsertROWID as number
+    };
+  }
+
+  addSuperlativeHack(superlativeHack: SuperlativeHack): Row<SuperlativeHack> {
+    let stmt = this.sql.prepare(
+      "INSERT INTO SuperlativeHack(hackId, superlativeId)"
+        +"VALUES (?,?);");
+
+    let r = stmt.run([superlativeHack.hackId, superlativeHack.superlativeId]);
+
+    return {
+      ...superlativeHack,
       id: r.lastInsertROWID as number
     };
   }

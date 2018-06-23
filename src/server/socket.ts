@@ -39,8 +39,16 @@ export class SocketCommunication {
       return this.genericAdd(sid, () => this.db.addJudge(data.judge));
     },
 
+    onAddJudgeHack: (sid: string, data: e.AddJudgeHack) => {
+      return this.genericAdd(sid, () => this.db.addJudgeHack(data.judgeHack));
+    },
+
     onAddSuperlative: (sid : string, data : e.AddSuperlative) => {
       return this.genericAdd(sid, () => this.db.addSuperlative(data.superlative));
+    },
+
+    onAddSuperlativeHack: (sid: string, data: e.AddSuperlativeHack) => {
+      return this.genericAdd(sid, () => this.db.addSuperlativeHack(data.superlativeHack));
     },
 
     onAuthenticate: (sid : string, data : e.Authenticate) => {

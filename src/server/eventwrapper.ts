@@ -20,7 +20,9 @@ export class ServerEventWrapper {
       reg(s, e.addCategory, h.onAddCategory);
       reg(s, e.addHack, h.onAddHack);
       reg(s, e.addJudge, h.onAddJudge);
+      reg(s, e.addJudgeHack, h.onAddJudgeHack);
       reg(s, e.addSuperlative, h.onAddSuperlative);
+      reg(s, e.addSuperlativeHack, h.onAddSuperlativeHack);
       reg(s, e.authenticate, h.onAuthenticate);
       reg(s, e.login, h.onLogin);
       reg(s, e.rateHack, h.onRateHack);
@@ -82,7 +84,9 @@ export interface ServerEventHandlers {
   onAddCategory: RequestHandler<e.AddCategory, e.AddRowResponse>;
   onAddHack : RequestHandler<e.AddHack, e.AddRowResponse>;
   onAddJudge : RequestHandler<e.AddJudge, e.AddRowResponse>;
+  onAddJudgeHack : RequestHandler<e.AddJudgeHack, e.AddRowResponse>;
   onAddSuperlative : RequestHandler<e.AddSuperlative, e.AddRowResponse>;
+  onAddSuperlativeHack : RequestHandler<e.AddSuperlativeHack, e.AddRowResponse>;
   onAuthenticate : RequestHandler<e.Authenticate, e.AuthenticateResponse>;
   onLogin : RequestHandler<e.Login, e.LoginResponse>;
   onRateHack : RequestHandler<e.RateHack, e.GenericResponse>;

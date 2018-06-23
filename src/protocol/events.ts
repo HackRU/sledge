@@ -1,7 +1,9 @@
 import {
   Hack,
   Judge,
+  JudgeHack,
   Superlative,
+  SuperlativeHack,
   Category,
   Row
 } from "./database.js";
@@ -118,6 +120,18 @@ export const addJudge : RequestMeta = {
 };
 
 /**
+ * Add an association between a judge and a hack. Must be an admin.
+ */
+export interface AddJudgeHack extends Request {
+  judgeHack: JudgeHack;
+}
+
+export const addJudgeHack: RequestMeta = {
+  name: "AddJudgeHack",
+  response: "AddRowResponse"
+};
+
+/**
  * Add a superlative. Must be sent by an admin.
  */
 export interface AddSuperlative extends Request {
@@ -126,6 +140,18 @@ export interface AddSuperlative extends Request {
 
 export const addSuperlative : RequestMeta = {
   name: "AddSuperlative",
+  response: "AddRowResponse"
+};
+
+/**
+ * Add an association between a superlative and a hack. Must be an admin.
+ */
+export interface AddSuperlativeHack extends Request {
+  superlativeHack: SuperlativeHack;
+}
+
+export const addSuperlativeHack: RequestMeta = {
+  name: "AddSuperlativeHack",
   response: "AddRowResponse"
 };
 
