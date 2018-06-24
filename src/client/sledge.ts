@@ -12,14 +12,17 @@ import * as db from "../protocol/database.js";
  */
 export class SledgeClient {
   socket : SocketIOClient.Socket;
+  status : SledgeStatus = SledgeStatus.Connecting;
 
   responseResolvers : Map<string, (r:any) => void>;
   synchronizeSubscribers : Array<(e:evts.Synchronize) => void>;
+  statusSubscribers: Array<(s:SledgeStatus) => void>;
 
   constructor(opts : SledgeOptions) {
     this.socket = io(opts.host);
     this.responseResolvers = new Map();
     this.synchronizeSubscribers = [];
+    this.statusSubscribers = [];
 
     this.setupResolverDispatch(evts.addRowResponse);
     this.setupResolverDispatch(evts.authenticateResponse);
@@ -36,6 +39,25 @@ export class SledgeClient {
         if (notify) notify(e);
       }
     });
+
+    this.socket.on("connect", () => {
+      this.status = SledgeStatus.Connected;
+      this.dispatchStatus();
+    });
+    this.socket.on("reconnecting", () => {
+      this.status = SledgeStatus.Reconnecting;
+      this.dispatchStatus();
+    });
+    this.socket.on("reconnect_failed", () => {
+      this.status = SledgeStatus.Disconnected;
+      this.dispatchStatus();
+    });
+  }
+
+  private dispatchStatus() {
+    for (let d of this.statusSubscribers) {
+      if (d) d(this.status);
+    }
   }
 
   private setupResolverDispatch(meta : evts.ResponseMeta) {
@@ -112,6 +134,13 @@ export class SledgeClient {
     return this.sendAndAwait("SetSynchronize", data);
   }
 
+  subscribeStatus(notify: (s:SledgeStatus) => void): () => void {
+    this.statusSubscribers.push(notify);
+    return () => {
+      this.statusSubscribers = this.statusSubscribers.filter(n => n!==notify);
+    }
+  }
+
   subscribeSynchronize(notify : (e:evts.Synchronize) => void) : () => void {
     let i = this.synchronizeSubscribers.length;
     this.synchronizeSubscribers[i] = notify;
@@ -121,4 +150,11 @@ export class SledgeClient {
 
 export interface SledgeOptions {
   host : string;
+}
+
+export const enum SledgeStatus {
+  Connecting = "SLEDGECLIENT_CONNECTING",
+  Connected = "SLEDGECLIENT_CONNECTED",
+  Reconnecting = "SLEDGECLIENT_RECONNECTING",
+  Disconnected = "SLEDGECLIENT_DISCONNECTED"
 }

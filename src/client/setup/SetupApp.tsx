@@ -15,8 +15,10 @@ import {List} from "immutable";
 import {AddRow} from "./AddRow.js";
 import {TabularActions} from "./TabularActions";
 
+import {Synchronize} from "../../protocol/events.js";
+
 import {getSession, setSession} from "../session.js";
-import {SledgeClient} from "../sledge.js";
+import {SledgeClient, SledgeStatus} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
 import {autoAssignTables} from "./assigntables.js";
 
@@ -26,7 +28,7 @@ function logPromise(p : Promise<any>) {
 
 let sledge : SledgeClient;
 
-export class SetupApp extends React.Component<any, any> {
+export class SetupApp extends React.Component<{}, State> {
 
   constructor(props:any) {
     super(props)
@@ -36,17 +38,36 @@ export class SetupApp extends React.Component<any, any> {
     });
     sledge.subscribeSynchronize(evt => {
       this.setState({
-        syncData: evt
+        syncData: evt,
+        lastSyncTime: (new Date()).toLocaleString()
       });
-      console.log(evt);
     });
+    sledge.subscribeStatus(s => {
+      this.setState({
+        sledgeStatus: s
+      });
+    });
+    logPromise(sledge.sendSetSynchronize({
+      sync: true
+    }));
     (window as any).sledge = sledge;
 
     let session = getSession();
 
     this.state = {
-      secret: session.secret
+      secret: session.secret,
+      syncData: undefined,
+      lastSyncTime: "never",
+      devpostCSV: "",
+      hacksOpen: false,
+      judgesOpen: false,
+      sledgeStatus: sledge.status,
+      autoAuth: !!localStorage.getItem("autoauth")
     };
+
+    if (localStorage.getItem("autoauth")) {
+      this.sendAuth();
+    }
   }
 
   setAuth() {
@@ -61,14 +82,39 @@ export class SetupApp extends React.Component<any, any> {
     }));
   }
 
+  toggleAutoAuth() {
+    localStorage.setItem("autoauth",
+      this.state.autoAuth ? "" : "1");
+    this.setState({
+      autoAuth: !this.state.autoAuth
+    });
+  }
+
   render() {
     return (
       <Container>
         <h1>{`Setup`}</h1>
 
-        {`Remember to look at the dev console for errors.`}
+        {`This page uses the javacript dev console to log errors and feedback. `}
+        {`The sledge client is assigned to `}<code>{`window.sledge`}</code>
+        {` if you want to do something fancy.`}
 
-        <h2>{`Admin Authentication`}</h2>
+        <h2>{`Status`}</h2>
+
+        <ul>
+          <li>
+            {`Client Status: `}
+            <em>{this.state.sledgeStatus}</em>
+          </li>
+          <li>
+            {`Last Sync: `}<em>{this.state.lastSyncTime}</em>{` (`}
+            <a href="javascript:void(0);" onClick={() => console.log(this.state.syncData)}>
+              {`Log to Console`}
+            </a>{`)`}
+          </li>
+        </ul>
+
+        <h2>{`Authentication`}</h2>
         <Form>
           <Label>
             {`Secret: `}
@@ -77,30 +123,18 @@ export class SetupApp extends React.Component<any, any> {
               onChange={evt => this.setState({secret: evt.target.value})}
             />
           </Label>
-          <ButtonGroup vertical>
+          <ButtonGroup>
             <Button onClick={() => this.setAuth()}>
               {`Set Secret`}
             </Button>
             <Button onClick={() => this.sendAuth()}>
               {`Authenticate`}
             </Button>
+            <Button onClick={() => this.toggleAutoAuth()}>
+              {this.state.autoAuth ? "Auto: On" : "Auto: Off"}
+            </Button>
           </ButtonGroup>
         </Form>
-
-        <h2>{`Synchronization`}</h2>
-        <p>{`Synchronizations will show up in the console.`}</p>
-        <ButtonGroup>
-          <Button onClick={() => logPromise(sledge.sendSetSynchronize({
-            sync: true
-          }))}>
-            {`Sync On`}
-          </Button>
-          <Button onClick={() => logPromise(sledge.sendSetSynchronize({
-            sync: false
-          }))}>
-            {`Sync Off`}
-          </Button>
-        </ButtonGroup>
 
         <h2>{`Manually Add Data`}</h2>
         <AddRow
@@ -173,7 +207,6 @@ export class SetupApp extends React.Component<any, any> {
         </Form>
 
         <h2>{`Manage Hacks`}</h2>
-        <p>{`You might want to enable sync before using this section.`}</p>
         <ButtonGroup>
           <Button
             onClick={() => this.setState((prevState:any) => ({
@@ -225,11 +258,13 @@ export class SetupApp extends React.Component<any, any> {
         )] : []}
 
         <h2>{`Manage Judges`}</h2>
-        <Button
-          onClick={() => this.setState((prevState:any) => ({
-            judgesOpen: !prevState.judgesOpen && prevState.syncData
-          }))}
-        >{`Toggle Show Judges`}</Button>
+        <ButtonGroup>
+          <Button
+            onClick={() => this.setState((prevState:any) => ({
+              judgesOpen: !prevState.judgesOpen && prevState.syncData
+            }))}
+          >{`Toggle Show Judges`}</Button>
+        </ButtonGroup>
         {this.state.judgesOpen ? [(
           <TabularActions
             key="table"
@@ -251,4 +286,15 @@ export class SetupApp extends React.Component<any, any> {
       </Container>
     );
   }
+}
+
+interface State {
+  secret: string;
+  syncData: Synchronize;
+  lastSyncTime: string;
+  devpostCSV: string;
+  hacksOpen: boolean;
+  judgesOpen: boolean;
+  sledgeStatus: SledgeStatus;
+  autoAuth: boolean;
 }
