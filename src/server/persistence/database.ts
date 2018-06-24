@@ -321,7 +321,9 @@ export class DatabaseConnection {
     let stmt = this.sql.prepare(
       "SELECT * FROM Token WHERE secret=?;");
 
-    return stmt.pluck().get([secret]);
+    let r = stmt.get([secret]);
+
+    return r;
   }
 
   ////////////////////
