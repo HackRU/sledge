@@ -56,7 +56,6 @@ export class SocketCommunication {
 
     onAuthenticate: (sid : string, data : e.Authenticate) => {
       let clientData = this.clients.get(sid);
-      // TODO: Check database
       if (data.secret === "") {
         clientData.privilege = -1;
         return Promise.resolve({
@@ -64,17 +63,21 @@ export class SocketCommunication {
           message: "success",
           privilege: -1
         });
-      } else if (data.secret === "badsecret") {
-        clientData.privilege = 0;
+      }
+
+      let token = this.db.getTokenBySecret(data.secret);
+
+      if (token) {
+        clientData.privilege = token.privilege;
         return Promise.resolve({
           success: true,
           message: "success",
-          privilege: 0
+          privilege: token.privilege
         });
       } else {
         return Promise.resolve({
           success: false,
-          message: "Bad secret (hint: test secret is badsecret)",
+          message: "Bad secret",
           privilege: clientData.privilege
         });
       }

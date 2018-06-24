@@ -59,8 +59,7 @@ export class DatabaseConnection {
       "CREATE TABLE IF NOT EXISTS Token ("
         +"id INTEGER NOT NULL,"
         +"secret TEXT NOT NULL,"
-        +"judgeId INTEGER NOT NULL,"
-        +"FOREIGN KEY(judgeId) REFERENCES Judge(id),"
+        +"privilege INTEGER NOT NULL,"
         +"PRIMARY KEY(id)"
       +");");
     this.sql.exec(
@@ -313,6 +312,16 @@ export class DatabaseConnection {
       "SELECT * FROM Category;");
 
     return stmt.all();
+  }
+
+  ////////////////////
+  // Get Single Rows
+
+  getTokenBySecret(secret: string): Token | undefined {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Token WHERE secret=?;");
+
+    return stmt.pluck().get([secret]);
   }
 
   ////////////////////
