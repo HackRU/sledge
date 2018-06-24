@@ -247,13 +247,34 @@ export class DatabaseConnection {
         +"(id, judgeId, hackId, rating)"
       +"VALUES ("
         +"(SELECT id FROM Rating WHERE judgeId=? AND hackId=?),"
-        +"?, ?, ?)"
+        +"?, ?, ?);"
     );
 
     stmt.run([
       rating.judgeId, rating.hackId,
       rating.judgeId, rating.hackId, rating.rating
     ]);
+  }
+
+  /** Returns if hack existed */
+  modifyHack(id: number, hack: Partial<Hack>): boolean {
+    let existsStmt = this.sql.prepare(
+      "SELECT 1 FROM Hack WHERE id=?;");
+    if (!existsStmt.get([id]))
+      return false;
+    if (hack.name != null)
+      this.sql.prepare(
+        "UPDATE Hack SET name=? WHERE id=?;").run([hack.name, id]);
+    if (hack.description != null)
+      this.sql.prepare(
+        "UPDATE Hack SET description=? WHERE id=?;").run([hack.description, id]);
+    if (hack.location != null)
+      this.sql.prepare(
+        "UPDATE Hack SET location=? WHERE id=?;").run([hack.location, id]);
+    if (hack.active != null)
+      this.sql.prepare(
+        "UPDATE Hack SET active=? WHERE id=?;").run([hack.active, id]);
+    return true;
   }
 
   ////////////////////

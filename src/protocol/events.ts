@@ -185,6 +185,19 @@ export const login : RequestMeta = {
 }
 
 /**
+ * Modify a hack. Must be sent by an admin.
+ */
+export interface ModifyHack extends Request {
+  hackId: number;
+  hack: Partial<Hack>;
+}
+
+export const modifyHack: RequestMeta = {
+  name: "ModifyHack",
+  response: "GenericResponse"
+}
+
+/**
  * Ask the server to rate a hack for each category from a certain judge. Client
  * must be privileged as the judge or an admin. A GenericResponse is sent back.
  */

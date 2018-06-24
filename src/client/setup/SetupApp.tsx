@@ -13,10 +13,12 @@ import {
 import {List} from "immutable";
 
 import {AddRow} from "./AddRow.js";
+import {TabularActions} from "./TabularActions";
 
 import {getSession, setSession} from "../session.js";
 import {SledgeClient} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
+import {autoAssignTables} from "./assigntables.js";
 
 function logPromise(p : Promise<any>) {
     p.then(r => console.log(r));
@@ -32,7 +34,10 @@ export class SetupApp extends React.Component<any, any> {
     sledge = new SledgeClient({
       host: document.location.host
     });
-    sledge.subscribeSynchronize(function (evt) {
+    sledge.subscribeSynchronize(evt => {
+      this.setState({
+        syncData: evt
+      });
       console.log(evt);
     });
     (window as any).sledge = sledge;
@@ -166,6 +171,83 @@ export class SetupApp extends React.Component<any, any> {
             </InputGroupAddon>
           </InputGroup>
         </Form>
+
+        <h2>{`Manage Hacks`}</h2>
+        <p>{`You might want to enable sync before using this section.`}</p>
+        <ButtonGroup>
+          <Button
+            onClick={() => this.setState((prevState:any) => ({
+              hacksOpen: !prevState.hacksOpen && prevState.syncData
+            }))}
+          >{`Toggle Show Hacks`}</Button>
+          <Button
+            onClick={() => autoAssignTables(sledge, this.state.syncData.hacks)}
+          >{`Auto Assign Tables`}</Button>
+        </ButtonGroup>
+        {this.state.hacksOpen ? [(
+          <TabularActions
+            key="table"
+            headings={["Id", "Active", "Location", "Name"]}
+            rows={
+              this.state.syncData.hacks.map((hack:any) => ({
+                id: hack.id,
+                columns: [
+                  hack.id.toString(),
+                  hack.active===0 ? "Inactive" : "Active",
+                  hack.location.toString(),
+                  hack.name
+                ]
+              }))
+            }
+            actions={[
+              {name: "Toggle Active", cb: id => {
+                let hack = this.state.syncData.hacks.find((h:any) => h.id===id);
+                logPromise(sledge.sendModifyHack({
+                  hackId: id,
+                  hack: {
+                    active: hack.active ? 0 : 1
+                  }
+                }));
+              }},
+              {name: "Change Location", cb: id => {
+                let hack = this.state.syncData.hacks.find((h:any) => h.id===id);
+                logPromise(sledge.sendModifyHack({
+                  hackId: id,
+                  hack: {
+                    location: parseInt(
+                      prompt("Enter new location (eg. 12)")
+                    )
+                  }
+                }));
+              }}
+            ]}
+          />
+        )] : []}
+
+        <h2>{`Manage Judges`}</h2>
+        <Button
+          onClick={() => this.setState((prevState:any) => ({
+            judgesOpen: !prevState.judgesOpen && prevState.syncData
+          }))}
+        >{`Toggle Show Judges`}</Button>
+        {this.state.judgesOpen ? [(
+          <TabularActions
+            key="table"
+            headings={["Id", "Active", "Name", "Email"]}
+            rows={
+              this.state.syncData.judges.map((judge:any) => ({
+                id: judge.id,
+                columns: [
+                  judge.id.toString(),
+                  judge.active===0 ? "Inactive" : "Active",
+                  judge.name,
+                  judge.email
+                ]
+              }))
+            }
+            actions={[]}
+          />
+        )] : []}
       </Container>
     );
   }

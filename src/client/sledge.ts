@@ -96,6 +96,10 @@ export class SledgeClient {
     return this.sendAndAwait("Login", data);
   }
 
+  sendModifyHack(data: evts.ModifyHack): Promise<evts.GenericResponse> {
+    return this.sendAndAwait("ModifyHack", data);
+  }
+
   sendRateHack(data : evts.RateHack) : Promise<evts.GenericResponse> {
     return this.sendAndAwait("RateHack", data);
   }

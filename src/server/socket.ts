@@ -84,6 +84,24 @@ export class SocketCommunication {
       return this.nyi(sid, "Login");
     },
 
+    onModifyHack: (sid: string, data: e.ModifyHack) => {
+      return this.privliged(sid, 0, () => {
+        let result = this.db.modifyHack(data.hackId, data.hack);
+        if (result) {
+          this.dispatchSync();
+          return Promise.resolve({
+            success: true,
+            message: "success"
+          });
+        } else {
+          return Promise.resolve({
+            success: false,
+            message: "Hack does not exist."
+          });
+        }
+      });
+    },
+
     onRateHack: (sid : string, data : e.RateHack) => {
       return this.nyi(sid, "RateHack");
     },

@@ -25,6 +25,7 @@ export class ServerEventWrapper {
       reg(s, e.addSuperlativeHack, h.onAddSuperlativeHack);
       reg(s, e.authenticate, h.onAuthenticate);
       reg(s, e.login, h.onLogin);
+      reg(s, e.modifyHack, h.onModifyHack);
       reg(s, e.rateHack, h.onRateHack);
       reg(s, e.rankSuperlative, h.onRankSuperlative);
       reg(s, e.setSynchronize, h.onSetSynchronize);
@@ -89,6 +90,7 @@ export interface ServerEventHandlers {
   onAddSuperlativeHack : RequestHandler<e.AddSuperlativeHack, e.AddRowResponse>;
   onAuthenticate : RequestHandler<e.Authenticate, e.AuthenticateResponse>;
   onLogin : RequestHandler<e.Login, e.LoginResponse>;
+  onModifyHack: RequestHandler<e.ModifyHack, e.GenericResponse>;
   onRateHack : RequestHandler<e.RateHack, e.GenericResponse>;
   onRankSuperlative : RequestHandler<e.RankSuperlative, e.GenericResponse>;
   onSetSynchronize : RequestHandler<e.SetSynchronize, e.GenericResponse>;
