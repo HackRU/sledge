@@ -5,8 +5,6 @@ import path     from "path";
 import * as persistence from "./persistence/database.js";
 import * as socket      from "./socket.js";
 
-
-
 export function start({port, publicDir, dataDir} : SetupOptions) {
   console.log("Public Directory: %s", publicDir);
   console.log("Data Directory: %s", dataDir);

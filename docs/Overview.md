@@ -1,4 +1,4 @@
-# Development
+# Overview
 
 This document contains some basic information about how sledge is structured,
 many of the important libraries and tools used, and how these all fit together.

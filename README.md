@@ -1,8 +1,18 @@
 # Sledge
 
-Sledge is the judging platform used for HackRU.
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+[![Build Status](https://travis-ci.org/HackRU/sledge.svg?branch=master)](https://travis-ci.org/HackRU/sledge)
 
-Sledge is undergoing major changes and is not stable at this point.
+**This project is currently in development.**
+
+Sledge is the judging platform used for HackRU and HackHers. Sledge is
+responsible for assigning judges to hacks, collecting ratings from judges and
+calculating the overall winners and prize winners.
+
+Sledge is built by architects on the RnD team. If you are an architect
+interested in joining sledge please read [`docs/Architects.md`][architects].
+
+[architects]: docs/Architects.md
 
 ## Quick Start
 

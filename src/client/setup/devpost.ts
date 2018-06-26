@@ -122,7 +122,7 @@ export function extractDevpostData(csvContent: string): DevpostData | undefined 
     return {
       name,
       description: des,
-      superlatives: parsedSups.data.length == 1 ?
+      superlatives: parsedSups.data.length === 1 ?
         parsedSups.data[0].map((s:string) => s.trim()) : []
     };
   }).filter(r => !!r);

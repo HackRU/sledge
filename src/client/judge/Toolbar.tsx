@@ -50,7 +50,7 @@ export const ToolbarPresentation = (p : Props) => (
 export const Toolbar = connect<StateProps, DispatchProps, {}>(
   state => ({
     prevButtonEnabled: offsetTo(state.myHacks, -1, state.currentHackId) >= 0,
-    listButtonEnabled: state.interfaceMode == InterfaceMode.Judging,
+    listButtonEnabled: state.interfaceMode === InterfaceMode.Judging,
     nextButtonEnabled: offsetTo(state.myHacks, 1, state.currentHackId) >= 0
   }),
   dispatch => ({

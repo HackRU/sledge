@@ -4,6 +4,7 @@ var path = require("path");
 var clean = require("gulp-clean");
 var gulp = require("gulp");
 var shell = require("shelljs");
+var tslint = require("gulp-tslint");
 
 let basePath = __dirname;
 let binPath = path.resolve(basePath, "node_modules/.bin");
@@ -29,6 +30,12 @@ function runCommand(cmd) {
 }
 
 gulp.task("default", ["build"]);
+
+gulp.task("lint", function () {
+  return gulp.src(["src/**/*.ts", "src/**/*.tsx"])
+    .pipe(tslint())
+    .pipe(tslint.report());
+});
 
 gulp.task("build", ["build-server", "build-client"]);
 

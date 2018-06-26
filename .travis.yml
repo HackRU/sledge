@@ -4,3 +4,4 @@ node_js:
   - "lts/*"
 script:
   - ./gulp
+  - ./gulp lint
