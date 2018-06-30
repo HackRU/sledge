@@ -18,9 +18,8 @@ sqlite3> INSERT INTO Token(secret, privilege) VALUES("test", 0);
 ```
 
 Now navigate to the setup page (`http://localhost:8080/setup.html`). Set your
-test secret and click authenticate. It's also a good idea to turn Sync on.
-Always check the javascript dev console after every action to look for a success
-message or errors.
+test secret and click authenticate.  Always check the javascript dev console
+after every action to look for a success message or errors.
 
 Judges and categories can be added manually. Hacks and superlatives can be
 imported from devpost. See https://sledge-site.s3.amazonaws.com/testdevpost.csv

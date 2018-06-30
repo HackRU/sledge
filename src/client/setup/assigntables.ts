@@ -1,5 +1,5 @@
 import {SledgeClient} from "../sledge.js";
-import {Hack, Row} from "../../protocol/database.js";
+import {Table, Hack, Row} from "../../protocol/database.js";
 
 export function autoAssignTables(client: SledgeClient, hacks: Array<Row<Hack>>) {
   // First, get all active hacks, sorted by ID
@@ -8,9 +8,10 @@ export function autoAssignTables(client: SledgeClient, hacks: Array<Row<Hack>>) 
   let changeLocRequests = [];
   let nextLocation = 1;
   for (let h of activeHacks) {
-    changeLocRequests.push(client.sendModifyHack({
-      hackId: h.id,
-      hack: {
+    changeLocRequests.push(client.sendModifyRow({
+      table: Table.Hack,
+      id: h.id,
+      diff: {
         location: nextLocation++
       }
     }));

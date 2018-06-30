@@ -3,5 +3,4 @@ node_js:
   - "node"
   - "lts/*"
 script:
-  - ./gulp
-  - ./gulp lint
+  - ./gulp build test lint

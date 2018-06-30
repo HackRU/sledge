@@ -17,18 +17,14 @@ export class ServerEventWrapper {
     let h = handlers;
     let reg = this.registerRequestHandler;
     sio.on("connect", s => {
-      reg(s, e.addCategory, h.onAddCategory);
-      reg(s, e.addHack, h.onAddHack);
-      reg(s, e.addJudge, h.onAddJudge);
-      reg(s, e.addJudgeHack, h.onAddJudgeHack);
-      reg(s, e.addSuperlative, h.onAddSuperlative);
-      reg(s, e.addSuperlativeHack, h.onAddSuperlativeHack);
+      reg(s, e.addRow, h.onAddRow);
       reg(s, e.authenticate, h.onAuthenticate);
       reg(s, e.login, h.onLogin);
-      reg(s, e.modifyHack, h.onModifyHack);
+      reg(s, e.modifyRow, h.onModifyRow);
       reg(s, e.rateHack, h.onRateHack);
       reg(s, e.rankSuperlative, h.onRankSuperlative);
-      reg(s, e.setSynchronize, h.onSetSynchronize);
+      reg(s, e.setSynchronizeMyHacks, h.onSetSynchronizeMyHacks);
+      reg(s, e.setSynchronizeShared, h.onSetSynchronizeShared);
       s.on("disconnect", h.onDisconnect);
 
       h.onConnect(s.id);
@@ -73,8 +69,12 @@ export class ServerEventWrapper {
     this.sio.to(room).emit("ProtocolError", protocolError);
   }
 
-  sendSynchronize(room : string, synchronize : e.Synchronize) {
-    this.sio.to(room).emit("Synchronize", synchronize);
+  sendSynchronizeShared(room: string, synchronizeShared: e.SynchronizeShared) {
+    this.sio.to(room).emit("SynchronizeShared", synchronizeShared);
+  }
+
+  sendSynchronizeMyHacks(room: string, synchronizeMyHacks: e.SynchronizeMyHacks) {
+    this.sio.to(room).emit("SynchronizeMyHacks", synchronizeMyHacks);
   }
 }
 
@@ -82,18 +82,14 @@ export interface ServerEventHandlers {
   onConnect : (sid : string) => void;
   onDisconnect : (sid : string) => void;
 
-  onAddCategory: RequestHandler<e.AddCategory, e.AddRowResponse>;
-  onAddHack : RequestHandler<e.AddHack, e.AddRowResponse>;
-  onAddJudge : RequestHandler<e.AddJudge, e.AddRowResponse>;
-  onAddJudgeHack : RequestHandler<e.AddJudgeHack, e.AddRowResponse>;
-  onAddSuperlative : RequestHandler<e.AddSuperlative, e.AddRowResponse>;
-  onAddSuperlativeHack : RequestHandler<e.AddSuperlativeHack, e.AddRowResponse>;
-  onAuthenticate : RequestHandler<e.Authenticate, e.AuthenticateResponse>;
-  onLogin : RequestHandler<e.Login, e.LoginResponse>;
-  onModifyHack: RequestHandler<e.ModifyHack, e.GenericResponse>;
-  onRateHack : RequestHandler<e.RateHack, e.GenericResponse>;
-  onRankSuperlative : RequestHandler<e.RankSuperlative, e.GenericResponse>;
-  onSetSynchronize : RequestHandler<e.SetSynchronize, e.GenericResponse>;
+  onAddRow: RequestHandler<e.AddRow, e.AddRowResponse>
+  onAuthenticate: RequestHandler<e.Authenticate, e.AuthenticateResponse>;
+  onLogin: RequestHandler<e.Login, e.LoginResponse>;
+  onModifyRow: RequestHandler<e.ModifyRow, e.GenericResponse>;
+  onRateHack: RequestHandler<e.RateHack, e.GenericResponse>;
+  onRankSuperlative: RequestHandler<e.RankSuperlative, e.GenericResponse>;
+  onSetSynchronizeShared: RequestHandler<e.SetSynchronizeShared, e.GenericResponse>;
+  onSetSynchronizeMyHacks: RequestHandler<e.SetSynchronizeMyHacks, e.GenericResponse>;
 }
 
 /*

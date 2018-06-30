@@ -1,5 +1,6 @@
 import {parse} from "papaparse";
 
+import {Table} from "../../protocol/database.js";
 import {SledgeClient} from "../sledge.js";
 
 export function importDevpostData(client: SledgeClient, csvContent: string) {
@@ -12,11 +13,13 @@ export function importDevpostData(client: SledgeClient, csvContent: string) {
   console.log(extracted);
 
   // First, Add all hacks and superlatives
-  let superlativesAddResults = extracted.superlatives.map(s => client.sendAddSuperlative({
-    superlative: { name: s }
+  let superlativesAddResults = extracted.superlatives.map(s => client.sendAddRow({
+    table: Table.Superlative,
+    row: { name: s }
   }));
-  let hacksAddResults = extracted.hacks.map(h => client.sendAddHack({
-    hack: {
+  let hacksAddResults = extracted.hacks.map(h => client.sendAddRow({
+    table: Table.Hack,
+    row: {
       name: h.name,
       description: h.description,
       location: 0,
@@ -42,8 +45,9 @@ export function importDevpostData(client: SledgeClient, csvContent: string) {
     let superHackResults = [];
     for (let hackIdx in extracted.hacks) {
       for (let supIdx of extracted.hacks[hackIdx].superlatives) {
-        superHackResults.push(client.sendAddSuperlativeHack({
-          superlativeHack: {
+        superHackResults.push(client.sendAddRow({
+          table: Table.SuperlativeHack,
+          row: {
             hackId: hackResults[hackIdx].newRowId,
             superlativeId: supResults[supIdx].newRowId
           }
@@ -108,7 +112,9 @@ export function extractDevpostData(csvContent: string): DevpostData | undefined 
     let name = row[nameColId] as string;
     let des = row[desColId] as string;
     let sups = row[supsColId];
-    if ( name == null || des == null || sups == null ) {
+    if ( row.length < 1 || (row.length === 1 && !row[0]) ) {
+      return undefined;
+    } else if ( name == null || des == null || sups == null ) {
       console.warn("WARNING: Skipping row because column is missing");
       console.log(row);
       return undefined;

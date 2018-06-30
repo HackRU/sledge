@@ -39,7 +39,7 @@ All development will happen on the Github repo. We will follow the standard pull
 request workflow common to many project on Github: develop on a fork and open a
 pull request when you want your features merged into the main branch. Your pull
 request will have to build, pass a linter, pass tests and be approved before it
-will be merged in. The first two will be automated with Travis CI. The linter
+will be merged in. The first three will be automated with Travis CI. The linter
 acts as our style guide.
 
 ## Further Information

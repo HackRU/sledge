@@ -7,7 +7,7 @@ import {
 } from "../../protocol/database.js";
 
 import {
-  Synchronize as SyncEvent
+  SynchronizeShared as SyncEvent
 } from "../../protocol/events.js";
 
 export type Action = Synchronize | OpenHackRelative;

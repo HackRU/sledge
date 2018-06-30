@@ -31,7 +31,7 @@
   script.addEventListener("load", function () {
     SystemJS.config({
       packages: {
-        "lib": { format: "system" }
+        "/": { format: "system" }
       },
 
       map: {
@@ -42,7 +42,9 @@
         "redux": "https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.0/redux.js",
         "reactstrap": "https://cdnjs.cloudflare.com/ajax/libs/reactstrap/6.1.0/reactstrap.full.js",
         "_immutable": "https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.2/immutable.js",
-        "_papaparse": "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.5.0/papaparse.js"
+        "_papaparse": "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.5.0/papaparse.js",
+        "mocha": "https://cdnjs.cloudflare.com/ajax/libs/mocha/5.2.0/mocha.min.js",
+        "chai": "https://cdnjs.cloudflare.com/ajax/libs/chai/4.1.2/chai.js"
       },
       meta: {
         "socket.io-client": { format: "amd" },
@@ -51,7 +53,9 @@
         "react-redux": { format: "amd" },
         "redux": { format: "amd" },
         "_immutable": { format: "amd" },
-        "_papaparse": { format: "amd" }
+        "_papaparse": { format: "amd" },
+				"mocha": { format: "global" },
+        "chai": { format: "amd" }
       },
 
       warnings: true

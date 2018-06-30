@@ -15,7 +15,7 @@ export class SledgeClient {
   status : SledgeStatus = SledgeStatus.Connecting;
 
   responseResolvers : Map<string, (r:any) => void>;
-  synchronizeSubscribers : Array<(e:evts.Synchronize) => void>;
+  synchronizeSubscribers : Array<(e:evts.SynchronizeShared) => void>;
   statusSubscribers: Array<(s:SledgeStatus) => void>;
 
   constructor(opts : SledgeOptions) {
@@ -34,7 +34,7 @@ export class SledgeClient {
       if (e.original) console.warn(e.original);
     });
 
-    this.socket.on("Synchronize", (e:evts.Synchronize) => {
+    this.socket.on("SynchronizeShared", (e:evts.SynchronizeShared) => {
       for (let notify of this.synchronizeSubscribers) {
         if (notify) notify(e);
       }
@@ -81,45 +81,19 @@ export class SledgeClient {
   }
 
   private generateUniqueReturnId() {
-    const randomness = 16;
-    let entropy = (Date.now() << randomness) + Math.floor(Math.random()*Math.pow(2,randomness));
-    return entropy.toString(16);
+    return Date.now().toString(16).slice(-6) + Math.random().toString(16).slice(-6);
   }
 
-  sendAddCategory(data: evts.AddCategory): Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddCategory", data);
+  sendAddRow(data: evts.AddRow): Promise<evts.AddRowResponse> {
+    return this.sendAndAwait("AddRow", data);
   }
 
-  sendAddHack(data : evts.AddHack) : Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddHack", data);
-  }
-
-  sendAddJudge(data : evts.AddJudge) : Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddJudge", data);
-  }
-
-  sendAddJudgeHack(data: evts.AddJudgeHack): Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddJudgeHack", data);
-  }
-
-  sendAddSuperlative(data : evts.AddSuperlative) : Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddSuperlative", data);
-  }
-
-  sendAddSuperlativeHack(data: evts.AddSuperlativeHack): Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddSuperlativeHack", data);
-  }
-
-  sendAuthenticate(data : evts.Authenticate) : Promise<evts.AuthenticateResponse> {
+  sendAuthenticate(data: evts.Authenticate): Promise<evts.Authenticate>  {
     return this.sendAndAwait("Authenticate", data);
   }
 
-  sendLogin(data : evts.Login) : Promise<evts.LoginResponse> {
-    return this.sendAndAwait("Login", data);
-  }
-
-  sendModifyHack(data: evts.ModifyHack): Promise<evts.GenericResponse> {
-    return this.sendAndAwait("ModifyHack", data);
+  sendModifyRow(data: evts.ModifyRow): Promise<evts.GenericResponse> {
+    return this.sendAndAwait("ModifyRow", data);
   }
 
   sendRateHack(data : evts.RateHack) : Promise<evts.GenericResponse> {
@@ -130,8 +104,8 @@ export class SledgeClient {
     return this.sendAndAwait("RankSuperlative", data);
   }
 
-  sendSetSynchronize(data : evts.SetSynchronize) : Promise<evts.GenericResponse> {
-    return this.sendAndAwait("SetSynchronize", data);
+  sendSetSynchronizeShared(data : evts.SetSynchronizeShared) : Promise<evts.GenericResponse> {
+    return this.sendAndAwait("SetSynchronizeShared", data);
   }
 
   subscribeStatus(notify: (s:SledgeStatus) => void): () => void {
@@ -141,7 +115,7 @@ export class SledgeClient {
     }
   }
 
-  subscribeSynchronize(notify : (e:evts.Synchronize) => void) : () => void {
+  subscribeSynchronize(notify : (e:evts.SynchronizeShared) => void) : () => void {
     let i = this.synchronizeSubscribers.length;
     this.synchronizeSubscribers[i] = notify;
     return () => { delete this.synchronizeSubscribers[i]; };

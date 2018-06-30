@@ -3,6 +3,7 @@ import {randomFillSync} from "crypto";
 import {default as socketio, Server, Socket}  from "socket.io";
 
 import * as e from "../protocol/events.js";
+import {Table} from "../protocol/database.js";
 import {DatabaseConnection} from "./persistence/database.js";
 import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper.js";
 
@@ -10,6 +11,9 @@ export class SocketCommunication {
   private sio : Server;
   private events : ServerEventWrapper;
   private clients : Map<string, ClientInfo>;
+
+  private sharedSyncTime: number = 0;
+  private sharedSyncTimer: NodeJS.Timer;
 
   constructor(private server : http.Server, private db : DatabaseConnection) {
     this.sio = socketio(server);
@@ -30,28 +34,61 @@ export class SocketCommunication {
       this.clients.delete(sid);
     },
 
-    onAddCategory: (sid: string, data: e.AddCategory) => {
-      return this.genericAdd(sid, () => this.db.addCategory(data.category));
-    },
+    onAddRow: (sid: string, data: e.AddRow) => {
+      if (!this.can(sid, 0)) {
+        return Promise.resolve({
+          success: false,
+          message: "Only admins can do that.",
+          newRowId: -1
+        });
+      }
 
-    onAddHack: (sid : string, data : e.AddHack) => {
-      return this.genericAdd(sid, () => this.db.addHack(data.hack));
-    },
+      let res: {id: number};
+      let shared = false;
+      switch (data.table) {
+        case Table.Category:
+          res = this.db.addCategory(data.row);
+          shared = true;
+          break;
+        case Table.Hack:
+          res = this.db.addHack(data.row);
+          shared = true;
+          break;
+        case Table.Judge:
+          res = this.db.addJudge(data.row);
+          shared = true;
+          break;
+        case Table.JudgeHack:
+          res = this.db.addJudgeHack(data.row);
+          shared = true;
+          break;
+        case Table.Superlative:
+          res = this.db.addSuperlative(data.row);
+          shared = true;
+          break;
+        case Table.SuperlativeHack:
+          res = this.db.addSuperlativeHack(data.row);
+          break;
+        case Table.Token:
+          res = this.db.addToken(data.row);
+          break;
+        default:
+          return Promise.resolve({
+            success: false,
+            message: "Unavailable for table: " + (data as any).table,
+            newRowId: -1
+          });
+      }
 
-    onAddJudge: (sid : string, data : e.AddJudge) => {
-      return this.genericAdd(sid, () => this.db.addJudge(data.judge));
-    },
+      if (shared) {
+        this.dispatchSync();
+      }
 
-    onAddJudgeHack: (sid: string, data: e.AddJudgeHack) => {
-      return this.genericAdd(sid, () => this.db.addJudgeHack(data.judgeHack));
-    },
-
-    onAddSuperlative: (sid : string, data : e.AddSuperlative) => {
-      return this.genericAdd(sid, () => this.db.addSuperlative(data.superlative));
-    },
-
-    onAddSuperlativeHack: (sid: string, data: e.AddSuperlativeHack) => {
-      return this.genericAdd(sid, () => this.db.addSuperlativeHack(data.superlativeHack));
+      return Promise.resolve({
+        success: true,
+        message: "success",
+        newRowId: res.id
+      });
     },
 
     onAuthenticate: (sid : string, data : e.Authenticate) => {
@@ -87,21 +124,34 @@ export class SocketCommunication {
       return this.nyi(sid, "Login");
     },
 
-    onModifyHack: (sid: string, data: e.ModifyHack) => {
-      return this.privliged(sid, 0, () => {
-        let result = this.db.modifyHack(data.hackId, data.hack);
-        if (result) {
-          this.dispatchSync();
-          return Promise.resolve({
-            success: true,
-            message: "success"
-          });
-        } else {
+    onModifyRow: (sid: string, data: e.ModifyRow) => {
+      if (!this.can(sid, 0)) {
+        return Promise.resolve({
+          success: false,
+          message: "Only admins can do that."
+        });
+      }
+
+      let shared = false;
+      switch (data.table) {
+        case Table.Hack:
+          this.db.modifyHack(data.id, data.diff);
+          shared = true;
+          break;
+        default:
           return Promise.resolve({
             success: false,
-            message: "Hack does not exist."
+            message: "Modify not supported on table " + (data as any).table
           });
-        }
+      }
+
+      if (shared) {
+        this.dispatchSync();
+      }
+
+      return Promise.resolve({
+        success: true,
+        message: "success"
       });
     },
 
@@ -113,22 +163,24 @@ export class SocketCommunication {
       return this.nyi(sid, "RankSuperlative");
     },
 
-    onSetSynchronize: (sid : string, data : e.SetSynchronize) => {
-      return new Promise(resolve => {
-        process.nextTick(() => {
-          this.events.sendSynchronize(sid, this.getSyncData());
-          this.clients.get(sid).synced = data.sync;
-          resolve({
-            success: true,
-            message: "success"
-          });
-        });
+    onSetSynchronizeShared: (sid : string, data : e.SetSynchronizeShared) => {
+      process.nextTick(() => {
+        this.events.sendSynchronizeShared(sid, this.getSyncData());
+        this.clients.get(sid).synced = data.syncShared;
       });
-    }
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
+    },
+
+    onSetSynchronizeMyHacks: (sid: string, data: e.SetSynchronizeMyHacks) => {
+      return this.nyi(sid, "SetSynchronizeMyHacks");
+    },
 
   }
 
-  private getSyncData(): e.Synchronize {
+  private getSyncData(): e.SynchronizeShared {
     return {
       hacks: this.db.getAllHacks(),
       judges: this.db.getAllJudges(),
@@ -139,10 +191,25 @@ export class SocketCommunication {
   }
 
   private dispatchSync() {
+    let now = Date.now();
+    let timeDiff = now - this.sharedSyncTime;
+    if (timeDiff < 500) {
+      if (!this.sharedSyncTimer) {
+        this.sharedSyncTimer =
+          setTimeout(() => this.dispatchSync(), timeDiff);
+      }
+      return;
+    }
+
+    if (this.sharedSyncTimer) {
+      clearTimeout(this.sharedSyncTimer);
+      this.sharedSyncTimer = null;
+    }
+
     let syncData = this.getSyncData();
     this.clients.forEach((v, k) => {
       if (v.synced) {
-        this.events.sendSynchronize(k, syncData);
+        this.events.sendSynchronizeShared(k, syncData);
       }
     });
   }

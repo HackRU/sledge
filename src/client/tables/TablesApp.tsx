@@ -6,7 +6,7 @@ import {
   Alert
 } from "reactstrap";
 
-import {Synchronize} from "../../protocol/events.js";
+import {SynchronizeShared as Synchronize} from "../../protocol/events.js";
 import {SledgeClient} from "../sledge.js";
 
 let sledge : SledgeClient;
@@ -21,8 +21,8 @@ export class TablesApp extends React.Component<{}, {initialized:boolean, syncDat
     sledge.subscribeSynchronize(evt => {
       this.handleSync(evt);
     });
-    sledge.sendSetSynchronize({
-      sync: true
+    sledge.sendSetSynchronizeShared({
+      syncShared: true
     });
 
     this.state = {

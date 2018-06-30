@@ -18,6 +18,10 @@ export function start({port, publicDir, dataDir} : SetupOptions) {
 
   server.listen(port);
   console.log(`Running at http://localhost:${port}`);
+
+  if (process.send) {
+    process.send("bound");
+  }
 }
 
 export interface SetupOptions {

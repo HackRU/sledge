@@ -3,6 +3,19 @@
 // given table. The type Row<TableName> is a complete representation of a table
 // row.
 
+export const enum Table {
+  Hack = "TABLE_HACK",
+  Judge = "TABLE_JUDGE",
+  Token = "TABLE_TOKEN",
+  JudgeHack = "TABLE_JUDGEHACK",
+  Superlative = "TABLE_SUPERLATIVE",
+  SuperlativeHack = "TABLE_SUPERLATIVEHACK",
+  SuperlativePlacement = "TABLE_SUPERLATIVEPLACEMENT",
+  HackNoshow = "TABLE_HACKNOSHOW",
+  Category = "TABLE_CATEGORY",
+  Rating = "TABLE_RATING"
+}
+
 /**
  * A hack to be judged, usually imported form devpost.
  */

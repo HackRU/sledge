@@ -1,10 +1,12 @@
 import {
+  Table,
   Hack,
   Judge,
   JudgeHack,
   Superlative,
   SuperlativeHack,
   Category,
+  Token,
   Row
 } from "./database.js";
 
@@ -15,7 +17,7 @@ import {
 // connected the client will not receive any events.
 //
 // Events
-//  Each event has a unique name and goes in a single direction.Events are split
+//  Each event has a unique name and goes in a single direction. Events are split
 //  into three types: requests (client to server), responses (server to client)
 //  and updates (server to client). For each event, this file includes a written
 //  description, an interface, and a meta object.
@@ -23,7 +25,7 @@ import {
 //  All client-server events have schemas that correspond to their interface. A
 //  ProtocolError event is sent back to the client if the interface does not
 //  match, and may also be sent for other reasons. Unhandled event names are
-//  ignored. Other errors are described in the specific events. N
+//  ignored. Other errors are described in the specific events.
 // Authentication
 //  All connected clients have a privilege represented by an integer. A
 //  privilege of -1 is unprivileged, of 0 is admin and of a positive integer is
@@ -31,33 +33,28 @@ import {
 //  given a privilege of -1. An admin is privileged to perform administrative
 //  actions and act as any judge.
 // Synchronized Data
-//  Certain tables in the database are considered shared and can be given to any
-//  client that requests it regardless of their privilege. All judges should
-//  have a copy of this data and keep their copy synchronized with the server.
-//  The following tables are considered shared:
-//    Hacks, Judges, Superlatives, SuperlativeHacks, Categories
+//  Because Sledge is a real-time judging system, we need ways to push events to
+//  judges without them having to request it each time the data changes. Clients
+//  can request to synchronize to certain types of updates which will cause them
+//  to to receive a type of synchronize event depending on what changes and what
+//  they are synchronized to.
 // Requests and Responses
 //  Each request (except those met by ProtocolError) will send back a single
 //  corresponding response. Each request and response will have a returnId,
 //  chosen by the client, which will be equal when they correspond.
 // Reconnection
-//  By default, the socket.io client will automatically attempt to reconnect to
+//  By default the socket.io client will automatically attempt to reconnect to
 //  the server if a connection is lost, and resend any lost events.
 //  Unfortunately, socket.io does not (always) keep track of clients after
 //  they're disconnected so to the server it appears like a new client. This is
 //  problematic if these resent events require the client to be privileged.
 //  Therefore, on reconnect the client should ensure socket.io reconnects with
-//  proper query parameters.
+//  proper query parameters. It is up to the client to resynchronize.
 // Query Parameters
 //  If the "secret" query parameter is present the server will, immediately upon
 //  connection, attempt to authenticate the client as though the server was sent
 //  an Authenticate request. The server will not send back a response and will
-//  disconnect the client if there's an issue authenticating.
-//  If the "synchronize" query parameter is present and set to a nonempty value
-//  the server will act as though it was sent a SetSynchronize event with
-//  sync=true and will send Synchronize updates to the client. Unlike the
-//  request, the server will not send back a response and will disconnect if
-//  this can't be done successfully.
+//  disconnect the client if there's an issue with authenticating.
 
 export interface EventMeta {
   name : string;
@@ -84,76 +81,22 @@ export interface Request {
 }
 
 /**
- * Add a category. Must be sent by an admin.
+ * Add a row to the table. Must be sent by an admin;
  */
-export interface AddCategory extends Request {
-  category: Category;
-}
+export type AddRow = (
+    {table: Table.Category, row: Category} |
+    {table: Table.Hack, row: Hack} |
+    {table: Table.Judge, row: Judge} |
+    {table: Table.JudgeHack, row: JudgeHack} |
+    {table: Table.Superlative, row: Superlative} |
+    {table: Table.SuperlativeHack, row: SuperlativeHack} |
+    {table: Table.Token, row: Token}
+  ) & Request;
 
-export const addCategory: RequestMeta = {
-  name: "AddCategory",
+export const addRow : RequestMeta = {
+  name: "AddRow",
   response: "AddRowResponse"
-};
-
-/**
- * Add a hack. Must be sent by an admin.
- */
-export interface AddHack extends Request {
-  hack: Hack;
 }
-
-export const addHack : RequestMeta = {
-  name: "AddHack",
-  response: "AddRowResponse"
-};
-
-/**
- * Add a judge. Must be sent by an admin.
- */
-export interface AddJudge extends Request {
-  judge : Judge;
-}
-
-export const addJudge : RequestMeta = {
-  name: "AddJudge",
-  response: "AddRowResponse"
-};
-
-/**
- * Add an association between a judge and a hack. Must be an admin.
- */
-export interface AddJudgeHack extends Request {
-  judgeHack: JudgeHack;
-}
-
-export const addJudgeHack: RequestMeta = {
-  name: "AddJudgeHack",
-  response: "AddRowResponse"
-};
-
-/**
- * Add a superlative. Must be sent by an admin.
- */
-export interface AddSuperlative extends Request {
-  superlative : Superlative;
-}
-
-export const addSuperlative : RequestMeta = {
-  name: "AddSuperlative",
-  response: "AddRowResponse"
-};
-
-/**
- * Add an association between a superlative and a hack. Must be an admin.
- */
-export interface AddSuperlativeHack extends Request {
-  superlativeHack: SuperlativeHack;
-}
-
-export const addSuperlativeHack: RequestMeta = {
-  name: "AddSuperlativeHack",
-  response: "AddRowResponse"
-};
 
 /**
  * Ask the server to change a client's privilege to the one corresponding to the
@@ -185,15 +128,14 @@ export const login : RequestMeta = {
 }
 
 /**
- * Modify a hack. Must be sent by an admin.
+ * Modify a row given its ID. Must be sent by an admin.
  */
-export interface ModifyHack extends Request {
-  hackId: number;
-  hack: Partial<Hack>;
-}
+export type ModifyRow = (
+    {table: Table.Hack, id: number, diff: Partial<Hack>}
+  ) & Request;
 
-export const modifyHack: RequestMeta = {
-  name: "ModifyHack",
+export const modifyRow: RequestMeta = {
+  name: "ModifyRow",
   response: "GenericResponse"
 }
 
@@ -230,18 +172,28 @@ export const rankSuperlative : RequestMeta = {
 }
 
 /**
- * Asks the server to start or stop synchronizing data with the client. If sync
- * is true, a Synchronize update is sent to the client, and then sent again any
- * time the relevant data changes. If false, the server will stop sending
- * Synchronize updates. A GenericResponse is sent back, and will always be sent
- * back before any updates.
+ * Asks the server to start or stop synchronizing shared data.
  */
-export interface SetSynchronize extends Request {
-  sync: boolean;
+export interface SetSynchronizeShared extends Request {
+  syncShared: boolean;
 }
 
-export const setSynchronize : RequestMeta = {
-  name: "SetSynchronize",
+export const setSynchronizeShared: RequestMeta = {
+  name: "SetSynchronizeShared",
+  response: "GenericResponse"
+}
+
+/**
+ * Asks the server to start or stop synchronizing hacks for a particular judge.
+ * Client must be privileged as that particular judge.
+ */
+export interface SetSynchronizeMyHacks extends Request {
+  judgeId: number;
+  syncMyHacks: boolean;
+}
+
+export const setSynchronizeMyHacks: RequestMeta = {
+  name: "SetSynchronizeMyHacks",
   response: "GenericResponse"
 }
 
@@ -265,9 +217,7 @@ export interface Response {
 }
 
 /**
- * Indicates the result of adding a row and, if so, what the id of the newly
- * created row is. If successful, newRowId will be the id of the new row,
- * otherwise it should be ignored.
+ * Indicates if adding a row was successful and, if so, what the new ID is.
  */
 export interface AddRowResponse extends Response {
   newRowId: number;
@@ -342,9 +292,9 @@ export const protocolError : UpdateMeta = {
 }
 
 /**
- * A Synchronize sends the current state of synchronized data to the client
+ * Synchronizes shared data.
  */
-export interface Synchronize {
+export interface SynchronizeShared {
   hacks: Array<Row<Hack>>;
   judges: Array<Row<Judge>>;
   superlatives: Array<Row<Superlative>>;
@@ -352,6 +302,14 @@ export interface Synchronize {
   categories: Array<Row<Category>>;
 }
 
-export const synchronize : UpdateMeta = {
+export const synchronizeShared : UpdateMeta = {
   name: "Synchronize"
+}
+
+/**
+ * Synchronizes judge hacks of a particular judge.
+ */
+export interface SynchronizeMyHacks {
+  judgeId: number;
+  hackIds: number[];
 }

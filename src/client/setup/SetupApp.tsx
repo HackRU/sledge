@@ -15,7 +15,8 @@ import {List} from "immutable";
 import {AddRow} from "./AddRow.js";
 import {TabularActions} from "./TabularActions";
 
-import {Synchronize} from "../../protocol/events.js";
+import {Table} from "../../protocol/database.js";
+import {SynchronizeShared as Synchronize} from "../../protocol/events.js";
 
 import {getSession, setSession} from "../session.js";
 import {SledgeClient, SledgeStatus} from "../sledge.js";
@@ -47,8 +48,8 @@ export class SetupApp extends React.Component<{}, State> {
         sledgeStatus: s
       });
     });
-    logPromise(sledge.sendSetSynchronize({
-      sync: true
+    logPromise(sledge.sendSetSynchronizeShared({
+      syncShared: true
     }));
     (window as any).sledge = sledge;
 
@@ -107,7 +108,7 @@ export class SetupApp extends React.Component<{}, State> {
             <em>{this.state.sledgeStatus}</em>
           </li>
           <li>
-            {`Last Sync: `}<em>{this.state.lastSyncTime}</em>{` (`}
+            {`Last Shared Sync: `}<em>{this.state.lastSyncTime}</em>{` (`}
             <a href="javascript:void(0);" onClick={() => console.log(this.state.syncData)}>
               {`Log to Console`}
             </a>{`)`}
@@ -140,8 +141,9 @@ export class SetupApp extends React.Component<{}, State> {
         <AddRow
           name={"Add Judge"}
           fields={List.of("Name", "Email")}
-          onAdd={f => logPromise(sledge.sendAddJudge({
-            judge: {
+          onAdd={f => logPromise(sledge.sendAddRow({
+            table: Table.Judge,
+            row: {
               name: f.get(0),
               email: f.get(1),
               active: 1
@@ -151,8 +153,9 @@ export class SetupApp extends React.Component<{}, State> {
         <AddRow
           name={"Add Hack"}
           fields={List.of("Name", "Description", "Location (number)")}
-          onAdd={f => logPromise(sledge.sendAddHack({
-            hack: {
+          onAdd={f => logPromise(sledge.sendAddRow({
+            table: Table.Hack,
+            row: {
               name: f.get(0),
               description: f.get(1),
               location: parseInt(f.get(2)),
@@ -163,8 +166,9 @@ export class SetupApp extends React.Component<{}, State> {
         <AddRow
           name={"Add Category"}
           fields={List.of("Name")}
-          onAdd={f => logPromise(sledge.sendAddCategory({
-            category: {
+          onAdd={f => logPromise(sledge.sendAddRow({
+            table: Table.Category,
+            row: {
               name: f.get(0)
             }
           }))}
@@ -172,8 +176,9 @@ export class SetupApp extends React.Component<{}, State> {
         <AddRow
           name={"Add Superlative"}
           fields={List.of("Name")}
-          onAdd={f => logPromise(sledge.sendAddSuperlative({
-            superlative: {
+          onAdd={f => logPromise(sledge.sendAddRow({
+            table: Table.Superlative,
+            row: {
               name: f.get(0)
             }
           }))}
@@ -235,18 +240,20 @@ export class SetupApp extends React.Component<{}, State> {
             actions={[
               {name: "Toggle Active", cb: id => {
                 let hack = this.state.syncData.hacks.find((h:any) => h.id===id);
-                logPromise(sledge.sendModifyHack({
-                  hackId: id,
-                  hack: {
+                logPromise(sledge.sendModifyRow({
+                  table: Table.Hack,
+                  id,
+                  diff: {
                     active: hack.active ? 0 : 1
                   }
                 }));
               }},
               {name: "Change Location", cb: id => {
                 let hack = this.state.syncData.hacks.find((h:any) => h.id===id);
-                logPromise(sledge.sendModifyHack({
-                  hackId: id,
-                  hack: {
+                logPromise(sledge.sendModifyRow({
+                  table: Table.Hack,
+                  id,
+                  diff: {
                     location: parseInt(
                       prompt("Enter new location (eg. 12)")
                     )
