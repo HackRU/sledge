@@ -69,7 +69,7 @@ export class DatabaseConnection {
         +"hackId INTEGER NOT NULL,"
         +"priority INTEGER NOT NULL,"
         +"FOREIGN KEY(judgeId) REFERENCES Judge(id),"
-        +"FOREIGN KEY(hackId) REFERENCES Hacks(id),"
+        +"FOREIGN KEY(hackId) REFERENCES Hack(id),"
         +"PRIMARY KEY(id)"
       +");");
     this.sql.exec(
@@ -227,7 +227,7 @@ export class DatabaseConnection {
 
   changeSuperlativePlacement(placement : SuperlativePlacement) {
     let stmt = this.sql.prepare(
-      "INSERT INTO SuperlativePlacement"
+      "INSERT OR REPLACE INTO SuperlativePlacement"
         +"(id, judgeId, superlativeId, firstChoice, secondChoice)"
       +"VALUES ("
         +"(SELECT id FROM SuperlativePlacement WHERE judgeId=? AND superlativeId = ?),"
@@ -237,6 +237,19 @@ export class DatabaseConnection {
       placement.judgeId, placement.superlativeId,
       placement.judgeId, placement.superlativeId,
       placement.firstChoiceId, placement.secondChoiceId
+    ]);
+  }
+
+  changeJudgeHackPriority(d: {judgeId: number, hackId: number, newPriority: number}) {
+    let stmt = this.sql.prepare(
+      "INSERT OR REPLACE INTO JudgeHack"
+        +"(id, judgeId, hackId, priority)"
+      +"VALUES ("
+        +"(SELECT id FROM JudgeHack WHERE judgeId=? AND hackId=?),"
+      +"?, ?, ?);");
+
+    stmt.run([
+      d.judgeId, d.hackId, d.judgeId, d.hackId, d.newPriority
     ]);
   }
 
@@ -315,6 +328,34 @@ export class DatabaseConnection {
   }
 
   ////////////////////
+  // Get Reformatted Data
+
+  getJudgeHackMatrix(): number[][] {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM JudgeHack");
+
+    let judgesCount = this.getJudgesCount();
+    let hacksCount = this.getHacksCount();
+
+    let r: number[][] = [];
+    for (let i=0;i<judgesCount;i++) {
+      let h: number[] = [];
+      for (let j=0;j<hacksCount;j++) {
+        h.push(0);
+      }
+      r.push(h);
+    }
+
+    let all = stmt.all();
+
+    for (let row of all) {
+      r[row.judgeId-1][row.hackId-1] = row.priority;
+    }
+
+    return r;
+  }
+
+  ////////////////////
   // Get Single Rows
 
   getTokenBySecret(secret: string): Token | undefined {
@@ -330,8 +371,22 @@ export class DatabaseConnection {
   // Table Population
 
   areHacksPopulated() : Boolean {
-    let stmt = this.sql.prepare("SELECT * FROM hacks;");
+    let stmt = this.sql.prepare("SELECT * FROM Hack;");
     return !!stmt.pluck().get();
+  }
+
+  getJudgesCount(): number {
+    let stmt = this.sql.prepare(
+      "SELECT id FROM Judge ORDER BY id DESC LIMIT 1;");
+    let row = stmt.get();
+    return row ? row.id : 0;
+  }
+
+  getHacksCount(): number {
+    let stmt = this.sql.prepare(
+      "SELECT id FROM Hack ORDER BY id DESC LIMIT 1;");
+    let row = stmt.get();
+    return row ? row.id : 0;
   }
 
 }

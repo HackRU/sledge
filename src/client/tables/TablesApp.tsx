@@ -18,7 +18,7 @@ export class TablesApp extends React.Component<{}, {initialized:boolean, syncDat
     sledge = new SledgeClient({
       host: document.location.host
     });
-    sledge.subscribeSynchronize(evt => {
+    sledge.subscribeSyncShared(evt => {
       this.handleSync(evt);
     });
     sledge.sendSetSynchronizeShared({

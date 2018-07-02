@@ -13,15 +13,17 @@ import {
 import {List} from "immutable";
 
 import {AddRow} from "./AddRow.js";
-import {TabularActions} from "./TabularActions";
+import {TabularActions} from "./TabularActions.js";
+import {ToggleMatrix} from "./ToggleMatrix.js";
 
 import {Table} from "../../protocol/database.js";
-import {SynchronizeShared as Synchronize} from "../../protocol/events.js";
+import {SynchronizeAdmin, SynchronizeShared} from "../../protocol/events.js";
 
 import {getSession, setSession} from "../session.js";
 import {SledgeClient, SledgeStatus} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
 import {autoAssignTables} from "./assigntables.js";
+import {autoAssignJudgeHacks} from "./assignjudgehacks.js";
 
 function logPromise(p : Promise<any>) {
     p.then(r => console.log(r));
@@ -37,10 +39,16 @@ export class SetupApp extends React.Component<{}, State> {
     sledge = new SledgeClient({
       host: document.location.host
     });
-    sledge.subscribeSynchronize(evt => {
+    sledge.subscribeSyncShared(evt => {
       this.setState({
-        syncData: evt,
-        lastSyncTime: (new Date()).toLocaleString()
+        syncSharedData: evt,
+        lastSyncSharedTime: (new Date()).toLocaleString()
+      });
+    });
+    sledge.subscribeSyncAdmin(evt => {
+      this.setState({
+        syncAdminData: evt,
+        lastSyncAdminTime: (new Date()).toLocaleString()
       });
     });
     sledge.subscribeStatus(s => {
@@ -57,11 +65,14 @@ export class SetupApp extends React.Component<{}, State> {
 
     this.state = {
       secret: session.secret,
-      syncData: undefined,
-      lastSyncTime: "never",
+      syncSharedData: undefined,
+      lastSyncSharedTime: "never",
+      syncAdminData: undefined,
+      lastSyncAdminTime: "never",
       devpostCSV: "",
       hacksOpen: false,
       judgesOpen: false,
+      assignedOpen: false,
       sledgeStatus: sledge.status,
       autoAuth: !!localStorage.getItem("autoauth")
     };
@@ -78,9 +89,17 @@ export class SetupApp extends React.Component<{}, State> {
   }
 
   sendAuth() {
-    logPromise(sledge.sendAuthenticate({
+    let authPromise = sledge.sendAuthenticate({
       secret: this.state.secret
-    }));
+    });
+    logPromise(authPromise);
+    authPromise.then(res => {
+      if (res.success) {
+        logPromise(sledge.sendSetSynchronizeAdmin({
+          syncAdmin: true
+        }));
+      }
+    });
   }
 
   toggleAutoAuth() {
@@ -108,8 +127,14 @@ export class SetupApp extends React.Component<{}, State> {
             <em>{this.state.sledgeStatus}</em>
           </li>
           <li>
-            {`Last Shared Sync: `}<em>{this.state.lastSyncTime}</em>{` (`}
-            <a href="javascript:void(0);" onClick={() => console.log(this.state.syncData)}>
+            {`Last Shared Sync: `}<em>{this.state.lastSyncSharedTime}</em>{` (`}
+            <a href="javascript:void(0);" onClick={() => console.log(this.state.syncSharedData)}>
+              {`Log to Console`}
+            </a>{`)`}
+          </li>
+          <li>
+            {`Last Admin Sync: `}<em>{this.state.lastSyncAdminTime}</em>{` (`}
+            <a href="javascript:void(0);" onClick={() => console.log(this.state.syncAdminData)}>
               {`Log to Console`}
             </a>{`)`}
           </li>
@@ -215,11 +240,11 @@ export class SetupApp extends React.Component<{}, State> {
         <ButtonGroup>
           <Button
             onClick={() => this.setState((prevState:any) => ({
-              hacksOpen: !prevState.hacksOpen && prevState.syncData
+              hacksOpen: !prevState.hacksOpen && prevState.syncSharedData
             }))}
           >{`Toggle Show Hacks`}</Button>
           <Button
-            onClick={() => autoAssignTables(sledge, this.state.syncData.hacks)}
+            onClick={() => autoAssignTables(sledge, this.state.syncSharedData.hacks)}
           >{`Auto Assign Tables`}</Button>
         </ButtonGroup>
         {this.state.hacksOpen ? [(
@@ -227,7 +252,7 @@ export class SetupApp extends React.Component<{}, State> {
             key="table"
             headings={["Id", "Active", "Location", "Name"]}
             rows={
-              this.state.syncData.hacks.map((hack:any) => ({
+              this.state.syncSharedData.hacks.map((hack:any) => ({
                 id: hack.id,
                 columns: [
                   hack.id.toString(),
@@ -239,7 +264,7 @@ export class SetupApp extends React.Component<{}, State> {
             }
             actions={[
               {name: "Toggle Active", cb: id => {
-                let hack = this.state.syncData.hacks.find((h:any) => h.id===id);
+                let hack = this.state.syncSharedData.hacks.find((h:any) => h.id===id);
                 logPromise(sledge.sendModifyRow({
                   table: Table.Hack,
                   id,
@@ -249,7 +274,7 @@ export class SetupApp extends React.Component<{}, State> {
                 }));
               }},
               {name: "Change Location", cb: id => {
-                let hack = this.state.syncData.hacks.find((h:any) => h.id===id);
+                let hack = this.state.syncSharedData.hacks.find((h:any) => h.id===id);
                 logPromise(sledge.sendModifyRow({
                   table: Table.Hack,
                   id,
@@ -268,7 +293,7 @@ export class SetupApp extends React.Component<{}, State> {
         <ButtonGroup>
           <Button
             onClick={() => this.setState((prevState:any) => ({
-              judgesOpen: !prevState.judgesOpen && prevState.syncData
+              judgesOpen: !prevState.judgesOpen && prevState.syncSharedData
             }))}
           >{`Toggle Show Judges`}</Button>
         </ButtonGroup>
@@ -277,7 +302,7 @@ export class SetupApp extends React.Component<{}, State> {
             key="table"
             headings={["Id", "Active", "Name", "Email"]}
             rows={
-              this.state.syncData.judges.map((judge:any) => ({
+              this.state.syncSharedData.judges.map((judge:any) => ({
                 id: judge.id,
                 columns: [
                   judge.id.toString(),
@@ -290,6 +315,33 @@ export class SetupApp extends React.Component<{}, State> {
             actions={[]}
           />
         )] : []}
+
+        <h2>{`Manage Hacks Assigned to Judges`}</h2>
+        <ButtonGroup>
+          <Button
+            onClick={() => this.setState((prevState:any) => ({
+              assignedOpen: !prevState.assignedOpen && prevState.syncSharedData && prevState.syncAdminData
+            }))}
+          >{`Toggle Assigned Matrix`}</Button>
+          <Button
+            onClick={() => autoAssignJudgeHacks(sledge, this.state.syncSharedData)}
+          >{`Auto Assign All Hacks to All Judges`}</Button>
+        </ButtonGroup>
+        {this.state.assignedOpen ? [(
+          <ToggleMatrix
+            key="table"
+            columns={this.state.syncSharedData.judges.map(j => j.name)}
+            rows={this.state.syncSharedData.hacks.map(h => h.name)}
+            matrix={
+              this.state.syncAdminData.judgeHackMatrix
+            }
+            onToggle={(prev,j, h) => logPromise(sledge.sendSetJudgeHackPriority({
+              judgeId: j+1,
+              hackId: h+1,
+              priority: parseInt(prompt("New Priority (eg. 3), or 0 for not assigned"))
+            }))}
+          />
+        )] : []}
       </Container>
     );
   }
@@ -297,11 +349,14 @@ export class SetupApp extends React.Component<{}, State> {
 
 interface State {
   secret: string;
-  syncData: Synchronize;
-  lastSyncTime: string;
+  syncSharedData: SynchronizeShared;
+  lastSyncSharedTime: string;
+  syncAdminData: SynchronizeAdmin;
+  lastSyncAdminTime: string;
   devpostCSV: string;
   hacksOpen: boolean;
   judgesOpen: boolean;
+  assignedOpen: boolean;
   sledgeStatus: SledgeStatus;
   autoAuth: boolean;
 }

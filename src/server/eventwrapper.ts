@@ -23,6 +23,8 @@ export class ServerEventWrapper {
       reg(s, e.modifyRow, h.onModifyRow);
       reg(s, e.rateHack, h.onRateHack);
       reg(s, e.rankSuperlative, h.onRankSuperlative);
+      reg(s, e.setJudgeHackPriority, h.onSetJudgeHackPriority);
+      reg(s, e.setSynchronizeAdmin, h.onSetSynchronizeAdmin);
       reg(s, e.setSynchronizeMyHacks, h.onSetSynchronizeMyHacks);
       reg(s, e.setSynchronizeShared, h.onSetSynchronizeShared);
       s.on("disconnect", h.onDisconnect);
@@ -69,6 +71,10 @@ export class ServerEventWrapper {
     this.sio.to(room).emit("ProtocolError", protocolError);
   }
 
+  sendSynchronizeAdmin(room: string, synchronizeAdmin: e.SynchronizeAdmin) {
+    this.sio.to(room).emit("SynchronizeAdmin", synchronizeAdmin);
+  }
+
   sendSynchronizeShared(room: string, synchronizeShared: e.SynchronizeShared) {
     this.sio.to(room).emit("SynchronizeShared", synchronizeShared);
   }
@@ -88,6 +94,8 @@ export interface ServerEventHandlers {
   onModifyRow: RequestHandler<e.ModifyRow, e.GenericResponse>;
   onRateHack: RequestHandler<e.RateHack, e.GenericResponse>;
   onRankSuperlative: RequestHandler<e.RankSuperlative, e.GenericResponse>;
+  onSetJudgeHackPriority: RequestHandler<e.SetJudgeHackPriority, e.GenericResponse>;
+  onSetSynchronizeAdmin: RequestHandler<e.SetSynchronizeAdmin, e.GenericResponse>;
   onSetSynchronizeShared: RequestHandler<e.SetSynchronizeShared, e.GenericResponse>;
   onSetSynchronizeMyHacks: RequestHandler<e.SetSynchronizeMyHacks, e.GenericResponse>;
 }

@@ -172,6 +172,32 @@ export const rankSuperlative : RequestMeta = {
 }
 
 /**
+ * Set the priority of a hack. Must be sent by an admin.
+ */
+export interface SetJudgeHackPriority extends Request {
+  judgeId: number;
+  hackId: number;
+  priority: number;
+}
+
+export const setJudgeHackPriority: RequestMeta = {
+  name: "SetJudgeHackPriority",
+  response: "GenericResponse"
+}
+
+/**
+ * Asks the server to start or stop synchronizing admin data.
+ */
+export interface SetSynchronizeAdmin extends Request {
+  syncAdmin: boolean;
+}
+
+export const setSynchronizeAdmin: RequestMeta = {
+  name: "SetSynchronizeAdmin",
+  response: "GenericResponse"
+}
+
+/**
  * Asks the server to start or stop synchronizing shared data.
  */
 export interface SetSynchronizeShared extends Request {
@@ -292,6 +318,29 @@ export const protocolError : UpdateMeta = {
 }
 
 /**
+ * Synchronize admin data.
+ */
+export interface SynchronizeAdmin {
+  /** judgeHackMatrix[judgeId][hackId] is priority */
+  judgeHackMatrix: number[][];
+  /** superlativeHackMatrix[superlativeId][hackId] if hack wants superlative prize */
+  superlativeHackMatrix: boolean[][];
+  /** noshowMatrix[judgeId][hackId] if judge marks hack as noshow */
+  noshowMatrix: boolean[][];
+  /** ratings[judgeId][hackId][categoryId] */
+  ratings: number[][][];
+  /** superlativePlacements[judgeId][superlativeId] */
+  superlativePlacements: Array<Array<{
+    firstChoiceId: number,
+    secondChoiceId: number
+  }>>;
+}
+
+export const synchronizeAdmin: UpdateMeta = {
+  name: "SynchronizeAdmin"
+}
+
+/**
  * Synchronizes shared data.
  */
 export interface SynchronizeShared {
@@ -303,7 +352,7 @@ export interface SynchronizeShared {
 }
 
 export const synchronizeShared : UpdateMeta = {
-  name: "Synchronize"
+  name: "SynchronizeShared"
 }
 
 /**

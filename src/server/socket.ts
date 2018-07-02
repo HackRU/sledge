@@ -26,7 +26,8 @@ export class SocketCommunication {
     onConnect: (sid : string) => {
       this.clients.set(sid, {
         privilege: -1,
-        synced: false
+        syncedShared: false,
+        syncedAdmin: false
       });
     },
 
@@ -163,10 +164,52 @@ export class SocketCommunication {
       return this.nyi(sid, "RankSuperlative");
     },
 
-    onSetSynchronizeShared: (sid : string, data : e.SetSynchronizeShared) => {
+    onSetJudgeHackPriority: (sid: string, data: e.SetJudgeHackPriority) => {
+      if (!this.can(sid, 0)) {
+        return Promise.resolve({
+          success: false,
+          message: "Only admins can do that."
+        });
+      }
+
+      this.db.changeJudgeHackPriority({
+        judgeId: data.judgeId,
+        hackId: data.hackId,
+        newPriority: data.priority
+      });
+
       process.nextTick(() => {
-        this.events.sendSynchronizeShared(sid, this.getSyncData());
-        this.clients.get(sid).synced = data.syncShared;
+        this.dispatchSync();
+      });
+
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
+    },
+
+    onSetSynchronizeAdmin: (sid: string, data: e.SetSynchronizeAdmin) => {
+      if (!this.can(sid, 0)) {
+        return Promise.resolve({
+          success: false,
+          message: "Only admins can do that."
+        });
+      }
+
+      process.nextTick(() => {
+        this.events.sendSynchronizeAdmin(sid, this.getSyncAdminData());
+        this.clients.get(sid).syncedAdmin = data.syncAdmin;
+      });
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
+    },
+
+    onSetSynchronizeShared: (sid : string, data: e.SetSynchronizeShared) => {
+      process.nextTick(() => {
+        this.events.sendSynchronizeShared(sid, this.getSyncSharedData());
+        this.clients.get(sid).syncedShared = data.syncShared;
       });
       return Promise.resolve({
         success: true,
@@ -180,7 +223,7 @@ export class SocketCommunication {
 
   }
 
-  private getSyncData(): e.SynchronizeShared {
+  private getSyncSharedData(): e.SynchronizeShared {
     return {
       hacks: this.db.getAllHacks(),
       judges: this.db.getAllJudges(),
@@ -188,6 +231,12 @@ export class SocketCommunication {
       superlativeHacks: this.db.getAllSuperlativeHacks(),
       categories: this.db.getAllCategories()
     };
+  }
+
+  private getSyncAdminData(): e.SynchronizeAdmin {
+    return {
+      judgeHackMatrix: this.db.getJudgeHackMatrix()
+    } as any;
   }
 
   private dispatchSync() {
@@ -206,10 +255,16 @@ export class SocketCommunication {
       this.sharedSyncTimer = null;
     }
 
-    let syncData = this.getSyncData();
+    let syncSharedData = this.getSyncSharedData();
+    let syncAdminData = this.getSyncAdminData();
     this.clients.forEach((v, k) => {
-      if (v.synced) {
-        this.events.sendSynchronizeShared(k, syncData);
+      if (v.syncedShared) {
+        this.events.sendSynchronizeShared(k, syncSharedData);
+      }
+    });
+    this.clients.forEach((v, k) => {
+      if (v.syncedAdmin) {
+        this.events.sendSynchronizeAdmin(k, syncAdminData);
       }
     });
   }
@@ -286,5 +341,6 @@ export class SocketCommunication {
 
 export interface ClientInfo {
   privilege: number;
-  synced: boolean;
+  syncedShared: boolean;
+  syncedAdmin: boolean;
 }

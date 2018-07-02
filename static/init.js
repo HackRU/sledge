@@ -31,7 +31,8 @@
   script.addEventListener("load", function () {
     SystemJS.config({
       packages: {
-        "/": { format: "system" }
+        "/lib": { format: "system" },
+        "/testrunner.js": { format: "system" }
       },
 
       map: {
