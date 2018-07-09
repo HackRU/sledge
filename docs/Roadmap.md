@@ -1,5 +1,6 @@
-TODO
+# Roadmap
 
+```
 Immediate
  - Clean up client until it compiles
 
@@ -29,3 +30,4 @@ Nice to have
    (add notice to beginning of files, to readme, explicitly only AGPLv3)
  - Copy src to public/src for sourcemaps (to be consistent with README)
  - Seperate dependencies and devDependencies, publish to npm
+```

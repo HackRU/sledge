@@ -2,7 +2,25 @@
 
 This document contains some basic information about how sledge is structured,
 many of the important libraries and tools used, and how these all fit together.
-It is meant to be a reference to both my future self and other contributors.
+If you suspect something isn't up to date it probably isn't.
+
+## Directory Structure
+
+```
+sledge
+├── bin           Contains the sledge.js executable
+├── src           Typescript source files
+│   ├── client      Client source files
+│   ├── protocol    Files relating to protocol (shared with client and server)
+│   └── server      Server source files
+├── static        Public files which are not compiled
+│
+├── data          Persistent data and configuration (eg database)
+├── lib           Compiled server files
+└── public        Public files, including static and compiled
+    ├── lib         Compiled client files
+    └── src         Original contents of src directory
+```
 
 ## General
 
@@ -77,7 +95,6 @@ component. Components generally should not attempt to style their subcomponents.
    "react";`.
  - Judge components should be stateless and pass data up to the redux store.
  - Avoid implicit any in TypeScript.
- - For consistency, don't include file extensions on imported modules.
  - Server libraries should be imported and managed using Yarn, and client
    libraries by configuring `init.js` to download them from [cdnjs][cdnjs]. For
    now, only include unminified development versions (if available). Always
