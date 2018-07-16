@@ -1,3 +1,5 @@
+import {Store, Dispatch} from "redux";
+
 import {
   Hack,
   Judge,
@@ -6,9 +8,25 @@ import {
   PartialTable
 } from "../../protocol/database.js";
 
-export interface JudgeState {
+import {
+  SynchronizeShared
+} from "../../protocol/events.js";
+
+import {SledgeClient} from "../sledge.js";
+
+////////////////////
+// Store
+
+export type JudgeStore = Store<State, Action>;
+
+////////////////////
+// State
+
+export interface State {
   /* Current mode of interface */
   interfaceMode : InterfaceMode;
+  /* Curretn judge Id */
+  myJudgeId: number;
   /* IDs of hacks to be judged, in order they should be judged */
   myHacks : number[];
   /* ID of currently selected hack, 0 if no hacks to judge */
@@ -18,11 +36,6 @@ export interface JudgeState {
   ratingFeature? : RatingFeature;
   /* Information specific to superlative rankings, undefined if no hacks to judge */
   superlativeFeature? : SuperlativeFeature;
-
-  /* Message to show in modal, only used if interfaceMode is Modal */
-  modalMessage : string;
-  /* Overlay message, will display in any mode, if not empty */
-  overlayMessage : string;
 
   /* Local synchronized copy of hacks */
   hacks : PartialTable<Hack>;
@@ -35,12 +48,9 @@ export interface JudgeState {
 }
 
 export enum InterfaceMode {
-  /* Default mode, where judges rate hacks */
+  Loading,
   Judging,
-  /* Judges can see a list of all the hacks and how they were rated */
-  Listing,
-  /* Displays a modal dialog the judge must acknowledge before continuing */
-  Modal
+  Listing
 }
 
 export interface RatingFeature {
@@ -58,14 +68,23 @@ export interface SuperlativeFeature {
   }>;
 }
 
-export const defaultState : JudgeState = {
-  interfaceMode: InterfaceMode.Listing,
-  myHacks: [],
-  currentHackId: 0,
-  modalMessage: "",
-  overlayMessage: "",
-  hacks: [],
-  judges: [],
-  superlatives: [],
-  categories: []
+////////////////////
+// Actions
+
+export type Action = {
+    type: Type.Synchronize,
+    data: SynchronizeShared
+  };
+
+export const enum Type {
+  Synchronize = "JUDGEACTION_TYPE_SYNC"
 }
+
+////////////////////
+// Async Actions
+
+export type AsyncAction = (
+    dispatch: Dispatch<Action>,
+    getState: () => State,
+    client: SledgeClient
+  ) => void;

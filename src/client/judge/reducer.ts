@@ -1,13 +1,24 @@
 import {Store} from "redux";
 
-import {JudgeState, defaultState} from "./state.js";
-import {Action} from "./actions.js";
+import {
+  State,
+  Action,
+  InterfaceMode
+} from "./types.js";
 
-export type JudgeStore = Store<JudgeState, Action>;
-
-export function reduce(state : JudgeState, action : Action) : JudgeState {
+export function reduce(state: State, action : Action): State {
   if (!state) {
-    state = defaultState;
+    state = {
+      interfaceMode: InterfaceMode.Loading,
+      myJudgeId: 0,
+      myHacks: [],
+      currentHackId: 0,
+
+      hacks: [],
+      judges: [],
+      superlatives: [],
+      categories: []
+    };
   }
 
   return state;

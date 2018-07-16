@@ -2,25 +2,20 @@ import React from "react";
 
 import {Button, ButtonGroup} from "reactstrap";
 
-import {InterfaceMode} from "./state.js";
-import {connect} from "./helpers.js";
-import {prevHack, openList, nextHack} from "../judge/actions.js";
+import {InterfaceMode} from "./types.js";
+import {connect} from "./connect.js";
+import {prevHack, openList, nextHack} from "./actions.js";
 
 const pf = "toolbar";
 
-export interface StateProps {
+export interface Props {
   prevButtonEnabled : boolean;
   listButtonEnabled : boolean;
   nextButtonEnabled : boolean;
-}
-
-export interface DispatchProps {
   onPrev: () => void;
   onList: () => void;
   onNext: () => void;
 }
-
-export type Props = StateProps & DispatchProps;
 
 export const ToolbarPresentation = (p : Props) => (
   <div className={pf}>
@@ -47,16 +42,14 @@ export const ToolbarPresentation = (p : Props) => (
   </div>
 )
 
-export const Toolbar = connect<StateProps, DispatchProps, {}>(
-  state => ({
+export const Toolbar = connect<{}, Props>(
+  (ownProps, state, dispatch) => ({
     prevButtonEnabled: offsetTo(state.myHacks, -1, state.currentHackId) >= 0,
     listButtonEnabled: state.interfaceMode === InterfaceMode.Judging,
-    nextButtonEnabled: offsetTo(state.myHacks, 1, state.currentHackId) >= 0
-  }),
-  dispatch => ({
-    onPrev: () => prevHack(dispatch),
-    onList: () => openList(dispatch),
-    onNext: () => nextHack(dispatch)
+    nextButtonEnabled: offsetTo(state.myHacks, 1, state.currentHackId) >= 0,
+    onPrev: () => dispatch(prevHack()),
+    onList: () => dispatch(openList()),
+    onNext: () => dispatch(nextHack())
   })
 )(ToolbarPresentation);
 

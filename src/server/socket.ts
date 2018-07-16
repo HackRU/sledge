@@ -188,24 +188,6 @@ export class SocketCommunication {
       });
     },
 
-    onSetSynchronizeAdmin: (sid: string, data: e.SetSynchronizeAdmin) => {
-      if (!this.can(sid, 0)) {
-        return Promise.resolve({
-          success: false,
-          message: "Only admins can do that."
-        });
-      }
-
-      process.nextTick(() => {
-        this.events.sendSynchronizeAdmin(sid, this.getSyncAdminData());
-        this.clients.get(sid).syncedAdmin = data.syncAdmin;
-      });
-      return Promise.resolve({
-        success: true,
-        message: "success"
-      });
-    },
-
     onSetSynchronizeShared: (sid : string, data: e.SetSynchronizeShared) => {
       process.nextTick(() => {
         this.events.sendSynchronizeShared(sid, this.getSyncSharedData());
@@ -229,14 +211,27 @@ export class SocketCommunication {
       judges: this.db.getAllJudges(),
       superlatives: this.db.getAllSuperlatives(),
       superlativeHacks: this.db.getAllSuperlativeHacks(),
-      categories: this.db.getAllCategories()
+      categories: this.db.getAllCategories(),
+
+      judgeHackMatrix: this.db.getJudgeHackMatrix()
     };
   }
 
-  private getSyncAdminData(): e.SynchronizeAdmin {
-    return {
-      judgeHackMatrix: this.db.getJudgeHackMatrix()
-    } as any;
+  private dispatchSyncTo(data: e.SynchronizeShared, admin: boolean, sid: string) {
+    let dataForClient : e.SynchronizeShared;
+    if (admin) {
+      dataForClient = data;
+    } else {
+      dataForClient = {
+        hacks: data.hacks,
+        judges: data.judges,
+        superlatives: data.superlatives,
+        superlativeHacks: data.superlativeHacks,
+        categories: data.categories
+      };
+    }
+
+    this.events.sendSynchronizeShared(sid, dataForClient);
   }
 
   private dispatchSync() {
@@ -255,16 +250,11 @@ export class SocketCommunication {
       this.sharedSyncTimer = null;
     }
 
-    let syncSharedData = this.getSyncSharedData();
-    let syncAdminData = this.getSyncAdminData();
+    let data = this.getSyncSharedData();
+
     this.clients.forEach((v, k) => {
       if (v.syncedShared) {
-        this.events.sendSynchronizeShared(k, syncSharedData);
-      }
-    });
-    this.clients.forEach((v, k) => {
-      if (v.syncedAdmin) {
-        this.events.sendSynchronizeAdmin(k, syncAdminData);
+        this.dispatchSyncTo(data, v.privilege===0, k);
       }
     });
   }

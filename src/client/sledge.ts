@@ -16,14 +16,12 @@ export class SledgeClient {
 
   responseResolvers : Map<string, (r:any) => void>;
   syncSharedSubs : Array<(e:evts.SynchronizeShared) => void>;
-  syncAdminSubs : Array<(e:evts.SynchronizeAdmin) => void>;
   statusSubscribers: Array<(s:SledgeStatus) => void>;
 
   constructor(opts : SledgeOptions) {
     this.socket = io(opts.host);
     this.responseResolvers = new Map();
     this.syncSharedSubs = [];
-    this.syncAdminSubs = [];
     this.statusSubscribers = [];
 
     this.setupResolverDispatch(evts.addRowResponse);
@@ -38,12 +36,6 @@ export class SledgeClient {
 
     this.socket.on("SynchronizeShared", (e:evts.SynchronizeShared) => {
       for (let notify of this.syncSharedSubs) {
-        if (notify) notify(e);
-      }
-    });
-
-    this.socket.on("SynchronizeAdmin", (e:evts.SynchronizeAdmin) => {
-      for (let notify of this.syncAdminSubs) {
         if (notify) notify(e);
       }
     });
@@ -116,10 +108,6 @@ export class SledgeClient {
     return this.sendAndAwait("SetJudgeHackPriority", data);
   }
 
-  sendSetSynchronizeAdmin(data: evts.SetSynchronizeAdmin): Promise<evts.GenericResponse> {
-    return this.sendAndAwait("SetSynchronizeAdmin", data);
-  }
-
   sendSetSynchronizeShared(data: evts.SetSynchronizeShared) : Promise<evts.GenericResponse> {
     return this.sendAndAwait("SetSynchronizeShared", data);
   }
@@ -129,10 +117,6 @@ export class SledgeClient {
     return () => {
       this.statusSubscribers = this.statusSubscribers.filter(n => n!==notify);
     }
-  }
-
-  subscribeSyncAdmin(notify: (e:evts.SynchronizeAdmin) => void) {
-    this.syncAdminSubs.push(notify);
   }
 
   subscribeSyncShared(notify: (e:evts.SynchronizeShared) => void) {

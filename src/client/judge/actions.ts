@@ -1,68 +1,32 @@
 import {
-  Hack,
-  Judge,
-  Superlative,
-  Category,
-  Row
-} from "../../protocol/database.js";
+  AsyncAction
+} from "./types.js";
 
-import {
-  SynchronizeShared as SyncEvent
-} from "../../protocol/events.js";
-
-export type Action = Synchronize | OpenHackRelative;
-
-export enum Type {
-  OpenList,
-
-  Synchronize,
-  OpenHackRelative,
+export function initialize(secret: string): AsyncAction {
+  return (dispatch, getState, client) => {
+    client.sendAuthenticate({secret}).then(function (res) {
+      if (!res.success) {
+        fail(res.message)(dispatch, getState, client);
+      }
+    });
+  };
 }
 
-/* Generic Action, could be sync or async */
-type GA = (d:(a:Action) => void) => void;
-
-////////////////////
-// Singular Actions (no data)
-
-export const openList : GA = d => ({
-  type: Type.OpenList
-})
-
-////////////////////
-// Synchronize Actions
-
-export interface Synchronize {
-  type : Type.Synchronize;
-
-  update: SyncEvent
+export function fail(message: string, error?: Error): AsyncAction {
+  return (dispatch, getState, client) => {
+    alert("ERROR: "+message+" (details in console)");
+    if (error) console.error(error);
+  };
 }
 
-export function syncFromEvent(syncEvent : SyncEvent) : GA {
-  return d => d({
-    type: Type.Synchronize,
-
-    update: syncEvent
-  });
+export function prevHack(): AsyncAction {
+  throw new Error("NYI");
 }
 
-////////////////////
-// OpenHackRelative actions
-
-export interface OpenHackRelative {
-  type : Type.OpenHackRelative
-
-  offset : number;
+export function openList(): AsyncAction {
+  throw new Error("NYI");
 }
 
-export const nextHack : GA = d => ({
-  type: Type.OpenHackRelative,
-
-  offset: 1
-})
-
-export const prevHack : GA = d => ({
-  type: Type.OpenHackRelative,
-
-  offset: -1
-})
+export function nextHack(): AsyncAction {
+  throw new Error("NYI");
+}

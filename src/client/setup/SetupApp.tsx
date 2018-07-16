@@ -17,7 +17,7 @@ import {TabularActions} from "./TabularActions.js";
 import {ToggleMatrix} from "./ToggleMatrix.js";
 
 import {Table} from "../../protocol/database.js";
-import {SynchronizeAdmin, SynchronizeShared} from "../../protocol/events.js";
+import {SynchronizeShared} from "../../protocol/events.js";
 
 import {getSession, setSession} from "../session.js";
 import {SledgeClient, SledgeStatus} from "../sledge.js";
@@ -45,12 +45,6 @@ export class SetupApp extends React.Component<{}, State> {
         lastSyncSharedTime: (new Date()).toLocaleString()
       });
     });
-    sledge.subscribeSyncAdmin(evt => {
-      this.setState({
-        syncAdminData: evt,
-        lastSyncAdminTime: (new Date()).toLocaleString()
-      });
-    });
     sledge.subscribeStatus(s => {
       this.setState({
         sledgeStatus: s
@@ -67,8 +61,6 @@ export class SetupApp extends React.Component<{}, State> {
       secret: session.secret,
       syncSharedData: undefined,
       lastSyncSharedTime: "never",
-      syncAdminData: undefined,
-      lastSyncAdminTime: "never",
       devpostCSV: "",
       hacksOpen: false,
       judgesOpen: false,
@@ -93,13 +85,6 @@ export class SetupApp extends React.Component<{}, State> {
       secret: this.state.secret
     });
     logPromise(authPromise);
-    authPromise.then(res => {
-      if (res.success) {
-        logPromise(sledge.sendSetSynchronizeAdmin({
-          syncAdmin: true
-        }));
-      }
-    });
   }
 
   toggleAutoAuth() {
@@ -129,12 +114,6 @@ export class SetupApp extends React.Component<{}, State> {
           <li>
             {`Last Shared Sync: `}<em>{this.state.lastSyncSharedTime}</em>{` (`}
             <a href="javascript:void(0);" onClick={() => console.log(this.state.syncSharedData)}>
-              {`Log to Console`}
-            </a>{`)`}
-          </li>
-          <li>
-            {`Last Admin Sync: `}<em>{this.state.lastSyncAdminTime}</em>{` (`}
-            <a href="javascript:void(0);" onClick={() => console.log(this.state.syncAdminData)}>
               {`Log to Console`}
             </a>{`)`}
           </li>
@@ -320,7 +299,7 @@ export class SetupApp extends React.Component<{}, State> {
         <ButtonGroup>
           <Button
             onClick={() => this.setState((prevState:any) => ({
-              assignedOpen: !prevState.assignedOpen && prevState.syncSharedData && prevState.syncAdminData
+              assignedOpen: !prevState.assignedOpen && prevState.syncSharedData
             }))}
           >{`Toggle Assigned Matrix`}</Button>
           <Button
@@ -333,7 +312,7 @@ export class SetupApp extends React.Component<{}, State> {
             columns={this.state.syncSharedData.judges.map(j => j.name)}
             rows={this.state.syncSharedData.hacks.map(h => h.name)}
             matrix={
-              this.state.syncAdminData.judgeHackMatrix
+              this.state.syncSharedData.judgeHackMatrix
             }
             onToggle={(prev,j, h) => logPromise(sledge.sendSetJudgeHackPriority({
               judgeId: j+1,
@@ -351,8 +330,6 @@ interface State {
   secret: string;
   syncSharedData: SynchronizeShared;
   lastSyncSharedTime: string;
-  syncAdminData: SynchronizeAdmin;
-  lastSyncAdminTime: string;
   devpostCSV: string;
   hacksOpen: boolean;
   judgesOpen: boolean;

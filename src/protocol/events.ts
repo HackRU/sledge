@@ -58,8 +58,15 @@ import {
 
 export interface EventMeta {
   name : string;
+  eventType: EventType;
   /* If not defined, any value is accepted */
   schema? : Schema;
+}
+
+export const enum EventType {
+  Request = "EVENT_TYPE_REQUEST",
+  Response = "EVENT_TYPE_RESPONSE",
+  Update = "EVENT_TYPE_UPDATE"
 }
 
 /**
@@ -95,6 +102,7 @@ export type AddRow = (
 
 export const addRow : RequestMeta = {
   name: "AddRow",
+  eventType: EventType.Request,
   response: "AddRowResponse"
 }
 
@@ -109,6 +117,7 @@ export interface Authenticate extends Request {
 
 export const authenticate : RequestMeta = {
   name: "Authenticate",
+  eventType: EventType.Request,
   response: "AuthenticateResponse"
 }
 
@@ -124,6 +133,7 @@ export interface Login extends Request {
 
 export const login : RequestMeta = {
   name: "Login",
+  eventType: EventType.Request,
   response: "LoginResponse"
 }
 
@@ -136,6 +146,7 @@ export type ModifyRow = (
 
 export const modifyRow: RequestMeta = {
   name: "ModifyRow",
+  eventType: EventType.Request,
   response: "GenericResponse"
 }
 
@@ -151,6 +162,7 @@ export interface RateHack extends Request {
 
 export const rateHack : RequestMeta = {
   name: "RateHack",
+  eventType: EventType.Request,
   response: "GenericResponse"
 }
 
@@ -168,6 +180,7 @@ export interface RankSuperlative extends Request {
 
 export const rankSuperlative : RequestMeta = {
   name: "RankSuperlative",
+  eventType: EventType.Request,
   response: "GenericResponse"
 }
 
@@ -182,18 +195,7 @@ export interface SetJudgeHackPriority extends Request {
 
 export const setJudgeHackPriority: RequestMeta = {
   name: "SetJudgeHackPriority",
-  response: "GenericResponse"
-}
-
-/**
- * Asks the server to start or stop synchronizing admin data.
- */
-export interface SetSynchronizeAdmin extends Request {
-  syncAdmin: boolean;
-}
-
-export const setSynchronizeAdmin: RequestMeta = {
-  name: "SetSynchronizeAdmin",
+  eventType: EventType.Request,
   response: "GenericResponse"
 }
 
@@ -206,6 +208,7 @@ export interface SetSynchronizeShared extends Request {
 
 export const setSynchronizeShared: RequestMeta = {
   name: "SetSynchronizeShared",
+  eventType: EventType.Request,
   response: "GenericResponse"
 }
 
@@ -220,6 +223,7 @@ export interface SetSynchronizeMyHacks extends Request {
 
 export const setSynchronizeMyHacks: RequestMeta = {
   name: "SetSynchronizeMyHacks",
+  eventType: EventType.Request,
   response: "GenericResponse"
 }
 
@@ -250,7 +254,8 @@ export interface AddRowResponse extends Response {
 }
 
 export const addRowResponse: ResponseMeta = {
-  name: "AddRowResponse"
+  name: "AddRowResponse",
+  eventType: EventType.Response
 }
 
 /**
@@ -265,7 +270,8 @@ export interface AuthenticateResponse extends Response {
 }
 
 export const authenticateResponse : ResponseMeta = {
-  name: "AuthenticateResponse"
+  name: "AuthenticateResponse",
+  eventType: EventType.Response
 }
 
 /**
@@ -275,7 +281,8 @@ export interface GenericResponse extends Response {
 }
 
 export const genericResponse : ResponseMeta = {
-  name: "GenericResponse"
+  name: "GenericResponse",
+  eventType: EventType.Response
 }
 
 /**
@@ -291,7 +298,8 @@ export interface LoginResponse extends Response {
 }
 
 export const loginResponse : ResponseMeta = {
-  name: "LoginResponse"
+  name: "LoginResponse",
+  eventType: EventType.Response
 }
 
 ////////////////////
@@ -314,30 +322,8 @@ export interface ProtocolError {
 }
 
 export const protocolError : UpdateMeta = {
-  name: "ProtocolError"
-}
-
-/**
- * Synchronize admin data.
- */
-export interface SynchronizeAdmin {
-  /** judgeHackMatrix[judgeId][hackId] is priority */
-  judgeHackMatrix: number[][];
-  /** superlativeHackMatrix[superlativeId][hackId] if hack wants superlative prize */
-  superlativeHackMatrix: boolean[][];
-  /** noshowMatrix[judgeId][hackId] if judge marks hack as noshow */
-  noshowMatrix: boolean[][];
-  /** ratings[judgeId][hackId][categoryId] */
-  ratings: number[][][];
-  /** superlativePlacements[judgeId][superlativeId] */
-  superlativePlacements: Array<Array<{
-    firstChoiceId: number,
-    secondChoiceId: number
-  }>>;
-}
-
-export const synchronizeAdmin: UpdateMeta = {
-  name: "SynchronizeAdmin"
+  name: "ProtocolError",
+  eventType: EventType.Update
 }
 
 /**
@@ -349,10 +335,27 @@ export interface SynchronizeShared {
   superlatives: Array<Row<Superlative>>;
   superlativeHacks: Array<Row<SuperlativeHack>>;
   categories: Array<Row<Category>>;
+
+  // These will be undefined for non-admins
+
+  /** judgeHackMatrix[judgeId][hackId] is priority */
+  judgeHackMatrix?: number[][];
+  /** superlativeHackMatrix[superlativeId][hackId] if hack wants superlative prize */
+  superlativeHackMatrix?: boolean[][];
+  /** noshowMatrix[judgeId][hackId] if judge marks hack as noshow */
+  noshowMatrix?: boolean[][];
+  /** ratings[judgeId][hackId][categoryId] */
+  ratings?: number[][][];
+  /** superlativePlacements[judgeId][superlativeId] */
+  superlativePlacements?: Array<Array<{
+    firstChoiceId: number,
+    secondChoiceId: number
+  }>>;
 }
 
 export const synchronizeShared : UpdateMeta = {
-  name: "SynchronizeShared"
+  name: "SynchronizeShared",
+  eventType: EventType.Update
 }
 
 /**
@@ -362,3 +365,32 @@ export interface SynchronizeMyHacks {
   judgeId: number;
   hackIds: number[];
 }
+
+export const synchronizeMyHacks: UpdateMeta = {
+  name: "SynchronizeMyHacks",
+  eventType: EventType.Update
+}
+
+////////////////////
+// All Hacks
+
+export const allHacks : Array<EventMeta> = [
+  addRow,
+  authenticate,
+  login,
+  modifyRow,
+  rateHack,
+  rankSuperlative,
+  setJudgeHackPriority,
+  setSynchronizeShared,
+  setSynchronizeMyHacks,
+
+  addRowResponse,
+  authenticateResponse,
+  genericResponse,
+  loginResponse,
+
+  protocolError,
+  synchronizeShared,
+  synchronizeMyHacks
+];
