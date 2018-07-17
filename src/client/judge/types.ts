@@ -9,7 +9,8 @@ import {
 } from "../../protocol/database.js";
 
 import {
-  SynchronizeShared
+  SynchronizeShared,
+  SynchronizeMyHacks
 } from "../../protocol/events.js";
 
 import {SledgeClient} from "../sledge.js";
@@ -36,6 +37,10 @@ export interface State {
   ratingFeature? : RatingFeature;
   /* Information specific to superlative rankings, undefined if no hacks to judge */
   superlativeFeature? : SuperlativeFeature;
+  /* Only set if interfaceMode==Fail */
+  failMessage? : string;
+  /* Only set if interfaceMode==Loading */
+  loadingMessages?: string[];
 
   /* Local synchronized copy of hacks */
   hacks : PartialTable<Hack>;
@@ -50,7 +55,8 @@ export interface State {
 export enum InterfaceMode {
   Loading,
   Judging,
-  Listing
+  Listing,
+  Fail
 }
 
 export interface RatingFeature {
@@ -72,12 +78,26 @@ export interface SuperlativeFeature {
 // Actions
 
 export type Action = {
+    type: Type.Fail,
+    message: string
+  } | {
+    type: Type.AddLoadingMessage,
+    message: string
+  } | {
+    type: Type.PrepareJudging,
+    syncData: SynchronizeShared,
+    myHacks: SynchronizeMyHacks,
+    myJudgeId: number,
+  } | {
     type: Type.Synchronize,
     data: SynchronizeShared
   };
 
 export const enum Type {
-  Synchronize = "JUDGEACTION_TYPE_SYNC"
+  Fail              = "JUDGEACTION_FAIL",
+  AddLoadingMessage = "JUDGEACTION_ADD_LOADING_MESSAGE",
+  PrepareJudging    = "JUDGEACTION_PREPARE_JUDGING",
+  Synchronize       = "JUDGEACTION_TYPE_SYNC"
 }
 
 ////////////////////

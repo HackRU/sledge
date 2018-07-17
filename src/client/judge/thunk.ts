@@ -1,4 +1,7 @@
+import {Store} from "redux";
+
 import {
+  State,
   Action,
   AsyncAction,
   JudgeStore
@@ -21,4 +24,8 @@ export function generateThunkMiddleware(client: SledgeClient) {
       }
     }
   }
+}
+
+export function dispatchAsyncToStore(store: Store<State, Action>, action: AsyncAction) {
+  store.dispatch(action as any);
 }

@@ -1,21 +1,100 @@
 import {
-  AsyncAction
+  SynchronizeShared
+} from "../../protocol/events.js";
+
+import {
+  AsyncAction,
+  Type
 } from "./types.js";
 
-export function initialize(secret: string): AsyncAction {
-  return (dispatch, getState, client) => {
-    client.sendAuthenticate({secret}).then(function (res) {
-      if (!res.success) {
-        fail(res.message)(dispatch, getState, client);
-      }
-    });
-  };
-}
+import {
+  Session
+} from "../session.js";
 
-export function fail(message: string, error?: Error): AsyncAction {
+export function initialize(session: Session): AsyncAction {
   return (dispatch, getState, client) => {
-    alert("ERROR: "+message+" (details in console)");
-    if (error) console.error(error);
+    dispatch({
+      type: Type.AddLoadingMessage,
+      message: "Loading..."
+    });
+
+    client.sendAuthenticate({secret: session.secret}).then(function (authRes) {
+      if (!authRes.success) {
+        dispatch({
+          type: Type.Fail,
+          message: authRes.message
+        });
+        return;
+      }
+
+      let judgeId = session.judgeId || authRes.privilege;
+
+      if (judgeId <= 0) {
+        dispatch({
+          type: Type.Fail,
+          message: `Cannot use judgeId of ${judgeId}`
+        });
+        return;
+      }
+
+      if (authRes.privilege !== 0 && judgeId !== authRes.privilege) {
+        dispatch({
+          type: Type.Fail,
+          message: `Cannot act as judge ${judgeId} with privilege ${authRes.privilege}`
+        });
+        return;
+      }
+
+      dispatch({
+        type: Type.AddLoadingMessage,
+        message: `Authenticated with privilege ${authRes.privilege} and judgeId ${judgeId}`
+      });
+
+      client.sendSetSynchronizeShared({syncShared: true}).then(function (syncShareRes) {
+        if (!syncShareRes.success) {
+          dispatch({
+            type: Type.Fail,
+            message: syncShareRes.message
+          });
+        }
+      });
+
+      // TODO: Unsubscribe after the first sync so we lose the closure
+
+      let firstSync = true;
+      client.subscribeSyncShared(syncData => {
+        if (firstSync) {
+          dispatch({
+            type: Type.AddLoadingMessage,
+            message: "Got first Sync"
+          });
+
+          let myself;
+          for (let judge of syncData.judges) {
+            if (judge.id === judgeId) myself = judge;
+          }
+
+          if (!myself) {
+            dispatch({
+              type: Type.Fail,
+              message: `Cannot find judge with ID ${judgeId}`
+            });
+            return;
+          }
+
+          dispatch({
+            type: Type.AddLoadingMessage,
+            message: `You are ${myself.name} <${myself.email}>!`
+          });
+
+          // TODO:
+          //  - Sync My Hacks
+          //  - Add permanent handlers
+          //  - dispatch PrepareJudging
+        }
+        firstSync = false;
+      });
+    });
   };
 }
 

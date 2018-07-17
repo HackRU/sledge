@@ -1,19 +1,13 @@
 import React from "react";
 
-import {Container} from "reactstrap";
+import {Alert, Container} from "reactstrap";
 
 import {State, InterfaceMode} from "./types.js";
 import {connect} from "./connect.js";
 import {Toolbar} from "./Toolbar.js";
 import {JudgeInfo} from "./JudgeInfo.js";
 
-export interface StateProps {
-  interfaceMode : InterfaceMode;
-}
-
-export type Props = StateProps;
-
-export const JudgeAppPresentation = (props : Props) => {
+export const JudgeAppPresentation = (props : State) => {
   switch (props.interfaceMode) {
     case InterfaceMode.Loading:
       return (<LoadingPresentation {...props} />);
@@ -21,34 +15,49 @@ export const JudgeAppPresentation = (props : Props) => {
       return (<JudgingPresentation {...props} />);
     case InterfaceMode.Listing:
       return (<ListingPresentation {...props} />);
+    case InterfaceMode.Fail:
+      return (<FailPresentation {...props} />);
   }
   throw new Error("Unhandled enum");
 }
 
 const pf = "judgeapp";
 
-export const LoadingPresentation = (props: Props) => (
+export const LoadingPresentation = (props: State) => (
   <Container className={pf}>
-    <span>{`Loading...`}</span>
+    <h2>{`Sledge is Loading...`}</h2>
+    <ul>
+      {props.loadingMessages.map((message,i) => (
+        <li key={i}><pre>{message}</pre></li>
+      ))}
+    </ul>
   </Container>
 )
 
-export const JudgingPresentation = (props:Props) => (
+export const JudgingPresentation = (props: State) => (
   <Container className={pf}>
     <Toolbar />
     <p>{"Judging"}</p>
   </Container>
 )
 
-export const ListingPresentation = (props:Props) => (
+export const ListingPresentation = (props: State) => (
   <Container className={pf}>
     <Toolbar />
     <JudgeInfo />
   </Container>
 )
 
-export const JudgeApp = connect<{}, Props>(
-  (ownProps, state, dispatch) => ({
-    interfaceMode: state.interfaceMode
-  })
+export const FailPresentation = (props: State) => (
+  <Container className={pf}>
+    <h1>{`Sledge`}</h1>
+    <Alert color="danger">
+      {`A critical error has caused Sledge to stop. See below for details.`}
+    </Alert>
+    <pre>{props.failMessage}</pre>
+  </Container>
+);
+
+export const JudgeApp = connect<{}, State>(
+  (ownProps, state, dispatch) => state
 )(JudgeAppPresentation)

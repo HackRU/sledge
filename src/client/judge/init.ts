@@ -6,7 +6,7 @@ import {render} from "react-dom";
 import {reduce} from "./reducer.js";
 import {JudgeApp} from "./JudgeApp.js";
 import {SledgeClient} from "../sledge.js";
-import {generateThunkMiddleware} from "./thunk.js";
+import {generateThunkMiddleware, dispatchAsyncToStore} from "./thunk.js";
 import {initialize} from "./actions.js";
 import {getSession} from "../session.js";
 
@@ -30,7 +30,7 @@ export function init() {
   let once = true;
   render(topElement, container, function () {
     if (once) {
-      store.dispatch(initialize(session.secret) as any);
+      dispatchAsyncToStore(store, initialize(session));
       once = false;
     }
   });

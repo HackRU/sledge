@@ -88,7 +88,7 @@ gulp.task("build-server-schemas", function () {
   // TODO
 });
 
-gulp.task("build-client", ["build-client-typescript", "build-client-scss", "build-client-static"]);
+gulp.task("build-client", ["build-client-typescript", "build-client-scss", "build-client-static", "build-client-src"]);
 
 gulp.task("build-client-typescript", function () {
   return runCommand([
@@ -109,6 +109,10 @@ gulp.task("build-client-scss", function () {
 
 gulp.task("build-client-static", function () {
   return gulp.src(["static/**/*"]).pipe(gulp.dest("public"));
+});
+
+gulp.task("build-client-src", function () {
+  return gulp.src(["src/**/*"]).pipe(gulp.dest("public/src"));
 });
 
 gulp.task("start", ["build"], function () {
