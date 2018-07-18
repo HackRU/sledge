@@ -27,7 +27,7 @@ export class SocketCommunication {
       this.clients.set(sid, {
         privilege: -1,
         syncedShared: false,
-        syncedAdmin: false
+        syncedJudge: 0
       });
     },
 
@@ -179,6 +179,16 @@ export class SocketCommunication {
       });
 
       process.nextTick(() => {
+        let judgeHackIds = this.db.getHackIdsOfJudge(data.judgeId);
+        this.clients.forEach((client, sid) => {
+          if (client.syncedJudge === data.judgeId) {
+            this.events.sendSynchronizeMyHacks(sid, {
+              judgeId: data.judgeId,
+              hackIds: judgeHackIds
+            });
+          }
+        });
+
         this.dispatchSync();
       });
 
@@ -189,10 +199,9 @@ export class SocketCommunication {
     },
 
     onSetSynchronizeShared: (sid : string, data: e.SetSynchronizeShared) => {
-      process.nextTick(() => {
-        this.events.sendSynchronizeShared(sid, this.getSyncSharedData());
-        this.clients.get(sid).syncedShared = data.syncShared;
-      });
+      this.events.sendSynchronizeShared(sid, this.getSyncSharedData());
+      this.clients.get(sid).syncedShared = data.syncShared;
+
       return Promise.resolve({
         success: true,
         message: "success"
@@ -200,7 +209,29 @@ export class SocketCommunication {
     },
 
     onSetSynchronizeMyHacks: (sid: string, data: e.SetSynchronizeMyHacks) => {
-      return this.nyi(sid, "SetSynchronizeMyHacks");
+      if (!this.can(sid, data.judgeId)) {
+        return Promise.resolve({
+          success: false,
+          message: "You can't see hacks of judges your not privileged as"
+        });
+      }
+
+      this.events.sendSynchronizeMyHacks(sid, {
+        judgeId: data.judgeId,
+        hackIds: this.db.getHackIdsOfJudge(data.judgeId)
+      });
+
+      let clientData = this.clients.get(sid);
+      if (data.syncMyHacks) {
+        clientData.syncedJudge = data.judgeId;
+      } else {
+        clientData.syncedJudge = 0;
+      }
+
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
     },
 
   }
@@ -332,5 +363,5 @@ export class SocketCommunication {
 export interface ClientInfo {
   privilege: number;
   syncedShared: boolean;
-  syncedAdmin: boolean;
+  syncedJudge: number;
 }

@@ -1,8 +1,14 @@
 import {
-  SynchronizeShared
+  SynchronizeShared,
+  SynchronizeMyHacks
 } from "../../protocol/events.js";
 
 import {
+  SledgeClient
+} from "../sledge.js";
+
+import {
+  Action,
   AsyncAction,
   Type
 } from "./types.js";
@@ -11,91 +17,123 @@ import {
   Session
 } from "../session.js";
 
+function fail(message: string): Action {
+  return {
+    type: Type.Fail,
+    message
+  };
+}
+
+function addLoadingMessage(message: string): Action {
+  return {
+    type: Type.AddLoadingMessage,
+    message
+  };
+}
+
 export function initialize(session: Session): AsyncAction {
   return (dispatch, getState, client) => {
+    initializeAll(session, dispatch, client);
+  }
+}
+
+async function initializeAll(
+  session: Session,
+  dispatch: (a:Action)=>void,
+  client: SledgeClient
+): Promise<void> {
+  // Visible loading messages are important in case something goes wrong
+  // during the hackathon, we can quickly diagnose what's happening. If a
+  // fail occurs during loading, these will be prepended to the fail message.
+  dispatch(addLoadingMessage("Loading..."));
+
+  // Fail on ProtocolError
+  client.subscribeProtocolError(data => {
+    dispatch(fail(`ProtocolError for ${data.eventName}: ${data.message}`));
+  });
+
+  // First, we authenticate with the token from the session
+  let authRes = await client.sendAuthenticate({
+    secret: session.secret
+  });
+  if (!authRes.success) {
+    dispatch(fail(authRes.message));
+    return;
+  }
+
+  // If the session has a non-zero judgeId set, that's the judgeId we use
+  // Otherwise, it's the privilege returned from auth
+  let judgeId = session.judgeId || authRes.privilege;
+  if (judgeId <= 0 || (authRes.privilege !== 0 && judgeId !== authRes.privilege)) {
+    dispatch(fail(`Cannot use judgeId of ${judgeId} with privilege of ${authRes.privilege}`));
+    return;
+  }
+
+  dispatch(addLoadingMessage(
+    `Authentication successful with judgeId=${judgeId} and privilege=${authRes.privilege}`
+  ));
+
+  // Set up the handler for SynchronizedShared updates. This is a bit tricky because
+  // there might be multiple updates before initialization is done.
+  let initSyncData: SynchronizeShared;
+  let removeInitialSyncHandler = client.subscribeSyncShared(data => {
+    initSyncData = data;
+  });
+
+  // And now we can request shared sync
+  let setSyncShareRes = await client.sendSetSynchronizeShared({syncShared: true});
+  if (!setSyncShareRes.success) {
+    dispatch(fail(setSyncShareRes.message));
+    return;
+  } else if (!initSyncData) {
+    dispatch(fail("SetSynchronizeShared came back successful, but we have no data!"));
+  }
+
+  // Ensure judgeId is valid with sync data
+  let judgeIdValid = false;
+  for (let judge of initSyncData.judges) {
+    if (judge.id === judgeId) {
+      judgeIdValid = true;
+      dispatch(addLoadingMessage(
+        `You are ${judge.name} <${judge.email}>`
+      ));
+    }
+  }
+  if (!judgeIdValid) {
+    dispatch(fail(`Can't find Judge if ID ${judgeId}`));
+    return;
+  }
+
+  // We have all the information needed to prepare judging, so dispatch the event.
+  dispatch({
+    type: Type.PrepareJudging,
+    syncData: initSyncData,
+    myJudgeId: judgeId
+  });
+
+  // Setup permanent handlers for sync and hack data
+  removeInitialSyncHandler();
+  client.subscribeSyncShared(data => {
     dispatch({
-      type: Type.AddLoadingMessage,
-      message: "Loading..."
+      type: Type.SynchronizeShared,
+      data
     });
-
-    client.sendAuthenticate({secret: session.secret}).then(function (authRes) {
-      if (!authRes.success) {
-        dispatch({
-          type: Type.Fail,
-          message: authRes.message
-        });
-        return;
-      }
-
-      let judgeId = session.judgeId || authRes.privilege;
-
-      if (judgeId <= 0) {
-        dispatch({
-          type: Type.Fail,
-          message: `Cannot use judgeId of ${judgeId}`
-        });
-        return;
-      }
-
-      if (authRes.privilege !== 0 && judgeId !== authRes.privilege) {
-        dispatch({
-          type: Type.Fail,
-          message: `Cannot act as judge ${judgeId} with privilege ${authRes.privilege}`
-        });
-        return;
-      }
-
-      dispatch({
-        type: Type.AddLoadingMessage,
-        message: `Authenticated with privilege ${authRes.privilege} and judgeId ${judgeId}`
-      });
-
-      client.sendSetSynchronizeShared({syncShared: true}).then(function (syncShareRes) {
-        if (!syncShareRes.success) {
-          dispatch({
-            type: Type.Fail,
-            message: syncShareRes.message
-          });
-        }
-      });
-
-      // TODO: Unsubscribe after the first sync so we lose the closure
-
-      let firstSync = true;
-      client.subscribeSyncShared(syncData => {
-        if (firstSync) {
-          dispatch({
-            type: Type.AddLoadingMessage,
-            message: "Got first Sync"
-          });
-
-          let myself;
-          for (let judge of syncData.judges) {
-            if (judge.id === judgeId) myself = judge;
-          }
-
-          if (!myself) {
-            dispatch({
-              type: Type.Fail,
-              message: `Cannot find judge with ID ${judgeId}`
-            });
-            return;
-          }
-
-          dispatch({
-            type: Type.AddLoadingMessage,
-            message: `You are ${myself.name} <${myself.email}>!`
-          });
-
-          // TODO:
-          //  - Sync My Hacks
-          //  - Add permanent handlers
-          //  - dispatch PrepareJudging
-        }
-        firstSync = false;
-      });
+  });
+  client.subscribeSyncMyHacks(data => {
+    dispatch({
+      type: Type.SynchronizeMyHacks,
+      data
     });
-  };
+  });
+
+  // And request My Hacks updates
+  let syncMyHacksRes = await client.sendSetSynchronizeMyHacks({
+    judgeId, syncMyHacks: true
+  });
+  if (!syncMyHacksRes.success) {
+    dispatch(fail(syncMyHacksRes.message));
+    return;
+  }
 }
 
 export function prevHack(): AsyncAction {

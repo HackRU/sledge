@@ -19,9 +19,6 @@ export interface Props {
 
 export const ToolbarPresentation = (p : Props) => (
   <div className={pf}>
-    <div className={`${pf}-title`}>
-      <h1>{"SLEDGE"}</h1>
-    </div>
     <ButtonGroup className={`${pf}-buttons`}>
       <Button
         disabled={!p.prevButtonEnabled}

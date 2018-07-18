@@ -1,7 +1,5 @@
 import React from "react";
 
-import {Alert} from "reactstrap";
-
 import {InterfaceMode} from "./types.js";
 import {connect} from "./connect.js";
 
@@ -13,23 +11,13 @@ export interface Props {
 }
 
 export const JudgeInfoPresentation = (p: Props) => {
-  if (p.judgeId) {
-    return (
-      <div className={pf}>
-        <Alert color="light">
-          {`You are logged in as `}<b>{p.judgeName}</b>{` (ID: ${p.judgeId}).`}
-        </Alert>
-      </div>
-    );
-  } else {
-    return (
-      <div className={pf}>
-        <Alert color="warning">
-          {`You are not logged in.`}
-        </Alert>
-      </div>
-    );
-  }
+  return (
+    <div className={pf}>
+      <span>
+        {`You are logged in as `}<b>{p.judgeName}</b>{` (ID: ${p.judgeId}).`}
+      </span>
+    </div>
+  );
 };
 
 export const JudgeInfo = connect<{}, Props>(

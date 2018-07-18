@@ -6,6 +6,8 @@ import {State, InterfaceMode} from "./types.js";
 import {connect} from "./connect.js";
 import {Toolbar} from "./Toolbar.js";
 import {JudgeInfo} from "./JudgeInfo.js";
+import {Header} from "./Header.js";
+import {HacksList} from "./HacksList.js";
 
 export const JudgeAppPresentation = (props : State) => {
   switch (props.interfaceMode) {
@@ -25,7 +27,7 @@ const pf = "judgeapp";
 
 export const LoadingPresentation = (props: State) => (
   <Container className={pf}>
-    <h2>{`Sledge is Loading...`}</h2>
+    <Header />
     <ul>
       {props.loadingMessages.map((message,i) => (
         <li key={i}><pre>{message}</pre></li>
@@ -36,6 +38,7 @@ export const LoadingPresentation = (props: State) => (
 
 export const JudgingPresentation = (props: State) => (
   <Container className={pf}>
+    <Header />
     <Toolbar />
     <p>{"Judging"}</p>
   </Container>
@@ -43,15 +46,16 @@ export const JudgingPresentation = (props: State) => (
 
 export const ListingPresentation = (props: State) => (
   <Container className={pf}>
-    <Toolbar />
+    <Header />
     <JudgeInfo />
+    <HacksList />
   </Container>
 )
 
 export const FailPresentation = (props: State) => (
   <Container className={pf}>
-    <h1>{`Sledge`}</h1>
-    <Alert color="danger">
+    <Header />
+    <Alert color="danger" transition={{ baseClass: '', timeout: 0 }}>
       {`A critical error has caused Sledge to stop. See below for details.`}
     </Alert>
     <pre>{props.failMessage}</pre>

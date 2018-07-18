@@ -11,18 +11,24 @@ import * as db from "../protocol/database.js";
  *  - Autoreconnect and Autoreauthentication
  */
 export class SledgeClient {
-  socket : SocketIOClient.Socket;
-  status : SledgeStatus = SledgeStatus.Connecting;
+  socket: SocketIOClient.Socket;
+  status: SledgeStatus = SledgeStatus.Connecting;
 
-  responseResolvers : Map<string, (r:any) => void>;
-  syncSharedSubs : Array<(e:evts.SynchronizeShared) => void>;
-  statusSubscribers: Array<(s:SledgeStatus) => void>;
+  responseResolvers: Map<string, (r:any) => void>;
+
+  syncSharedSubs: Array<(e:evts.SynchronizeShared) => void>;
+  syncHacksSubs: Array<(e:evts.SynchronizeMyHacks) => void>;
+  protoErrSubs: Array<(e:evts.ProtocolError) => void>;
+  statusSubs: Array<(s:SledgeStatus) => void>;
 
   constructor(opts : SledgeOptions) {
     this.socket = io(opts.host);
     this.responseResolvers = new Map();
+
     this.syncSharedSubs = [];
-    this.statusSubscribers = [];
+    this.syncHacksSubs = [];
+    this.protoErrSubs = [];
+    this.statusSubs = [];
 
     this.setupResolverDispatch(evts.addRowResponse);
     this.setupResolverDispatch(evts.authenticateResponse);
@@ -32,12 +38,14 @@ export class SledgeClient {
     this.socket.on("ProtocolError", (e:evts.ProtocolError) => {
       console.warn("ProtocolError for %s\n%s", e.eventName, e.message);
       if (e.original) console.warn(e.original);
+      for (let notify of this.protoErrSubs) notify(e);
     });
 
     this.socket.on("SynchronizeShared", (e:evts.SynchronizeShared) => {
-      for (let notify of this.syncSharedSubs) {
-        if (notify) notify(e);
-      }
+      for (let notify of this.syncSharedSubs) notify(e);
+    });
+    this.socket.on("SynchronizeMyHacks", (e:evts.SynchronizeMyHacks) => {
+      for (let notify of this.syncHacksSubs) notify(e);
     });
 
     this.socket.on("connect", () => {
@@ -55,9 +63,7 @@ export class SledgeClient {
   }
 
   private dispatchStatus() {
-    for (let d of this.statusSubscribers) {
-      if (d) d(this.status);
-    }
+    for (let notify of this.statusSubs) notify(this.status);
   }
 
   private setupResolverDispatch(meta : evts.ResponseMeta) {
@@ -84,6 +90,9 @@ export class SledgeClient {
     return Date.now().toString(16).slice(-6) + Math.random().toString(16).slice(-6);
   }
 
+  ////////////////////
+  // Requests
+
   sendAddRow(data: evts.AddRow): Promise<evts.AddRowResponse> {
     return this.sendAndAwait("AddRow", data);
   }
@@ -108,19 +117,43 @@ export class SledgeClient {
     return this.sendAndAwait("SetJudgeHackPriority", data);
   }
 
+  sendSetSynchronizeMyHacks(data: evts.SetSynchronizeMyHacks): Promise<evts.GenericResponse> {
+    return this.sendAndAwait("SetSynchronizeMyHacks", data);
+  }
+
   sendSetSynchronizeShared(data: evts.SetSynchronizeShared) : Promise<evts.GenericResponse> {
     return this.sendAndAwait("SetSynchronizeShared", data);
   }
 
+  ////////////////////
+  // Updates
+
   subscribeStatus(notify: (s:SledgeStatus) => void): () => void {
-    this.statusSubscribers.push(notify);
+    this.statusSubs.push(notify);
     return () => {
-      this.statusSubscribers = this.statusSubscribers.filter(n => n!==notify);
-    }
+      this.statusSubs = this.statusSubs.filter(n => n!==notify);
+    };
   }
 
-  subscribeSyncShared(notify: (e:evts.SynchronizeShared) => void) {
+  subscribeSyncShared(notify: (e:evts.SynchronizeShared) => void): () => void {
     this.syncSharedSubs.push(notify);
+    return () => {
+      this.syncSharedSubs = this.syncSharedSubs.filter(n => n!==notify);
+    };
+  }
+
+  subscribeProtocolError(notify: (e:evts.ProtocolError) => void): () => void {
+    this.protoErrSubs.push(notify);
+    return () => {
+      this.protoErrSubs = this.protoErrSubs.filter(n => n!==notify);
+    };
+  }
+
+  subscribeSyncMyHacks(notify: (e:evts.SynchronizeMyHacks) => void): () => void {
+    this.syncHacksSubs.push(notify);
+    return () => {
+      this.syncHacksSubs = this.syncHacksSubs.filter(n => n!==notify);
+    };
   }
 }
 

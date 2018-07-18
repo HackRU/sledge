@@ -46,8 +46,8 @@ export function reduce(oldState: State, action : Action): State {
     // future actions are ignored. The only way to survive a fail is to refresh the page.
     state.interfaceMode = InterfaceMode.Fail;
     if (state.loadingMessages) {
-      state.failMessage = `Loading Messages:\n${state.loadingMessages.map(m => ` - ${m}\n`)}\n`
-        +`----------\n\n${action.message}`;
+      state.failMessage = `Loading Messages:\n${state.loadingMessages.map(m => ` - ${m}\n`)
+          .join("")}\n`+`\n\n${action.message}`;
     } else {
       state.failMessage = action.message;
     }
@@ -70,11 +70,14 @@ export function reduce(oldState: State, action : Action): State {
     state.interfaceMode = InterfaceMode.Listing;
     state.myJudgeId = action.myJudgeId;
     syncSharedDataToState(action.syncData, state);
-    state.myHacks = action.myHacks.hackIds;
   }
 
-  if (action.type === Type.Synchronize) {
+  if (action.type === Type.SynchronizeShared) {
     syncSharedDataToState(action.data, state);
+  }
+
+  if (action.type === Type.SynchronizeMyHacks) {
+    state.myHacks = action.data.hackIds;
   }
 
   return state;

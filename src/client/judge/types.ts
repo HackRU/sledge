@@ -86,18 +86,21 @@ export type Action = {
   } | {
     type: Type.PrepareJudging,
     syncData: SynchronizeShared,
-    myHacks: SynchronizeMyHacks,
     myJudgeId: number,
   } | {
-    type: Type.Synchronize,
+    type: Type.SynchronizeShared,
     data: SynchronizeShared
+  } | {
+    type: Type.SynchronizeMyHacks,
+    data: SynchronizeMyHacks
   };
 
 export const enum Type {
-  Fail              = "JUDGEACTION_FAIL",
-  AddLoadingMessage = "JUDGEACTION_ADD_LOADING_MESSAGE",
-  PrepareJudging    = "JUDGEACTION_PREPARE_JUDGING",
-  Synchronize       = "JUDGEACTION_TYPE_SYNC"
+  Fail                = "JUDGEACTION_FAIL",
+  AddLoadingMessage   = "JUDGEACTION_ADD_LOADING_MESSAGE",
+  PrepareJudging      = "JUDGEACTION_PREPARE_JUDGING",
+  SynchronizeShared   = "JUDGEACTION_TYPE_SYNC_SHARED",
+  SynchronizeMyHacks  = "JUDGEACTION_TYPE_SYNC_HACKS"
 }
 
 ////////////////////
