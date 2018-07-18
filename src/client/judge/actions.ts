@@ -17,14 +17,14 @@ import {
   Session
 } from "../session.js";
 
-function fail(message: string): Action {
+export function fail(message: string): Action {
   return {
     type: Type.Fail,
     message
   };
 }
 
-function addLoadingMessage(message: string): Action {
+export function addLoadingMessage(message: string): Action {
   return {
     type: Type.AddLoadingMessage,
     message

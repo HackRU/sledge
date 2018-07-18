@@ -7,7 +7,7 @@ import {reduce} from "./reducer.js";
 import {JudgeApp} from "./JudgeApp.js";
 import {SledgeClient} from "../sledge.js";
 import {generateThunkMiddleware, dispatchAsyncToStore} from "./thunk.js";
-import {initialize} from "./actions.js";
+import {initialize, fail} from "./actions.js";
 import {getSession} from "../session.js";
 
 export function init() {
@@ -24,7 +24,7 @@ export function init() {
 
   let container = document.getElementById("app");
   let topElement = createElement(Provider, {store},
-    createElement(JudgeApp)
+    createElement(JudgeApp, {store})
   );
 
   let once = true;

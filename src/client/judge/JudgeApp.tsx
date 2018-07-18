@@ -1,8 +1,10 @@
 import React from "react";
 
 import {Alert, Container} from "reactstrap";
+import {Store} from "redux";
 
-import {State, InterfaceMode} from "./types.js";
+import {State, Action, InterfaceMode} from "./types.js";
+import {fail} from "./actions.js";
 import {connect} from "./connect.js";
 import {Toolbar} from "./Toolbar.js";
 import {JudgeInfo} from "./JudgeInfo.js";
@@ -62,6 +64,25 @@ export const FailPresentation = (props: State) => (
   </Container>
 );
 
-export const JudgeApp = connect<{}, State>(
+export const JudgeAppConnected = connect<{}, State>(
   (ownProps, state, dispatch) => state
 )(JudgeAppPresentation)
+
+export class JudgeApp extends React.Component<{store: Store<State, Action>}, {hasError: boolean}> {
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      hasError: false,
+    };
+  }
+
+  componentDidCatch(error: Error, info: any) {
+    this.setState({hasError: true});
+    this.props.store.dispatch(fail(`Error in UI handling: ${error.message}`));
+  }
+
+  render() {
+    return (<JudgeAppConnected />);
+  }
+}
