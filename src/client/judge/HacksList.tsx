@@ -11,13 +11,15 @@ import {Row, Hack} from "../../protocol/database.js";
 
 import {InterfaceMode} from "./types.js";
 import {connect} from "./connect.js";
-import {prevHack, openList, nextHack} from "./actions.js";
+import {openHack} from "./actions.js";
 
 const pf = "hacklist";
 
 export interface Props {
   hacks: Array<Row<Hack>>;
   currentHackId: number;
+
+  openHack: (id: number) => void;
 }
 
 export const HacksListPresentation = (p : Props) => (
@@ -36,6 +38,7 @@ export const HacksListPresentation = (p : Props) => (
           key={h.id}
           tag="button"
           active={h.id===p.currentHackId}
+          onClick={() => p.openHack(h.id)}
         >{h.name}</ListGroupItem>
       ))}
     </ListGroup>
@@ -45,6 +48,8 @@ export const HacksListPresentation = (p : Props) => (
 export const HacksList = connect<{}, Props>(
   (ownProps, state, dispatch) => ({
     hacks: state.myHacks.map(hackId => state.hacks[hackId]),
-    currentHackId: state.currentHackId
+    currentHackId: state.currentHackId,
+
+    openHack: id => dispatch(openHack(id))
   })
 )(HacksListPresentation);

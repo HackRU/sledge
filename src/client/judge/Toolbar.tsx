@@ -4,14 +4,15 @@ import {Button, ButtonGroup} from "reactstrap";
 
 import {InterfaceMode} from "./types.js";
 import {connect} from "./connect.js";
-import {prevHack, openList, nextHack} from "./actions.js";
+import {openList, openHack} from "./actions.js";
 
 const pf = "toolbar";
 
 export interface Props {
-  prevButtonEnabled : boolean;
-  listButtonEnabled : boolean;
-  nextButtonEnabled : boolean;
+  prevButtonEnabled: boolean;
+  listButtonEnabled: boolean;
+  nextButtonEnabled: boolean;
+
   onPrev: () => void;
   onList: () => void;
   onNext: () => void;
@@ -44,11 +45,30 @@ export const Toolbar = connect<{}, Props>(
     prevButtonEnabled: offsetTo(state.myHacks, -1, state.currentHackId) >= 0,
     listButtonEnabled: state.interfaceMode === InterfaceMode.Judging,
     nextButtonEnabled: offsetTo(state.myHacks, 1, state.currentHackId) >= 0,
-    onPrev: () => dispatch(prevHack()),
+
+    onPrev: () => dispatch(openHack(prev(state.myHacks, state.currentHackId))),
     onList: () => dispatch(openList()),
-    onNext: () => dispatch(nextHack())
+    onNext: () => dispatch(openHack(next(state.myHacks, state.currentHackId)))
   })
 )(ToolbarPresentation);
+
+function prev(hackIds: number[], currentHackId: number) {
+  let idx = offsetTo(hackIds, -1, currentHackId);
+  if (idx < 0) {
+    return currentHackId;
+  } else {
+    return hackIds[idx];
+  }
+}
+
+function next(hackIds: number[], currentHackId: number) {
+  let idx = offsetTo(hackIds, 1, currentHackId);
+  if (idx < 0) {
+    return currentHackId;
+  } else {
+    return hackIds[idx];
+  }
+}
 
 function offsetTo(nums : number[], offset: number, x : number) : number {
   let idx = nums.indexOf(x);

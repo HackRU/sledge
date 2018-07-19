@@ -69,6 +69,7 @@ export function reduce(oldState: State, action : Action): State {
 
     state.interfaceMode = InterfaceMode.Listing;
     state.myJudgeId = action.myJudgeId;
+    state.loadingMessages = undefined;
     syncSharedDataToState(action.syncData, state);
   }
 
@@ -78,6 +79,28 @@ export function reduce(oldState: State, action : Action): State {
 
   if (action.type === Type.SynchronizeMyHacks) {
     state.myHacks = action.data.hackIds;
+  }
+
+  if (action.type === Type.OpenList) {
+    if (
+      state.interfaceMode !== InterfaceMode.Listing &&
+      state.interfaceMode !== InterfaceMode.Judging
+    ) throw new Error("Interface must be listing or judging to OpenList");
+
+    state.interfaceMode = InterfaceMode.Listing;
+    state.ratingFeature = undefined;
+    state.superlativeFeature = undefined;
+  }
+
+  if (action.type === Type.OpenHack) {
+    if (
+      state.interfaceMode !== InterfaceMode.Listing &&
+      state.interfaceMode !== InterfaceMode.Judging
+    ) throw new Error("Interface must be listing or judging to OpenHack");
+
+    state.interfaceMode = InterfaceMode.Judging;
+    state.currentHackId = action.hackId;
+    // TODO: Features
   }
 
   return state;

@@ -136,13 +136,27 @@ async function initializeAll(
   }
 }
 
+export function openList(): AsyncAction {
+  return (dispatch, getState, client) => {
+    dispatch({
+      type: Type.OpenList
+    });
+  }
+}
+
+export function openHack(hackId: number): AsyncAction {
+  return (dispatch, getState, client) => {
+    dispatch({
+      type: Type.OpenHack,
+      hackId
+    });
+  }
+}
+
 export function prevHack(): AsyncAction {
   throw new Error("NYI");
 }
 
-export function openList(): AsyncAction {
-  throw new Error("NYI");
-}
 
 export function nextHack(): AsyncAction {
   throw new Error("NYI");

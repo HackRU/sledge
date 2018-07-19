@@ -93,14 +93,21 @@ export type Action = {
   } | {
     type: Type.SynchronizeMyHacks,
     data: SynchronizeMyHacks
+  } | {
+    type: Type.OpenHack,
+    hackId: number
+  } | {
+    type: Type.OpenList
   };
 
 export const enum Type {
   Fail                = "JUDGEACTION_FAIL",
   AddLoadingMessage   = "JUDGEACTION_ADD_LOADING_MESSAGE",
   PrepareJudging      = "JUDGEACTION_PREPARE_JUDGING",
-  SynchronizeShared   = "JUDGEACTION_TYPE_SYNC_SHARED",
-  SynchronizeMyHacks  = "JUDGEACTION_TYPE_SYNC_HACKS"
+  SynchronizeShared   = "JUDGEACTION_SYNC_SHARED",
+  SynchronizeMyHacks  = "JUDGEACTION_SYNC_HACKS",
+  OpenList            = "JUDGEACTION_OPEN_LIST",
+  OpenHack            = "JUDGEACTION_OPEN_HACK"
 }
 
 ////////////////////

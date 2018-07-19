@@ -10,6 +10,7 @@ import {Toolbar} from "./Toolbar.js";
 import {JudgeInfo} from "./JudgeInfo.js";
 import {Header} from "./Header.js";
 import {HacksList} from "./HacksList.js";
+import {HackInfo} from "./HackInfo.js";
 
 export const JudgeAppPresentation = (props : State) => {
   switch (props.interfaceMode) {
@@ -42,7 +43,7 @@ export const JudgingPresentation = (props: State) => (
   <Container className={pf}>
     <Header />
     <Toolbar />
-    <p>{"Judging"}</p>
+    <HackInfo />
   </Container>
 )
 

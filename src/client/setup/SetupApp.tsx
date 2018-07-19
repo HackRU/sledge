@@ -24,6 +24,7 @@ import {SledgeClient, SledgeStatus} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
 import {autoAssignTables} from "./assigntables.js";
 import {autoAssignJudgeHacks} from "./assignjudgehacks.js";
+import {loadTestData} from "./testdata.js";
 
 function logPromise(p : Promise<any>) {
     p.then(r => console.log(r));
@@ -140,6 +141,14 @@ export class SetupApp extends React.Component<{}, State> {
             </Button>
           </ButtonGroup>
         </Form>
+
+        <h2>{`Test Data`}</h2>
+        <p>{`This will populate the judges, hacks, categories and superlatives with test data.`}</p>
+        <ButtonGroup>
+          <Button onClick={() => loadTestData(sledge)}>
+            {`Load Test Data`}
+          </Button>
+        </ButtonGroup>
 
         <h2>{`Manually Add Data`}</h2>
         <AddRow

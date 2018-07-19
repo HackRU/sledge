@@ -20,5 +20,11 @@
     }
   }
 
+  .hackinfo {
+    .card {
+      min-height: 200px;
+    }
+  }
+
   @import "Toolbar.scss";
 }
