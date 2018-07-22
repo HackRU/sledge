@@ -9,7 +9,8 @@ import {
 } from "../../protocol/database.js";
 
 import {
-  SynchronizeShared
+  SynchronizeGlobal,
+  SynchronizeJudge
 } from "../../protocol/events.js";
 
 import {SledgeClient} from "../sledge.js";
@@ -36,6 +37,10 @@ export interface State {
   ratingFeature? : RatingFeature;
   /* Information specific to superlative rankings, undefined if no hacks to judge */
   superlativeFeature? : SuperlativeFeature;
+  /* Only set if interfaceMode==Fail */
+  failMessage? : string;
+  /* Only set if interfaceMode==Loading */
+  loadingMessages?: string[];
 
   /* Local synchronized copy of hacks */
   hacks : PartialTable<Hack>;
@@ -50,7 +55,8 @@ export interface State {
 export enum InterfaceMode {
   Loading,
   Judging,
-  Listing
+  Listing,
+  Fail
 }
 
 export interface RatingFeature {
@@ -72,12 +78,36 @@ export interface SuperlativeFeature {
 // Actions
 
 export type Action = {
-    type: Type.Synchronize,
-    data: SynchronizeShared
+    type: Type.Fail,
+    message: string
+  } | {
+    type: Type.AddLoadingMessage,
+    message: string
+  } | {
+    type: Type.PrepareJudging,
+    syncData: SynchronizeGlobal,
+    myJudgeId: number,
+  } | {
+    type: Type.SynchronizeShared,
+    data: SynchronizeGlobal
+  } | {
+    type: Type.SynchronizeMyHacks,
+    data: SynchronizeJudge
+  } | {
+    type: Type.OpenHack,
+    hackId: number
+  } | {
+    type: Type.OpenList
   };
 
 export const enum Type {
-  Synchronize = "JUDGEACTION_TYPE_SYNC"
+  Fail                = "JUDGEACTION_FAIL",
+  AddLoadingMessage   = "JUDGEACTION_ADD_LOADING_MESSAGE",
+  PrepareJudging      = "JUDGEACTION_PREPARE_JUDGING",
+  SynchronizeShared   = "JUDGEACTION_SYNC_SHARED",
+  SynchronizeMyHacks  = "JUDGEACTION_SYNC_HACKS",
+  OpenList            = "JUDGEACTION_OPEN_LIST",
+  OpenHack            = "JUDGEACTION_OPEN_HACK"
 }
 
 ////////////////////

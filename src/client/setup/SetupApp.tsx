@@ -3,6 +3,7 @@ import React from "react";
 import {
   Container,
   Form,
+  FormGroup,
   Label,
   Input,
   InputGroup,
@@ -17,13 +18,14 @@ import {TabularActions} from "./TabularActions.js";
 import {ToggleMatrix} from "./ToggleMatrix.js";
 
 import {Table} from "../../protocol/database.js";
-import {SynchronizeShared} from "../../protocol/events.js";
+import {SynchronizeGlobal} from "../../protocol/events.js";
 
 import {getSession, setSession} from "../session.js";
 import {SledgeClient, SledgeStatus} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
 import {autoAssignTables} from "./assigntables.js";
 import {autoAssignJudgeHacks} from "./assignjudgehacks.js";
+import {loadTestData} from "./testdata.js";
 
 function logPromise(p : Promise<any>) {
     p.then(r => console.log(r));
@@ -39,7 +41,7 @@ export class SetupApp extends React.Component<{}, State> {
     sledge = new SledgeClient({
       host: document.location.host
     });
-    sledge.subscribeSyncShared(evt => {
+    sledge.subscribeSyncGlobal(evt => {
       this.setState({
         syncSharedData: evt,
         lastSyncSharedTime: (new Date()).toLocaleString()
@@ -50,7 +52,7 @@ export class SetupApp extends React.Component<{}, State> {
         sledgeStatus: s
       });
     });
-    logPromise(sledge.sendSetSynchronizeShared({
+    logPromise(sledge.sendSetSynchronizeGlobal({
       syncShared: true
     }));
     (window as any).sledge = sledge;
@@ -66,7 +68,8 @@ export class SetupApp extends React.Component<{}, State> {
       judgesOpen: false,
       assignedOpen: false,
       sledgeStatus: sledge.status,
-      autoAuth: !!localStorage.getItem("autoauth")
+      autoAuth: !!localStorage.getItem("autoauth"),
+      judgeId: session.judgeId ? session.judgeId.toString(10) : ""
     };
 
     if (localStorage.getItem("autoauth")) {
@@ -75,8 +78,11 @@ export class SetupApp extends React.Component<{}, State> {
   }
 
   setAuth() {
+    let judgeId = parseInt(this.state.judgeId);
+
     setSession({
-      secret: this.state.secret
+      secret: this.state.secret,
+      judgeId: Number.isNaN(judgeId) ? undefined : judgeId
     });
   }
 
@@ -121,16 +127,21 @@ export class SetupApp extends React.Component<{}, State> {
 
         <h2>{`Authentication`}</h2>
         <Form>
-          <Label>
-            {`Secret: `}
+          <FormGroup>
             <Input
+              placeholder="Secret"
               value={this.state.secret}
               onChange={evt => this.setState({secret: evt.target.value})}
             />
-          </Label>
+            <Input
+              placeholder="JudgeId"
+              value={this.state.judgeId}
+              onChange={evt => this.setState({judgeId: evt.target.value})}
+            />
+          </FormGroup>
           <ButtonGroup>
             <Button onClick={() => this.setAuth()}>
-              {`Set Secret`}
+              {`Set`}
             </Button>
             <Button onClick={() => this.sendAuth()}>
               {`Authenticate`}
@@ -140,6 +151,14 @@ export class SetupApp extends React.Component<{}, State> {
             </Button>
           </ButtonGroup>
         </Form>
+
+        <h2>{`Test Data`}</h2>
+        <p>{`This will populate the judges, hacks, categories and superlatives with test data.`}</p>
+        <ButtonGroup>
+          <Button onClick={() => loadTestData(sledge)}>
+            {`Load Test Data`}
+          </Button>
+        </ButtonGroup>
 
         <h2>{`Manually Add Data`}</h2>
         <AddRow
@@ -328,7 +347,7 @@ export class SetupApp extends React.Component<{}, State> {
 
 interface State {
   secret: string;
-  syncSharedData: SynchronizeShared;
+  syncSharedData: SynchronizeGlobal;
   lastSyncSharedTime: string;
   devpostCSV: string;
   hacksOpen: boolean;
@@ -336,4 +355,5 @@ interface State {
   assignedOpen: boolean;
   sledgeStatus: SledgeStatus;
   autoAuth: boolean;
+  judgeId: string;
 }

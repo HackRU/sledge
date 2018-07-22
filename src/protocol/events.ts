@@ -42,7 +42,7 @@ import {
 //  Each request (except those met by ProtocolError) will send back a single
 //  corresponding response. Each request and response will have a returnId,
 //  chosen by the client, which will be equal when they correspond.
-// Reconnection
+// Reconnectio
 //  By default the socket.io client will automatically attempt to reconnect to
 //  the server if a connection is lost, and resend any lost events.
 //  Unfortunately, socket.io does not (always) keep track of clients after
@@ -200,29 +200,29 @@ export const setJudgeHackPriority: RequestMeta = {
 }
 
 /**
- * Asks the server to start or stop synchronizing shared data.
+ * Asks the server to start or stop synchronizing global data.
  */
-export interface SetSynchronizeShared extends Request {
+export interface SetSynchronizeGlobal extends Request {
   syncShared: boolean;
 }
 
-export const setSynchronizeShared: RequestMeta = {
-  name: "SetSynchronizeShared",
+export const setSynchronizeGlobal: RequestMeta = {
+  name: "SetSynchronizeGlobal",
   eventType: EventType.Request,
   response: "GenericResponse"
 }
 
 /**
- * Asks the server to start or stop synchronizing hacks for a particular judge.
+ * Asks the server to start or stop synchronizing data for a particular judge.
  * Client must be privileged as that particular judge.
  */
-export interface SetSynchronizeMyHacks extends Request {
+export interface SetSynchronizeJudge extends Request {
   judgeId: number;
   syncMyHacks: boolean;
 }
 
-export const setSynchronizeMyHacks: RequestMeta = {
-  name: "SetSynchronizeMyHacks",
+export const setSynchronizeJudge: RequestMeta = {
+  name: "SetSynchronizeJudge",
   eventType: EventType.Request,
   response: "GenericResponse"
 }
@@ -327,16 +327,21 @@ export const protocolError : UpdateMeta = {
 }
 
 /**
- * Synchronizes shared data.
+ * Synchronizes global data.
  */
-export interface SynchronizeShared {
+export interface SynchronizeGlobal {
+  isFull: boolean;
+
+  // An unordered list of rows
+
   hacks: Array<Row<Hack>>;
   judges: Array<Row<Judge>>;
   superlatives: Array<Row<Superlative>>;
   superlativeHacks: Array<Row<SuperlativeHack>>;
   categories: Array<Row<Category>>;
 
-  // These will be undefined for non-admins
+  // These will be undefined for non-admins, and may not be sent if update
+  // is partial.
 
   /** judgeHackMatrix[judgeId][hackId] is priority */
   judgeHackMatrix?: number[][];
@@ -353,22 +358,22 @@ export interface SynchronizeShared {
   }>>;
 }
 
-export const synchronizeShared : UpdateMeta = {
-  name: "SynchronizeShared",
+export const synchronizeGlobal : UpdateMeta = {
+  name: "SynchronizeGlobal",
   eventType: EventType.Update
 }
 
 /**
- * Synchronizes judge hacks of a particular judge.
+ * Synchronizes data specific to a judge
  */
-export interface SynchronizeMyHacks {
+export interface SynchronizeJudge {
   judgeId: number;
   hackIds: number[];
 }
 
-export const synchronizeMyHacks: UpdateMeta = {
-  name: "SynchronizeMyHacks",
-  eventType: EventType.Update
+export const synchronizeJudge: UpdateMeta = {
+  name: "SynchronizeJudge",
+  eventType: EventType.Update,
 }
 
 ////////////////////
@@ -382,8 +387,8 @@ export const allHacks : Array<EventMeta> = [
   rateHack,
   rankSuperlative,
   setJudgeHackPriority,
-  setSynchronizeShared,
-  setSynchronizeMyHacks,
+  setSynchronizeGlobal,
+  setSynchronizeJudge,
 
   addRowResponse,
   authenticateResponse,
@@ -391,6 +396,6 @@ export const allHacks : Array<EventMeta> = [
   loginResponse,
 
   protocolError,
-  synchronizeShared,
-  synchronizeMyHacks
+  synchronizeGlobal,
+  synchronizeJudge
 ];

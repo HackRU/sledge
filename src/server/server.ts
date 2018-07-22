@@ -4,7 +4,7 @@ import {default as socketio, Server, Socket}  from "socket.io";
 
 import * as e from "../protocol/events.js";
 import {Table} from "../protocol/database.js";
-import {DatabaseConnection} from "./persistence/database.js";
+import {DatabaseConnection} from "./persistence.js";
 import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper.js";
 
 export class SocketCommunication {
@@ -12,10 +12,12 @@ export class SocketCommunication {
   private events : ServerEventWrapper;
   private clients : Map<string, ClientInfo>;
 
-  private sharedSyncTime: number = 0;
-  private sharedSyncTimer: NodeJS.Timer;
+  private globalSyncTime: number;
+  private globalSyncTimer: NodeJS.Timer;
 
   constructor(private server : http.Server, private db : DatabaseConnection) {
+    this.globalSyncTime = 0;
+
     this.sio = socketio(server);
     this.events = new ServerEventWrapper(this.sio, this.handlers);
     this.clients = new Map<string, ClientInfo>();
@@ -27,7 +29,7 @@ export class SocketCommunication {
       this.clients.set(sid, {
         privilege: -1,
         syncedShared: false,
-        syncedAdmin: false
+        syncedJudge: 0
       });
     },
 
@@ -179,6 +181,16 @@ export class SocketCommunication {
       });
 
       process.nextTick(() => {
+        let judgeHackIds = this.db.getHackIdsOfJudge(data.judgeId);
+        this.clients.forEach((client, sid) => {
+          if (client.syncedJudge === data.judgeId) {
+            this.events.sendSynchronizeJudge(sid, {
+              judgeId: data.judgeId,
+              hackIds: judgeHackIds
+            });
+          }
+        });
+
         this.dispatchSync();
       });
 
@@ -188,25 +200,48 @@ export class SocketCommunication {
       });
     },
 
-    onSetSynchronizeShared: (sid : string, data: e.SetSynchronizeShared) => {
-      process.nextTick(() => {
-        this.events.sendSynchronizeShared(sid, this.getSyncSharedData());
-        this.clients.get(sid).syncedShared = data.syncShared;
-      });
+    onSetSynchronizeGlobal: (sid : string, data: e.SetSynchronizeGlobal) => {
+      this.events.sendSynchronizeGlobal(sid, this.getSyncSharedData());
+      this.clients.get(sid).syncedShared = data.syncShared;
+
       return Promise.resolve({
         success: true,
         message: "success"
       });
     },
 
-    onSetSynchronizeMyHacks: (sid: string, data: e.SetSynchronizeMyHacks) => {
-      return this.nyi(sid, "SetSynchronizeMyHacks");
+    onSetSynchronizeJudge: (sid: string, data: e.SetSynchronizeJudge) => {
+      if (!this.can(sid, data.judgeId)) {
+        return Promise.resolve({
+          success: false,
+          message: "You can't see hacks of judges your not privileged as"
+        });
+      }
+
+      this.events.sendSynchronizeJudge(sid, {
+        judgeId: data.judgeId,
+        hackIds: this.db.getHackIdsOfJudge(data.judgeId)
+      });
+
+      let clientData = this.clients.get(sid);
+      if (data.syncMyHacks) {
+        clientData.syncedJudge = data.judgeId;
+      } else {
+        clientData.syncedJudge = 0;
+      }
+
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
     },
 
   }
 
-  private getSyncSharedData(): e.SynchronizeShared {
+  private getSyncSharedData(): e.SynchronizeGlobal {
     return {
+      isFull: true,
+
       hacks: this.db.getAllHacks(),
       judges: this.db.getAllJudges(),
       superlatives: this.db.getAllSuperlatives(),
@@ -217,12 +252,14 @@ export class SocketCommunication {
     };
   }
 
-  private dispatchSyncTo(data: e.SynchronizeShared, admin: boolean, sid: string) {
-    let dataForClient : e.SynchronizeShared;
+  private dispatchSyncTo(data: e.SynchronizeGlobal, admin: boolean, sid: string) {
+    let dataForClient : e.SynchronizeGlobal;
     if (admin) {
       dataForClient = data;
     } else {
       dataForClient = {
+        isFull: true,
+
         hacks: data.hacks,
         judges: data.judges,
         superlatives: data.superlatives,
@@ -231,23 +268,23 @@ export class SocketCommunication {
       };
     }
 
-    this.events.sendSynchronizeShared(sid, dataForClient);
+    this.events.sendSynchronizeGlobal(sid, dataForClient);
   }
 
   private dispatchSync() {
     let now = Date.now();
-    let timeDiff = now - this.sharedSyncTime;
+    let timeDiff = now - this.globalSyncTime;
     if (timeDiff < 500) {
-      if (!this.sharedSyncTimer) {
-        this.sharedSyncTimer =
+      if (!this.globalSyncTimer) {
+        this.globalSyncTimer =
           setTimeout(() => this.dispatchSync(), timeDiff);
       }
       return;
     }
 
-    if (this.sharedSyncTimer) {
-      clearTimeout(this.sharedSyncTimer);
-      this.sharedSyncTimer = null;
+    if (this.globalSyncTimer) {
+      clearTimeout(this.globalSyncTimer);
+      this.globalSyncTimer = null;
     }
 
     let data = this.getSyncSharedData();
@@ -332,5 +369,5 @@ export class SocketCommunication {
 export interface ClientInfo {
   privilege: number;
   syncedShared: boolean;
-  syncedAdmin: boolean;
+  syncedJudge: number;
 }

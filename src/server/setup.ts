@@ -2,8 +2,8 @@ import express  from "express";
 import http     from "http";
 import path     from "path";
 
-import * as persistence from "./persistence/database.js";
-import * as socket      from "./socket.js";
+import * as persistence from "./persistence.js";
+import * as socket      from "./server.js";
 
 export function start({port, publicDir, dataDir} : SetupOptions) {
   console.log("Public Directory: %s", publicDir);

@@ -5,7 +5,7 @@ import Sqlite3 from "better-sqlite3";
 import {
   Hack, Judge, Token, JudgeHack, Superlative, SuperlativeHack,
   SuperlativePlacement, HackNoshow, Category, Rating, Row
-} from "../../protocol/database.js";
+} from "../protocol/database.js";
 
 export class DatabaseConnection {
   private sql : Sqlite3;
@@ -353,6 +353,18 @@ export class DatabaseConnection {
     }
 
     return r;
+  }
+
+  getHackIdsOfJudge(judgeId: number): number[] {
+    let stmt = this.sql.prepare(
+      "SELECT hackId FROM JudgeHack "
+        +"WHERE "
+          +"judgeId=? AND priority>0 "
+        +"ORDER BY "
+          +"priority ASC,"
+          +"hackId ASC;");
+
+    return stmt.all([judgeId]).map(jh => jh.hackId);
   }
 
   ////////////////////

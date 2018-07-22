@@ -1,4 +1,30 @@
 #judgePage {
-  // There really shouldn't be that much stuff here since the components have
-  // their own stylesheets
+  .header {
+    text-align: center;
+    margin: 24px auto 0 0;
+
+    h1 {
+      font-family: Helvetica Neue, Helvetica;
+      font-size: 30px;
+    }
+  }
+
+  .judgeinfo {
+    text-align: center;
+    color: #818182;
+  }
+
+  .hacklist {
+    button {
+      cursor: pointer;
+    }
+  }
+
+  .hackinfo {
+    .card {
+      min-height: 200px;
+    }
+  }
+
+  @import "Toolbar.scss";
 }
