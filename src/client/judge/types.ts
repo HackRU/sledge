@@ -9,8 +9,8 @@ import {
 } from "../../protocol/database.js";
 
 import {
-  SynchronizeShared,
-  SynchronizeMyHacks
+  SynchronizeGlobal,
+  SynchronizeJudge
 } from "../../protocol/events.js";
 
 import {SledgeClient} from "../sledge.js";
@@ -85,14 +85,14 @@ export type Action = {
     message: string
   } | {
     type: Type.PrepareJudging,
-    syncData: SynchronizeShared,
+    syncData: SynchronizeGlobal,
     myJudgeId: number,
   } | {
     type: Type.SynchronizeShared,
-    data: SynchronizeShared
+    data: SynchronizeGlobal
   } | {
     type: Type.SynchronizeMyHacks,
-    data: SynchronizeMyHacks
+    data: SynchronizeJudge
   } | {
     type: Type.OpenHack,
     hackId: number

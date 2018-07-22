@@ -6,35 +6,49 @@ import {
   Alert
 } from "reactstrap";
 
-import {SynchronizeShared as Synchronize} from "../../protocol/events.js";
+import {
+  SynchronizeGlobal as Synchronize
+} from "../../protocol/events.js";
+
+import {
+  Hack,
+  PartialTable
+} from "../../protocol/database.js";
+
 import {SledgeClient} from "../sledge.js";
 
 let sledge : SledgeClient;
 
-export class TablesApp extends React.Component<{}, {initialized:boolean, syncData:Synchronize}> {
+export class TablesApp extends React.Component<{}, State> {
   constructor(props:any) {
     super(props);
 
     sledge = new SledgeClient({
       host: document.location.host
     });
-    sledge.subscribeSyncShared(evt => {
+    sledge.subscribeSyncGlobal(evt => {
       this.handleSync(evt);
     });
-    sledge.sendSetSynchronizeShared({
+    sledge.sendSetSynchronizeGlobal({
       syncShared: true
     });
 
     this.state = {
       initialized: false,
-      syncData: undefined
+      hacks: []
     };
   }
 
   handleSync(data: Synchronize) {
-    this.setState({
-      initialized: true,
-      syncData: data
+    this.setState(prevState => {
+      let newState = {
+        initialized: true,
+        hacks: prevState.hacks.slice(0)
+      };
+
+      for (let hack of data.hacks) {
+        newState.hacks[hack.id] = hack;
+      }
     });
   }
 
@@ -74,7 +88,7 @@ export class TablesApp extends React.Component<{}, {initialized:boolean, syncDat
             </tr>
           </thead>
           <tbody>
-            {this.state.syncData.hacks.sort((h1,h2) => {
+            {this.state.hacks.filter(h => !!h).sort((h1,h2) => {
               if (h1.location !== h2.location) {
                 return h1.location - h2.location;
               } else {
@@ -91,4 +105,9 @@ export class TablesApp extends React.Component<{}, {initialized:boolean, syncDat
       </div>
     );
   }
+}
+
+interface State {
+  initialized: boolean;
+  hacks: PartialTable<Hack>;
 }

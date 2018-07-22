@@ -4,7 +4,7 @@ import {default as socketio, Server, Socket}  from "socket.io";
 
 import * as e from "../protocol/events.js";
 import {Table} from "../protocol/database.js";
-import {DatabaseConnection} from "./persistence/database.js";
+import {DatabaseConnection} from "./persistence.js";
 import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper.js";
 
 export class SocketCommunication {
@@ -12,10 +12,12 @@ export class SocketCommunication {
   private events : ServerEventWrapper;
   private clients : Map<string, ClientInfo>;
 
-  private sharedSyncTime: number = 0;
-  private sharedSyncTimer: NodeJS.Timer;
+  private globalSyncTime: number;
+  private globalSyncTimer: NodeJS.Timer;
 
   constructor(private server : http.Server, private db : DatabaseConnection) {
+    this.globalSyncTime = 0;
+
     this.sio = socketio(server);
     this.events = new ServerEventWrapper(this.sio, this.handlers);
     this.clients = new Map<string, ClientInfo>();
@@ -182,7 +184,7 @@ export class SocketCommunication {
         let judgeHackIds = this.db.getHackIdsOfJudge(data.judgeId);
         this.clients.forEach((client, sid) => {
           if (client.syncedJudge === data.judgeId) {
-            this.events.sendSynchronizeMyHacks(sid, {
+            this.events.sendSynchronizeJudge(sid, {
               judgeId: data.judgeId,
               hackIds: judgeHackIds
             });
@@ -198,8 +200,8 @@ export class SocketCommunication {
       });
     },
 
-    onSetSynchronizeShared: (sid : string, data: e.SetSynchronizeShared) => {
-      this.events.sendSynchronizeShared(sid, this.getSyncSharedData());
+    onSetSynchronizeGlobal: (sid : string, data: e.SetSynchronizeGlobal) => {
+      this.events.sendSynchronizeGlobal(sid, this.getSyncSharedData());
       this.clients.get(sid).syncedShared = data.syncShared;
 
       return Promise.resolve({
@@ -208,7 +210,7 @@ export class SocketCommunication {
       });
     },
 
-    onSetSynchronizeMyHacks: (sid: string, data: e.SetSynchronizeMyHacks) => {
+    onSetSynchronizeJudge: (sid: string, data: e.SetSynchronizeJudge) => {
       if (!this.can(sid, data.judgeId)) {
         return Promise.resolve({
           success: false,
@@ -216,7 +218,7 @@ export class SocketCommunication {
         });
       }
 
-      this.events.sendSynchronizeMyHacks(sid, {
+      this.events.sendSynchronizeJudge(sid, {
         judgeId: data.judgeId,
         hackIds: this.db.getHackIdsOfJudge(data.judgeId)
       });
@@ -236,8 +238,10 @@ export class SocketCommunication {
 
   }
 
-  private getSyncSharedData(): e.SynchronizeShared {
+  private getSyncSharedData(): e.SynchronizeGlobal {
     return {
+      isFull: true,
+
       hacks: this.db.getAllHacks(),
       judges: this.db.getAllJudges(),
       superlatives: this.db.getAllSuperlatives(),
@@ -248,12 +252,14 @@ export class SocketCommunication {
     };
   }
 
-  private dispatchSyncTo(data: e.SynchronizeShared, admin: boolean, sid: string) {
-    let dataForClient : e.SynchronizeShared;
+  private dispatchSyncTo(data: e.SynchronizeGlobal, admin: boolean, sid: string) {
+    let dataForClient : e.SynchronizeGlobal;
     if (admin) {
       dataForClient = data;
     } else {
       dataForClient = {
+        isFull: true,
+
         hacks: data.hacks,
         judges: data.judges,
         superlatives: data.superlatives,
@@ -262,23 +268,23 @@ export class SocketCommunication {
       };
     }
 
-    this.events.sendSynchronizeShared(sid, dataForClient);
+    this.events.sendSynchronizeGlobal(sid, dataForClient);
   }
 
   private dispatchSync() {
     let now = Date.now();
-    let timeDiff = now - this.sharedSyncTime;
+    let timeDiff = now - this.globalSyncTime;
     if (timeDiff < 500) {
-      if (!this.sharedSyncTimer) {
-        this.sharedSyncTimer =
+      if (!this.globalSyncTimer) {
+        this.globalSyncTimer =
           setTimeout(() => this.dispatchSync(), timeDiff);
       }
       return;
     }
 
-    if (this.sharedSyncTimer) {
-      clearTimeout(this.sharedSyncTimer);
-      this.sharedSyncTimer = null;
+    if (this.globalSyncTimer) {
+      clearTimeout(this.globalSyncTimer);
+      this.globalSyncTimer = null;
     }
 
     let data = this.getSyncSharedData();

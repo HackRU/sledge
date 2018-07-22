@@ -14,19 +14,19 @@ export class SledgeClient {
   socket: SocketIOClient.Socket;
   status: SledgeStatus = SledgeStatus.Connecting;
 
-  responseResolvers: Map<string, (r:any) => void>;
+  private responseResolvers: Map<string, (r:any) => void>;
 
-  syncSharedSubs: Array<(e:evts.SynchronizeShared) => void>;
-  syncHacksSubs: Array<(e:evts.SynchronizeMyHacks) => void>;
-  protoErrSubs: Array<(e:evts.ProtocolError) => void>;
-  statusSubs: Array<(s:SledgeStatus) => void>;
+  private syncGlobalSubs: Array<(e:evts.SynchronizeGlobal) => void>;
+  private syncJudgeSubs: Array<(e:evts.SynchronizeJudge) => void>;
+  private protoErrSubs: Array<(e:evts.ProtocolError) => void>;
+  private statusSubs: Array<(s:SledgeStatus) => void>;
 
   constructor(opts : SledgeOptions) {
-    this.socket = io(opts.host);
+    this.socket = io(opts.host, { reconnection: false });
     this.responseResolvers = new Map();
 
-    this.syncSharedSubs = [];
-    this.syncHacksSubs = [];
+    this.syncGlobalSubs = [];
+    this.syncJudgeSubs = [];
     this.protoErrSubs = [];
     this.statusSubs = [];
 
@@ -41,11 +41,11 @@ export class SledgeClient {
       for (let notify of this.protoErrSubs) notify(e);
     });
 
-    this.socket.on("SynchronizeShared", (e:evts.SynchronizeShared) => {
-      for (let notify of this.syncSharedSubs) notify(e);
+    this.socket.on("SynchronizeGlobal", (e: evts.SynchronizeGlobal) => {
+      this.syncGlobalSubs.forEach(n => n(e));
     });
-    this.socket.on("SynchronizeMyHacks", (e:evts.SynchronizeMyHacks) => {
-      for (let notify of this.syncHacksSubs) notify(e);
+    this.socket.on("SynchronizeJudge", (e: evts.SynchronizeJudge) => {
+      this.syncJudgeSubs.forEach(n => n(e));
     });
 
     this.socket.on("connect", () => {
@@ -56,7 +56,7 @@ export class SledgeClient {
       this.status = SledgeStatus.Reconnecting;
       this.dispatchStatus();
     });
-    this.socket.on("reconnect_failed", () => {
+    this.socket.on("disconnect", () => {
       this.status = SledgeStatus.Disconnected;
       this.dispatchStatus();
     });
@@ -90,40 +90,36 @@ export class SledgeClient {
     return Date.now().toString(16).slice(-6) + Math.random().toString(16).slice(-6);
   }
 
+  private genSender<
+    Req extends evts.Request,
+    Res extends evts.Response
+  >(evt: evts.RequestMeta): (this: SledgeClient, r: Req) => Promise<Res> {
+    return function (req) {
+      return this.sendAndAwait(evt.name, req);
+    }
+  }
+
   ////////////////////
   // Requests
 
-  sendAddRow(data: evts.AddRow): Promise<evts.AddRowResponse> {
-    return this.sendAndAwait("AddRow", data);
-  }
-
-  sendAuthenticate(data: evts.Authenticate): Promise<evts.AuthenticateResponse>  {
-    return this.sendAndAwait("Authenticate", data);
-  }
-
-  sendModifyRow(data: evts.ModifyRow): Promise<evts.GenericResponse> {
-    return this.sendAndAwait("ModifyRow", data);
-  }
-
-  sendRateHack(data : evts.RateHack) : Promise<evts.GenericResponse> {
-    return this.sendAndAwait("RateHack", data);
-  }
-
-  sendRankSuperlative(data : evts.RankSuperlative) : Promise<evts.GenericResponse> {
-    return this.sendAndAwait("RankSuperlative", data);
-  }
-
-  sendSetJudgeHackPriority(data: evts.SetJudgeHackPriority): Promise<evts.GenericResponse> {
-    return this.sendAndAwait("SetJudgeHackPriority", data);
-  }
-
-  sendSetSynchronizeMyHacks(data: evts.SetSynchronizeMyHacks): Promise<evts.GenericResponse> {
-    return this.sendAndAwait("SetSynchronizeMyHacks", data);
-  }
-
-  sendSetSynchronizeShared(data: evts.SetSynchronizeShared) : Promise<evts.GenericResponse> {
-    return this.sendAndAwait("SetSynchronizeShared", data);
-  }
+  sendAddRow = this.genSender<
+    evts.AddRow, evts.AddRowResponse>(evts.addRow);
+  sendAuthenticate = this.genSender<
+    evts.Authenticate, evts.AuthenticateResponse>(evts.authenticate);
+  sendLogin = this.genSender<
+    evts.Login, evts.LoginResponse>(evts.login);
+  sendModifyRow = this.genSender<
+    evts.ModifyRow, evts.GenericResponse>(evts.modifyRow);
+  sendRateHack = this.genSender<
+    evts.RateHack, evts.GenericResponse>(evts.rateHack);
+  sendRankSuperlative = this.genSender<
+    evts.RankSuperlative, evts.GenericResponse>(evts.rankSuperlative);
+  sendSetJudgeHackPriority = this.genSender<
+    evts.SetJudgeHackPriority, evts.GenericResponse>(evts.setJudgeHackPriority);
+  sendSetSynchronizeGlobal = this.genSender<
+    evts.SetSynchronizeGlobal, evts.GenericResponse>(evts.setSynchronizeGlobal);
+  sendSetSynchronizeJudge = this.genSender<
+    evts.SetSynchronizeJudge, evts.GenericResponse>(evts.setSynchronizeJudge);
 
   ////////////////////
   // Updates
@@ -135,10 +131,17 @@ export class SledgeClient {
     };
   }
 
-  subscribeSyncShared(notify: (e:evts.SynchronizeShared) => void): () => void {
-    this.syncSharedSubs.push(notify);
+  subscribeSyncGlobal(notify: (e:evts.SynchronizeGlobal) => void): () => void {
+    this.syncGlobalSubs.push(notify);
     return () => {
-      this.syncSharedSubs = this.syncSharedSubs.filter(n => n!==notify);
+      this.syncGlobalSubs = this.syncGlobalSubs.filter(n => n!==notify);
+    };
+  }
+
+  subscribeSyncMyHacks(notify: (e:evts.SynchronizeJudge) => void): () => void {
+    this.syncJudgeSubs.push(notify);
+    return () => {
+      this.syncJudgeSubs = this.syncJudgeSubs.filter(n => n!==notify);
     };
   }
 
@@ -146,13 +149,6 @@ export class SledgeClient {
     this.protoErrSubs.push(notify);
     return () => {
       this.protoErrSubs = this.protoErrSubs.filter(n => n!==notify);
-    };
-  }
-
-  subscribeSyncMyHacks(notify: (e:evts.SynchronizeMyHacks) => void): () => void {
-    this.syncHacksSubs.push(notify);
-    return () => {
-      this.syncHacksSubs = this.syncHacksSubs.filter(n => n!==notify);
     };
   }
 }

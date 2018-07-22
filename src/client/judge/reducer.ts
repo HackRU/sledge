@@ -1,7 +1,7 @@
 import {Store} from "redux";
 
 import {
-  SynchronizeShared
+  SynchronizeGlobal
 } from "../../protocol/events.js";
 
 import {
@@ -107,7 +107,7 @@ export function reduce(oldState: State, action : Action): State {
 }
 
 /** Mutates state */
-function syncSharedDataToState(syncData: SynchronizeShared, state: State) {
+function syncSharedDataToState(syncData: SynchronizeGlobal, state: State) {
   state.hacks = state.hacks.slice();
   for (let hack of syncData.hacks) {
     state.hacks[hack.id] = hack;

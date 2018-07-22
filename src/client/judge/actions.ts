@@ -1,10 +1,11 @@
 import {
-  SynchronizeShared,
-  SynchronizeMyHacks
+  SynchronizeGlobal,
+  SynchronizeJudge
 } from "../../protocol/events.js";
 
 import {
-  SledgeClient
+  SledgeClient,
+  SledgeStatus
 } from "../sledge.js";
 
 import {
@@ -47,6 +48,13 @@ async function initializeAll(
   // fail occurs during loading, these will be prepended to the fail message.
   dispatch(addLoadingMessage("Loading..."));
 
+  // Fail on disconnect
+  client.subscribeStatus(s => {
+    if ( s !== SledgeStatus.Connecting && s !== SledgeStatus.Connected ) {
+      dispatch(fail(`Sledge Disconnected. Status: ${s}`));
+    }
+  });
+
   // Fail on ProtocolError
   client.subscribeProtocolError(data => {
     dispatch(fail(`ProtocolError for ${data.eventName}: ${data.message}`));
@@ -75,13 +83,13 @@ async function initializeAll(
 
   // Set up the handler for SynchronizedShared updates. This is a bit tricky because
   // there might be multiple updates before initialization is done.
-  let initSyncData: SynchronizeShared;
-  let removeInitialSyncHandler = client.subscribeSyncShared(data => {
+  let initSyncData: SynchronizeGlobal;
+  let removeInitialSyncHandler = client.subscribeSyncGlobal(data => {
     initSyncData = data;
   });
 
   // And now we can request shared sync
-  let setSyncShareRes = await client.sendSetSynchronizeShared({syncShared: true});
+  let setSyncShareRes = await client.sendSetSynchronizeGlobal({syncShared: true});
   if (!setSyncShareRes.success) {
     dispatch(fail(setSyncShareRes.message));
     return;
@@ -113,7 +121,7 @@ async function initializeAll(
 
   // Setup permanent handlers for sync and hack data
   removeInitialSyncHandler();
-  client.subscribeSyncShared(data => {
+  client.subscribeSyncGlobal(data => {
     dispatch({
       type: Type.SynchronizeShared,
       data
@@ -127,7 +135,7 @@ async function initializeAll(
   });
 
   // And request My Hacks updates
-  let syncMyHacksRes = await client.sendSetSynchronizeMyHacks({
+  let syncMyHacksRes = await client.sendSetSynchronizeJudge({
     judgeId, syncMyHacks: true
   });
   if (!syncMyHacksRes.success) {
