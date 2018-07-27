@@ -30,6 +30,8 @@ export interface State {
   myJudgeId: number;
   /* IDs of hacks to be judged, in order they should be judged */
   myHacks : number[];
+  /* Ratings of hacks, ratings[hackId-1][categoryId-1] */
+  ratings: number[][];
   /* ID of currently selected hack, 0 if no hacks to judge */
   currentHackId : number;
 

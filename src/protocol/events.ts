@@ -364,11 +364,17 @@ export const synchronizeGlobal : UpdateMeta = {
 }
 
 /**
- * Synchronizes data specific to a judge
+ * Synchronizes data specific to a judge. The first SynchronizeJudge following a
+ * SetSynhcronizeJudge will have all fields filled.
  */
 export interface SynchronizeJudge {
   judgeId: number;
-  hackIds: number[];
+
+  // These will only be sent when things change
+
+  hackIds?: number[];
+  /** ratings[hackId][categoryId] */
+  ratings?: number[][];
 }
 
 export const synchronizeJudge: UpdateMeta = {

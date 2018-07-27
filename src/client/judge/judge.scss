@@ -26,5 +26,24 @@
     }
   }
 
+  .ratingbox {
+    h3 {
+      text-align: center;
+    }
+
+    .ratingbox-category .btn-group {
+      width: 100%;
+
+      .btn {
+        width: 20%;
+      }
+    }
+
+    .ratingbox-selected {
+      background: green;
+      color: black;
+    }
+  }
+
   @import "Toolbar.scss";
 }

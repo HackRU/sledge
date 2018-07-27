@@ -16,7 +16,7 @@ import {openHack} from "./actions.js";
 const pf = "hacklist";
 
 export interface Props {
-  hacks: Array<Row<Hack>>;
+  hacks: Array<Row<Hack> & {totalRating: number}>;
   currentHackId: number;
 
   openHack: (id: number) => void;
@@ -39,15 +39,26 @@ export const HacksListPresentation = (p : Props) => (
           tag="button"
           active={h.id===p.currentHackId}
           onClick={() => p.openHack(h.id)}
-        >{h.name}</ListGroupItem>
+        >{hackText(h)}</ListGroupItem>
       ))}
     </ListGroup>
   </div>
 )
 
+function hackText(h: Row<Hack> & {totalRating: number}) {
+  if (h.totalRating > 0) {
+    return `${h.name} (${h.totalRating})`;
+  } else {
+    return h.name;
+  }
+}
+
 export const HacksList = connect<{}, Props>(
   (ownProps, state, dispatch) => ({
-    hacks: state.myHacks.map(hackId => state.hacks[hackId]),
+    hacks: state.myHacks.map(hackId => ({
+      ...state.hacks[hackId],
+      totalRating: state.ratings[hackId-1].reduce((a,b) => a+b, 0)
+    })),
     currentHackId: state.currentHackId,
 
     openHack: id => dispatch(openHack(id))

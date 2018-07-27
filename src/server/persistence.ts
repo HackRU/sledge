@@ -255,16 +255,16 @@ export class DatabaseConnection {
 
   changeRating(rating : Rating) {
     let stmt = this.sql.prepare(
-      "INSERT INTO Rating"
-        +"(id, judgeId, hackId, rating)"
+      "INSERT OR REPLACE INTO Rating"
+        +"(id, judgeId, hackId, categoryId, rating)"
       +"VALUES ("
-        +"(SELECT id FROM Rating WHERE judgeId=? AND hackId=?),"
-        +"?, ?, ?);"
+        +"(SELECT id FROM Rating WHERE judgeId=? AND hackId=? AND categoryId=?),"
+        +"?, ?, ?, ?);"
     );
 
     stmt.run([
-      rating.judgeId, rating.hackId,
-      rating.judgeId, rating.hackId, rating.rating
+      rating.judgeId, rating.hackId, rating.categoryId,
+      rating.judgeId, rating.hackId, rating.categoryId, rating.rating
     ]);
   }
 
@@ -355,6 +355,31 @@ export class DatabaseConnection {
     return r;
   }
 
+  getRatingsOfJudge(judgeId: number): number[][] {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Rating WHERE judgeId=?;");
+
+    let categoriesCount = this.getCategoriesCount();
+    let hacksCount = this.getHacksCount();
+
+    let r: number[][] = [];
+    for (let i=0;i<hacksCount;i++) {
+      let h: number[] = [];
+      for (let j=0;j<categoriesCount;j++) {
+        h.push(0);
+      }
+      r.push(h);
+    }
+
+    let all: Array<Row<Rating>> = stmt.all(judgeId);
+
+    for (let row of all) {
+      r[row.hackId-1][row.categoryId-1] = row.rating;
+    }
+
+    return r;
+  }
+
   getHackIdsOfJudge(judgeId: number): number[] {
     let stmt = this.sql.prepare(
       "SELECT hackId FROM JudgeHack "
@@ -397,6 +422,13 @@ export class DatabaseConnection {
   getHacksCount(): number {
     let stmt = this.sql.prepare(
       "SELECT id FROM Hack ORDER BY id DESC LIMIT 1;");
+    let row = stmt.get();
+    return row ? row.id : 0;
+  }
+
+  getCategoriesCount(): number {
+    let stmt = this.sql.prepare(
+      "SELECT id FROM Category ORDER BY id DESC LIMIT 1;");
     let row = stmt.get();
     return row ? row.id : 0;
   }

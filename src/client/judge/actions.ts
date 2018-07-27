@@ -161,10 +161,14 @@ export function openHack(hackId: number): AsyncAction {
   }
 }
 
-export function prevHack(): AsyncAction {
-  throw new Error("NYI");
-}
-
-export function nextHack(): AsyncAction {
-  throw new Error("NYI");
+export function rateHack(judgeId: number, hackId: number, ratings: number[]): AsyncAction {
+  return (dispatch, getState, client) => {
+    client.sendRateHack({
+      judgeId, hackId, ratings
+    }).then(res => {
+      if (!res.success) {
+        dispatch(fail(res.message));
+      }
+    });
+  }
 }

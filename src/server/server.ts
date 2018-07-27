@@ -159,7 +159,38 @@ export class SocketCommunication {
     },
 
     onRateHack: (sid : string, data : e.RateHack) => {
-      return this.nyi(sid, "RateHack");
+      if (!this.can(sid, data.judgeId)) {
+        return Promise.resolve({
+          success: false,
+          message: "You don't have permission to do that"
+        });
+      }
+
+      if (this.db.getCategoriesCount() != data.ratings.length) {
+        return Promise.resolve({
+          success: false,
+          message: "Wrong number of ratings"
+        });
+      }
+
+      for (let i=0;i<data.ratings.length;i++) {
+        this.db.changeRating({
+          judgeId: data.judgeId,
+          categoryId: i+1,
+          hackId: data.hackId,
+          rating: data.ratings[i]
+        });
+      }
+
+      this.events.sendSynchronizeJudge(sid, {
+        judgeId: data.judgeId,
+        ratings: this.db.getRatingsOfJudge(data.judgeId)
+      });
+
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
     },
 
     onRankSuperlative: (sid : string, data : e.RankSuperlative) => {
@@ -220,7 +251,8 @@ export class SocketCommunication {
 
       this.events.sendSynchronizeJudge(sid, {
         judgeId: data.judgeId,
-        hackIds: this.db.getHackIdsOfJudge(data.judgeId)
+        hackIds: this.db.getHackIdsOfJudge(data.judgeId),
+        ratings: this.db.getRatingsOfJudge(data.judgeId)
       });
 
       let clientData = this.clients.get(sid);
