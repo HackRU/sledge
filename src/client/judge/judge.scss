@@ -45,5 +45,54 @@
     }
   }
 
+  .supgadget {
+    border: 3px solid black;
+    border-radius: 20px;
+    margin: 5px;
+    padding: 10px;
+
+    .supgadget-one, .supgadget-two {
+      width: 100%;
+      height: 50px;
+
+      h4 {
+        width: 10px;
+      }
+    }
+
+    .supgadget-place {
+      height: 50px;
+      float: left;
+      padding: 0px 10px;
+    }
+
+    .supgadget-hack {
+      height: 50px;
+      margin: auto;
+    }
+
+    .supgadget-set {
+      width: 100%;
+
+      button {
+        width: 50%;
+        height: 40px;
+      }
+    }
+
+    .supgadget-clear {
+      width: 100%;
+
+      button {
+        height: 40px;
+        display: inline-block;
+      }
+
+      .supgadget-button-clear1  { width: 33%; }
+      .supgadget-button-clear2  { width: 34%; }
+      .supgadget-button-undo    { width: 33%; }
+    }
+  }
+
   @import "Toolbar.scss";
 }

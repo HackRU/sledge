@@ -26,6 +26,7 @@ export function reduce(oldState: State, action : Action): State {
       hacks: [],
       judges: [],
       superlatives: [],
+      superlativeHacks: [],
       categories: []
     };
   } else {
@@ -125,6 +126,11 @@ function syncSharedDataToState(syncData: SynchronizeGlobal, state: State) {
   state.superlatives = state.superlatives.slice();
   for (let superlative of syncData.superlatives) {
     state.superlatives[superlative.id] = superlative;
+  }
+
+  state.superlativeHacks = state.superlativeHacks.slice();
+  for (let superlativeHack of syncData.superlativeHacks) {
+    state.superlativeHacks[superlativeHack.id] = superlativeHack;
   }
 
   state.categories = state.categories.slice();

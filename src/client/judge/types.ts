@@ -4,8 +4,10 @@ import {
   Hack,
   Judge,
   Superlative,
+  SuperlativeHack,
   Category,
-  PartialTable
+  PartialTable,
+  Row
 } from "../../protocol/database.js";
 
 import {
@@ -45,13 +47,15 @@ export interface State {
   loadingMessages?: string[];
 
   /* Local synchronized copy of hacks */
-  hacks : PartialTable<Hack>;
+  hacks : PartialTable<Row<Hack>>;
   /* Local synchronized copy of judges */
-  judges : PartialTable<Judge>;
+  judges : PartialTable<Row<Judge>>;
   /* Local synchronized copy of superlatives */
-  superlatives : PartialTable<Superlative>;
+  superlatives : PartialTable<Row<Superlative>>;
+  /* Local synchronized copy of superlativeHacks */
+  superlativeHacks : PartialTable<Row<SuperlativeHack>>;
   /* Local synchronized copy of categories */
-  categories : PartialTable<Category>;
+  categories : PartialTable<Row<Category>>;
 }
 
 export enum InterfaceMode {
