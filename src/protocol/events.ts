@@ -174,8 +174,8 @@ export const rateHack : RequestMeta = {
 export interface RankSuperlative extends Request {
   judgeId: number;
   superlativeId: number;
-  firstHackId: number;
-  secondHackId: number;
+  firstChoiceId: number;
+  secondChoiceId: number;
 }
 
 export const rankSuperlative : RequestMeta = {

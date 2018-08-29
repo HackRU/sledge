@@ -134,9 +134,9 @@ export class DatabaseConnection {
   addHack(hack : Hack): Row<Hack> {
     let stmt = this.sql.prepare(
       "INSERT INTO Hack(name, description, location, active)"
-        +"VALUES (?,?,?,?);");
+        +"VALUES ($name, $description, $location, $active);");
 
-    let r = stmt.run([hack.name, hack.description, hack.location, hack.active]);
+    let r = stmt.run(hack);
 
     return {
       ...hack,
@@ -147,9 +147,9 @@ export class DatabaseConnection {
   addJudge(judge : Judge): Row<Judge> {
     let stmt = this.sql.prepare(
       "INSERT INTO Judge(name, email, active)"
-        +"VALUES (?,?,?);");
+        +"VALUES ($name, $email, $active);");
 
-    let r = stmt.run([judge.name, judge.email, judge.active]);
+    let r = stmt.run(judge);
 
     return {
       ...judge,
@@ -160,9 +160,9 @@ export class DatabaseConnection {
   addJudgeHack(judgeHack: JudgeHack): Row<JudgeHack> {
     let stmt = this.sql.prepare(
       "INSERT INTO JudgeHack(judgeId, hackId, priority)"
-        +"VALUES (?,?,?);");
+        +"VALUES ($judgeId, $hackId, $priority);");
 
-    let r = stmt.run([judgeHack.judgeId, judgeHack.hackId, judgeHack.priority]);
+    let r = stmt.run(judgeHack);
 
     return {
       ...judgeHack,
@@ -173,9 +173,9 @@ export class DatabaseConnection {
   addToken(token : Token): Row<Token> {
     let stmt = this.sql.prepare(
       "INSERT INTO Token(secret, privilege)"
-        +"VALUES (?,?);");
+        +"VALUES ($secret, $privilege);");
 
-    let r = stmt.run([token.secret, token.privilege]);
+    let r = stmt.run(token);
 
     return {
       ...token,
@@ -186,9 +186,9 @@ export class DatabaseConnection {
   addSuperlative(superlative : Superlative): Row<Superlative> {
     let stmt = this.sql.prepare(
       "INSERT INTO Superlative(name)"
-        +"VALUES (?);");
+        +"VALUES ($name);");
 
-    let r = stmt.run([superlative.name]);
+    let r = stmt.run(superlative);
 
     return {
       ...superlative,
@@ -199,9 +199,9 @@ export class DatabaseConnection {
   addSuperlativeHack(superlativeHack: SuperlativeHack): Row<SuperlativeHack> {
     let stmt = this.sql.prepare(
       "INSERT INTO SuperlativeHack(hackId, superlativeId)"
-        +"VALUES (?,?);");
+        +"VALUES ($hackId, $superlativeId);");
 
-    let r = stmt.run([superlativeHack.hackId, superlativeHack.superlativeId]);
+    let r = stmt.run(superlativeHack);
 
     return {
       ...superlativeHack,
@@ -212,9 +212,9 @@ export class DatabaseConnection {
   addCategory(category : Category): Row<Category> {
     let stmt = this.sql.prepare(
       "INSERT INTO Category(name)"
-        +"VALUES (?);");
+        +"VALUES ($name);");
 
-    let r = stmt.run([category.name]);
+    let r = stmt.run(category);
 
     return {
       ...category,
@@ -228,16 +228,14 @@ export class DatabaseConnection {
   changeSuperlativePlacement(placement : SuperlativePlacement) {
     let stmt = this.sql.prepare(
       "INSERT OR REPLACE INTO SuperlativePlacement"
-        +"(id, judgeId, superlativeId, firstChoice, secondChoice)"
+        +"(id, judgeId, superlativeId, firstChoiceId, secondChoiceId)"
       +"VALUES ("
-        +"(SELECT id FROM SuperlativePlacement WHERE judgeId=? AND superlativeId = ?),"
-      +"?, ?, ?, ?);");
+        +"(SELECT id "
+          +"FROM SuperlativePlacement "
+          +"WHERE judgeId=$judgeId AND superlativeId=$superlativeId),"
+      +"$judgeId, $superlativeId, $firstChoiceId, $secondChoiceId);");
 
-    stmt.run([
-      placement.judgeId, placement.superlativeId,
-      placement.judgeId, placement.superlativeId,
-      placement.firstChoiceId, placement.secondChoiceId
-    ]);
+    stmt.run(placement);
   }
 
   changeJudgeHackPriority(d: {judgeId: number, hackId: number, newPriority: number}) {
@@ -245,12 +243,10 @@ export class DatabaseConnection {
       "INSERT OR REPLACE INTO JudgeHack"
         +"(id, judgeId, hackId, priority)"
       +"VALUES ("
-        +"(SELECT id FROM JudgeHack WHERE judgeId=? AND hackId=?),"
-      +"?, ?, ?);");
+        +"(SELECT id FROM JudgeHack WHERE judgeId=$judgeId AND hackId=$hackId),"
+      +"$judgeId, $hackId, $newPriority);");
 
-    stmt.run([
-      d.judgeId, d.hackId, d.judgeId, d.hackId, d.newPriority
-    ]);
+    stmt.run(d);
   }
 
   changeRating(rating : Rating) {

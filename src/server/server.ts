@@ -6,39 +6,32 @@ import * as e from "../protocol/events.js";
 import {Table} from "../protocol/database.js";
 import {DatabaseConnection} from "./persistence.js";
 import {ServerEventWrapper, ServerEventHandlers} from "./eventwrapper.js";
+import {ClientStateManager} from "./clientstatemanager";
+import {SyncManager} from "./syncmanager";
 
 export class SocketCommunication {
-  private sio : Server;
-  private events : ServerEventWrapper;
-  private clients : Map<string, ClientInfo>;
-
-  private globalSyncTime: number;
-  private globalSyncTimer: NodeJS.Timer;
+  private sio: Server;
+  private events: ServerEventWrapper;
+  private clients: ClientStateManager;
+  private sync: SyncManager;
 
   constructor(private server : http.Server, private db : DatabaseConnection) {
-    this.globalSyncTime = 0;
-
     this.sio = socketio(server);
     this.events = new ServerEventWrapper(this.sio, this.handlers);
-    this.clients = new Map<string, ClientInfo>();
+    this.clients = new ClientStateManager();
+    this.sync = new SyncManager(this.events, this.db, this.clients);
   }
 
   public handlers : ServerEventHandlers = {
 
     onConnect: (sid : string) => {
-      this.clients.set(sid, {
-        privilege: -1,
-        syncedShared: false,
-        syncedJudge: 0
-      });
+      this.clients.registerClient(sid);
     },
 
-    onDisconnect: (sid : string) => {
-      this.clients.delete(sid);
-    },
+    onDisconnect: (sid : string) => {},
 
     onAddRow: (sid: string, data: e.AddRow) => {
-      if (!this.can(sid, 0)) {
+      if (!this.clients.can(sid, 0)) {
         return Promise.resolve({
           success: false,
           message: "Only admins can do that.",
@@ -84,7 +77,7 @@ export class SocketCommunication {
       }
 
       if (shared) {
-        this.dispatchSync();
+        this.sync.scheduleFullGlobalSync();
       }
 
       return Promise.resolve({
@@ -95,9 +88,10 @@ export class SocketCommunication {
     },
 
     onAuthenticate: (sid : string, data : e.Authenticate) => {
-      let clientData = this.clients.get(sid);
+      // An empty secret always corresponds to unprivileged
       if (data.secret === "") {
-        clientData.privilege = -1;
+        this.clients.setClientPrivilege(sid, -1);
+
         return Promise.resolve({
           success: true,
           message: "success",
@@ -108,7 +102,8 @@ export class SocketCommunication {
       let token = this.db.getTokenBySecret(data.secret);
 
       if (token) {
-        clientData.privilege = token.privilege;
+        this.clients.setClientPrivilege(sid, token.privilege);
+
         return Promise.resolve({
           success: true,
           message: "success",
@@ -118,17 +113,18 @@ export class SocketCommunication {
         return Promise.resolve({
           success: false,
           message: "Bad secret",
-          privilege: clientData.privilege
+          privilege: this.clients.getClientPrivilege(sid)
         });
       }
     },
 
     onLogin: (sid : string, data : e.Login) => {
+      // TODO
       return this.nyi(sid, "Login");
     },
 
     onModifyRow: (sid: string, data: e.ModifyRow) => {
-      if (!this.can(sid, 0)) {
+      if (!this.clients.can(sid, 0)) {
         return Promise.resolve({
           success: false,
           message: "Only admins can do that."
@@ -149,7 +145,7 @@ export class SocketCommunication {
       }
 
       if (shared) {
-        this.dispatchSync();
+        this.sync.scheduleFullGlobalSync();
       }
 
       return Promise.resolve({
@@ -159,7 +155,7 @@ export class SocketCommunication {
     },
 
     onRateHack: (sid : string, data : e.RateHack) => {
-      if (!this.can(sid, data.judgeId)) {
+      if (!this.clients.can(sid, data.judgeId)) {
         return Promise.resolve({
           success: false,
           message: "You don't have permission to do that"
@@ -182,10 +178,7 @@ export class SocketCommunication {
         });
       }
 
-      this.events.sendSynchronizeJudge(sid, {
-        judgeId: data.judgeId,
-        ratings: this.db.getRatingsOfJudge(data.judgeId)
-      });
+      this.sync.scheduleFullJudgeSync(data.judgeId);
 
       return Promise.resolve({
         success: true,
@@ -194,11 +187,25 @@ export class SocketCommunication {
     },
 
     onRankSuperlative: (sid : string, data : e.RankSuperlative) => {
-      return this.nyi(sid, "RankSuperlative");
+      if (!this.clients.can(sid, data.judgeId)) {
+        return Promise.resolve({
+          success: false,
+          message: "You can't do that."
+        });
+      }
+
+      this.db.changeSuperlativePlacement(data);
+
+      this.sync.scheduleFullJudgeSync(data.judgeId);
+
+      return Promise.resolve({
+        success: true,
+        message: "success"
+      });
     },
 
     onSetJudgeHackPriority: (sid: string, data: e.SetJudgeHackPriority) => {
-      if (!this.can(sid, 0)) {
+      if (!this.clients.can(sid, 0)) {
         return Promise.resolve({
           success: false,
           message: "Only admins can do that."
@@ -212,17 +219,7 @@ export class SocketCommunication {
       });
 
       process.nextTick(() => {
-        let judgeHackIds = this.db.getHackIdsOfJudge(data.judgeId);
-        this.clients.forEach((client, sid) => {
-          if (client.syncedJudge === data.judgeId) {
-            this.events.sendSynchronizeJudge(sid, {
-              judgeId: data.judgeId,
-              hackIds: judgeHackIds
-            });
-          }
-        });
-
-        this.dispatchSync();
+        this.sync.scheduleFullJudgeSync(data.judgeId);
       });
 
       return Promise.resolve({
@@ -233,7 +230,10 @@ export class SocketCommunication {
 
     onSetSynchronizeGlobal: (sid : string, data: e.SetSynchronizeGlobal) => {
       this.events.sendSynchronizeGlobal(sid, this.getSyncSharedData());
-      this.clients.get(sid).syncedShared = data.syncShared;
+
+      let clientState = this.clients.getClientState(sid);
+      clientState.syncGlobal = data.syncShared;
+      this.clients.setClientState(sid, clientState);
 
       return Promise.resolve({
         success: true,
@@ -242,25 +242,22 @@ export class SocketCommunication {
     },
 
     onSetSynchronizeJudge: (sid: string, data: e.SetSynchronizeJudge) => {
-      if (!this.can(sid, data.judgeId)) {
+      if (!this.clients.can(sid, data.judgeId)) {
         return Promise.resolve({
           success: false,
-          message: "You can't see hacks of judges your not privileged as"
+          message: "You can't see hacks of judges your not privileged as."
         });
       }
 
-      this.events.sendSynchronizeJudge(sid, {
-        judgeId: data.judgeId,
-        hackIds: this.db.getHackIdsOfJudge(data.judgeId),
-        ratings: this.db.getRatingsOfJudge(data.judgeId)
-      });
-
-      let clientData = this.clients.get(sid);
+      let clientState = this.clients.getClientState(sid);
       if (data.syncMyHacks) {
-        clientData.syncedJudge = data.judgeId;
+        clientState.syncJudge = data.judgeId;
       } else {
-        clientData.syncedJudge = 0;
+        clientState.syncJudge = 0;
       }
+      this.clients.setClientState(sid, clientState);
+
+      this.sync.sendJudgeSync(sid);
 
       return Promise.resolve({
         success: true,
@@ -303,44 +300,6 @@ export class SocketCommunication {
     this.events.sendSynchronizeGlobal(sid, dataForClient);
   }
 
-  private dispatchSync() {
-    let now = Date.now();
-    let timeDiff = now - this.globalSyncTime;
-    if (timeDiff < 500) {
-      if (!this.globalSyncTimer) {
-        this.globalSyncTimer =
-          setTimeout(() => this.dispatchSync(), timeDiff);
-      }
-      return;
-    }
-
-    if (this.globalSyncTimer) {
-      clearTimeout(this.globalSyncTimer);
-      this.globalSyncTimer = null;
-    }
-
-    let data = this.getSyncSharedData();
-
-    this.clients.forEach((v, k) => {
-      if (v.syncedShared) {
-        this.dispatchSyncTo(data, v.privilege===0, k);
-      }
-    });
-  }
-
-  /**
-   * Given a client's id and a privilege level return if that client should
-   * be able to perform an action at that privilege
-   */
-  private can(sid : string, testPrivilege : number) : boolean {
-    let clientPrivilege = this.clients.get(sid).privilege;
-    return (
-      clientPrivilege === 0 ||
-      clientPrivilege === testPrivilege ||
-      testPrivilege < 0
-    );
-  }
-
   /**
    * This factors out a common pattern of request handling, whereas if the
    * client is of a certain privilege an action is performed and
@@ -351,7 +310,7 @@ export class SocketCommunication {
     testPrivilege: number,
     action: () => Promise<R>
   ): Promise<R> => {
-    if (this.can(sid, testPrivilege)) {
+    if (this.clients.can(sid, testPrivilege)) {
       return action();
     } else {
       let message;
@@ -371,9 +330,9 @@ export class SocketCommunication {
    * Factors out adding rows
    */
   private genericAdd = (sid: string, action: () => {id: number}) => {
-    if (this.can(sid, 0)) {
+    if (this.clients.can(sid, 0)) {
       let result = action();
-      this.dispatchSync();
+      this.sync.scheduleFullGlobalSync();
       return Promise.resolve({
         success: true,
         message: "success",
