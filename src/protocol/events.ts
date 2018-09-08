@@ -343,15 +343,15 @@ export interface SynchronizeGlobal {
   // These will be undefined for non-admins, and may not be sent if update
   // is partial.
 
-  /** judgeHackMatrix[judgeId][hackId] is priority */
+  /** judgeHackMatrix[judgeId-1][hackId-1] is priority */
   judgeHackMatrix?: number[][];
-  /** superlativeHackMatrix[superlativeId][hackId] if hack wants superlative prize */
+  /** superlativeHackMatrix[superlativeId-1][hackId-1] if hack wants superlative prize */
   superlativeHackMatrix?: boolean[][];
-  /** noshowMatrix[judgeId][hackId] if judge marks hack as noshow */
+  /** noshowMatrix[judgeId-1][hackId-1] if judge marks hack as noshow */
   noshowMatrix?: boolean[][];
-  /** ratings[judgeId][hackId][categoryId] */
+  /** ratings[judgeId-1][hackId-1][categoryId-1] */
   ratings?: number[][][];
-  /** superlativePlacements[judgeId][superlativeId] */
+  /** superlativePlacements[judgeId-1][superlativeId-1] */
   superlativePlacements?: Array<Array<{
     firstChoiceId: number,
     secondChoiceId: number

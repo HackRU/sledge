@@ -376,6 +376,34 @@ export class DatabaseConnection {
     return r;
   }
 
+  getRatingsOfAllJudges(): number[][][] {
+    let judgesCount = this.getJudgesCount();
+    let hacksCount = this.getHacksCount();
+    let categoriesCount = this.getCategoriesCount();
+
+    let ratings: number[][][] = [];
+    for (let i=0;i<judgesCount;i++) {
+      let r: number[][] = [];
+      for (let j=0;j<hacksCount;j++) {
+        let h: number[] = [];
+        for (let k=0;k<categoriesCount;k++) {
+          h.push(0);
+        }
+        r.push(h);
+      }
+      ratings.push(r);
+    }
+
+    let stmt = this.sql.prepare(
+      "SELECT * FROM Rating;");
+    let all: Array<Row<Rating>> = stmt.all();
+    for (let r of all) {
+      ratings[r.judgeId-1][r.hackId-1][r.categoryId-1] = r.rating;
+    }
+
+    return ratings;
+  }
+
   getHackIdsOfJudge(judgeId: number): number[] {
     let stmt = this.sql.prepare(
       "SELECT hackId FROM JudgeHack "

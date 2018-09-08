@@ -179,6 +179,7 @@ export class SocketCommunication {
       }
 
       this.sync.scheduleFullJudgeSync(data.judgeId);
+      this.sync.scheduleFullGlobalSync();
 
       return Promise.resolve({
         success: true,
@@ -228,8 +229,8 @@ export class SocketCommunication {
       });
     },
 
-    onSetSynchronizeGlobal: (sid : string, data: e.SetSynchronizeGlobal) => {
-      this.events.sendSynchronizeGlobal(sid, this.getSyncSharedData());
+    onSetSynchronizeGlobal: (sid: string, data: e.SetSynchronizeGlobal) => {
+      this.sync.sendGlobalSync(sid);
 
       let clientState = this.clients.getClientState(sid);
       clientState.syncGlobal = data.syncShared;
