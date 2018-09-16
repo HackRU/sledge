@@ -4,11 +4,15 @@ import {Button, ButtonGroup} from "reactstrap";
 import {
   Superlative,
   SuperlativeHack,
+  SuperlativePlacement,
   Row
 } from "../../protocol/database";
 
 import {State} from "./types";
 import {connect} from "./connect";
+import {
+  setSuperlativeRanking
+} from "./actions";
 
 const pf = "srank";
 
@@ -33,13 +37,31 @@ export const SuperlativeRankerPresentation = (p: Props) => {
 };
 
 export const SuperlativeRanker = connect<{}, Props>(
-  (ownProps, state, dispatch) => ({
-    superlatives: findSuperlativesForHack(state, state.currentHackId).map(s => ({
-      name: s.name,
-      firstChoiceName: "[None]",
-      secondChoiceName: "[None]"
-    }))
-  })
+  (ownProps, state, dispatch) => {
+    let supersForHack = findSuperlativesForHack(state, state.currentHackId);
+
+    return {
+      superlatives: findSuperlativesForHack(state, state.currentHackId).map(s => {
+        let firstChoiceId = state.mySuperPlacements[s.id].firstChoiceId;
+        let secondChoiceId = state.mySuperPlacements[s.id].secondChoiceId;
+
+        return {
+          name: s.name,
+          firstChoiceName: firstChoiceId ? state.hacks[firstChoiceId].name : "[NONE SELECTED]",
+          secondChoiceName: secondChoiceId ? state.hacks[secondChoiceId].name : "[NONE SELECTED]",
+
+          onSetFirst: () => {
+            dispatch(setSuperlativeRanking(state.myJudgeId, s.id, state.currentHackId, 0))
+          },
+          onSetSecond: () => { /* TODO */ },
+          onClearFirst: () => { /* TODO */ },
+          onClearSecond: () => { /* TODO */ },
+          onUndo: () => { /* TODO */ }
+        }
+      }),
+
+    }
+  }
 )(SuperlativeRankerPresentation);
 
 function findSuperlativesForHack(props: State, hackId: number): Array<Row<Superlative>> {
@@ -62,20 +84,25 @@ export const SuperlativeGadget = (p: SuperlativeGadgetProps) => (
     <div className="supgadget-set">
       <button
         className="supgadget-button-first"
+        onClick={p.onSetFirst}
       >{`FIRST`}</button>
       <button
         className="supgadget-button-second"
+        onClick={p.onSetSecond}
       >{`SECOND`}</button>
     </div>
     <div className="supgadget-clear">
       <button
         className="supgadget-button-clear1"
+        onClick={p.onClearFirst}
       >{`CLEAR 1`}</button>
       <button
         className="supgadget-button-clear2"
+        onClick={p.onClearSecond}
       >{`CLEAR 2`}</button>
       <button
         className="supgadget-button-undo"
+        onClick={p.onUndo}
       >{`UNDO`}</button>
     </div>
 
@@ -104,4 +131,10 @@ export interface SuperlativeGadgetProps {
   name: string;
   firstChoiceName: string;
   secondChoiceName: string;
+
+  onSetFirst: () => void;
+  onSetSecond: () => void;
+  onClearFirst: () => void;
+  onClearSecond: () => void;
+  onUndo: () => void;
 }

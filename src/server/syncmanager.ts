@@ -45,11 +45,11 @@ export class SyncManager {
   }
 
   private getJudgeData(judgeId: number): SynchronizeJudge {
-
     return {
       judgeId,
       hackIds: this.db.getHackIdsOfJudge(judgeId),
-      ratings: this.db.getRatingsOfJudge(judgeId)
+      ratings: this.db.getRatingsOfJudge(judgeId),
+      superlativePlacements: this.db.getSuperlativePlacementsOfJudge(judgeId)
     };
   }
 
@@ -64,7 +64,7 @@ export class SyncManager {
     } else {
       data = {
         isFull: true,
-        ...this.getAdminGlobalData()
+        ...this.getUnprivilegedGlobalData()
       } as SynchronizeGlobal;
     }
 

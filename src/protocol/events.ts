@@ -5,6 +5,7 @@ import {
   JudgeHack,
   Superlative,
   SuperlativeHack,
+  SuperlativePlacement,
   Category,
   Token,
   Row
@@ -373,8 +374,10 @@ export interface SynchronizeJudge {
   // These will only be sent when things change
 
   hackIds?: number[];
-  /** ratings[hackId][categoryId] */
+  /** ratings[hackId-1][categoryId-1] */
   ratings?: number[][];
+  /** superlativePlacements[superlativeId-1] */
+  superlativePlacements?: SuperlativePlacement[];
 }
 
 export const synchronizeJudge: UpdateMeta = {

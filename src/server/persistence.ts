@@ -94,9 +94,9 @@ export class DatabaseConnection {
         +"superlativeId INTEGER NOT NULL,"
         +"firstChoiceId INTEGER NOT NULL,"
         +"secondChoiceId INTEGER NOT NULL,"
+        // We can't have a foreign key constraint for choices, because
+        // 0 represents none chosen
         +"FOREIGN KEY(judgeId) REFERENCES Judge(id),"
-        +"FOREIGN KEY(firstChoiceId) REFERENCES Hack(id),"
-        +"FOREIGN KEY(secondChoiceId) REFERENCES Hack(id),"
         +"PRIMARY KEY(id)"
       +");");
     this.sql.exec(
@@ -226,6 +226,7 @@ export class DatabaseConnection {
   // Change Rows
 
   changeSuperlativePlacement(placement : SuperlativePlacement) {
+    console.log(placement);
     let stmt = this.sql.prepare(
       "INSERT OR REPLACE INTO SuperlativePlacement"
         +"(id, judgeId, superlativeId, firstChoiceId, secondChoiceId)"
@@ -416,6 +417,38 @@ export class DatabaseConnection {
     return stmt.all([judgeId]).map(jh => jh.hackId);
   }
 
+  /**
+   */
+  getSuperlativePlacementsOfJudge(judgeId: number): Array<SuperlativePlacement> {
+    let stmt = this.sql.prepare(
+      "SELECT * "
+        +"FROM SuperlativePlacement "
+        +"WHERE "
+          +"judgeId=$judgeId "
+        +"ORDER BY "
+          +"superlativeId ASC;");
+
+    let all: Array<SuperlativePlacement> = stmt.all({judgeId});
+    let placements: Array<SuperlativePlacement> = new Array(this.getSuperlativesCount());
+
+    for (let p of all) {
+      placements[p.superlativeId-1] = p;
+    }
+
+    for (let i=0;i<placements.length;i++) {
+      if (!placements[i]) {
+        placements[i] = {
+          superlativeId: 0,
+          judgeId: -1,
+          firstChoiceId: 0,
+          secondChoiceId: 0
+        };
+      }
+    }
+
+    return placements;
+  }
+
   ////////////////////
   // Get Single Rows
 
@@ -453,6 +486,13 @@ export class DatabaseConnection {
   getCategoriesCount(): number {
     let stmt = this.sql.prepare(
       "SELECT id FROM Category ORDER BY id DESC LIMIT 1;");
+    let row = stmt.get();
+    return row ? row.id : 0;
+  }
+
+  getSuperlativesCount(): number {
+    let stmt = this.sql.prepare(
+      "SELECT id FROM Superlative ORDER BY id DESC LIMIT 1;");
     let row = stmt.get();
     return row ? row.id : 0;
   }

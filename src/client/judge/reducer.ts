@@ -19,6 +19,7 @@ export function reduce(oldState: State, action : Action): State {
       myJudgeId: 0,
       myHacks: [],
       ratings: [],
+      mySuperPlacements: [],
       currentHackId: 0,
 
       loadingMessages: [],
@@ -84,6 +85,8 @@ export function reduce(oldState: State, action : Action): State {
       state.myHacks = action.data.hackIds;
     if (action.data.ratings)
       state.ratings = action.data.ratings;
+    if (action.data.superlativePlacements)
+      state.mySuperPlacements = action.data.superlativePlacements;
   }
 
   if (action.type === Type.OpenList) {

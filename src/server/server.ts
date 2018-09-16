@@ -104,6 +104,10 @@ export class SocketCommunication {
       if (token) {
         this.clients.setClientPrivilege(sid, token.privilege);
 
+        process.nextTick(() => {
+          this.sync.sendGlobalSync(sid);
+        });
+
         return Promise.resolve({
           success: true,
           message: "success",

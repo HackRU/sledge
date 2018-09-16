@@ -172,3 +172,17 @@ export function rateHack(judgeId: number, hackId: number, ratings: number[]): As
     });
   }
 }
+
+export function setSuperlativeRanking(
+  judgeId: number, superlativeId: number, firstChoiceId: number, secondChoiceId: number
+): AsyncAction {
+  return (dispatch, getState, client) => {
+    client.sendRankSuperlative({
+      judgeId, superlativeId, firstChoiceId, secondChoiceId
+    }).then(res => {
+      if (!res.success) {
+        dispatch(fail(res.message));
+      }
+    });
+  };
+}

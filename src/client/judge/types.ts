@@ -5,6 +5,7 @@ import {
   Judge,
   Superlative,
   SuperlativeHack,
+  SuperlativePlacement,
   Category,
   PartialTable,
   Row
@@ -26,14 +27,16 @@ export type JudgeStore = Store<State, Action>;
 // State
 
 export interface State {
-  /* Current mode of interface */
+  /** Current mode of interface */
   interfaceMode : InterfaceMode;
-  /* Curretn judge Id */
+  /** Curretn judge Id */
   myJudgeId: number;
-  /* IDs of hacks to be judged, in order they should be judged */
+  /** IDs of hacks to be judged, in order they should be judged */
   myHacks : number[];
-  /* Ratings of hacks, ratings[hackId-1][categoryId-1] */
+  /** Ratings of hacks, ratings[hackId-1][categoryId-1] */
   ratings: number[][];
+  /** mySuperPlacements[superlativeId-1] */
+  mySuperPlacements: Array<SuperlativePlacement>;
   /* ID of currently selected hack, 0 if no hacks to judge */
   currentHackId : number;
 

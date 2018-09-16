@@ -8,7 +8,6 @@ import {
 export class ToggleMatrix extends React.Component<ToggleMatrixProps, State> {
   constructor(props:any) {
     super(props);
-    console.log(this.props);
   }
 
   render() {
