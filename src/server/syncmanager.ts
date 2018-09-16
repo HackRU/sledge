@@ -40,7 +40,11 @@ export class SyncManager {
   private getAdminGlobalData(): Partial<SynchronizeGlobal> {
     return {
       judgeHackMatrix: this.db.getJudgeHackMatrix(),
-      ratings: this.db.getRatingsOfAllJudges()
+      ratings: this.db.getRatingsOfAllJudges(),
+      superlativePlacements: this.db.getAllSuperlativePlacementsMatrix().map(xs => xs.map(p => ({
+        firstChoiceId: p.firstChoiceId,
+        secondChoiceId: p.secondChoiceId
+      })))
     };
   }
 
@@ -108,14 +112,14 @@ export class SyncManager {
       hacks, judges, superlatives, superlativeHacks, categories
     } = this.getUnprivilegedGlobalData() as any;
     let {
-      judgeHackMatrix, ratings
+      judgeHackMatrix, ratings, superlativePlacements
     } = this.getAdminGlobalData() as any;
 
     // Sync data for admins
     let adminSync: SynchronizeGlobal = {
       isFull: true,
       hacks, judges, superlatives, superlativeHacks, categories,
-      judgeHackMatrix, ratings
+      judgeHackMatrix, ratings, superlativePlacements
     };
 
     // Sync data for non-admins

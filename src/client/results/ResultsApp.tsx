@@ -12,6 +12,7 @@ import {
 
 import {
   Hack,
+  Superlative,
   PartialTable,
   Row
 } from "../../protocol/database.js";
@@ -63,7 +64,6 @@ export class ResultsApp extends React.Component<{}, State> {
         <h1>{`Hack Results`}</h1>
 
         <h2>{`Overall Ranking`}</h2>
-
         <Table>
           <thead>
             <tr>
@@ -80,6 +80,35 @@ export class ResultsApp extends React.Component<{}, State> {
                 <td>{w.info.name}</td>
                 <td>{w.overall}</td>
                 <td>{w.totalFinished}{` / `}{w.totalJudges}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
+        <h2>{`Superlative Rankings`}</h2>
+        <Table>
+          <thead>
+            <tr>
+              <th>{`Superlative`}</th>
+              <th>{`Score`}</th>
+              <th>{`Hack`}</th>
+              <th>{`Loc`}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getSuperlativeWinners(this.state.syncData).map((r,i) => r.score > 0 ? (
+              <tr key={i}>
+                <td>{i%5 === 0 ? (<b>{r.superlative.name}</b>) : []}</td>
+                <td>{r.score}</td>
+                <td>{r.hack.name}</td>
+                <td>{r.hack.location}</td>
+              </tr>
+            ) : (
+              <tr key={i}>
+                <td>{i%5 === 0 ? r.superlative.name : ""}</td>
+                <td>{`0`}</td>
+                <td />
+                <td />
               </tr>
             ))}
           </tbody>
@@ -143,6 +172,51 @@ function getOverallWinners(sync: Synchronize): Array<{ overall: number, info: Ro
       return a.info.id - b.info.id;
     }
   });
+}
+
+function getSuperlativeWinners(sync: Synchronize): Array<{ hack: Row<Hack>,  superlative: Row<Superlative>, score: number }> {
+  if (!sync || !sync.superlativePlacements) return [];
+
+  let superlatives = sync.superlatives.filter(s => !!s);
+
+  let scores: Array<Array<{hackId: number, score: number}>> = new Array(superlatives.length);
+  for (let i=0;i<scores.length;i++) {
+    let h: Array<{hackId: number, score: number}> = new Array(sync.hacks.length);
+    for (let j=0;j<h.length;j++) {
+      h[j] = { hackId: j+1, score: 0 };
+    }
+
+    for (let judgeId=1;judgeId<=sync.superlativePlacements.length;judgeId++) {
+      let p = sync.superlativePlacements[judgeId-1][superlatives[i].id-1];
+      if (p.firstChoiceId !== p.secondChoiceId) {
+        h[p.firstChoiceId].score += 2;
+        h[p.secondChoiceId].score += 1;
+      } else {
+        h[p.firstChoiceId].score += 2;
+      }
+    }
+
+    scores[i] = h.sort((a,b) => {
+      return b.score - a.score;
+    });
+
+    while (scores[i].length > 5) {
+      scores[i].pop();
+    }
+  }
+
+  let r: Array<{ hack: Row<Hack>,  superlative: Row<Superlative>, score: number }> = [];
+  for (let i=0;i<scores.length;i++) {
+    for (let s of scores[i]) {
+      r.push({
+        hack: sync.hacks[s.hackId],
+        superlative: superlatives[i],
+        score: s.score
+      });
+    }
+  }
+
+  return r;
 }
 
 function average(xs: number[]): number {

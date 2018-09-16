@@ -226,7 +226,6 @@ export class DatabaseConnection {
   // Change Rows
 
   changeSuperlativePlacement(placement : SuperlativePlacement) {
-    console.log(placement);
     let stmt = this.sql.prepare(
       "INSERT OR REPLACE INTO SuperlativePlacement"
         +"(id, judgeId, superlativeId, firstChoiceId, secondChoiceId)"
@@ -447,6 +446,38 @@ export class DatabaseConnection {
     }
 
     return placements;
+  }
+
+  getAllSuperlativePlacementsMatrix(): Array<Array<SuperlativePlacement>> {
+    let stmt = this.sql.prepare(
+      "SELECT * FROM SuperlativePlacement;");
+    let all: Array<SuperlativePlacement> = stmt.all();
+
+    let hacksCount = this.getHacksCount();
+
+    let r: Array<Array<SuperlativePlacement>> = new Array(this.getJudgesCount());
+    for (let i=0;i<r.length;i++) {
+      r[i] = new Array(hacksCount);
+    }
+
+    for (let s of all) {
+      r[s.judgeId-1][s.superlativeId-1] = s;
+    }
+
+    for (let i=0;i<r.length;i++) {
+      for (let j=0;j<r[i].length;j++) {
+        if (!r[i][j]) {
+          r[i][j] = {
+            judgeId: i+1,
+            superlativeId: j+1,
+            firstChoiceId: 0,
+            secondChoiceId: 0
+          };
+        }
+      }
+    }
+
+    return r;
   }
 
   ////////////////////

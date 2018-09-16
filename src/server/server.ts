@@ -202,6 +202,7 @@ export class SocketCommunication {
       this.db.changeSuperlativePlacement(data);
 
       this.sync.scheduleFullJudgeSync(data.judgeId);
+      this.sync.scheduleFullGlobalSync();
 
       return Promise.resolve({
         success: true,

@@ -42,8 +42,9 @@ export const SuperlativeRanker = connect<{}, Props>(
 
     return {
       superlatives: findSuperlativesForHack(state, state.currentHackId).map(s => {
-        let firstChoiceId = state.mySuperPlacements[s.id].firstChoiceId;
-        let secondChoiceId = state.mySuperPlacements[s.id].secondChoiceId;
+        console.log(state);
+        let firstChoiceId = state.mySuperPlacements[s.id-1].firstChoiceId;
+        let secondChoiceId = state.mySuperPlacements[s.id-1].secondChoiceId;
 
         return {
           name: s.name,
@@ -51,12 +52,26 @@ export const SuperlativeRanker = connect<{}, Props>(
           secondChoiceName: secondChoiceId ? state.hacks[secondChoiceId].name : "[NONE SELECTED]",
 
           onSetFirst: () => {
-            dispatch(setSuperlativeRanking(state.myJudgeId, s.id, state.currentHackId, 0))
+            if (firstChoiceId !== state.currentHackId) {
+              dispatch(setSuperlativeRanking(state.myJudgeId, s.id, state.currentHackId, firstChoiceId))
+            }
           },
-          onSetSecond: () => { /* TODO */ },
-          onClearFirst: () => { /* TODO */ },
-          onClearSecond: () => { /* TODO */ },
-          onUndo: () => { /* TODO */ }
+          onSetSecond: () => {
+            if (secondChoiceId !== state.currentHackId) {
+              dispatch(setSuperlativeRanking(state.myJudgeId, s.id, firstChoiceId, state.currentHackId))
+            }
+          },
+          onClearFirst: () => {
+            if (firstChoiceId !== 0) {
+              dispatch(setSuperlativeRanking(state.myJudgeId, s.id, secondChoiceId, 0))
+            }
+          },
+          onClearSecond: () => {
+            if (secondChoiceId !== 0) {
+              dispatch(setSuperlativeRanking(state.myJudgeId, s.id, firstChoiceId, 0))
+            }
+          },
+          onUndo: () => { alert("Not Yet Implemented"); }
         }
       }),
 
