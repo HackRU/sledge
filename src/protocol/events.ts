@@ -5,6 +5,7 @@ import {
   JudgeHack,
   Superlative,
   SuperlativeHack,
+  SuperlativePlacement,
   Category,
   Token,
   Row
@@ -174,8 +175,8 @@ export const rateHack : RequestMeta = {
 export interface RankSuperlative extends Request {
   judgeId: number;
   superlativeId: number;
-  firstHackId: number;
-  secondHackId: number;
+  firstChoiceId: number;
+  secondChoiceId: number;
 }
 
 export const rankSuperlative : RequestMeta = {
@@ -343,15 +344,15 @@ export interface SynchronizeGlobal {
   // These will be undefined for non-admins, and may not be sent if update
   // is partial.
 
-  /** judgeHackMatrix[judgeId][hackId] is priority */
+  /** judgeHackMatrix[judgeId-1][hackId-1] is priority */
   judgeHackMatrix?: number[][];
-  /** superlativeHackMatrix[superlativeId][hackId] if hack wants superlative prize */
+  /** superlativeHackMatrix[superlativeId-1][hackId-1] if hack wants superlative prize */
   superlativeHackMatrix?: boolean[][];
-  /** noshowMatrix[judgeId][hackId] if judge marks hack as noshow */
+  /** noshowMatrix[judgeId-1][hackId-1] if judge marks hack as noshow */
   noshowMatrix?: boolean[][];
-  /** ratings[judgeId][hackId][categoryId] */
+  /** ratings[judgeId-1][hackId-1][categoryId-1] */
   ratings?: number[][][];
-  /** superlativePlacements[judgeId][superlativeId] */
+  /** superlativePlacements[judgeId-1][superlativeId-1] */
   superlativePlacements?: Array<Array<{
     firstChoiceId: number,
     secondChoiceId: number
@@ -364,11 +365,19 @@ export const synchronizeGlobal : UpdateMeta = {
 }
 
 /**
- * Synchronizes data specific to a judge
+ * Synchronizes data specific to a judge. The first SynchronizeJudge following a
+ * SetSynhcronizeJudge will have all fields filled.
  */
 export interface SynchronizeJudge {
   judgeId: number;
-  hackIds: number[];
+
+  // These will only be sent when things change
+
+  hackIds?: number[];
+  /** ratings[hackId-1][categoryId-1] */
+  ratings?: number[][];
+  /** superlativePlacements[superlativeId-1] */
+  superlativePlacements?: SuperlativePlacement[];
 }
 
 export const synchronizeJudge: UpdateMeta = {

@@ -11,6 +11,8 @@ import {JudgeInfo} from "./JudgeInfo.js";
 import {Header} from "./Header.js";
 import {HacksList} from "./HacksList.js";
 import {HackInfo} from "./HackInfo.js";
+import {RatingBox} from "./RatingBox";
+import {SuperlativeRanker} from "./SuperlativeRanker.js";
 
 export const JudgeAppPresentation = (props : State) => {
   switch (props.interfaceMode) {
@@ -44,6 +46,9 @@ export const JudgingPresentation = (props: State) => (
     <Header />
     <Toolbar />
     <HackInfo />
+    <RatingBox />
+    <SuperlativeRanker />
+    <Toolbar />
   </Container>
 )
 

@@ -18,6 +18,8 @@ export function reduce(oldState: State, action : Action): State {
       interfaceMode: InterfaceMode.Loading,
       myJudgeId: 0,
       myHacks: [],
+      ratings: [],
+      mySuperPlacements: [],
       currentHackId: 0,
 
       loadingMessages: [],
@@ -25,6 +27,7 @@ export function reduce(oldState: State, action : Action): State {
       hacks: [],
       judges: [],
       superlatives: [],
+      superlativeHacks: [],
       categories: []
     };
   } else {
@@ -78,7 +81,12 @@ export function reduce(oldState: State, action : Action): State {
   }
 
   if (action.type === Type.SynchronizeMyHacks) {
-    state.myHacks = action.data.hackIds;
+    if (action.data.hackIds)
+      state.myHacks = action.data.hackIds;
+    if (action.data.ratings)
+      state.ratings = action.data.ratings;
+    if (action.data.superlativePlacements)
+      state.mySuperPlacements = action.data.superlativePlacements;
   }
 
   if (action.type === Type.OpenList) {
@@ -121,6 +129,11 @@ function syncSharedDataToState(syncData: SynchronizeGlobal, state: State) {
   state.superlatives = state.superlatives.slice();
   for (let superlative of syncData.superlatives) {
     state.superlatives[superlative.id] = superlative;
+  }
+
+  state.superlativeHacks = state.superlativeHacks.slice();
+  for (let superlativeHack of syncData.superlativeHacks) {
+    state.superlativeHacks[superlativeHack.id] = superlativeHack;
   }
 
   state.categories = state.categories.slice();

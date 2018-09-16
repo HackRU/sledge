@@ -1,5 +1,5 @@
 import {SledgeClient} from "../sledge.js";
-import {Table, Hack, Row} from "../../protocol/database.js";
+import {Table, Hack, Judge, Row} from "../../protocol/database.js";
 
 export function autoAssignTables(client: SledgeClient, hacks: Array<Row<Hack>>) {
   // First, get all active hacks, sorted by ID

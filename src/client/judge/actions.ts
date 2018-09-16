@@ -161,10 +161,28 @@ export function openHack(hackId: number): AsyncAction {
   }
 }
 
-export function prevHack(): AsyncAction {
-  throw new Error("NYI");
+export function rateHack(judgeId: number, hackId: number, ratings: number[]): AsyncAction {
+  return (dispatch, getState, client) => {
+    client.sendRateHack({
+      judgeId, hackId, ratings
+    }).then(res => {
+      if (!res.success) {
+        dispatch(fail(res.message));
+      }
+    });
+  }
 }
 
-export function nextHack(): AsyncAction {
-  throw new Error("NYI");
+export function setSuperlativeRanking(
+  judgeId: number, superlativeId: number, firstChoiceId: number, secondChoiceId: number
+): AsyncAction {
+  return (dispatch, getState, client) => {
+    client.sendRankSuperlative({
+      judgeId, superlativeId, firstChoiceId, secondChoiceId
+    }).then(res => {
+      if (!res.success) {
+        dispatch(fail(res.message));
+      }
+    });
+  };
 }

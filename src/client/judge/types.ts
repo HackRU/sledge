@@ -4,8 +4,11 @@ import {
   Hack,
   Judge,
   Superlative,
+  SuperlativeHack,
+  SuperlativePlacement,
   Category,
-  PartialTable
+  PartialTable,
+  Row
 } from "../../protocol/database.js";
 
 import {
@@ -24,12 +27,16 @@ export type JudgeStore = Store<State, Action>;
 // State
 
 export interface State {
-  /* Current mode of interface */
+  /** Current mode of interface */
   interfaceMode : InterfaceMode;
-  /* Curretn judge Id */
+  /** Curretn judge Id */
   myJudgeId: number;
-  /* IDs of hacks to be judged, in order they should be judged */
+  /** IDs of hacks to be judged, in order they should be judged */
   myHacks : number[];
+  /** Ratings of hacks, ratings[hackId-1][categoryId-1] */
+  ratings: number[][];
+  /** mySuperPlacements[superlativeId-1] */
+  mySuperPlacements: Array<SuperlativePlacement>;
   /* ID of currently selected hack, 0 if no hacks to judge */
   currentHackId : number;
 
@@ -43,13 +50,15 @@ export interface State {
   loadingMessages?: string[];
 
   /* Local synchronized copy of hacks */
-  hacks : PartialTable<Hack>;
+  hacks : PartialTable<Row<Hack>>;
   /* Local synchronized copy of judges */
-  judges : PartialTable<Judge>;
+  judges : PartialTable<Row<Judge>>;
   /* Local synchronized copy of superlatives */
-  superlatives : PartialTable<Superlative>;
+  superlatives : PartialTable<Row<Superlative>>;
+  /* Local synchronized copy of superlativeHacks */
+  superlativeHacks : PartialTable<Row<SuperlativeHack>>;
   /* Local synchronized copy of categories */
-  categories : PartialTable<Category>;
+  categories : PartialTable<Row<Category>>;
 }
 
 export enum InterfaceMode {

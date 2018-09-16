@@ -24,7 +24,7 @@ import {getSession, setSession} from "../session.js";
 import {SledgeClient, SledgeStatus} from "../sledge.js";
 import {importDevpostData} from "./devpost.js";
 import {autoAssignTables} from "./assigntables.js";
-import {autoAssignJudgeHacks} from "./assignjudgehacks.js";
+import {autoAssignJudgeHacks, autoAssignJudgeHacksBetter, removeJudgeHackAssignments} from "./assignjudgehacks.js";
 import {loadTestData} from "./testdata.js";
 
 function logPromise(p : Promise<any>) {
@@ -52,7 +52,8 @@ export class SetupApp extends React.Component<{}, State> {
         sledgeStatus: s
       });
     });
-    logPromise(sledge.sendSetSynchronizeGlobal({
+    let p;
+    logPromise(p = sledge.sendSetSynchronizeGlobal({
       syncShared: true
     }));
     (window as any).sledge = sledge;
@@ -324,6 +325,12 @@ export class SetupApp extends React.Component<{}, State> {
           <Button
             onClick={() => autoAssignJudgeHacks(sledge, this.state.syncSharedData)}
           >{`Auto Assign All Hacks to All Judges`}</Button>
+          <Button
+            onClick={() => autoAssignJudgeHacksBetter(sledge, this.state.syncSharedData)}
+          >{`Auto Assign 3 Judges Per Hack`}</Button>
+          <Button
+            onClick={() => removeJudgeHackAssignments(sledge, this.state.syncSharedData)}
+          >{`Clear`}</Button>
         </ButtonGroup>
         {this.state.assignedOpen ? [(
           <ToggleMatrix
