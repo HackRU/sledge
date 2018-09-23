@@ -15,7 +15,10 @@ import {
   PartialTable
 } from "../../protocol/database.js";
 
-import {SledgeClient} from "../sledge.js";
+import {
+  SledgeClient,
+  SledgeStatus
+} from "../sledge.js";
 
 let sledge : SledgeClient;
 
@@ -32,23 +35,32 @@ export class TablesApp extends React.Component<{}, State> {
     sledge.sendSetSynchronizeGlobal({
       syncShared: true
     });
+    sledge.subscribeStatus(s => {
+      if (s === SledgeStatus.Disconnected) {
+        this.setState({
+          disconnected: true
+        });
+      }
+    });
 
     this.state = {
       initialized: false,
-      hacks: []
+      hacks: [],
+      disconnected: false
     };
   }
 
   handleSync(data: Synchronize) {
     this.setState(prevState => {
-      let newState = {
-        initialized: true,
-        hacks: prevState.hacks.slice(0)
-      };
+      let newState = { ...prevState };
+      newState.hacks = prevState.hacks.slice();
+      newState.initialized = true;
 
       for (let hack of data.hacks) {
         newState.hacks[hack.id] = hack;
       }
+
+      return newState;
     });
   }
 
@@ -56,53 +68,83 @@ export class TablesApp extends React.Component<{}, State> {
     return (
       <Container>
         <h1>{`Hack Locations`}</h1>
-        { this.state.initialized ?
-          this.renderTables() :
-          this.renderWaiting() }
+        { this.renderBody() }
       </Container>
     );
   }
 
-  renderWaiting(): JSX.Element {
-    return (
-      <div>
-        <Alert color="secondary">
-          {`Loading...`}
-        </Alert>
-      </div>
-    );
+  renderBody(): JSX.Element {
+    if (this.state.initialized) {
+      return (
+        <div>
+          { this.renderAlert() }
+          { this.renderTable() }
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          { this.renderAlert() }
+        </div>
+      );
+    }
   }
 
-  renderTables(): JSX.Element {
-    return (
-      <div>
+  renderAlert(): JSX.Element {
+    if (this.state.disconnected && this.state.initialized) {
+      return (
+        <Alert color="danger">
+          {`You have been disconnected from Sledge. Please check your internet connection.`}
+        </Alert>
+      );
+    } else if (this.state.disconnected && !this.state.initialized) {
+      return (
+        <Alert color="danger">
+          {`Unable to connect to Sledge. Please check your internet.`}
+        </Alert>
+      );
+    } else if (!this.state.disconnected && this.state.initialized) {
+      return (
         <Alert color="success">
           {`If something changes this page will update automatically. `}
           {`Do not setup up until told by hackathon staff.`}
         </Alert>
-        <Table hover>
-          <thead>
-            <tr>
-              <th>{`Location`}</th>
-              <th>{`Hack Name`}</th>
+      );
+    } else if (!this.state.disconnected && !this.state.initialized) {
+      return (
+        <Alert color="secondary">
+          {`Loading...`}
+        </Alert>
+      );
+    } else {
+      throw new Error("Impossible else");
+    }
+  }
+
+  renderTable(): JSX.Element {
+    return (
+      <Table hover>
+        <thead>
+          <tr>
+            <th>{`Location`}</th>
+            <th>{`Hack Name`}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.state.hacks.filter(h => !!h).sort((h1,h2) => {
+            if (h1.location !== h2.location) {
+              return h1.location - h2.location;
+            } else {
+              return h1.id - h2.id;
+            }
+          }).map(h => (
+            <tr key={h.id}>
+              <th>{h.location}</th>
+              <th>{h.name}</th>
             </tr>
-          </thead>
-          <tbody>
-            {this.state.hacks.filter(h => !!h).sort((h1,h2) => {
-              if (h1.location !== h2.location) {
-                return h1.location - h2.location;
-              } else {
-                return h1.id - h2.id;
-              }
-            }).map(h => (
-              <tr key={h.id}>
-                <th>{h.location}</th>
-                <th>{h.name}</th>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
+          ))}
+        </tbody>
+      </Table>
     );
   }
 }
@@ -110,4 +152,5 @@ export class TablesApp extends React.Component<{}, State> {
 interface State {
   initialized: boolean;
   hacks: PartialTable<Hack>;
+  disconnected: boolean;
 }

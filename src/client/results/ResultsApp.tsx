@@ -12,6 +12,7 @@ import {
 
 import {
   Hack,
+  Judge,
   Superlative,
   PartialTable,
   Row
@@ -105,7 +106,7 @@ export class ResultsApp extends React.Component<{}, State> {
               </tr>
             ) : (
               <tr key={i}>
-                <td>{i%5 === 0 ? r.superlative.name : ""}</td>
+                <td>{i%5 === 0 ? (<b>{r.superlative ? r.superlative.name : "???"}</b>) : []}</td>
                 <td>{`0`}</td>
                 <td />
                 <td />
@@ -174,49 +175,81 @@ function getOverallWinners(sync: Synchronize): Array<{ overall: number, info: Ro
   });
 }
 
-function getSuperlativeWinners(sync: Synchronize): Array<{ hack: Row<Hack>,  superlative: Row<Superlative>, score: number }> {
+interface SuperlativeWinner {
+  hack: Row<Hack>;
+  superlative: Row<Superlative>;
+  score: number;
+}
+
+function getSuperlativeWinners(sync: Synchronize): Array<SuperlativeWinner> {
   if (!sync || !sync.superlativePlacements) return [];
 
-  let superlatives = sync.superlatives.filter(s => !!s);
+  // superlatives[superlativeId-1]
+  let superlatives: Array<Row<Superlative>> = [];
+  // hacks[hackId-1]
+  let hacks: Array<Row<Hack>> = [];
+  // judges[judgeId-1]
+  let judges: Array<Row<Judge>> = [];
 
-  let scores: Array<Array<{hackId: number, score: number}>> = new Array(superlatives.length);
-  for (let i=0;i<scores.length;i++) {
-    let h: Array<{hackId: number, score: number}> = new Array(sync.hacks.length);
-    for (let j=0;j<h.length;j++) {
-      h[j] = { hackId: j+1, score: 0 };
+  for (let superlative of sync.superlatives) superlatives[superlative.id] = superlative;
+  for (let hack of sync.hacks) hacks[hack.id] = hack;
+  for (let judge of sync.judges) judges[judge.id] = judge;
+
+  // Reformat in scores matrix
+  // scores[superlativeId-1][hackId-1]
+  let scores: number[][] = new Array(superlatives.length-1);
+  for (let superlativeId=1;superlativeId<=superlatives.length;superlativeId++) {
+    scores[superlativeId-1] = new Array(hacks.length-1);
+    for (let hackId=1;hackId<=hacks.length;hackId++) {
+      scores[superlativeId-1][hackId-1] = 0;
     }
+  }
 
-    for (let judgeId=1;judgeId<=sync.superlativePlacements.length;judgeId++) {
-      let p = sync.superlativePlacements[judgeId-1][superlatives[i].id-1];
-      if (p.firstChoiceId !== p.secondChoiceId) {
-        h[p.firstChoiceId].score += 2;
-        h[p.secondChoiceId].score += 1;
+  for (let judgeId=1;judgeId<judges.length;judgeId++) {
+    for (let superlativeId=1;superlativeId<superlatives.length;superlativeId++) {
+      let placement = sync.superlativePlacements[judgeId-1][superlativeId-1];
+      if (placement.firstChoiceId === placement.secondChoiceId) {
+        if (placement.firstChoiceId > 0) scores[superlativeId-1][placement.firstChoiceId-1] += 2;
       } else {
-        h[p.firstChoiceId].score += 2;
+        if (placement.firstChoiceId > 0)  scores[superlativeId-1][placement.firstChoiceId-1] += 2;
+        if (placement.secondChoiceId > 0) scores[superlativeId-1][placement.secondChoiceId-1] += 1;
       }
     }
+  }
 
-    scores[i] = h.sort((a,b) => {
-      return b.score - a.score;
-    });
+  // For each superlative, get top 5 winners
+  let winners: Array<SuperlativeWinner> = [];
+  type HackScore = { hackId: number, score: number };
+  for (let superlativeId=1;superlativeId<superlatives.length;superlativeId++) {
+    // Sort by score
+    let sorted = scores[superlativeId-1].map((s,h) => ({
+      score: s,
+      hackId: h+1
+    })).sort((a,b) => b.score - a.score);
 
-    while (scores[i].length > 5) {
-      scores[i].pop();
+    // Get 5 best, or add dummies if <5
+    for (let i=0;i<5;i++) {
+      if (sorted.length > i && sorted[i].score > 0) {
+        if (superlativeId >= superlatives.length) console.log(superlativeId);
+        console.log(superlatives);
+        winners.push({
+          superlative: superlatives[superlativeId],
+          hack: hacks[sorted[i].hackId],
+          score: sorted[i].score
+        });
+      } else {
+        winners.push({
+          superlative: superlatives[superlativeId],
+          hack: null,
+          score: 0
+        });
+      }
     }
   }
 
-  let r: Array<{ hack: Row<Hack>,  superlative: Row<Superlative>, score: number }> = [];
-  for (let i=0;i<scores.length;i++) {
-    for (let s of scores[i]) {
-      r.push({
-        hack: sync.hacks[s.hackId],
-        superlative: superlatives[i],
-        score: s.score
-      });
-    }
-  }
+  console.log(winners);
 
-  return r;
+  return winners;
 }
 
 function average(xs: number[]): number {

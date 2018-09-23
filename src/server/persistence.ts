@@ -448,28 +448,31 @@ export class DatabaseConnection {
     return placements;
   }
 
+  /**
+   * return[judgeId-1][superlativeId-1]
+   */
   getAllSuperlativePlacementsMatrix(): Array<Array<SuperlativePlacement>> {
     let stmt = this.sql.prepare(
       "SELECT * FROM SuperlativePlacement;");
     let all: Array<SuperlativePlacement> = stmt.all();
 
-    let hacksCount = this.getHacksCount();
+    let judgesCount = this.getJudgesCount();
+    let superlativesCount = this.getSuperlativesCount();
 
-    let r: Array<Array<SuperlativePlacement>> = new Array(this.getJudgesCount());
-    for (let i=0;i<r.length;i++) {
-      r[i] = new Array(hacksCount);
+    let matrix: Array<Array<SuperlativePlacement>> = new Array(judgesCount);
+    for (let i=0;i<matrix.length;i++) {
+      matrix[i] = new Array(superlativesCount);
     }
 
     for (let s of all) {
-      r[s.judgeId-1][s.superlativeId-1] = s;
+      matrix[s.judgeId-1][s.superlativeId-1] = s;
     }
 
-    for (let i=0;i<r.length;i++) {
-      for (let j=0;j<r[i].length;j++) {
-        if (!r[i][j]) {
-          r[i][j] = {
-            judgeId: i+1,
-            superlativeId: j+1,
+    for (let judgeId=1;judgeId<=judgesCount;judgeId++) {
+      for (let superlativeId=1;superlativeId<=superlativesCount;superlativeId++) {
+        if (!matrix[judgeId-1][superlativeId-1]) {
+          matrix[judgeId-1][superlativeId-1] = {
+            judgeId, superlativeId,
             firstChoiceId: 0,
             secondChoiceId: 0
           };
@@ -477,7 +480,7 @@ export class DatabaseConnection {
       }
     }
 
-    return r;
+    return matrix;
   }
 
   ////////////////////
