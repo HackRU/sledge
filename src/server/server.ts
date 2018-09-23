@@ -1,5 +1,6 @@
 import http from "http";
 import {randomFillSync} from "crypto";
+import uuidv4 from "uuid";
 import {default as socketio, Server, Socket}  from "socket.io";
 
 import * as e from "../protocol/events.js";
@@ -122,9 +123,28 @@ export class SocketCommunication {
       }
     },
 
-    onLogin: (sid : string, data : e.Login) => {
-      // TODO
-      return this.nyi(sid, "Login");
+    onLogin: (sid: string, data: e.Login) => {
+      if (!this.clients.can(sid, 0) && data.loginCode !== "0000") {
+        return Promise.resolve({
+          success: false,
+          message: "Must have login code or be admin.",
+          judgeId: 0,
+          secret: ""
+        });
+      }
+
+      let secret = uuidv4();
+      this.db.addToken({
+        secret,
+        privilege: data.judgeId
+      });
+
+      return Promise.resolve({
+        success: true,
+        message: "success",
+        judgeId: data.judgeId,
+        secret
+      });
     },
 
     onModifyRow: (sid: string, data: e.ModifyRow) => {
