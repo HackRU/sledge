@@ -5,6 +5,8 @@
 
 **This project is currently in development.**
 
+**See docs/Deployment.md for HackRU deployment.**
+
 Sledge is a real-time judging platform used for HackRU and HackHers. Sledge is
 responsible for assigning judges to hacks, collecting ratings from judges and
 calculating the overall winners and prize winners.
