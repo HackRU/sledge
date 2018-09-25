@@ -19,7 +19,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" >/etc/apt/sources.list.d/y
 
 # Update repos and install additional packages
 apt-get -y update
-apt-get -y install nodejs yarn build-essential git sudo certbot nginx xxd
+apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent
 
 # nginx automatically starts when it's installed, we don't want that yet
 service nginx stop
@@ -40,11 +40,11 @@ iptables -P INPUT ACCEPT
 iptables -F INPUT
 iptables -P OUTPUT ACCEPT
 iptables -F OUTPUT
-
+iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p tcp --match multiport --dports 22,80,443 -j ACCEPT
-
 iptables -P INPUT DROP
+iptables-save >/etc/iptables/rules.v4
 
 # Sledge, particularly the build process, should have at least 1GB of RAM.
 # Although our delpoyment server *should* be equipped with much more, we create
@@ -54,7 +54,7 @@ if [ ! -f /swapfile ]; then
   chmod 600 /swapfile
   mkswap /swapfile
   swapon /swapfile
-  echo -e "/swapfile\tnone\tswap\tsw\t0\t0" >>/etc/fstab
+  /bin/echo -e '/swapfile\tnone\tswap\tsw\t0\t0' >>/etc/fstab
 fi
 
 # Create user for sledge
@@ -86,14 +86,19 @@ Description=A Judging System for Hackathons
 
 [Service]
 ExecStart=/usr/local/bin/sledge-daemon
+
+[Install]
+Alias=sledge.service
+WantedBy=multi-user.target
 EOF
-service sledge enable
+systemctl enable sledge.service
+systemctl start sledge.service
 sleep 3 # Wait for Sledge to fully start
 
 # Add an initial admin token
 ADMIN_TOKEN="$(head -c5 </dev/random | xxd -p)"
 echo $ADMIN_TOKEN >admin-token.txt
-sqlite3 /home/sledge/sledge/sledge.db "INSERT INTO Token(\"$ADMIN_TOKEN\", 0);"
+sqlite3 /home/sledge/sledge/data/sledge.db "INSERT INTO Token(secret, privilege) VALUES(\"$ADMIN_TOKEN\", 0);"
 
 # Sledge ssl certificate
 mkdir -p /etc/nginx/ssl
@@ -161,8 +166,9 @@ server {
 EOF
 ln -s /etc/nginx/sites-available/sledge /etc/nginx/sites-enabled/sledge
 
-# Test nginx config
+# Start nginx
 nginx -t
+systemctl start nginx
 
 # Finish message
 echo "============================"
