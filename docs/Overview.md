@@ -1,5 +1,7 @@
 # Overview
 
+*This document is not up to date. It might be best to ignore it for now.*
+
 This document contains some basic information about how sledge is structured,
 many of the important libraries and tools used, and how these all fit together.
 If you suspect something isn't up to date it probably isn't.
