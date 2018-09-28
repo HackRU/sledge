@@ -246,6 +246,7 @@ export class SocketCommunication {
 
       process.nextTick(() => {
         this.sync.scheduleFullJudgeSync(data.judgeId);
+        this.sync.scheduleFullGlobalSync();
       });
 
       return Promise.resolve({
