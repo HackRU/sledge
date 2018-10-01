@@ -1,9 +1,9 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{array,multirow,graphicx}
-\usepackage{xcolor,colortbl}
 \usepackage[margin=0.5in]{geometry}
 \usepackage{float}
+\usepackage[table]{xcolor}
 
 \begin{document}
 
@@ -44,28 +44,39 @@ assigned.
     \parbox[c][1cm]{1cm}{\ } &
     \parbox[c][1cm]{1cm}{\ } &
     \parbox[c][1cm]{1cm}{\ } &
-    \cellcolor{black} &
+    &
+    \parbox[c][1cm]{1cm}{\ } &
+    \parbox[c][1cm]{1cm}{\ } &
     \parbox[c][1cm]{1cm}{\ } &
     \parbox[c][1cm]{1cm}{\ } &
     \parbox[c][1cm]{1cm}{\ } &
     \parbox[c][1cm]{1cm}{\ }
 }
 
-\begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | c | c |}
+\begin{center}
+
+\rowcolors{2}{gray!25}{white}
+\begin{tabular}{| c | c | c | c | c | c | c | c | c | c | c | c | c | c |}
+    \hline
+    &
+       \multicolumn{5}{|c|}{Overall Rating} &
+       \cellcolor{black} &
+       \multicolumn{6}{|c|}{Superlatives} \\
     \hline
     \textbf{\parbox{1cm}{\begin{center}Table\\ \#\end{center}}}
         & \rotatebox{90}{Creativity}
         & \rotatebox{90}{Functionality}
-        & \rotatebox{90}{\parbox{2.5cm}{Technical\\ Difficulty}}
+        & \rotatebox{90}{\parbox{3cm}{Technical\\ Difficulty}}
         & \rotatebox{90}{Design}
         & \rotatebox{90}{\textbf{Total}}
         & \cellcolor{black}
-        & \rotatebox{90}{\parbox{2.5cm}{Best\\ Solo Hack}}
-        & \rotatebox{90}{\parbox{2.5cm}{Best\\ Hardware Hack}}
+        & \rotatebox{90}{\parbox{3cm}{Best\\ Solo Hack}}
+        & \rotatebox{90}{\parbox{3cm}{Best\\ Hardware Hack}}
         & \rotatebox{90}{Funniest Hack}
-        & \rotatebox{90}{\parbox{2.5cm}{Best\\ Rutgers Hack}} \\
+        & \rotatebox{90}{\parbox{3cm}{Best\\ Rutgers Hack}}
+        & \rotatebox{90}{\ }
+        & \rotatebox{90}{\ } \\
 
-        \hline  \judgerow \\
         \hline  \judgerow \\
         \hline  \judgerow \\
         \hline  \judgerow \\
@@ -88,5 +99,7 @@ assigned.
         \hline  \judgerow \\
     \hline
 \end{tabular}
+
+\end{center}
 
 \end{document}
