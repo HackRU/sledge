@@ -133,7 +133,8 @@ export class LoginApp extends React.Component<{}, State> {
 
       localStorage.setItem("secret", res.secret);
       localStorage.setItem("judgeId", res.judgeId.toString(10));
-      document.location.reload();
+      document.location.href = "/judge.html";
+      //document.location.reload();
     });
   }
 }

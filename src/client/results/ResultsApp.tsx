@@ -114,6 +114,28 @@ export class ResultsApp extends React.Component<{}, State> {
             ))}
           </tbody>
         </Table>
+
+      <h2>{`Judge Status`}</h2>
+      <Table>
+        <thead>
+          <tr>
+            <th>{`Id`}</th>
+            <th>{`Name`}</th>
+            <th>{`Assigned`}</th>
+            <th>{`Rated`}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {getJudgesStatus(this.state.syncData).map((j,i) => (
+            <tr key={i}>
+              <td>{j.info.id.toString(10)}</td>
+              <td>{j.info.name}</td>
+              <td>{j.totalAssigned.toString(10)}</td>
+              <td>{j.totalRated.toString(10)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
       </Container>
     );
   }
@@ -121,6 +143,41 @@ export class ResultsApp extends React.Component<{}, State> {
 
 interface State {
   syncData: Synchronize
+}
+
+function getJudgesStatus(sync: Synchronize): Array<{ info: Row<Judge>, totalAssigned: number, totalRated: number }> {
+  if (!sync || !sync.ratings) return [];
+
+  let r: any[] = [];
+  for (let j of sync.judges) {
+    let assigned = 0;
+    for (let i=0;i<sync.judgeHackMatrix[j.id-1].length;i++) {
+      if (sync.judgeHackMatrix[j.id-1][i] > 0) {
+        assigned++;
+      }
+    }
+
+    let jr = sync.ratings[j.id-1];
+    let rated = 0;
+    for (let i=0;i<jr.length;i++) {
+      let r = true;
+      for (let s of jr[i]) {
+        if (s <= 0) r = false;
+      }
+
+      if (r) {
+        rated++;
+      }
+    }
+
+    r[j.id-1] = {
+      info: j,
+      totalAssigned: assigned,
+      totalRated: rated
+    };
+  }
+
+  return r;
 }
 
 function getOverallWinners(sync: Synchronize): Array<{ overall: number, info: Row<Hack>, totalJudges: number, totalFinished: number }> {
