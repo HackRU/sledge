@@ -180,7 +180,9 @@ function getJudgesStatus(sync: Synchronize): Array<{ info: Row<Judge>, totalAssi
   return r;
 }
 
-function getOverallWinners(sync: Synchronize): Array<{ overall: number, info: Row<Hack>, totalJudges: number, totalFinished: number }> {
+function getOverallWinners(sync: Synchronize): Array<{
+  overall: number, info: Row<Hack>, totalJudges: number, totalFinished: number
+}> {
   if (!sync || !sync.ratings) return [];
 
   return sync.hacks.map(h => {

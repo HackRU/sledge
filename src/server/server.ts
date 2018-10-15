@@ -186,7 +186,7 @@ export class SocketCommunication {
         });
       }
 
-      if (this.db.getCategoriesCount() != data.ratings.length) {
+      if (this.db.getCategoriesCount() !== data.ratings.length) {
         return Promise.resolve({
           success: false,
           message: "Wrong number of ratings"
