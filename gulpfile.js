@@ -21,7 +21,12 @@ function runCommand(cmd) {
       process.stdout.write(stderr);
 
       if (error) {
-        console.log("Exit Status: " + error.code.toString());
+        if (error.code) {
+          console.log("Exit Status: " + error.code.toString());
+        } else {
+          console.log("Command failed for weird reasons.");
+          console.log(error);
+        }
         reject(error);
       } else {
         resolve();
