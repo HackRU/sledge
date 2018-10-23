@@ -23,7 +23,7 @@ import {
 //  and updates (server to client). For each event, this file includes a written
 //  description, an interface, and a meta object.
 // Errors
-//  All client-server events have schemas that correspond to their interface. A
+//  All client-server events have schemas that correspond to their interface.
 //  ProtocolError event is sent back to the client if the interface does not
 //  match, and may also be sent for other reasons. Unhandled event names are
 //  ignored. Other errors are described in the specific events.
@@ -57,32 +57,50 @@ import {
 //  an Authenticate request. The server will not send back a response and will
 //  disconnect the client if there's an issue with authenticating.
 
-export interface EventMeta {
-  name : string;
-  eventType: EventType;
-  /* If not defined, any value is accepted */
-  schema? : Schema;
-}
-
-export const enum EventType {
-  Request = "EVENT_TYPE_REQUEST",
-  Response = "EVENT_TYPE_RESPONSE",
-  Update = "EVENT_TYPE_UPDATE"
-}
-
 /**
  * Object representing a JSON schema.
  */
 type Schema = object;
 
-//TODO: Schemas for each event
+export const enum EventClass {
+  Request = "EVENT_TYPE_REQUEST",
+  Response = "EVENT_TYPE_RESPONSE",
+  Update = "EVENT_TYPE_UPDATE"
+}
+
+export const enum EventType {
+  AddRow = "ADD_ROW",
+  Authenticate = "AUTHENTICATE",
+  Login = "LOGIN",
+  ModifyRow = "MODIFY_ROW",
+  RateHack = "RATE_HACK",
+  RankSuperlative = "RANK_SUPERLATIVE",
+  SetJudgeHackPriority = "SET_JUDGE_HACK_PRIORITY",
+  SetSynchronizeGlobal = "SET_SYNCHRONIZE_GLOBAL",
+  SetSynchronizeJudge = "SET_SYNCHRONIZE_JUDGE",
+
+  AddRowResponse = "ADD_ROW_RESPONSE",
+  AuthenticateResponse = "AUTHENTICATE_RESPONSE",
+  GenericResponse = "GENERIC_RESPONSE",
+  LoginResponse = "LOGIN_RESPONSE",
+
+  ProtocolError = "PROTOCOL_ERROR",
+  SynchronizeGlobal = "SYNCHRONIZE_GLOBAL",
+  SynchronizeJudge = "SYNCHRONIZE_JUDGE"
+}
+
+export type EventMeta = {
+    eventClass: EventClass.Request,
+    eventType: EventType,
+    response: EventType,
+    schema: Schema
+  } | {
+    eventClass: EventClass.Response | EventClass.Update,
+    eventType: EventType
+  };
 
 ////////////////////
-// Requests
-
-export interface RequestMeta extends EventMeta {
-  response: string;
-}
+// Request
 
 export interface Request {
   returnId?: string;
@@ -101,10 +119,11 @@ export type AddRow = (
     {table: Table.Token, row: Token}
   ) & Request;
 
-export const addRow : RequestMeta = {
-  name: "AddRow",
-  eventType: EventType.Request,
-  response: "AddRowResponse"
+export const addRow: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.AddRow,
+  response: EventType.AddRowResponse,
+  schema: {}
 }
 
 /**
@@ -116,10 +135,11 @@ export interface Authenticate extends Request {
   secret: string;
 }
 
-export const authenticate : RequestMeta = {
-  name: "Authenticate",
-  eventType: EventType.Request,
-  response: "AuthenticateResponse"
+export const authenticate: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.Authenticate,
+  response: EventType.AuthenticateResponse,
+  schema: {}
 }
 
 /**
@@ -132,10 +152,11 @@ export interface Login extends Request {
   loginCode: string
 }
 
-export const login : RequestMeta = {
-  name: "Login",
-  eventType: EventType.Request,
-  response: "LoginResponse"
+export const login: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.Login,
+  response: EventType.LoginResponse,
+  schema: {}
 }
 
 /**
@@ -145,10 +166,11 @@ export type ModifyRow = (
     {table: Table.Hack, id: number, diff: Partial<Hack>}
   ) & Request;
 
-export const modifyRow: RequestMeta = {
-  name: "ModifyRow",
-  eventType: EventType.Request,
-  response: "GenericResponse"
+export const modifyRow: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.ModifyRow,
+  response: EventType.GenericResponse,
+  schema: {}
 }
 
 /**
@@ -161,10 +183,11 @@ export interface RateHack extends Request {
   ratings: number[];
 }
 
-export const rateHack : RequestMeta = {
-  name: "RateHack",
-  eventType: EventType.Request,
-  response: "GenericResponse"
+export const rateHack: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.RateHack,
+  response: EventType.GenericResponse,
+  schema: {}
 }
 
 /**
@@ -179,10 +202,11 @@ export interface RankSuperlative extends Request {
   secondChoiceId: number;
 }
 
-export const rankSuperlative : RequestMeta = {
-  name: "RankSuperlative",
-  eventType: EventType.Request,
-  response: "GenericResponse"
+export const rankSuperlative: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.RankSuperlative,
+  response: EventType.GenericResponse,
+  schema: {}
 }
 
 /**
@@ -194,10 +218,11 @@ export interface SetJudgeHackPriority extends Request {
   priority: number;
 }
 
-export const setJudgeHackPriority: RequestMeta = {
-  name: "SetJudgeHackPriority",
-  eventType: EventType.Request,
-  response: "GenericResponse"
+export const setJudgeHackPriority: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.SetJudgeHackPriority,
+  response: EventType.GenericResponse,
+  schema: {}
 }
 
 /**
@@ -207,10 +232,11 @@ export interface SetSynchronizeGlobal extends Request {
   syncShared: boolean;
 }
 
-export const setSynchronizeGlobal: RequestMeta = {
-  name: "SetSynchronizeGlobal",
-  eventType: EventType.Request,
-  response: "GenericResponse"
+export const setSynchronizeGlobal: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.SetSynchronizeGlobal,
+  response: EventType.GenericResponse,
+  schema: {}
 }
 
 /**
@@ -222,16 +248,15 @@ export interface SetSynchronizeJudge extends Request {
   syncMyHacks: boolean;
 }
 
-export const setSynchronizeJudge: RequestMeta = {
-  name: "SetSynchronizeJudge",
-  eventType: EventType.Request,
-  response: "GenericResponse"
+export const setSynchronizeJudge: EventMeta = {
+  eventClass: EventClass.Request,
+  eventType: EventType.SetSynchronizeJudge,
+  response: EventType.GenericResponse,
+  schema: {}
 }
 
 ////////////////////
 // Responses
-
-export type ResponseMeta = EventMeta;
 
 export interface Response {
   /** This isn't optional when sent, but there are points in the program where
@@ -240,6 +265,7 @@ export interface Response {
 
   /** Indicates if the request was successful */
   success: boolean;
+
   /**
    * A human-readable description of why the request failed or how it succeeded
    * (usually just "success" on success).
@@ -254,9 +280,9 @@ export interface AddRowResponse extends Response {
   newRowId: number;
 }
 
-export const addRowResponse: ResponseMeta = {
-  name: "AddRowResponse",
-  eventType: EventType.Response
+export const addRowResponse: EventMeta = {
+  eventClass: EventClass.Response,
+  eventType: EventType.AddRowResponse
 }
 
 /**
@@ -270,9 +296,9 @@ export interface AuthenticateResponse extends Response {
   privilege: number;
 }
 
-export const authenticateResponse : ResponseMeta = {
-  name: "AuthenticateResponse",
-  eventType: EventType.Response
+export const authenticateResponse: EventMeta = {
+  eventClass: EventClass.Response,
+  eventType: EventType.AuthenticateResponse
 }
 
 /**
@@ -281,9 +307,9 @@ export const authenticateResponse : ResponseMeta = {
 export interface GenericResponse extends Response {
 }
 
-export const genericResponse : ResponseMeta = {
-  name: "GenericResponse",
-  eventType: EventType.Response
+export const genericResponse: EventMeta = {
+  eventClass: EventClass.Response,
+  eventType: EventType.GenericResponse
 }
 
 /**
@@ -298,15 +324,13 @@ export interface LoginResponse extends Response {
   secret: string;
 }
 
-export const loginResponse : ResponseMeta = {
-  name: "LoginResponse",
-  eventType: EventType.Response
+export const loginResponse: EventMeta = {
+  eventClass: EventClass.Response,
+  eventType: EventType.LoginResponse
 }
 
 ////////////////////
 // Updates
-
-export type UpdateMeta = EventMeta;
 
 /**
  * A ProtocolError is sent back when the client sends a malformed event. The
@@ -322,9 +346,9 @@ export interface ProtocolError {
   original? : any;
 }
 
-export const protocolError : UpdateMeta = {
-  name: "ProtocolError",
-  eventType: EventType.Update
+export const protocolError: EventMeta = {
+  eventClass: EventClass.Update,
+  eventType: EventType.ProtocolError
 }
 
 /**
@@ -359,9 +383,9 @@ export interface SynchronizeGlobal {
   }>>;
 }
 
-export const synchronizeGlobal : UpdateMeta = {
-  name: "SynchronizeGlobal",
-  eventType: EventType.Update
+export const synchronizeGlobal: EventMeta = {
+  eventClass: EventClass.Update,
+  eventType: EventType.SynchronizeGlobal
 }
 
 /**
@@ -380,15 +404,15 @@ export interface SynchronizeJudge {
   superlativePlacements?: SuperlativePlacement[];
 }
 
-export const synchronizeJudge: UpdateMeta = {
-  name: "SynchronizeJudge",
-  eventType: EventType.Update,
+export const synchronizeJudge: EventMeta = {
+  eventClass: EventClass.Update,
+  eventType: EventType.SynchronizeJudge
 }
 
 ////////////////////
 // All Hacks
 
-export const allHacks : Array<EventMeta> = [
+export const eventMetas : Array<EventMeta> = [
   addRow,
   authenticate,
   login,

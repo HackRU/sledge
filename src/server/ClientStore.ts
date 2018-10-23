@@ -1,16 +1,16 @@
-import {ServerEventWrapper} from "./eventwrapper";
-import {DatabaseConnection} from "./persistence";
-
 /**
  * Manages in-memory state for connected clients
  */
-export class ClientStateManager {
+export class ClientStore {
   private clients: Map<string, ClientState>;
 
   constructor() {
     this.clients = new Map();
   }
 
+  /**
+   * Registers a client with the store
+   */
   registerClient(sid: string) {
     this.clients.set(sid, {
       sid,
@@ -20,16 +20,30 @@ export class ClientStateManager {
     });
   }
 
+  /**
+   * Get a readonly copy of the client's state
+   */
   getClientState(sid: string): ClientState {
-    return { ...this.clients.get(sid) }
+    return this.clients.get(sid);
   }
 
+  /**
+   * Set the client state to a readonly value
+   */
   setClientState(sid: string, newClientState: ClientState) {
     this.clients.set(sid, newClientState);
   }
 
+  setClientPrivilege(sid: string, privilege: number) {
+    let oldState = this.clients.get(sid);
+    this.clients.set(sid, {
+      ...oldState,
+      privilege
+    });
+  }
+
   /**
-   * Can the client perform the privileged action?
+   * Test if the client can perform a privileged action
    */
   can(sid: string, testPrivilege: number): boolean {
     let clientPrivilege = this.clients.get(sid).privilege;
@@ -40,13 +54,18 @@ export class ClientStateManager {
     );
   }
 
-  setClientPrivilege(sid: string, newPrivilege: number) {
-    let clientState = this.clients.get(sid);
-    clientState.privilege = newPrivilege;
+  /**
+   * Get states of clients who are synced globally
+   */
+  getGloballySyncedClients(): Array<ClientState> {
+    return this.getFilteredClients(c => c.syncGlobal);
   }
 
-  getClientPrivilege(sid: string): number {
-    return this.clients.get(sid).privilege;
+  /**
+   * Get states of clients who are synced to a judge
+   */
+  getJudgeSyncedClients(judgeId: number): Array<ClientState> {
+    return this.getFilteredClients(c => c.syncJudge === judgeId);
   }
 
   private getFilteredClients(f: (c:ClientState) => boolean): Array<ClientState> {
@@ -59,19 +78,15 @@ export class ClientStateManager {
 
     return filteredClients;
   }
-
-  getGloballySyncedClients(): Array<ClientState> {
-    return this.getFilteredClients(c => c.syncGlobal);
-  }
-
-  getJudgeSyncedClients(judgeId: number): Array<ClientState> {
-    return this.getFilteredClients(c => c.syncJudge === judgeId);
-  }
 }
 
 export interface ClientState {
+  /** The corresponding nodejs sid, which should be unique */
   sid: string;
+  /** The privilige of the client (see src/protocol/events.ts) */
   privilege: number;
+  /** Is client synced globaly? */
   syncGlobal: boolean;
+  /** If synced to judge, ID of judge otherwise 0 */
   syncJudge: number;
 }

@@ -10,6 +10,8 @@ var mocha = require("gulp-mocha");
 let basePath = __dirname;
 let binPath = path.resolve(basePath, "node_modules/.bin");
 
+process.env["DEBUG"] = "sledge";
+
 // TODO: Prefer programmatic APIs to commands
 function runCommand(cmd) {
   return new Promise( (resolve, reject) => {
