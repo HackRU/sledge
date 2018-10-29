@@ -1,8 +1,5 @@
 # Contributing
 
-*Right now contributions are only being accepted by members of HackRU's RnD
-team.*
-
 As any competitor knows, "winning isn't everything; it's the only thing" which
 is why a judging is an incredibly important part of any hackathon. Hence, Sledge
 is an important piece of software for HackRU. If you decide to work on Sledge

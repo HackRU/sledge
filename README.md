@@ -8,13 +8,13 @@ responsible for assigning judges to hacks, collecting ratings from judges and
 calculating the overall winners and prize winners.
 
 Sledge is built by architects on the RnD team. If you are an architect
-interested in joining sledge please read [`docs/Architects.md`][architects].
+interested in joining sledge please read [`docs/Contributing.md`][contributing].
 
-[architects]: docs/Contributing.md
+[contributing]: docs/Contributing.md
 
 ## Quick Start
 
-Sledge requires nodejs 10+, yarn 1+ and a complete GNU/Linux installation. See
+Sledge requires nodejs 11+, yarn 1+ and a complete GNU/Linux installation. See
 the `docs` folder for more detailed instructions.
 
 ```
