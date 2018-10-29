@@ -45,6 +45,7 @@ export class Socket {
       this.handlers.forEach((v,k) => {
         this.registerRequestHandler(s, v[0], v[1]);
       });
+      this.onConnectHandler(s.id);
     });
   }
 

@@ -1,3 +1,5 @@
+import {log} from "./log";
+
 /**
  * Manages in-memory state for connected clients
  */
@@ -18,6 +20,8 @@ export class ClientStore {
       syncGlobal: false,
       syncJudge: 0
     });
+
+    log(`Client Registered: ${sid}`);
   }
 
   /**
