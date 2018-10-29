@@ -9,14 +9,14 @@ import {
   Category,
   PartialTable,
   Row
-} from "../../protocol/database.js";
+} from "../../protocol/database";
 
 import {
   SynchronizeGlobal,
   SynchronizeJudge
-} from "../../protocol/events.js";
+} from "../../protocol/events";
 
-import {SledgeClient} from "../sledge.js";
+import {SledgeClient} from "../SledgeClient";
 
 ////////////////////
 // Store

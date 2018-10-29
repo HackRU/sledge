@@ -2,9 +2,9 @@ import React from "react";
 
 import {Button, ButtonGroup} from "reactstrap";
 
-import {InterfaceMode} from "./types.js";
-import {connect} from "./connect.js";
-import {openList, openHack} from "./actions.js";
+import {InterfaceMode} from "./types";
+import {connect} from "./connect";
+import {openList, openHack} from "./actions";
 
 const pf = "toolbar";
 

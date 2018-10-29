@@ -8,7 +8,7 @@ import {
 
 import {
   SynchronizeGlobal as Synchronize
-} from "../../protocol/events.js";
+} from "../../protocol/events";
 
 import {
   Hack,
@@ -16,9 +16,9 @@ import {
   Superlative,
   PartialTable,
   Row
-} from "../../protocol/database.js";
+} from "../../protocol/database";
 
-import {SledgeClient} from "../sledge.js";
+import {SledgeClient} from "../SledgeClient";
 
 let sledge : SledgeClient;
 

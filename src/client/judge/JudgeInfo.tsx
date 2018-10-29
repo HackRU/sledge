@@ -1,7 +1,7 @@
 import React from "react";
 
-import {InterfaceMode} from "./types.js";
-import {connect} from "./connect.js";
+import {InterfaceMode} from "./types";
+import {connect} from "./connect";
 
 const pf = "judgeinfo";
 

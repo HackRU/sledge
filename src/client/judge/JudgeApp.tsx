@@ -3,16 +3,16 @@ import React from "react";
 import {Alert, Container} from "reactstrap";
 import {Store} from "redux";
 
-import {State, Action, InterfaceMode} from "./types.js";
-import {fail} from "./actions.js";
-import {connect} from "./connect.js";
-import {Toolbar} from "./Toolbar.js";
-import {JudgeInfo} from "./JudgeInfo.js";
-import {Header} from "./Header.js";
-import {HacksList} from "./HacksList.js";
-import {HackInfo} from "./HackInfo.js";
+import {State, Action, InterfaceMode} from "./types";
+import {fail} from "./actions";
+import {connect} from "./connect";
+import {Toolbar} from "./Toolbar";
+import {JudgeInfo} from "./JudgeInfo";
+import {Header} from "./Header";
+import {HacksList} from "./HacksList";
+import {HackInfo} from "./HackInfo";
 import {RatingBox} from "./RatingBox";
-import {SuperlativeRanker} from "./SuperlativeRanker.js";
+import {SuperlativeRanker} from "./SuperlativeRanker";
 
 export const JudgeAppPresentation = (props : State) => {
   switch (props.interfaceMode) {

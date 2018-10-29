@@ -3,12 +3,12 @@ import {createElement, Component} from "react";
 import {Provider} from "react-redux";
 import {render} from "react-dom";
 
-import {reduce} from "./reducer.js";
-import {JudgeApp} from "./JudgeApp.js";
-import {SledgeClient} from "../sledge.js";
-import {generateThunkMiddleware, dispatchAsyncToStore} from "./thunk.js";
-import {initialize, fail} from "./actions.js";
-import {getSession} from "../session.js";
+import {reduce} from "./reducer";
+import {JudgeApp} from "./JudgeApp";
+import {SledgeClient} from "../SledgeClient";
+import {generateThunkMiddleware, dispatchAsyncToStore} from "./thunk";
+import {initialize, fail} from "./actions";
+import {getSession} from "../session";
 
 export function init() {
   let session = getSession();

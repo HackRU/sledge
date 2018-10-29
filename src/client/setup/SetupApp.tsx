@@ -13,19 +13,19 @@ import {
 } from "reactstrap";
 import {List} from "immutable";
 
-import {AddRow} from "./AddRow.js";
-import {TabularActions} from "./TabularActions.js";
-import {ToggleMatrix} from "./ToggleMatrix.js";
+import {AddRow} from "./AddRow";
+import {TabularActions} from "./TabularActions";
+import {ToggleMatrix} from "./ToggleMatrix";
 
-import {Table} from "../../protocol/database.js";
-import {SynchronizeGlobal} from "../../protocol/events.js";
+import {Table} from "../../protocol/database";
+import {SynchronizeGlobal} from "../../protocol/events";
 
-import {getSession, setSession} from "../session.js";
-import {SledgeClient, SledgeStatus} from "../sledge.js";
-import {importDevpostData} from "./devpost.js";
-import {autoAssignTables} from "./assigntables.js";
-import {autoAssignJudgeHacks, autoAssignJudgeHacksBetter, removeJudgeHackAssignments} from "./assignjudgehacks.js";
-import {loadTestData} from "./testdata.js";
+import {getSession, setSession} from "../session";
+import {SledgeClient, SledgeStatus} from "../SledgeClient";
+import {importDevpostData} from "./devpost";
+import {autoAssignTables} from "./assigntables";
+import {autoAssignJudgeHacks, autoAssignJudgeHacksBetter, removeJudgeHackAssignments} from "./assignjudgehacks";
+import {loadTestData} from "./testdata";
 
 function logPromise(p : Promise<any>) {
     p.then(r => console.log(r));

@@ -15,7 +15,7 @@ import {
 import {
   SledgeClient,
   SledgeStatus
-} from "../sledge.js";
+} from "../SledgeClient";
 
 let sledge: SledgeClient;
 

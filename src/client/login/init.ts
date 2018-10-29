@@ -1,7 +1,7 @@
 import {createElement, Component} from "react";
 import {render} from "react-dom";
 
-import {LoginApp} from "./LoginApp.js";
+import {LoginApp} from "./LoginApp";
 
 export function init() {
   let container = document.getElementById("app");

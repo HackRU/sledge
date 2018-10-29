@@ -6,7 +6,7 @@ import {
   AsyncAction,
   JudgeStore
 } from "./types.js";
-import {SledgeClient} from "../sledge.js";
+import {SledgeClient} from "../SledgeClient";
 
 // This is redux middleware designed to allow async actions within the judge
 // app. It's based on the principles of https://github.com/reduxjs/redux-thunk

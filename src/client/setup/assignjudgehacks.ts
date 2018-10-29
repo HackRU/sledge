@@ -1,5 +1,5 @@
-import {SledgeClient} from "../sledge.js";
-import {SynchronizeGlobal, GenericResponse} from "../../protocol/events.js";
+import {SledgeClient} from "../SledgeClient";
+import {SynchronizeGlobal, GenericResponse} from "../../protocol/events";
 
 export function autoAssignJudgeHacks(sledge: SledgeClient, syncShared: SynchronizeGlobal) {
   let hacks = syncShared.hacks.filter(h => h.active).sort((h1,h2) => {

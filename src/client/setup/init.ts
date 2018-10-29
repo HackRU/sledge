@@ -3,7 +3,7 @@ import {createElement, Component} from "react";
 import {Provider} from "react-redux";
 import {render} from "react-dom";
 
-import {SetupApp} from "./SetupApp.js";
+import {SetupApp} from "./SetupApp";
 
 export function init() {
   let store = createStore(x => ({}));
