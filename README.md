@@ -41,7 +41,7 @@ hacks to apply for additional prizes.
 
 ```
 Sledge - A judging system for Hackathons
-Copyright (C) 2018 Eric Roberts
+Copyright (C) 2018 The Sledge Authors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
