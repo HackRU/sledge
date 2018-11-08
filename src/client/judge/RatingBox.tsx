@@ -1,11 +1,11 @@
 import React from "react";
 import {Button, ButtonGroup} from "reactstrap";
 
-import {Hack, Row} from "../../protocol/database.js";
+import {Hack, Row} from "../../protocol/database";
 
-import {InterfaceMode} from "./types.js";
-import {connect} from "./connect.js";
-import {rateHack} from "./actions.js";
+import {InterfaceMode} from "./types";
+import {connect} from "./connect";
+import {rateHack} from "./actions";
 
 const pf = "ratingbox";
 

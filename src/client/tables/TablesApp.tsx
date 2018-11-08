@@ -8,17 +8,17 @@ import {
 
 import {
   SynchronizeGlobal as Synchronize
-} from "../../protocol/events.js";
+} from "../../protocol/events";
 
 import {
   Hack,
   PartialTable
-} from "../../protocol/database.js";
+} from "../../protocol/database";
 
 import {
   SledgeClient,
   SledgeStatus
-} from "../sledge.js";
+} from "../SledgeClient";
 
 let sledge : SledgeClient;
 

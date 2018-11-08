@@ -3,9 +3,9 @@ import {
   SynchronizeJudge
 } from "../protocol/events";
 
-import {ServerEventWrapper} from "./eventwrapper";
-import {DatabaseConnection} from "./persistence";
-import {ClientStateManager} from "./clientstatemanager";
+import {Socket} from "./Socket";
+import {DatabaseConnection} from "./DatabaseConnection";
+import {ClientStore} from "./ClientStore";
 
 // TODO:
 //  - Send global updates at most once every few seconds
@@ -19,9 +19,9 @@ export class SyncManager {
   private globalSyncTimer: NodeJS.Timer;
 
   constructor(
-    private events: ServerEventWrapper,
+    private socket: Socket,
     private db: DatabaseConnection,
-    private clients: ClientStateManager
+    private clients: ClientStore
   ) {
     this.lastGlobalSync = 0;
     this.globalSyncTimer = null;
@@ -72,7 +72,7 @@ export class SyncManager {
       } as SynchronizeGlobal;
     }
 
-    this.events.sendSynchronizeGlobal(sid, data);
+    this.socket.sendSynchronizeGlobal(sid, data);
   }
 
   sendJudgeSync(sid: string) {
@@ -80,7 +80,7 @@ export class SyncManager {
     if (client.syncJudge <= 0) return;
 
     let data = this.getJudgeData(client.syncJudge);
-    this.events.sendSynchronizeJudge(sid, data);
+    this.socket.sendSynchronizeJudge(sid, data);
   }
 
   scheduleFullGlobalSync() {
@@ -131,7 +131,7 @@ export class SyncManager {
     // Send data to clients
     for (let client of clients) {
       let data = client.privilege === 0 ? adminSync : regularSync;
-      this.events.sendSynchronizeGlobal(client.sid, data);
+      this.socket.sendSynchronizeGlobal(client.sid, data);
     }
   }
 
@@ -141,7 +141,7 @@ export class SyncManager {
     let data = this.getJudgeData(judgeId);
 
     this.clients.getJudgeSyncedClients(judgeId).forEach(client => {
-      this.events.sendSynchronizeJudge(client.sid, data);
+      this.socket.sendSynchronizeJudge(client.sid, data);
     });
   }
 }

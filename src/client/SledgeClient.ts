@@ -1,6 +1,16 @@
 import io from "socket.io-client";
 
-import * as evts from "../protocol/events.js";
+import {
+  EventClass, EventType, EventMeta, Request, Response,
+
+  AddRow, Authenticate, Login, ModifyRow, RateHack, RankSuperlative, SetJudgeHackPriority,
+  SetSynchronizeGlobal, SetSynchronizeJudge, ProtocolError, SynchronizeGlobal, SynchronizeJudge,
+  AddRowResponse, LoginResponse,
+
+  addRow, addRowResponse, authenticate, authenticateResponse, AuthenticateResponse, eventMetas, genericResponse,
+  GenericResponse, login, loginResponse, modifyRow, protocolError, rankSuperlative, rateHack, setJudgeHackPriority,
+  setSynchronizeGlobal, setSynchronizeJudge, synchronizeGlobal, synchronizeJudge
+} from "../protocol/events.js";
 import * as db from "../protocol/database.js";
 
 /**
@@ -16,9 +26,9 @@ export class SledgeClient {
 
   private responseResolvers: Map<string, (r:any) => void>;
 
-  private syncGlobalSubs: Array<(e:evts.SynchronizeGlobal) => void>;
-  private syncJudgeSubs: Array<(e:evts.SynchronizeJudge) => void>;
-  private protoErrSubs: Array<(e:evts.ProtocolError) => void>;
+  private syncGlobalSubs: Array<(e:SynchronizeGlobal) => void>;
+  private syncJudgeSubs: Array<(e:SynchronizeJudge) => void>;
+  private protoErrSubs: Array<(e:ProtocolError) => void>;
   private statusSubs: Array<(s:SledgeStatus) => void>;
 
   constructor(opts : SledgeOptions) {
@@ -30,21 +40,21 @@ export class SledgeClient {
     this.protoErrSubs = [];
     this.statusSubs = [];
 
-    this.setupResolverDispatch(evts.addRowResponse);
-    this.setupResolverDispatch(evts.authenticateResponse);
-    this.setupResolverDispatch(evts.genericResponse);
-    this.setupResolverDispatch(evts.loginResponse);
+    this.setupResolverDispatch(addRowResponse);
+    this.setupResolverDispatch(authenticateResponse);
+    this.setupResolverDispatch(genericResponse);
+    this.setupResolverDispatch(loginResponse);
 
-    this.socket.on("ProtocolError", (e:evts.ProtocolError) => {
+    this.socket.on("ProtocolError", (e:ProtocolError) => {
       console.warn("ProtocolError for %s\n%s", e.eventName, e.message);
       if (e.original) console.warn(e.original);
       for (let notify of this.protoErrSubs) notify(e);
     });
 
-    this.socket.on("SynchronizeGlobal", (e: evts.SynchronizeGlobal) => {
+    this.socket.on("SynchronizeGlobal", (e: SynchronizeGlobal) => {
       this.syncGlobalSubs.forEach(n => n(e));
     });
-    this.socket.on("SynchronizeJudge", (e: evts.SynchronizeJudge) => {
+    this.socket.on("SynchronizeJudge", (e: SynchronizeJudge) => {
       this.syncJudgeSubs.forEach(n => n(e));
     });
 
@@ -66,8 +76,8 @@ export class SledgeClient {
     for (let notify of this.statusSubs) notify(this.status);
   }
 
-  private setupResolverDispatch(meta : evts.ResponseMeta) {
-    this.socket.on(meta.name, (data:evts.Response) => {
+  private setupResolverDispatch(meta : EventMeta) {
+    this.socket.on(meta.eventType, (data:Response) => {
       let resolver = this.responseResolvers.get(data.returnId);
       if (resolver) {
         resolver(data);
@@ -78,7 +88,7 @@ export class SledgeClient {
     });
   }
 
-  private sendAndAwait(eventName : string, data : evts.Request) : Promise<any> {
+  private sendAndAwait(eventName : string, data : Request) : Promise<any> {
     let returnId = this.generateUniqueReturnId();
     this.socket.emit(eventName, {...data, returnId});
     return new Promise( (resolve, reject) => {
@@ -91,11 +101,11 @@ export class SledgeClient {
   }
 
   private genSender<
-    Req extends evts.Request,
-    Res extends evts.Response
-  >(evt: evts.RequestMeta): (this: SledgeClient, r: Req) => Promise<Res> {
+    Req extends Request,
+    Res extends Response
+  >(evt: EventMeta): (this: SledgeClient, r: Req) => Promise<Res> {
     return function (req) {
-      return this.sendAndAwait(evt.name, req);
+      return this.sendAndAwait(evt.eventType, req);
     }
   }
 
@@ -103,23 +113,23 @@ export class SledgeClient {
   // Requests
 
   sendAddRow = this.genSender<
-    evts.AddRow, evts.AddRowResponse>(evts.addRow);
+    AddRow, AddRowResponse>(addRow);
   sendAuthenticate = this.genSender<
-    evts.Authenticate, evts.AuthenticateResponse>(evts.authenticate);
+    Authenticate, AuthenticateResponse>(authenticate);
   sendLogin = this.genSender<
-    evts.Login, evts.LoginResponse>(evts.login);
+    Login, LoginResponse>(login);
   sendModifyRow = this.genSender<
-    evts.ModifyRow, evts.GenericResponse>(evts.modifyRow);
+    ModifyRow, GenericResponse>(modifyRow);
   sendRateHack = this.genSender<
-    evts.RateHack, evts.GenericResponse>(evts.rateHack);
+    RateHack, GenericResponse>(rateHack);
   sendRankSuperlative = this.genSender<
-    evts.RankSuperlative, evts.GenericResponse>(evts.rankSuperlative);
+    RankSuperlative, GenericResponse>(rankSuperlative);
   sendSetJudgeHackPriority = this.genSender<
-    evts.SetJudgeHackPriority, evts.GenericResponse>(evts.setJudgeHackPriority);
+    SetJudgeHackPriority, GenericResponse>(setJudgeHackPriority);
   sendSetSynchronizeGlobal = this.genSender<
-    evts.SetSynchronizeGlobal, evts.GenericResponse>(evts.setSynchronizeGlobal);
+    SetSynchronizeGlobal, GenericResponse>(setSynchronizeGlobal);
   sendSetSynchronizeJudge = this.genSender<
-    evts.SetSynchronizeJudge, evts.GenericResponse>(evts.setSynchronizeJudge);
+    SetSynchronizeJudge, GenericResponse>(setSynchronizeJudge);
 
   ////////////////////
   // Updates
@@ -131,21 +141,21 @@ export class SledgeClient {
     };
   }
 
-  subscribeSyncGlobal(notify: (e:evts.SynchronizeGlobal) => void): () => void {
+  subscribeSyncGlobal(notify: (e:SynchronizeGlobal) => void): () => void {
     this.syncGlobalSubs.push(notify);
     return () => {
       this.syncGlobalSubs = this.syncGlobalSubs.filter(n => n!==notify);
     };
   }
 
-  subscribeSyncMyHacks(notify: (e:evts.SynchronizeJudge) => void): () => void {
+  subscribeSyncMyHacks(notify: (e:SynchronizeJudge) => void): () => void {
     this.syncJudgeSubs.push(notify);
     return () => {
       this.syncJudgeSubs = this.syncJudgeSubs.filter(n => n!==notify);
     };
   }
 
-  subscribeProtocolError(notify: (e:evts.ProtocolError) => void): () => void {
+  subscribeProtocolError(notify: (e:ProtocolError) => void): () => void {
     this.protoErrSubs.push(notify);
     return () => {
       this.protoErrSubs = this.protoErrSubs.filter(n => n!==notify);

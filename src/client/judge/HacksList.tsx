@@ -7,11 +7,11 @@ import {
   ListGroupItemText
 } from "reactstrap";
 
-import {Row, Hack} from "../../protocol/database.js";
+import {Row, Hack} from "../../protocol/database";
 
-import {InterfaceMode} from "./types.js";
-import {connect} from "./connect.js";
-import {openHack} from "./actions.js";
+import {InterfaceMode} from "./types";
+import {connect} from "./connect";
+import {openHack} from "./actions";
 
 const pf = "hacklist";
 

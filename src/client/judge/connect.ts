@@ -2,7 +2,7 @@ import {
   connectAdvanced
 } from "react-redux";
 
-import {State, Action, AsyncAction} from "./types.js";
+import {State, Action, AsyncAction} from "./types";
 
 // Because we're using custom middleware we need a custom connect function to
 // ensure type safety

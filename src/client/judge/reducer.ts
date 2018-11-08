@@ -2,7 +2,7 @@ import {Store} from "redux";
 
 import {
   SynchronizeGlobal
-} from "../../protocol/events.js";
+} from "../../protocol/events";
 
 import {
   State,

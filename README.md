@@ -8,13 +8,13 @@ responsible for assigning judges to hacks, collecting ratings from judges and
 calculating the overall winners and prize winners.
 
 Sledge is built by architects on the RnD team. If you are an architect
-interested in joining sledge please read [`docs/Architects.md`][architects].
+interested in joining sledge please read [`docs/Contributing.md`][contributing].
 
-[architects]: docs/Contributing.md
+[contributing]: docs/Contributing.md
 
 ## Quick Start
 
-Sledge requires nodejs 10+, yarn 1+ and a complete GNU/Linux installation. See
+Sledge requires nodejs 11+, yarn 1+ and a complete GNU/Linux installation. See
 the `docs` folder for more detailed instructions.
 
 ```
@@ -41,7 +41,7 @@ hacks to apply for additional prizes.
 
 ```
 Sledge - A judging system for Hackathons
-Copyright (C) 2018 Eric Roberts
+Copyright (C) 2018 The Sledge Authors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as

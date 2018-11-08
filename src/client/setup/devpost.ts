@@ -1,7 +1,7 @@
 import {parse} from "papaparse";
 
-import {Table} from "../../protocol/database.js";
-import {SledgeClient} from "../sledge.js";
+import {Table} from "../../protocol/database";
+import {SledgeClient} from "../SledgeClient";
 
 export function importDevpostData(client: SledgeClient, csvContent: string) {
   let extracted = extractDevpostData(csvContent);

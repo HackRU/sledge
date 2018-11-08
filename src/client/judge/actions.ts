@@ -1,22 +1,22 @@
 import {
   SynchronizeGlobal,
   SynchronizeJudge
-} from "../../protocol/events.js";
+} from "../../protocol/events";
 
 import {
   SledgeClient,
   SledgeStatus
-} from "../sledge.js";
+} from "../SledgeClient";
 
 import {
   Action,
   AsyncAction,
   Type
-} from "./types.js";
+} from "./types";
 
 import {
   Session
-} from "../session.js";
+} from "../session";
 
 export function fail(message: string): Action {
   return {

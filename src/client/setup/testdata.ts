@@ -1,8 +1,8 @@
-import {Table} from "../../protocol/database.js";
-import {GenericResponse} from "../../protocol/events.js";
+import {Table} from "../../protocol/database";
+import {GenericResponse} from "../../protocol/events";
 
-import {SledgeClient} from "../sledge.js";
-import {importDevpostData} from "./devpost.js";
+import {SledgeClient} from "../SledgeClient";
+import {importDevpostData} from "./devpost";
 
 export function loadTestData(client: SledgeClient) {
   let addJudge = (name: string, email: string) => client.sendAddRow({
