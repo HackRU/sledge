@@ -50,7 +50,7 @@ gulp.task("test", ["test-client", "test-server"]);
 gulp.task("test-client", ["build-client"], function () {
   return new Promise(function (resolve, reject) {
     console.log("Starting server on port 8123 for testing");
-    var server = child_process.fork("./bin/sledge", ["8123"], {
+    var server = child_process.fork("./bin/sledge", ["--port", "8123"], {
       stdio: ["ignore", "ignore", process.stderr, "ipc"]
     });
     var bound = false;
@@ -70,8 +70,8 @@ gulp.task("test-client", ["build-client"], function () {
         server.kill();
         resolve(r);
       }).catch(reject);
-  });
     });
+  });
 });
 
 gulp.task("test-server", ["build-server"], function () {

@@ -99,6 +99,10 @@ export function start(opts: Options) {
     let server = new Server(opts.port, opts.dataDir, opts.publicDir);
     server.init();
 
+    if (process.send) {
+      process.send("bound");
+    }
+
     if (opts.exitAfterInit) {
       process.exit(EXIT_SUCCESS);
     }
