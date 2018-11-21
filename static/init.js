@@ -68,8 +68,10 @@
     fixDefaultExportProblem("papaparse", "_papaparse");
   });
 
-  window.init = function (modulepath) {
-    return SystemJS.import(modulepath).then(function (m) {
+  window.init = function () {
+    let modulePath = '/lib/client/' + window.location.hash.substr(1) + '/init.js';
+
+    return SystemJS.import(modulePath).then(function (m) {
       window.page = m;
       m.init();
     });
