@@ -79,7 +79,6 @@ sledge
 ├── data          Persistent data and configuration (eg database)
 ├── lib           Compiled server files
 └── public        Public files, including static and compiled
-    ├── lib         Compiled client files
     └── src         Original contents of src directory
 ```
 
