@@ -43,7 +43,7 @@ import {
 //  Each request (except those met by ProtocolError) will send back a single
 //  corresponding response. Each request and response will have a returnId,
 //  chosen by the client, which will be equal when they correspond.
-// Reconnectio
+// Reconnection
 //  By default the socket.io client will automatically attempt to reconnect to
 //  the server if a connection is lost, and resend any lost events.
 //  Unfortunately, socket.io does not (always) keep track of clients after
@@ -123,7 +123,62 @@ export const addRow: EventMeta = {
   eventClass: EventClass.Request,
   eventType: EventType.AddRow,
   response: EventType.AddRowResponse,
-  schema: {}
+  schema: {
+	"type" : "object",
+	"oneOf" : [
+		{
+			"properties":{
+				"name":{"type":"string"},
+				"description":{"type":"string"},
+				"location":{"type":"integer"},
+				"active":{"type":"integer"}
+			},
+			"required" : ["name", "description", "location", "active"]
+		},
+		{
+			"properties":{
+				"name":{"type" : "string"}
+			},
+			"required" : ["name"]
+		},
+		{
+			"properties":{
+				"name":{"type" : "string"},
+				"email":{"type" : "string"},
+				"active":{"type" : "integer"}
+			},
+			"required" : ["name", "email", "active"]
+		},
+		{
+			"properties":{
+				"judgeId":{"type":"integer"},
+				"hackId":{"type":"integer"},
+				"priority":{"type":"integer"}
+			},
+			"required" : ["judgeId","hackId","priority"]
+		},
+		{
+			"properties":{
+				"name":{"type":"string"}
+			},
+			"required" : ["name"]
+		},
+		{
+			"properties":{
+				"hackId":{"type":"integer"},
+				"superlativeId":{"type":"integer"}
+			},
+			"required" : ["hackId","superlativeId"]
+		},
+		{
+			"properties":{
+				"secret":{"type":"string"},
+				"privilege":{"type":"integer", "minimum": -1}
+			},
+			"required" : ["secret","privilege"]
+		}
+	]
+  }
 }
 
 /**
@@ -139,7 +194,13 @@ export const authenticate: EventMeta = {
   eventClass: EventClass.Request,
   eventType: EventType.Authenticate,
   response: EventType.AuthenticateResponse,
-  schema: {}
+  schema: {
+	"type":"object",
+	"properties":{
+		"secret":{"type" : "string"},
+	},
+	"required" : ["secret"]	
+  }
 }
 
 /**
