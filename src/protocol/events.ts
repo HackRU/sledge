@@ -124,60 +124,60 @@ export const addRow: EventMeta = {
   eventType: EventType.AddRow,
   response: EventType.AddRowResponse,
   schema: {
-	"type" : "object",
-	"oneOf" : [
-		{
-			"properties":{
-				"name":{"type":"string"},
-				"description":{"type":"string"},
-				"location":{"type":"integer"},
-				"active":{"type":"integer"}
-			},
-			"required" : ["name", "description", "location", "active"]
-		},
-		{
-			"properties":{
-				"name":{"type" : "string"}
-			},
-			"required" : ["name"]
-		},
-		{
-			"properties":{
-				"name":{"type" : "string"},
-				"email":{"type" : "string"},
-				"active":{"type" : "integer"}
-			},
-			"required" : ["name", "email", "active"]
-		},
-		{
-			"properties":{
-				"judgeId":{"type":"integer"},
-				"hackId":{"type":"integer"},
-				"priority":{"type":"integer"}
-			},
-			"required" : ["judgeId","hackId","priority"]
-		},
-		{
-			"properties":{
-				"name":{"type":"string"}
-			},
-			"required" : ["name"]
-		},
-		{
-			"properties":{
-				"hackId":{"type":"integer"},
-				"superlativeId":{"type":"integer"}
-			},
-			"required" : ["hackId","superlativeId"]
-		},
-		{
-			"properties":{
-				"secret":{"type":"string"},
-				"privilege":{"type":"integer", "minimum": -1}
-			},
-			"required" : ["secret","privilege"]
-		}
-	]
+    "type" : "object",
+    "oneOf" : [
+      {
+        "properties":{
+	  "name":{"type":"string"},
+	  "description":{"type":"string"},
+	  "location":{"type":"integer"},
+	  "active":{"type":"integer"}
+	},
+	"required" : ["name", "description", "location", "active"]
+      },
+      {
+        "properties":{
+	  "name":{"type" : "string"}
+	  },
+	  "required" : ["name"]
+      },
+      {
+        "properties":{
+	  "name":{"type" : "string"},
+	  "email":{"type" : "string"},
+	  "active":{"type" : "integer"}
+        },
+        "required" : ["name", "email", "active"]
+      },
+      {
+        "properties":{
+	  "judgeId":{"type":"integer"},
+	  "hackId":{"type":"integer"},
+	  "priority":{"type":"integer"}
+        },
+	"required" : ["judgeId","hackId","priority"]
+      },
+      {
+        "properties":{
+	  "name":{"type":"string"}
+	},
+	"required" : ["name"]
+      },
+      {
+        "properties":{
+	  "hackId":{"type":"integer"},
+	  "superlativeId":{"type":"integer"}
+        },
+	"required" : ["hackId","superlativeId"]
+      },
+      {
+        "properties":{
+	  "secret":{"type":"string"},
+	  "privilege":{"type":"integer", "minimum": -1}
+	},
+	"required" : ["secret","privilege"]
+      }
+    ]
   }
 }
 
@@ -195,11 +195,11 @@ export const authenticate: EventMeta = {
   eventType: EventType.Authenticate,
   response: EventType.AuthenticateResponse,
   schema: {
-	"type":"object",
-	"properties":{
-		"secret":{"type" : "string"},
-	},
-	"required" : ["secret"]	
+    "type":"object",
+    "properties":{
+      "secret":{"type" : "string"},
+    },
+    "required" : ["secret"]
   }
 }
 
