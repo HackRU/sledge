@@ -139,7 +139,7 @@ export const addRow: EventMeta = {
         "properties": {
 	        "name": {"type": "string"}
 	      },
-	     "required": ["name"]
+	      "required": ["name"]
       },
       {
         "properties":{
