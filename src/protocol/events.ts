@@ -125,59 +125,62 @@ export const addRow: EventMeta = {
   response: EventType.AddRowResponse,
   schema: {
     "type": "object",
-    "oneOf": [
-      {
-        "properties": {
-          "name": {"type": "string"},
-          "description": {"type": "string"},
-          "location": {"type": "integer"},
-          "active": {"type": "integer"}
+    "properties": {
+      "table": {"type": "string"},
+      "oneOf": [
+        {
+          "row": {
+            "name": {"type": "string"},
+            "description": {"type": "string"},
+            "location": {"type": "integer"},
+            "active": {"type": "integer"}
+          },
+  	  "required": ["name", "description", "location", "active"]
         },
-  	    "required": ["name", "description", "location", "active"]
-      },
-      {
-        "properties": {
-	        "name": {"type": "string"}
-	      },
-	      "required": ["name"]
-      },
-      {
-        "properties":{
-          "name":{"type" : "string"},
-          "email":{"type" : "string"},
-          "active":{"type" : "integer"}
+        {
+          "row": {
+            "name": {"type": "string"}
+	  },
+	  "required": ["name"]
         },
-        "required" : ["name", "email", "active"]
-      },
-      {
-        "properties": {
-          "judgeId": {"type": "integer"},
-          "hackId": {"type": "integer"},
-          "priority": {"type": "integer"}
+        {
+          "row":{
+            "name":{"type" : "string"},
+            "email":{"type" : "string"},
+            "active":{"type" : "integer"}
+          },
+          "required" : ["name", "email", "active"]
         },
-	      "required": ["judgeId","hackId","priority"]
-      },
-      {
-        "properties": {
-          "name": {"type": "string"}
-	      },
-	      "required": ["name"]
-      },
-      {
-        "properties": {
-          "hackId": {"type": "integer"},
-          "superlativeId": {"type": "integer"}
+        {
+          "row": {
+            "judgeId": {"type": "integer"},
+            "hackId": {"type": "integer"},
+            "priority": {"type": "integer"}
+          },
+	  "required": ["judgeId","hackId","priority"]
         },
-	      "required": ["hackId","superlativeId"]
-      },
-      {
-        "properties": {
-          "secret": {"type": "string"},
-          "privilege" :{"type": "integer", "minimum": -1}
-	      },
-	      "required": ["secret","privilege"]
-      }
-    ]
+        {
+          "row": {
+            "name": {"type": "string"}
+	  },
+	  "required": ["name"]
+        },
+        {
+          "row": {
+            "hackId": {"type": "integer"},
+            "superlativeId": {"type": "integer"}
+          },
+	  "required": ["hackId","superlativeId"]
+        },
+        {
+          "properties": {
+            "secret": {"type": "string"},
+            "privilege" :{"type": "integer", "minimum": -1}
+	  },
+  	  "required": ["secret","privilege"]
+        }
+      ]
+    }
   }
 }
 
