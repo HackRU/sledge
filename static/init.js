@@ -52,21 +52,21 @@
     },
 
     map: {
-      "socket.io-client": "https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js",
-      "_react": "https://cdnjs.cloudflare.com/ajax/libs/react/16.4.2/umd/react.development.js",
-      "_react-dom": "https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.4.2/umd/react-dom.development.js",
-      "react-redux": "https://cdnjs.cloudflare.com/ajax/libs/react-redux/5.1.0/react-redux.js",
-      "redux": "https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.js",
-      "reactstrap": "https://cdnjs.cloudflare.com/ajax/libs/reactstrap/6.5.0/reactstrap.full.js",
-      "_immutable": "https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.2/immutable.js",
-      "_papaparse": "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.1/papaparse.js",
-      "mocha": "https://cdnjs.cloudflare.com/ajax/libs/mocha/5.2.0/mocha.min.js",
-      "chai": "https://cdnjs.cloudflare.com/ajax/libs/chai/4.2.0/chai.js"
+      "socket.io-client": "/vendor/socket.io.dev.js",
+      "_react": "/vendor/react.development.js",
+      "_react-dom": "/vendor/react-dom.development.js",
+      "react-redux": "/vendor/react-redux.js",
+      "redux": "/vendor/redux.js",
+      "reactstrap": "/vendor/reactstrap.full.js",
+      "_immutable": "/vendor/immutable.js",
+      "_papaparse": "/vendor/papaparse.js",
+      "mocha": "/vendor/mocha.js",
+      "chai": "/vendor/chai.js"
     },
     meta: {
       "socket.io-client": { format: "amd" },
       "_react": { format: "amd" },
-      "_react-dom": { format: "amd" },
+      "_react-dom": { format: "cjs" },
       "react-redux": { format: "amd" },
       "redux": { format: "amd" },
       "_immutable": { format: "amd" },
