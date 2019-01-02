@@ -90,7 +90,7 @@ static content is done through socket.io which routed to on `/socket.io`.
 
 ## Tests
 
-We use mocha for unit tests and both the client and server. Use `gulp test` to
+We use mocha for unit tests and both the client and server. Use `make test` to
 run both client and server tests. When testing the server we look for
 `*.test.ts` files (after they're compiled into js), and on the client all files
 to test must be listed in an array in `static/testrunner.js`.

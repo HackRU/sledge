@@ -20,7 +20,7 @@ the `docs` folder for more detailed instructions.
 ```
 $ git clone https://github.com/HackRU/sledge.git && cd sledge
 $ yarn install
-$ ./gulp start
+$ make -j4 start
 ```
 
 ## Inspiration
