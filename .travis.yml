@@ -1,6 +1,5 @@
 language: node_js
 node_js:
   - "node"
-  - "lts/*"
 script:
-  - ./gulp build test lint
+  - make build test lint
