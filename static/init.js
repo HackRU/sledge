@@ -84,12 +84,13 @@
   fixDefaultExportProblem("immutable", "_immutable");
   fixDefaultExportProblem("papaparse", "_papaparse");
 
-  // Wait until page laods before initializing further
-  window.addEventListener("load", function () {
+  // Second stage of initialization is started by the page after load
+  // This is not run on test.html
+  window.init2 = function() {
     // The Router will decide which page to actually load
     window.SystemJS.import("client/Router").then(function (m) {
       let router = new m.Router();
       router.start();
     });
-  });
+  };
 })();
