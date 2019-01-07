@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "public/lib/",
+    "outFile": "public/lib.js",
     "sourceMap": true,
 
     "jsx": "react",
