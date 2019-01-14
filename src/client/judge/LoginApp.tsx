@@ -17,43 +17,45 @@ import {
   SledgeStatus
 } from "../SledgeClient";
 
-let sledge: SledgeClient;
+import {
+  getSession,
+  setSession
+} from "../session";
 
 export class LoginApp extends React.Component<{}, State> {
+  sledge: SledgeClient;
+
   constructor(props: any) {
     super(props);
 
-    let currentJudgeId = parseInt(localStorage.getItem("judgeId"));
-    if (isNaN(currentJudgeId)) {
-      currentJudgeId = 0;
-    }
-
-    console.log(currentJudgeId);
+    let session = getSession();
 
     this.state = {
       synced: false,
       disconnected: false,
-      judgeId: currentJudgeId
+      judgeId: session.judgeId || 0
     };
 
-    sledge = new SledgeClient({
+    this.sledge = new SledgeClient({
       host: document.location.host
     });
 
-    sledge.subscribeStatus(s => {
+    this.sledge.subscribeStatus(s => {
       if (s === SledgeStatus.Disconnected) {
         this.setState({
           disconnected: true
         });
       }
     });
-    sledge.subscribeSyncGlobal(evt => {
+
+    this.sledge.subscribeSyncGlobal(evt => {
       this.setState({
         synced: true,
         lastSync: evt
       });
     });
-    sledge.sendSetSynchronizeGlobal({
+
+    this.sledge.sendSetSynchronizeGlobal({
       syncShared: true
     });
   }
@@ -122,7 +124,7 @@ export class LoginApp extends React.Component<{}, State> {
   }
 
   selectJudge(judgeId: number) {
-    sledge.sendLogin({
+    this.sledge.sendLogin({
       judgeId,
       loginCode: "0000"
     }).then(res => {
@@ -133,8 +135,7 @@ export class LoginApp extends React.Component<{}, State> {
 
       localStorage.setItem("secret", res.secret);
       localStorage.setItem("judgeId", res.judgeId.toString(10));
-      document.location.href = "/judge.html";
-      //document.location.reload();
+      window.location.hash = "#judge";
     });
   }
 }
