@@ -76,8 +76,13 @@ EOF
 # Add sledge daemon command
 tee /usr/local/bin/sledge-daemon <<EOF
 #!/bin/sh
-cd /home/sledge/sledge
-sudo -u sledge ./sledge 4000
+if [ "\$(whoami)" != "sledge" ]; then
+  >&2 echo Daemon should be run as user sledge not \$(whoami)
+  exit 1
+fi
+cd \$HOME/sledge
+export DEBUG='*'
+./bin/sledge --port 4000
 EOF
 chmod 755 /usr/local/bin/sledge-daemon
 
@@ -87,6 +92,7 @@ tee /lib/systemd/system/sledge.service <<EOF
 Description=A Judging System for Hackathons
 
 [Service]
+User=sledge
 ExecStart=/usr/local/bin/sledge-daemon
 
 [Install]
