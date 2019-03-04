@@ -32,6 +32,7 @@ export class EventHandler {
     socket.onConnect(sid => this.doConnect(sid));
     socket.setHandler(EventType.AddRow, (s,d:any) => this.doAddRow(s,d));
     socket.setHandler(EventType.Authenticate, (s,d:any) => this.doAuthenticate(s,d));
+    socket.setHandler(EventType.Login, (s,d:any) => this.doLogin(s,d));
     socket.setHandler(EventType.ModifyRow, (s,d:any) => this.doModifyRow(s,d));
     socket.setHandler(EventType.RankSuperlative, (s,d:any) => this.doRankSuperlative(s,d));
     socket.setHandler(EventType.RateHack, (s,d:any) => this.doRateHack(s,d));
@@ -136,7 +137,7 @@ export class EventHandler {
     }
   }
 
-  onLogin(sid: string, data: Login): Promise<LoginResponse> {
+  doLogin(sid: string, data: Login): Promise<LoginResponse> {
     if (!this.clients.can(sid, 0) && data.loginCode !== "0000") {
       return Promise.resolve({
         success: false,

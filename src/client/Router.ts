@@ -20,6 +20,7 @@ import {render} from "react-dom";
 
 import {LoginApp} from "./judge/LoginApp";
 import {SetupApp} from "./admin/SetupApp";
+import {init as initJudgeApp} from "./judge/init";
 
 /**
  * Decide which page to load
@@ -35,6 +36,9 @@ export class Router {
       renderReactApp(LoginApp);
     } else if (this.hash === "#setup") {
       renderReactApp(SetupApp);
+    } else if (this.hash === "#judge") {
+      document.body.id = "judgePage";
+      initJudgeApp();
     } else {
       let container = document.getElementById("app");
       container.innerHTML = `<em>ERROR: Bad Route!</em>`;
