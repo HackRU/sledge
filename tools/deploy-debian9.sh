@@ -6,6 +6,8 @@ set -e -u
 
 export DEBIAN_FRONTEND=noninteractive
 
+DOMAIN="sledge.site" # No www
+
 # Initial Update
 apt-get -y update
 apt-get -y dist-upgrade
@@ -25,7 +27,7 @@ apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd s
 service nginx stop
 
 # If possible, get SSL certificates
-certbot certonly -n --standalone --agree-tos --email eric@threedot14.com --domains sledge.site,www.sledge.site || {
+certbot certonly -n --standalone --agree-tos --email eric@threedot14.com --domains "$DOMAIN,www.$DOMAIN" || {
   echo "================================================"
   echo "===== WARNING: Could not get certificates! ====="
   echo "================================================"
@@ -65,7 +67,7 @@ sudo -u sledge sh - <<EOF
 cd \$HOME
 git clone https://github.com/HackRU/sledge.git sledge
 cd sledge
-git checkout fall2018
+git checkout hackrusp19
 
 yarn install
 ./gulp build
@@ -102,11 +104,11 @@ sqlite3 /home/sledge/sledge/data/sledge.db "INSERT INTO Token(secret, privilege)
 
 # Sledge ssl certificate
 mkdir -p /etc/nginx/ssl
-ln -s /etc/letsencrypt/live/sledge.site/privkey.pem /etc/nginx/ssl/sledge.key
-ln -s /etc/letsencrypt/live/sledge.site/fullchain.pem /etc/nginx/ssl/sledge.cert
+ln -s "/etc/letsencrypt/live/$DOMAIN/privkey.pem /etc/nginx/ssl/sledge.key"
+ln -s "/etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/nginx/ssl/sledge.cert"
 tee /etc/nginx/snippets/ssl-sledge <<EOF
-ssl_certificate /etc/letsencrypt/live/sledge.site/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/sledge.site/privkey.pem;
+ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
 EOF
 
 # Self-signed certificate
@@ -119,7 +121,7 @@ ssl_certificate_key /etc/nginx/ssl/nginx.key;
 EOF
 
 # Choose which certificate, based on if we got the certificate
-if [ -d "/etc/letsencrypt/live/sledge.site" ]; then
+if [ -d "/etc/letsencrypt/live/$DOMAIN" ]; then
   SSL_SNIPPET="snippets/ssl-sledge"
 else
   SSL_SNIPPET="snippets/ssl-nginx"
@@ -131,7 +133,7 @@ server {
   listen 443 ssl;
   listen [::]:443 ssl;
 
-  server_name www.sledge.site;
+  server_name $DOMAIN;
 
   include $SSL_SNIPPET;
 
@@ -161,7 +163,7 @@ server {
 
   include $SSL_SNIPPET;
 
-  return 301 https://www.sledge.site\$request_uri;
+  return 301 https://www.$DOMAIN\$request_uri;
 }
 EOF
 ln -s /etc/nginx/sites-available/sledge /etc/nginx/sites-enabled/sledge
