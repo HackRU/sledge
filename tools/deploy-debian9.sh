@@ -21,7 +21,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" >/etc/apt/sources.list.d/y
 
 # Update repos and install additional packages
 apt-get -y update
-apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent
+apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent make
 
 # nginx automatically starts when it's installed, we don't want that yet
 service nginx stop
@@ -70,7 +70,7 @@ cd sledge
 git checkout hackrusp19
 
 yarn install
-./gulp build
+make -j$(nproc) build
 EOF
 
 # Add sledge daemon command
