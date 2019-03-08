@@ -120,7 +120,7 @@ EOF
 # Self-signed certificate
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.cert \
-  -subj "/CN=netbuzz.xyz"
+  -subj "/CN=$DOMAIN"
 tee /etc/nginx/snippets/ssl-nginx <<EOF
 ssl_certificate /etc/nginx/ssl/nginx.cert;
 ssl_certificate_key /etc/nginx/ssl/nginx.key;

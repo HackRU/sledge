@@ -20,6 +20,7 @@ import {render} from "react-dom";
 
 import {LoginApp} from "./judge/LoginApp";
 import {SetupApp} from "./admin/SetupApp";
+import {ResultsApp} from "./admin/ResultsApp";
 import {init as initJudgeApp} from "./judge/init";
 
 /**
@@ -39,9 +40,11 @@ export class Router {
     } else if (this.hash === "#judge") {
       document.body.id = "judgePage";
       initJudgeApp();
+    } else if (this.hash === "#results") {
+      renderReactApp(ResultsApp);
     } else {
       let container = document.getElementById("app");
-      container.innerHTML = `<em>ERROR: Bad Route!</em>`;
+      container.innerHTML = `<em>ERROR: Bad Route!</em> <a href="/">Return Home?</a>`;
     }
 
     // The browser won't automatically reload if only the hash changes, so
