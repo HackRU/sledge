@@ -85,12 +85,14 @@ export function removeJudgeHackAssignments(client: SledgeClient, syncGlobal: Syn
 
 function judgeAssignments(hacksCount: number, judgesCount: number, judgesPerHack: number): number[][] {
   let r: number[][] = repeat(() => [], judgesCount);
-  let gap = Math.max(Math.floor(hacksCount / judgesCount), 1);
-  for (let i=0;i<judgesPerHack;i++) {
-    for (let j=0;j<gap;j++) {
-      for (let k=0;k<judgesCount;k++) {
-        r[k].push( (gap*k + i*gap + j) % hacksCount);
-      }
+  let gap = hacksCount / judgesCount;
+  let hacksPerJudge = Math.ceil(hacksCount * judgesPerHack / judgesCount);
+
+  for (let judge=0;judge<judgesCount;judge++) {
+    let startingHack = Math.floor(judge * gap);
+    for (let i=0;i<hacksPerJudge;i++) {
+      let hack = (startingHack + i) % hacksCount;
+      r[judge].push(hack);
     }
   }
 
