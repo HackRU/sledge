@@ -1,17 +1,13 @@
 {
+  "extends": "./tsconfig.json",
+
   "compilerOptions": {
     "outDir": "./lib/",
     "sourceMap": true,
-
     "module": "commonjs",
     "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "lib/*": [ "src/*" ],
-      "*": [ "node_modules/*" ]
-    }
+
+    "lib": ["es5", "es6", "dom"]
   },
   "include": [
     "src/index.ts",

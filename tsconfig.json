@@ -1,18 +1,20 @@
 {
   "compilerOptions": {
-    "jsx": "preserve",
-
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
     "noImplicitReturns": true,
-    "lib": ["es5", "es6", "dom"],
 
-    "outDir": "/tmp/ignore",
+    "moduleResolution": "node",
+    "target": "es6",
+    "jsx": "react",
+    "esModuleInterop": true,
+
     "baseUrl": ".",
     "paths": {
       "lib/*": [ "src/*" ],
-      "*": [ "node_modules/*" ]
-    }
+      "*": [ "node_modules/types/*", "node_modules/*" ]
+    },
+
+    "lib": ["es5", "es6", "dom"]
   },
   "include": [
     "src/**/*"

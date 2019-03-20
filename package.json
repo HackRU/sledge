@@ -1,6 +1,6 @@
 {
   "name": "sledge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
     "@types/better-sqlite3": "^3.1.3",
