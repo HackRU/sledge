@@ -18,6 +18,8 @@
 import {Server as HttpServer} from "http";
 import {default as express, Express} from "express";
 
+import {log} from "./log";
+
 import {Database} from "./Database";
 import {SocketAttacher} from "./SocketAttacher";
 import {EventHandler} from "./EventHandler";
@@ -49,5 +51,8 @@ export class Server {
     this.db = new Database(this.dataDir);
     this.eventHandler = new EventHandler(this.db);
     this.socketAttacher = new SocketAttacher(this.http, this.eventHandler.getRequestHandler());
+
+    this.http.listen(this.port);
+    log(`Running on :${this.port}`);
   }
 }

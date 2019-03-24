@@ -14,7 +14,7 @@
       "*": [ "node_modules/types/*", "node_modules/*" ]
     },
 
-    "lib": ["es5", "es6", "dom"]
+    "lib": ["es7", "dom"]
   },
   "include": [
     "src/**/*"

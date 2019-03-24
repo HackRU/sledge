@@ -30,11 +30,14 @@ export class SocketAttacher {
   connectHandler(socket: SioSocket) {
     socket.on("request", data => {
       if (typeof data !== "object") {
-        log(`Got request event with type ${typeof data}`);
+        log(`WARN: Got request event with type ${typeof data}`);
       }
 
       this.onRecieve(data).then(res => {
-        socket.emit("response", res);
+        socket.emit("response", {
+          ...res,
+          returnId: data["returnId"]
+        });
       });
     });
   }

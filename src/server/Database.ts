@@ -1,7 +1,9 @@
 import {mkdirSync, readFileSync} from "fs";
 import {resolve} from "path";
 
-import Sqlite3 from "better-sqlite3";
+import {
+  default as Sqlite3,
+} from "better-sqlite3";
 import integer from "integer";
 
 /**
@@ -14,11 +16,11 @@ export class Database {
     this.openDatabase();
     this.initTables();
     this.initData();
+
+    this.sql.transaction
   }
 
-  getSql() {
-    return this.sql;
-  }
+  prepare = (source: string) => this.sql.prepare(source);
 
   /**
    * Open the Sqlite3 database file, or create if it doesn't exist

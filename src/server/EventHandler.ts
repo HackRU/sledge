@@ -23,7 +23,7 @@ export class EventHandler {
     }
 
     if (response == null) {
-      log("Got request with no handler");
+      log("WARN: Got request with no handler %O", request);
 
       response = {
         error: true,

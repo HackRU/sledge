@@ -15,30 +15,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import {createElement, Component} from "react";
 import {render} from "react-dom";
 
-import {LoginApp} from "./judge/LoginApp";
-import {SetupApp} from "./admin/SetupApp";
+import {DebugApp} from "./DebugApp";
+
+let pages = [{
+  match: /#admin\/debug/,
+  canonical: "#admin/debug",
+  component: DebugApp
+}, {
+  // Default
+  match: /.*/,
+  canonical: "#error",
+  html: "<em>ERROR: Bad Route!</em>"
+}];
 
 /**
  * Decide which page to load
  */
 export class Router {
   hash: string;
+  container: HTMLElement;
+  page: any;
 
   start() {
     this.hash = window.location.hash;
+    this.container = document.getElementById("app");
+    this.page = pages.find(p => p.match.test(this.hash));
 
-    if (this.hash === "" || this.hash === "#" || this.hash === "#login") {
-      window.location.hash = "#login";
-      renderReactApp(LoginApp);
-    } else if (this.hash === "#setup") {
-      renderReactApp(SetupApp);
+    if (this.page.html) {
+      this.renderHtmlApp(this.page.html);
     } else {
-      let container = document.getElementById("app");
-      container.innerHTML = `<em>ERROR: Bad Route!</em>`;
+      this.renderReactApp(this.page.component);
     }
+
+    document.location.hash = this.page.canonical;
+    this.hash = this.page.canonical;
 
     // The browser won't automatically reload if only the hash changes, so
     // we do this manually
@@ -49,18 +63,21 @@ export class Router {
     });
   }
 
-}
+  renderHtmlApp(html: string) {
+    this.container.innerHTML = html;
+  }
 
-/**
- * Renders a react app to the "app" div on the page. The app argument is passed
- * to React.createElement
- *
- * React Components postfixed by App indicate they are toplevel components, and
- * can assume they will never be unmounted and the only other components will be
- * created by them.
- */
-function renderReactApp(app: any) {
-  let container = document.getElementById("app");
-  let topElement = createElement(app);
-  render(topElement, container);
+  /**
+   * Renders a react app to the "app" div on the page. The app argument is passed
+   * to React.createElement
+   *
+   * React Components postfixed by App indicate they are toplevel components, and
+   * can assume they will never be unmounted and the only other components will be
+   * created by them.
+   */
+  renderReactApp(app: any) {
+    let topElement = createElement(app);
+    render(topElement, this.container);
+  }
+
 }
