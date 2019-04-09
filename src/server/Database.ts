@@ -12,15 +12,33 @@ import integer from "integer";
 export class Database {
   private sql: Sqlite3;
 
+  private beginStmt;
+  private commitStmt;
+
   constructor(private datadir: string) {
     this.openDatabase();
     this.initTables();
     this.initData();
 
-    this.sql.transaction
+    this.beginStmt = this.sql.prepare("BEGIN;");
+    this.commitStmt = this.sql.prepare("END;");
   }
 
   prepare = (source: string) => this.sql.prepare(source);
+
+  /**
+   * Start a Transaction
+   */
+  begin() {
+    this.beginStmt.run();
+  }
+
+  /**
+   * End and commit a Transaction
+   */
+  commit() {
+    this.commitStmt.run();
+  }
 
   /**
    * Open the Sqlite3 database file, or create if it doesn't exist

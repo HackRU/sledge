@@ -1,66 +1,80 @@
 import {log} from "./log";
 
-import {Database} from "./Database";
+import integer from "integer";
 
-export function populateHandler(db: Database, data: object): object | null {
-  if (data["requestName"] !== "REQUEST_POPULATE") {
-    return null;
+import {Database} from "./Database";
+import {runMany} from "./DatabaseHelpers";
+
+export class PopulateRequest {
+  // Sql statements
+  selectPhase;
+  setPhase;
+  insertSubmission;
+  insertJudge;
+  insertCategory;
+  insertPrize;
+  insertSubmissionPrize;
+
+  constructor(private db: Database) {
+    this.selectPhase = db.prepare(
+      "SELECT phase FROM Status ORDER BY timestamp DESC;");
+    this.setPhase = db.prepare(
+      "UPDATE Status SET phase=$phase,timestamp=$timestamp;");
+    this.insertSubmission = db.prepare(
+      "INSERT INTO Submission(name, location) VALUES($name, $location);");
+    this.insertJudge = db.prepare(
+      "INSERT INTO Judge(name) VALUES($name);");
+    this.insertCategory = db.prepare(
+      "INSERT INTO Category(name) VALUES($name);");
+    this.insertPrize = db.prepare(
+      "INSERT INTO Prize(name) VALUES($name);");
+    this.insertSubmissionPrize = db.prepare(
+      "INSERT INTO SubmissionPrize(submissionId, prizeId, eligibility) "
+        +"VALUES($submissionId, $prizeId, 1);");
   }
 
-  // Populate is only valid in phase 1
-  let phase = db
-    .prepare("SELECT phase FROM Status ORDER BY timestamp DESC;")
-    .get().phase;
-  if (phase !== 1) {
-    log("WARN: Populate sent in wrong phase");
+  handler(data: object): object | null {
+    if (data["requestName"] !== "REQUEST_POPULATE") {
+      return null;
+    }
+
+    this.db.begin();
+
+    // Populate is only valid in phase 1
+    let phase = this.selectPhase.get().phase;
+    if (phase !== 1) {
+      log("WARN: Populate sent in wrong phase");
+
+      return {
+        error: "Populate can only be sent in phase 1"
+      };
+    }
+
+    // Insert submissions, judges, categories and prizes
+    let submissionIds = runMany(this.insertSubmission, data["submissions"]);
+    let judgeIds = runMany(this.insertJudge, data["judges"]);
+    let categoryIds = runMany(this.insertCategory, data["categories"]);
+    let prizeIds = runMany(this.insertPrize, data["prizes"]);
+
+    // The submissions prizes are encoded by their index into submissions
+    // and prizes
+    let submissionPrizeRows = data["submissionPrizes"].map(sp => ({
+      submissionId: submissionIds[sp["submission"]],
+      prizeId: prizeIds[sp["prize"]]
+    }));
+    let submissionPrizeIds =
+      runMany(this.insertSubmissionPrize, submissionPrizeRows);
+
+    // Change phase to 2
+    this.setPhase.run({
+      phase: 2,
+      timestamp: integer(Date.now())
+    });
+
+    this.db.commit();
 
     return {
-      error: "Populate can only be sent in phase 1"
+      success: true
     };
   }
-
-  db.prepare("BEGIN;").run();
-
-  // Populate Submission table
-  let addSubmission = db
-    .prepare("INSERT INTO Submission(name, location) VALUES($name, $location);");
-  let submissionIds = runMany(addSubmission, data["submissions"]);
-
-  if (Array.isArray(data["submissions"])) {
-    for (let submission of data["submissions"]) {
-      let r = addSubmission.run(data["name"], data["location"]);
-      r.lastInsertROWID
-    }
-  }
-
-  // Populate Judges table
-  let addJudge = db
-    .prepare("INSERT INTO Judge(name) VALUES(?);");
-  if (Array.isArray(data["judges"])) {
-    for (let submission of data["judges"]) {
-      addSubmission.run(data["name"]);
-    }
-  }
-
-  // Populate Prize table
-  let addCategory = db
-    .prepare("INSERT INTO Category(name) VALUES(?);");
-  if (Array.isArray(data["judges"])) {
-    for (let submission of data["judges"]) {
-      addSubmission.run(data["name"]);
-    }
-  }
-
-  db.prepare("COMMIT;").run();
-
-  return {};
-}
-
-function runMany(stmt: any, rows: Array<object>): Array<number> {
-  let inserted = [];
-  for (let row of rows) {
-    let r = stmt.run(row);
-    inserted.push(r.lastInsertRowid);
-  }
-  return inserted;
 }

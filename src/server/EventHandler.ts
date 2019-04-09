@@ -1,13 +1,15 @@
 import {log} from "./log";
 import {Database} from "./Database";
-import {populateHandler} from "./PopulateRequest";
+import {PopulateRequest} from "./PopulateRequest";
 
 export class EventHandler {
   simpleHandlers: Array<(db: Database, data: object) => object | null>;
 
   constructor(private db: Database) {
+    let populateRequest = new PopulateRequest(db);
+
     this.simpleHandlers = [
-      populateHandler
+      populateRequest.handler.bind(populateRequest)
     ];
   }
 

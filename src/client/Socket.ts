@@ -42,6 +42,17 @@ export class Socket {
     });
   }
 
+  sendDebug(data: object): Promise<object> {
+    let beforeTime = Date.now();
+    let promise = this.sendRequest(data);
+    promise.then(res => {
+      let diffTime = Date.now() - beforeTime;
+      console.log(`Got response after ${diffTime/1000} seconds!`);
+      console.log(res);
+    });
+    return promise;
+  }
+
   onUpdate(handler: UpdateHandler) {
     this.updateHandlers.push(handler);
   }

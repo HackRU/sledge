@@ -19,9 +19,10 @@
 import {createElement, Component} from "react";
 import {render} from "react-dom";
 
+import {BadRouteApp} from "./BadRouteApp";
 import {DebugApp} from "./DebugApp";
 
-let pages = [{
+export let pages = [{
   match: /#admin\/debug/,
   canonical: "#admin/debug",
   component: DebugApp
@@ -29,7 +30,7 @@ let pages = [{
   // Default
   match: /.*/,
   canonical: "#error",
-  html: "<em>ERROR: Bad Route!</em>"
+  component: BadRouteApp
 }];
 
 /**
