@@ -6,3 +6,4 @@ data/
 lib/
 public/
 node_modules/
+.tsbuildinfo

@@ -21,11 +21,21 @@ import {render} from "react-dom";
 
 import {BadRouteApp} from "./BadRouteApp";
 import {DebugApp} from "./DebugApp";
+import {PopulateApp} from "./PopulateApp";
+import {DevpostApp} from "./DevpostApp";
 
 export let pages = [{
   match: /#admin\/debug/,
   canonical: "#admin/debug",
   component: DebugApp
+}, {
+  match: /#setup\/populate/,
+  canonical: "#setup/populate",
+  component: PopulateApp
+}, {
+  match: /#setup\/devpost/,
+  canonical: "#setup/devpost",
+  component: DevpostApp
 }, {
   // Default
   match: /.*/,
