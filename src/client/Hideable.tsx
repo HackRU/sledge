@@ -5,12 +5,12 @@ import {
   Button
 } from "reactstrap";
 
-export class Hideable extends React.Component<any, any> {
+export class Hideable extends React.Component<HideableProps, any> {
   constructor(props) {
     super(props);
 
     this.state = {
-      hidden: false
+      hidden: !!this.props.initiallyHidden
     };
   }
 
@@ -27,4 +27,8 @@ export class Hideable extends React.Component<any, any> {
       </div>
     );
   }
+}
+
+export interface HideableProps {
+  initiallyHidden?: boolean;
 }

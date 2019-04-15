@@ -34,6 +34,17 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
     };
   }
 
+  loadFromJson(json) {
+    let data = {
+      ...getDefaultSetupData(),
+      ...JSON.parse(json)
+    };
+    this.setState({
+      setupData: data
+    });
+    this.saveToLocalStorage(data);
+  }
+
   reloadFromLocalStorage() {
     let data = JSON.parse(localStorage["setup"]);
     this.setState({
@@ -95,6 +106,34 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
     this.saveToLocalStorage(newSetupData);
   }
 
+  removePrize(index: number) {
+    let oldSetupData = this.state.setupData;
+    let newSetupData = {
+      ...oldSetupData,
+      submissions: oldSetupData.submissions.map((s,i) => ({
+        ...s,
+        prizes: s.prizes
+          .filter(p => p !== index)
+          .map(p => p > index ? p-1 : p)
+      })),
+      prizes: oldSetupData.prizes.filter((s,i) => i !== index)
+    };
+
+    this.setState({ setupData: newSetupData });
+    this.saveToLocalStorage(newSetupData);
+  }
+
+  renamePrize(index: number, newName: string) {
+    let oldSetupData = this.state.setupData;
+    let newSetupData = {
+      ...oldSetupData,
+      prizes: oldSetupData.prizes.map((p,i) => i === index ? newName : p)
+    };
+
+    this.setState({ setupData: newSetupData });
+    this.saveToLocalStorage(newSetupData);
+  }
+
   render() {
     return (
       <Container id="PopulateApp">
@@ -105,7 +144,7 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
         <InputItem
           name="From JSON"
           fields={["JSON Data"]}
-          onAdd={d => alert(d[0])}
+          onAdd={d => this.loadFromJson(d)}
         />
 
         <ButtonGroup>
@@ -119,7 +158,7 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
 
         <h2>{`Submissions`}</h2>
 
-        <Hideable>
+        <Hideable initiallyHidden={true}>
           <TabularActions
             headings={["Table", "Name", "Prizes"]}
             rows={this.state.setupData.submissions.map((s, i) => ({
@@ -146,6 +185,25 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
                   this.changeTableNumber(i, newTable);
                 }
               }
+            }]}
+          />
+        </Hideable>
+
+        <h2>{`Prizes`}</h2>
+
+        <Hideable initiallyHidden={true}>
+          <TabularActions
+            headings={["Name"]}
+            rows={this.state.setupData.prizes.map((p, i) => ({
+              columns: [p],
+              id: i
+            }))}
+            actions={[{
+              name: "Remove",
+              cb: i => this.removePrize(i)
+            }, {
+              name: "Rename",
+              cb: i => this.renamePrize(i, prompt("New Prize Name:"))
             }]}
           />
         </Hideable>

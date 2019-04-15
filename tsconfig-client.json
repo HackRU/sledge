@@ -8,6 +8,8 @@
 
     "lib": ["es5", "es6", "dom"],
 
+    "incremental": true,
+    "tsBuildInfoFile": "tmp/client.tsbuildinfo"
   },
   "include": [
     "src/client/**/*.ts",

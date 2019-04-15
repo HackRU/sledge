@@ -7,7 +7,10 @@
     "module": "commonjs",
     "esModuleInterop": true,
 
-    "lib": ["es5", "es6", "dom"]
+    "lib": ["es5", "es6", "dom"],
+
+    "incremental": true,
+    "tsBuildInfoFile": "tmp/server.tsbuildinfo"
   },
   "include": [
     "src/index.ts",

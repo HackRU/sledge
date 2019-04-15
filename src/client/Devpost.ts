@@ -72,3 +72,5 @@ export function parseDevpostData(csvContent: string) {
 
   return { submissions, prizes };
 }
+
+export const TEST_CSV_URL = "https://s3.amazonaws.com/sledge-assets/hackru-sp2019.csv";

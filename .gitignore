@@ -7,3 +7,4 @@ lib/
 public/
 node_modules/
 .tsbuildinfo
+tmp/
