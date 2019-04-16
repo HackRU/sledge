@@ -7,7 +7,7 @@
 export function runMany(stmt, rows: Array<any>): Array<number> {
   let inserted = [];
   for (let row of rows) {
-    inserted.push(stmt.run(row));
+    inserted.push(stmt.run(row).lastInsertROWID);
   }
   return inserted;
 }

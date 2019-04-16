@@ -7,6 +7,8 @@ import {
   Button
 } from "reactstrap";
 
+import {range} from "../shared/util";
+
 import {TextSubmit} from "./TextSubmit";
 import {Hideable} from "./Hideable";
 import {TabularActions} from "./TabularActions";
@@ -14,7 +16,7 @@ import {InputItem} from "./InputItem";
 
 import {Socket} from "./Socket";
 
-export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
+export class PopulateApp extends React.Component<any, PopulateState> {
   socket: Socket;
 
   constructor(props: any) {
@@ -30,19 +32,17 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
     }
 
     this.state = {
-      setupData
+      setupData,
+      json: JSON.stringify(setupData),
+      response: ""
     };
   }
 
   loadFromJson(json) {
-    let data = {
+    this.alterSetupData(d => ({
       ...getDefaultSetupData(),
       ...JSON.parse(json)
-    };
-    this.setState({
-      setupData: data
-    });
-    this.saveToLocalStorage(data);
+    }));
   }
 
   reloadFromLocalStorage() {
@@ -52,86 +52,125 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
     });
   }
 
-  reset() {
-    let setupData = getDefaultSetupData();
+  alterSetupData(f: (data: SetupData) => SetupData) {
+    let oldSetupData = this.state.setupData;
+    let newSetupData = f({ ...oldSetupData });
+
     this.setState({
-      setupData: setupData
+      setupData: newSetupData,
+      json: JSON.stringify(newSetupData)
     });
-    this.saveToLocalStorage(setupData);
+    this.saveToLocalStorage(newSetupData);
   }
 
   saveToLocalStorage(setupData: SetupData) {
     localStorage["setup"] = JSON.stringify(setupData);
   }
 
-  removeHack(index: number) {
-    let oldSetupData = this.state.setupData;
-    let newSetupData = {
-      ...oldSetupData,
-      submissions: oldSetupData.submissions.filter((x,i) => i !== index)
-    };
+  reset() {
+    this.alterSetupData(d => getDefaultSetupData());
+  }
 
-    this.setState({ setupData: newSetupData });
-    this.saveToLocalStorage(newSetupData);
+  removeHack(index: number) {
+    this.alterSetupData(old => ({
+      ...old,
+      submissions: old.submissions.filter((x,i) => i !== index)
+    }));
   }
 
   assignAllPrizesToHack(index: number) {
-    let allPrizeIndexes = [];
-    for (let i=0;i<this.state.setupData.prizes.length;i++) {
-      allPrizeIndexes.push(i);
-    }
-
-    let oldSetupData = this.state.setupData;
-    let newSetupData = {
-      ...oldSetupData,
-      submissions: oldSetupData.submissions.map((s,i) => i !== index ? s :
-        { ...s, prizes: allPrizeIndexes }
+    this.alterSetupData(old => ({
+      ...old,
+      submissions: old.submissions.map((s,i) => i !== index ? s :
+        { ...s, prizes: range(old.prizes.length) }
       )
-    };
-
-    this.setState({ setupData: newSetupData });
-    this.saveToLocalStorage(newSetupData);
+    }));
   }
 
   changeTableNumber(index: number, table: number) {
-    let oldSetupData = this.state.setupData;
-    let newSetupData = {
-      ...oldSetupData,
-      submissions: oldSetupData.submissions.map((s,i) => i !== index ? s :
+    this.alterSetupData(old => ({
+      ...old,
+      submissions: old.submissions.map((s,i) => i !== index ? s :
         { ...s, table }
       )
-    };
-
-    this.setState({ setupData: newSetupData });
-    this.saveToLocalStorage(newSetupData);
+    }));
   }
 
   removePrize(index: number) {
-    let oldSetupData = this.state.setupData;
-    let newSetupData = {
-      ...oldSetupData,
-      submissions: oldSetupData.submissions.map((s,i) => ({
+    this.alterSetupData(old => ({
+      ...old,
+      submissions: old.submissions.map((s,i)=> ({
         ...s,
-        prizes: s.prizes
-          .filter(p => p !== index)
-          .map(p => p > index ? p-1 : p)
+        prizes: s.prizes.filter(p => p !== index).map(p => p > index ? p-1 : p)
       })),
-      prizes: oldSetupData.prizes.filter((s,i) => i !== index)
-    };
-
-    this.setState({ setupData: newSetupData });
-    this.saveToLocalStorage(newSetupData);
+      prizes: old.prizes.filter((s,i) => i !== index)
+    }));
   }
 
   renamePrize(index: number, newName: string) {
-    let oldSetupData = this.state.setupData;
-    let newSetupData = {
-      ...oldSetupData,
-      prizes: oldSetupData.prizes.map((p,i) => i === index ? newName : p)
-    };
+    this.alterSetupData(old => ({
+      ...old,
+      prizes: old.prizes.map((p,i) => i === index ? newName : p)
+    }));
+  }
 
-    this.setState({ setupData: newSetupData });
-    this.saveToLocalStorage(newSetupData);
+  addJudge(name: string) {
+    this.alterSetupData(old => ({
+      ...old,
+      judges: old.judges.concat([name])
+    }));
+  }
+
+  removeJudge(index: number) {
+    this.alterSetupData(old => ({
+      ...old,
+      judges: old.judges.filter((j,i) => i !== index)
+    }));
+  }
+
+  addCategory(name: string) {
+    this.alterSetupData(old => ({
+      ...old,
+      categories: old.categories.concat([name])
+    }));
+  }
+
+  removeCategory(index: number) {
+    this.alterSetupData(old => ({
+      ...old,
+      categories: old.categories.filter((c,i) => i !== index)
+    }));
+  }
+
+  populateServer() {
+    let submissions = this.state.setupData.submissions.map(s => ({
+      name: s.name,
+      location: s.table
+    }));
+    let judges = this.state.setupData.judges.map(name => ({name}));
+    let categories = this.state.setupData.categories.map(name => ({name}));
+    let prizes = this.state.setupData.prizes.map(name => ({name}));
+    let submissionPrizes = this.state.setupData.submissions.reduce(
+      (subPrs, sub, subIdx) => subPrs.concat(
+        sub.prizes.map(prizeIdx => ({
+          submission: subIdx,
+          prize: prizeIdx
+        }))
+      ), []
+    );
+
+    this.socket.sendRequest({
+      requestName: "REQUEST_POPULATE",
+      submissions,
+      judges,
+      categories,
+      prizes,
+      submissionPrizes
+    }).then(res => {
+      this.setState({
+        response: JSON.stringify(res)
+      });
+    });
   }
 
   render() {
@@ -208,6 +247,70 @@ export class PopulateApp extends React.Component<any, {setupData: SetupData}> {
           />
         </Hideable>
 
+        <h2>{`Judges`}</h2>
+
+        <ButtonGroup>
+          <Button
+            onClick={() => this.addJudge(prompt("Name for Judge:"))}
+          >{`Add`}</Button>
+        </ButtonGroup>
+
+        <Hideable initiallyHidden={true}>
+          <TabularActions
+            headings={["Name"]}
+            rows={this.state.setupData.judges.map((j, i) => ({
+              columns: [j],
+              id: i
+            }))}
+            actions={[{
+              name: "Remove",
+              cb: i => this.removeJudge(i)
+            }]}
+          />
+        </Hideable>
+
+        <h2>{`Categories`}</h2>
+
+        <ButtonGroup>
+          <Button
+            onClick={() => this.addCategory(prompt("Name for Category:"))}
+          >{`Add`}</Button>
+        </ButtonGroup>
+
+        <Hideable initiallyHidden={true}>
+          <TabularActions
+            headings={["Name"]}
+            rows={this.state.setupData.categories.map((c, i) => ({
+              columns: [c],
+              id: i
+            }))}
+            actions={[{
+              name: "Remove",
+              cb: i => this.removeCategory(i)
+            }]}
+          />
+        </Hideable>
+
+        <h2>{`Populate on Server`}</h2>
+
+        <ButtonGroup>
+          <Button
+            onClick={() => this.populateServer()}
+          >{`Populate Server`}</Button>
+        </ButtonGroup>
+
+        <Input
+          type="textarea"
+          readOnly
+          value={this.state.json}
+        />
+
+        <Input
+          type="textarea"
+          readOnly
+          value={this.state.response}
+        />
+
       </Container>
     );
   }
@@ -227,4 +330,10 @@ interface SetupData {
   prizes: Array<string>;
   judges: Array<string>;
   categories: Array<string>;
+}
+
+interface PopulateState {
+  setupData: SetupData;
+  json: string;
+  response: string;
 }

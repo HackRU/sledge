@@ -55,7 +55,7 @@ export function parseDevpostData(csvContent: string) {
         // To help with possible ambiguities in the parsing, we trim the name
         let prize = hackPrizes.data[0][j].trim();
         let prizeIdx = prizes.indexOf(prize);
-        if (prizeIdx < 0) prizeIdx = prizes.push(prize);
+        if (prizeIdx < 0) prizeIdx = prizes.push(prize) - 1;
         prizeIdxs.push(prizeIdx);
       }
     }

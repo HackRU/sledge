@@ -27,7 +27,7 @@ export class PopulateRequest {
     this.insertCategory = db.prepare(
       "INSERT INTO Category(name) VALUES($name);");
     this.insertPrize = db.prepare(
-      "INSERT INTO Prize(name) VALUES($name);");
+      "INSERT INTO Prize(name, isOverall) VALUES($name, 0);");
     this.insertSubmissionPrize = db.prepare(
       "INSERT INTO SubmissionPrize(submissionId, prizeId, eligibility) "
         +"VALUES($submissionId, $prizeId, 1);");
@@ -44,6 +44,7 @@ export class PopulateRequest {
     let phase = this.selectPhase.get().phase;
     if (phase !== 1) {
       log("WARN: Populate sent in wrong phase");
+      this.db.commit();
 
       return {
         error: "Populate can only be sent in phase 1"

@@ -3,7 +3,7 @@ import {Database} from "./Database";
 import {PopulateRequest} from "./PopulateRequest";
 
 export class EventHandler {
-  simpleHandlers: Array<(db: Database, data: object) => object | null>;
+  simpleHandlers: Array<(data: object) => object | null>;
 
   constructor(private db: Database) {
     let populateRequest = new PopulateRequest(db);
@@ -17,7 +17,7 @@ export class EventHandler {
     let response = null;
 
     for (let handler of this.simpleHandlers) {
-      response = handler(this.db, request);
+      response = handler(request);
 
       if (response != null) {
         break;
