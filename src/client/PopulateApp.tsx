@@ -173,6 +173,16 @@ export class PopulateApp extends React.Component<any, PopulateState> {
     });
   }
 
+  startJudging() {
+    this.socket.sendRequest({
+      requestName: "REQUEST_BEGIN_JUDGING"
+    }).then(res => {
+      this.setState({
+        response: JSON.stringify(res)
+      });
+    });
+  }
+
   render() {
     return (
       <Container id="PopulateApp">
@@ -297,6 +307,9 @@ export class PopulateApp extends React.Component<any, PopulateState> {
           <Button
             onClick={() => this.populateServer()}
           >{`Populate Server`}</Button>
+          <Button
+            onClick={() => this.startJudging()}
+          >{`Start Judging`}</Button>
         </ButtonGroup>
 
         <Input

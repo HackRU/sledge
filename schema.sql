@@ -138,6 +138,10 @@ CREATE TABLE IF NOT EXISTS Assignment (
   -- submissions).
   rankingCount INTEGER,
 
+  CHECK(
+    (type=1 AND ratingSubmissionId NOTNULL AND rankingCount ISNULL) OR
+    (type=2 AND ratingSubmissionId ISNULL AND rankingCount NOTNULL)
+  ),
   FOREIGN KEY(judgeId) REFERENCES Judge(id),
   FOREIGN KEY(prizeId) REFERENCES Prize(id),
   FOREIGN KEY(ratingSubmissionId) REFERENCES Submission(id),

@@ -1,15 +1,18 @@
 import {log} from "./log";
 import {Database} from "./Database";
 import {PopulateRequest} from "./PopulateRequest";
+import {BeginJudgingRequest} from "./BeginJudgingRequest";
 
 export class EventHandler {
   simpleHandlers: Array<(data: object) => object | null>;
 
   constructor(private db: Database) {
     let populateRequest = new PopulateRequest(db);
+    let beginJudgingRequest = new BeginJudgingRequest(db);
 
     this.simpleHandlers = [
-      populateRequest.handler.bind(populateRequest)
+      populateRequest.handler.bind(populateRequest),
+      beginJudgingRequest.handler.bind(beginJudgingRequest)
     ];
   }
 
@@ -28,9 +31,10 @@ export class EventHandler {
       log("WARN: Got request with no handler %O", request);
 
       response = {
-        error: true,
-        message: "No handler would take your request"
+        error: "No handler would take your request"
       };
+    } else if (response["error"] != null) {
+      log("WARN: Handler returned an error: %O", response);
     }
 
     return Promise.resolve(response);

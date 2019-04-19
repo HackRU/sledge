@@ -14,6 +14,7 @@ export class Database {
 
   private beginStmt;
   private commitStmt;
+  private rollbackStmt;
 
   constructor(private datadir: string) {
     this.openDatabase();
@@ -22,6 +23,7 @@ export class Database {
 
     this.beginStmt = this.sql.prepare("BEGIN;");
     this.commitStmt = this.sql.prepare("END;");
+    this.rollbackStmt = this.sql.prepare("ROLLBACK;");
   }
 
   prepare = (source: string) => this.sql.prepare(source);
@@ -31,6 +33,13 @@ export class Database {
    */
   begin() {
     this.beginStmt.run();
+  }
+
+  /**
+   * Rollback a Transaction
+   */
+  rollback() {
+    this.rollbackStmt.run();
   }
 
   /**
