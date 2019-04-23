@@ -2,6 +2,7 @@ import {log} from "./log";
 import {Database} from "./Database";
 import {PopulateRequest} from "./PopulateRequest";
 import {BeginJudgingRequest} from "./BeginJudgingRequest";
+import {GlobalStatusRequest} from "./GlobalStatusRequest";
 
 export class EventHandler {
   simpleHandlers: Array<(data: object) => object | null>;
@@ -9,10 +10,12 @@ export class EventHandler {
   constructor(private db: Database) {
     let populateRequest = new PopulateRequest(db);
     let beginJudgingRequest = new BeginJudgingRequest(db);
+    let globalStatusRequest = new GlobalStatusRequest(db);
 
     this.simpleHandlers = [
       populateRequest.handler.bind(populateRequest),
-      beginJudgingRequest.handler.bind(beginJudgingRequest)
+      beginJudgingRequest.handler.bind(beginJudgingRequest),
+      globalStatusRequest.handler.bind(globalStatusRequest)
     ];
   }
 
