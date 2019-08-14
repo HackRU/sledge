@@ -2,21 +2,16 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "noImplicitReturns": true,
-
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "es5",
+    "module": "commonjs",
     "jsx": "react",
-    "esModuleInterop": true,
-
     "baseUrl": ".",
+    "outDir": "./lib",
+    "sourceMap": true,
     "paths": {
-      "lib/*": [ "src/*" ],
       "*": [ "node_modules/types/*", "node_modules/*" ]
-    },
-
-    "lib": ["es2018", "dom"],
-
-    "incremental": true
+    }
   },
   "include": [
     "src/**/*"

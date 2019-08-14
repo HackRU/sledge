@@ -17,8 +17,8 @@
  */
 import {resolve} from "path";
 
-import {Server} from "./server/Server";
-import {VERSION} from "./version";
+import {Server} from "./Server";
+import {VERSION} from "../version";
 
 const DEFAULT_PORT = 8080;
 

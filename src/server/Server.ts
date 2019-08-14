@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import {Server as HttpServer} from "http";
-import {default as express, Express} from "express";
+import * as express from "express";
 
 import {log} from "./log";
 
@@ -27,7 +27,7 @@ import {EventHandler} from "./EventHandler";
 export class Server {
   private isInitialized: boolean;
 
-  private express: Express;
+  private express: express.Express;
   private http: HttpServer;
 
   private db: Database;

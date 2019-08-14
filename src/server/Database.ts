@@ -1,16 +1,14 @@
 import {mkdirSync, readFileSync} from "fs";
 import {resolve} from "path";
 
-import {
-  default as Sqlite3,
-} from "better-sqlite3";
-import integer from "integer";
+import * as Sqlite3 from "better-sqlite3";
+import * as integer from "integer";
 
 /**
  * Manages persistent data
  */
 export class Database {
-  private sql: Sqlite3;
+  private sql: any;
 
   private beginStmt;
   private commitStmt;
@@ -26,7 +24,12 @@ export class Database {
     this.rollbackStmt = this.sql.prepare("ROLLBACK;");
   }
 
-  prepare = (source: string) => this.sql.prepare(source);
+  /**
+   * Create a Statement
+   */
+  prepare(source: string): Statement {
+    return this.sql.prepare(source);
+  }
 
   /**
    * Start a Transaction
@@ -95,4 +98,7 @@ export class Database {
         .run();
     }
   }
+}
+
+export interface Statement {
 }

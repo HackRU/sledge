@@ -1,9 +1,5 @@
 import {Server as HttpServer} from "http";
-import {
-  default as socketio,
-  Server as SioServer,
-  Socket as SioSocket
-} from "socket.io";
+import * as socketio from "socket.io";
 
 import {log} from "./log";
 
@@ -20,14 +16,14 @@ export type RecieveHandler = (data: object) => Promise<object>;
  * are server to client and are always sent to everyone.
  */
 export class SocketAttacher {
-  private sio: SioServer;
+  private sio;
 
   constructor(private server: HttpServer, private onRecieve: RecieveHandler) {
     this.sio = socketio(server);
     this.sio.on("connect", s => this.connectHandler(s));
   }
 
-  connectHandler(socket: SioSocket) {
+  connectHandler(socket) {
     socket.on("request", data => {
       if (typeof data !== "object") {
         log(`WARN: Got request event with type ${typeof data}`);
