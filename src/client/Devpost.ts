@@ -1,5 +1,8 @@
 import {parse} from "papaparse";
 
+/**
+ * Parses a Devpost CSV
+ */
 export function parseDevpostData(csvContent: string) {
   let csv = parse(csvContent, {delimiter: ","});
   if (csv.errors.length > 0 || csv.data.length < 1) {

@@ -6,9 +6,9 @@ import {
   Button
 } from "reactstrap";
 
-import {TextSubmit} from "./TextSubmit";
-import {Socket} from "./Socket";
-import {parseDevpostData, TEST_CSV_URL} from "./Devpost";
+import {TextSubmit} from "../components/TextSubmit";
+import {Socket} from "../Socket";
+import {parseDevpostData, TEST_CSV_URL} from "../Devpost";
 
 export class DevpostApp extends React.Component<any,any> {
   socket: Socket;
@@ -24,13 +24,13 @@ export class DevpostApp extends React.Component<any,any> {
     };
   }
 
-  onChanged(csv) {
+  private onChanged(csv) {
     let parsed = parseDevpostData(csv);
     let json = JSON.stringify(parsed);
 
     if (!parsed.error) {
 
-      localStorage["setup"] = json;
+      localStorage["setup"] = JSON.stringify(convertDevpostToSetupData(parsed));
 
       this.setState({
         result: json,
@@ -44,14 +44,14 @@ export class DevpostApp extends React.Component<any,any> {
     }
   }
 
-  loadTestData() {
+  private loadTestData() {
     let xhr = new XMLHttpRequest();
     xhr.addEventListener("load", () => {
       let parsed = parseDevpostData(xhr.responseText);
       let json = JSON.stringify(parsed);
 
       if (!parsed.error) {
-        localStorage["setup"] = json;
+        localStorage["setup"] = JSON.stringify(convertDevpostToSetupData(parsed));
         this.setState({
           result: json,
           status: `Successfully loaded from ${TEST_CSV_URL}`
@@ -75,7 +75,7 @@ export class DevpostApp extends React.Component<any,any> {
   render() {
     return (
       <Container id="DevpostApp">
-        <h1>{`Use Submission Data from Devpost`}</h1>
+        <h1>{`Load Submission Data from Devpost`}</h1>
 
         <Button
           onClick={() => this.loadTestData()}
@@ -94,4 +94,15 @@ export class DevpostApp extends React.Component<any,any> {
       </Container>
     );
   }
+}
+
+function convertDevpostToSetupData(devpostData) {
+  return {
+    prizes: devpostData.prizes,
+    submissions: devpostData.submissions.map(d => ({
+      name: d.name,
+      location: d.table,
+      prizes: d.prizes
+    }))
+  };
 }

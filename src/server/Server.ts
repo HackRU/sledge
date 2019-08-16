@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import {Server as HttpServer} from "http";
-import * as express from "express";
+import express from "express";
 
 import {log} from "./log";
 

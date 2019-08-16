@@ -1,5 +1,5 @@
 import {Server as HttpServer} from "http";
-import * as socketio from "socket.io";
+import socketio from "socket.io";
 
 import {log} from "./log";
 

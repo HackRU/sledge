@@ -7,9 +7,9 @@ import {
   Button
 } from "reactstrap";
 
-import {catchOnly} from "../shared/util";
+import {catchOnly} from "../../shared/util";
 
-import {Socket} from "./Socket";
+import {Socket} from "../Socket";
 
 export class DebugApp extends React.Component<any,any> {
   socket: Socket;

@@ -1,8 +1,8 @@
 import {mkdirSync, readFileSync} from "fs";
 import {resolve} from "path";
 
-import * as Sqlite3 from "better-sqlite3";
-import * as integer from "integer";
+import Sqlite3 from "better-sqlite3";
+import integer from "integer";
 
 /**
  * Manages persistent data
