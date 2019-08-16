@@ -5,6 +5,8 @@ import integer from "integer";
 import {Database} from "./Database";
 import {runMany} from "./DatabaseHelpers";
 
+import {PopulateRequestData, checkPopulateRequestData} from "../shared/PopulateRequestTypes";
+
 export class PopulateRequest {
   // Sql statements
   selectPhase;
@@ -51,6 +53,14 @@ export class PopulateRequest {
       };
     }
 
+    if (!checkPopulateRequestData(data)) {
+      this.db.commit();
+
+      return {
+        error: "Recieved bad data for request"
+      };
+    }
+
     // Insert submissions, judges, categories and prizes
     let submissionIds = runMany(this.insertSubmission, data["submissions"]);
     let judgeIds = runMany(this.insertJudge, data["judges"]);
@@ -63,8 +73,16 @@ export class PopulateRequest {
       submissionId: submissionIds[sp["submission"]],
       prizeId: prizeIds[sp["prize"]]
     }));
-    let submissionPrizeIds =
-      runMany(this.insertSubmissionPrize, submissionPrizeRows);
+    for (let sp of submissionPrizeRows) {
+      if (typeof sp["submissionId"] !== "number" || typeof sp["prizeId"] !== "number") {
+        this.db.rollback();
+
+        return {
+          error: "Bad data, probably out of bounds submission or prize index"
+        };
+      }
+    }
+    let submissionPrizeIds = runMany(this.insertSubmissionPrize, submissionPrizeRows);
 
     // Change phase to 2
     this.setPhase.run({

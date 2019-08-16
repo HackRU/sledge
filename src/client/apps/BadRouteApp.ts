@@ -5,7 +5,7 @@ import { BadRoutePage } from "../components/BadRoutePage";
 /**
  * This will render when we get a route that doesn't exist
  */
-export class BadRouteApp extends React.Component {
+export class BadRouteApp extends React.Component<any, any> {
   pageHash: string;
 
   constructor(props) {
@@ -17,7 +17,7 @@ export class BadRouteApp extends React.Component {
     return React.createElement(
       BadRoutePage,
       {
-        currentHash: this.pageHash,
+        currentHash: this.props.originalHash,
         pages
       }
     );

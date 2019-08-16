@@ -26,11 +26,13 @@ import {pages} from "./directory";
  */
 export class Router {
   hash: string;
+  originalHash: string;
   container: HTMLElement;
   page: any;
 
   start() {
     this.hash = window.location.hash;
+    this.originalHash = this.hash;
     this.container = document.getElementById("app");
     this.page = pages.find(p => p.match.test(this.hash));
 
@@ -65,8 +67,9 @@ export class Router {
    * created by them.
    */
   renderReactApp(app: any) {
-    let topElement = createElement(app);
+    let topElement = createElement(app, {
+      originalHash: this.originalHash
+    });
     render(topElement, this.container);
   }
-
 }

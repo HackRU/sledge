@@ -2,6 +2,9 @@ import io from "socket.io-client";
 
 export type UpdateHandler = (data: object) => void;
 
+/**
+ * Communicates with the Sledge server
+ */
 export class Socket {
   updateHandlers: Array<UpdateHandler>;
   socket: SocketIOClient.Socket;
@@ -16,19 +19,23 @@ export class Socket {
     this.socket.on("response", data => this.handleResponse(data));
   }
 
-  handleUpdate(data: object) {
+  private handleUpdate(data: object) {
     for (let h of this.updateHandlers) {
       h(data);
     }
   }
 
-  handleResponse(data: object) {
+  private handleResponse(data: object) {
     let returnId = data["returnId"];
     let resolver = this.resolvers.get(returnId);
     resolver(data);
     this.resolvers.delete(returnId);
   }
 
+  /**
+   * Sends a request to the server and returns a Promise giving
+   * the response. Before sending the returnId is set.
+   */
   sendRequest(data: object): Promise<object> {
     let returnId = generateUniqueReturnId();
     let wireData = {
@@ -58,7 +65,12 @@ export class Socket {
   }
 }
 
-function generateUniqueReturnId() {
+/**
+ * Generates a unique string used as the returnId of a request.
+ *
+ * This is a combination of time and randomness.
+ */
+function generateUniqueReturnId(): string {
   let timePart = Date.now().toString(16).slice(-6);
   let randomPart = Math.random().toString(16).slice(-6);
 

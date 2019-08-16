@@ -4,6 +4,8 @@ import {PopulatePage, PopulatePageProps} from "../components/PopulatePage";
 import {range} from "../../shared/util";
 import {Socket} from "../Socket";
 
+import {PopulateRequestData} from "../../shared/PopulateRequestTypes";
+
 export class PopulateApp extends React.Component<any, PopulateState> {
   socket: Socket;
 
@@ -138,14 +140,16 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       ), []
     );
 
-    this.socket.sendRequest({
+    let requestData: PopulateRequestData = {
       requestName: "REQUEST_POPULATE",
       submissions,
       judges,
       categories,
       prizes,
       submissionPrizes
-    }).then(res => {
+    }
+
+    this.socket.sendRequest(requestData).then(res => {
       this.setState({
         response: JSON.stringify(res)
       });

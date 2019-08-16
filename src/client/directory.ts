@@ -11,20 +11,20 @@ export interface PageListing {
 };
 
 export const pages: Array<PageListing> = [{
-  match: /^#admin\/debug$/,
-  canonical: "#admin/debug",
+  match: /^#debug($|\/)/,
+  canonical: "#debug",
   component: DebugApp
 }, {
-  match: /^#setup\/populate(\/|$)/,
-  canonical: "#setup/populate",
+  match: /^#populate(\/|$)/,
+  canonical: "#populate",
   component: PopulateApp
 }, {
-  match: /^#setup\/devpost(\/|$)/,
-  canonical: "#setup/devpost",
+  match: /^#devpost(\/|$)/,
+  canonical: "#devpost",
   component: DevpostApp
 }, {
-  match: /^#judge\/login(\/|$)/,
-  canonical: "#judge/login",
+  match: /^#login(\/|$)/,
+  canonical: "#login",
   component: LoginApp,
 }, {
   // Default

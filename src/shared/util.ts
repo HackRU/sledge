@@ -19,3 +19,9 @@ export function range(to: number): Array<number> {
   }
   return result;
 }
+
+export function isArray(data: any) {
+  return (
+    typeof data === "object" && data.constructor === Array
+  );
+}
