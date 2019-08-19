@@ -25,3 +25,18 @@ export function isArray(data: any) {
     typeof data === "object" && data.constructor === Array
   );
 }
+
+/**
+ * Calculates a number modulo another number. Modulus must be postive.[A
+ *
+ * This is necessary because Javascript's "%" operator doesn't perform the modulo correctly if num<0.
+ */
+export function modulo(num: number, modulus: number) {
+  if (modulus <= 0) {
+    throw new Error("modulus must be positive");
+  } else if (modulus === Number.POSITIVE_INFINITY) {
+    return Number.isFinite(num) ? num : Number.NaN;
+  } else {
+    return ((num % modulus) + modulus) % modulus;
+  }
+}

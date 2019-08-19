@@ -7,6 +7,7 @@ import {PopulateRequest} from "./PopulateRequest";
 import {BeginJudgingRequest} from "./BeginJudgingRequest";
 import {GlobalStatusRequest} from "./GlobalStatusRequest";
 import {GetJudgesRequest} from "./GetJudgesRequest";
+import {GetAssignmentRequest} from "./GetAssignmentRequest";
 
 export class EventHandler {
   handlers: Array<RequestHandler>;
@@ -18,7 +19,8 @@ export class EventHandler {
       new PopulateRequest(db),
       new BeginJudgingRequest(db),
       new GlobalStatusRequest(db),
-      new GetJudgesRequest(db)
+      new GetJudgesRequest(db),
+      new GetAssignmentRequest(db)
     ];
   }
 

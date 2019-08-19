@@ -26,13 +26,6 @@ export class BeginJudgingRequest implements RequestHandler {
       "SELECT COUNT() as count FROM Category;");
     this.getSubmissionsByLocations = db.prepare(
       "SELECT id, name, location FROM Submission ORDER BY LOCATION;");
-    this.insertInitialAssignment = db.prepare(
-      "INSERT INTO "
-        +"Assignment "
-          +"(judgeId, priority, prizeId, type, isComplete, ratingSubmissionId) "
-        +"VALUES "
-          +"($judgeId, 1, (SELECT id FROM Prize WHERE isOverall=1), 1, 0, "
-            +"$submissionId);");
   }
 
   canHandle(data: object): boolean {
@@ -44,20 +37,15 @@ export class BeginJudgingRequest implements RequestHandler {
   }
 
   syncHandle(data: object): object {
-    if (data["requestName"] !== "REQUEST_BEGIN_JUDGING") {
-      return null;
+    // We can only begin judging in phase 2
+    let phase = this.selectPhase.get().phase;
+    if (phase !== 1) {
+      return {
+        error: "Begin Judging can only be sent in setup phase"
+      };
     }
 
     this.db.begin();
-
-    // We can only begin judging in phase 2
-    let phase = this.selectPhase.get().phase;
-    if (phase !== 2) {
-      this.db.rollback();
-      return {
-        error: "Begin Judging can only be sent in phase 2"
-      };
-    }
 
     // Ensure certain invariants are met
     let numSubmissions = this.countSubmissions.get().count;
@@ -78,21 +66,20 @@ export class BeginJudgingRequest implements RequestHandler {
 
     // Ensure all locations are unique positive integers
     for (let i=0;i<submissions.length;i++) {
-      let unique = i === 0 ||
-        submissions[i].location !== submissions[i-1].location;
+      let unique = i === 0 || submissions[i].location !== submissions[i-1].location;
       if (!unique || submissions[i].location < 1) {
         this.db.rollback();
         return { error: "Locations must be unique positive integers" };
       }
     }
 
-    // We always begin by giving each judge a single submission, spread out
-    // across the locations.
-    let spread = Math.floor(numSubmissions / numJudges);
-    runMany(this.insertInitialAssignment, range(numJudges).map(j => ({
-      judgeId: j+1,
-      submissionId: submissions[j*spread].id
-    })));
+    // Give each judge an anchor location
+    let judgeAnchors: Array<number> = [];
+    for (let i=0;i<numJudges;i++) {
+      let anchorIndex = Math.floor(i*numSubmissions/numJudges);
+      judgeAnchors.push(submissions[anchorIndex].location);
+    }
+    runMany(this.db.prepare("UPDATE Judge SET anchor=? WHERE id=?;"), judgeAnchors.map((loc, j) => [loc, j+1]));
 
     // Change phase to 2
     this.setPhase.run({

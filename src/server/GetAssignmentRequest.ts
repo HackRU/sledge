@@ -1,0 +1,151 @@
+import {RequestHandler} from "./Request";
+import {Database, Statement} from "./Database";
+import {modulo} from "../shared/util";
+
+export class GetAssignmentRequest implements RequestHandler {
+  constructor(private db: Database) {
+  }
+
+  canHandle(data: object) {
+    return data["requestName"] === "REQUEST_GET_ASSIGNMENT";
+  }
+
+  handle(data: object) {
+    return Promise.resolve(this.syncHandle(data));
+  }
+
+  getJudgeInfo(judgeId: number): {id: number, name: string, anchor: number} | null {
+    return this.db.prepare(
+      "SELECT id, name, anchor FROM Judge WHERE id=?;"
+    ).get([judgeId]);
+  }
+
+  getNextActiveAssignment(judgeId: number): number | null {
+    const row = this.db.prepare(
+      "SELECT id FROM Assignment WHERE active=1 AND judgeId=? ORDER BY priority ASC;"
+    ).get([judgeId]);
+    if (row) {
+      return row.id;
+    } else {
+      return null;
+    }
+  }
+
+  getNextAssignmentPriority(judgeId: number): number {
+    const highestPriorityAssignment = this.db.prepare(
+      "SELECT priority FROM Assignment WHERE judgeId=? ORDER BY priority DESC;"
+    ).get(judgeId);
+
+    if (highestPriorityAssignment) {
+      return highestPriorityAssignment.priority;
+    } else {
+      return 1;
+    }
+  }
+
+  createRatingAssignment(judgeId: number, anchor: number): number | null {
+    let seenSubmissions: Set<number> = new Set();
+    const seenSubmissionsStmt = this.db.prepare(
+      "SELECT Submission.id AS id "+
+        "FROM RatingAssignment "+
+        "LEFT JOIN Assignment ON RatingAssignment.assignmentId = Assignment.id "+
+        "LEFT JOIN Submission ON RatingAssignment.submissionId = Submission.id "+
+        "WHERE Assignment.judgeId = ?;"
+    );
+    for (let submission of seenSubmissionsStmt.iterate([judgeId])) {
+      seenSubmissions.add(submission.id);
+    }
+
+    const submissionLocationsStmt = this.db.prepare(
+      "SELECT id, location FROM Submission;"
+    );
+
+    let closestSubmissionId = 0;
+    let closestSubmissionDistance = Infinity;
+    for (let submission of submissionLocationsStmt.iterate()) {
+      const distance = modulo(submission.location - anchor, 10000);
+      const seen = seenSubmissions.has(submission.id);
+
+      if (!seen && distance < closestSubmissionDistance) {
+        closestSubmissionId = submission.id;
+        closestSubmissionDistance = distance;
+      }
+    }
+
+    if (!closestSubmissionId) {
+      return null;
+    }
+
+    const priority = this.getNextAssignmentPriority(judgeId);
+    const newAssignmentId = this.db.prepare(
+      "INSERT INTO Assignment(judgeId, priority, type, active) "+
+        "VALUES(?, ?, 1, 1);"
+    ).run(judgeId, priority).lastInsertRowid;
+    this.db.prepare(
+      "INSERT INTO RatingAssignment(assignmentId, submissionId) "+
+        "VALUES(?, ?);"
+    ).run(newAssignmentId, closestSubmissionId);
+
+    return newAssignmentId as number;
+  }
+
+  getAssignmentDetails(assignmentId: number): any {
+    const assignment = this.db.prepare(
+      "SELECT id, judgeId, priority, type, active FROM Assignment WHERE id=?;"
+    ).get(assignmentId);
+
+    if (!assignment) {
+      return null;
+    }
+
+    const ratingAssignment = this.db.prepare(
+      "SELECT id, assignmentId, submissionId FROM RatingAssignment WHERE assignmentId=?;"
+    ).get(assignmentId);
+
+    const submission = this.db.prepare(
+      "SELECT id, name, location FROM Submission WHERE id=?;"
+    ).get(ratingAssignment.submissionId);
+
+    return {
+      id: assignment.id,
+      type: assignment.type,
+      isActive: assignment.active,
+
+      submissionName: submission.name,
+      submissionId: submission.id,
+      submissionLocation: submission.location
+    };
+  }
+
+  syncHandle(data: object): object {
+    if (!Number.isInteger(data["judgeId"])) {
+      return {
+        error: "Recieved bad data, judgeId must be an integer"
+      };
+    }
+
+    const judge = this.getJudgeInfo(data["judgeId"]);
+    if (!judge) {
+      return {
+        error: `No Judge with id ${data["judgeId"]}`
+      };
+    }
+
+    const currentActiveAssignment = this.getNextActiveAssignment(judge.id);
+    if (currentActiveAssignment) {
+      return this.getAssignmentDetails(currentActiveAssignment);
+    }
+
+    this.db.begin();
+    const newAssignmentId = this.createRatingAssignment(judge.id, judge.anchor);
+    this.db.commit();
+
+    if (!newAssignmentId) {
+      return {
+        error: "NYI: Out of Submissions"
+      };
+    }
+
+    return this.getAssignmentDetails(newAssignmentId);
+  }
+}

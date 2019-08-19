@@ -44,7 +44,9 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       } else if (statusRes.phase === 1) {
         this.setState({subPage: "JUDGE_SUBPAGE_SETUP"});
       } else if (statusRes.phase === 2) {
-        // TODO
+        this.socket.sendRequest({requestName: "REQUEST_GET_ASSIGNMENT", judgeId: this.judgeId}).then(assignment => {
+          console.log(assignment)
+        });
       } else if (statusRes.phase === 3) {
         this.setState({subPage: "JUDGE_SUBPAGE_END"});
       }

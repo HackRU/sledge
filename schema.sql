@@ -22,6 +22,8 @@
 -- Additionally we avoid deleting rows by adding additional columns which marks
 -- what otherwise would be marked by nonexistence.
 
+BEGIN;
+
 -- The Status table is used to store the overall state of Sledge. Should always
 -- have at least one entry.
 CREATE TABLE IF NOT EXISTs Status (
@@ -32,7 +34,9 @@ CREATE TABLE IF NOT EXISTs Status (
   timestamp INTEGER NOT NULL,
 
   -- Current Phase
-  phase INTEGER NOT NULL
+  phase INTEGER NOT NULL,
+
+  CHECK(id=1)
 );
 
 -- A Submission is something that needs to be judged. All submissions are
@@ -55,7 +59,9 @@ CREATE TABLE IF NOT EXISTS Judge (
   id INTEGER NOT NULL PRIMARY KEY,
 
   -- Name of the Judge, so they can differentiate themselves from other judges
-  name TEXT NOT NULL
+  name TEXT NOT NULL,
+
+  anchor INTEGER
 );
 
 -- A Prize is a specific item a Submission is eligible to win
@@ -113,36 +119,23 @@ CREATE TABLE IF NOT EXISTS Assignment (
   -- assignments
   priority INTEGER NOT NULL,
 
-  -- Which prize the judge is rating based on
-  prizeId INTEGER NOT NULL,
-
-  -- An assignment can be a numeric rating (1) or a comparative ranking (2).
-  -- Rating assignments are based on Categories and uses the Rating table, while
-  -- Ranking ranks multiple hacks and uses the Ranking table.  Rating
-  -- assignments are only valid when prizeId references the overall prize.
   type INTEGER NOT NULL,
 
-  -- Whether or not the assignment has been completed. Is 1 if completed,
-  -- otherwise 0. A completed assignment should never become uncompleted.
-  isComplete INTEGER NOT NULL,
+  active INTEGER NOT NULL,
 
-  -- The ratingSubmissionId is NULL if type is 2, otherise it references the
-  -- submission to be rated.
-  ratingSubmissionId INTEGER,
-
-  -- The rankingCount is NULL if type is 1, otherwise it is the number of
-  -- submissions to be ranked (ie, 3 if the judge must give the top 3
-  -- submissions).
-  rankingCount INTEGER,
-
-  CHECK(
-    (type=1 AND ratingSubmissionId NOTNULL AND rankingCount ISNULL) OR
-    (type=2 AND ratingSubmissionId ISNULL AND rankingCount NOTNULL)
-  ),
   FOREIGN KEY(judgeId) REFERENCES Judge(id),
-  FOREIGN KEY(prizeId) REFERENCES Prize(id),
-  FOREIGN KEY(ratingSubmissionId) REFERENCES Submission(id),
   UNIQUE(judgeId, priority)
+);
+
+CREATE TABLE IF NOT EXISTS RatingAssignment (
+  id INTEGER NOT NULL PRIMARY KEY,
+
+  assignmentId INTEGER NOT NULL,
+  submissionId INTEGER NOT NULL,
+
+  FOREIGN KEY(assignmentId) REFERENCES Assignment(id),
+  FOREIGN KEY(submissionId) REFERENCES Submission(id),
+  UNIQUE(assignmentId)
 );
 
 -- A rating for a particular assignment and category. Generally, for every rated
@@ -150,10 +143,7 @@ CREATE TABLE IF NOT EXISTS Assignment (
 CREATE TABLE IF NOT EXISTS Rating (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- References the assignment to complete this rating for
-  assignmentId INTEGER NOT NULL,
-
-  -- References the category to complete this rating for
+  ratingAssignmentId INTEGER NOT NULL,
   categoryId INTEGER NOT NULL,
 
   -- A number -1 to 5 indicating a judge's score or the current rating state. A
@@ -163,9 +153,9 @@ CREATE TABLE IF NOT EXISTS Rating (
   -- will not be taken into account for weighting purposes.
   score INTEGER NOT NULL,
 
-  FOREIGN KEY(assignmentId) REFERENCES Assignment(id),
+  FOREIGN KEY(ratingAssignmentId) REFERENCES RatingAssignmentId(id),
   FOREIGN KEY(categoryId) REFERENCES Category(id),
-  UNIQUE(assignmentId, categoryId)
+  UNIQUE(ratingAssignmentId, categoryId)
 );
 
 -- A ranking for a particular assignment and submission. For a ranked assignment
@@ -183,3 +173,5 @@ CREATE TABLE IF NOT EXISTS Ranking (
   -- is unranked and 1 or greater is the ranking where lower is better
   rank INTEGER NOT NULL
 );
+
+COMMIT;

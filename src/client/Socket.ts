@@ -52,8 +52,10 @@ export class Socket {
   private handleResponse(data: object) {
     let returnId = data["returnId"];
     let resolver = this.resolvers.get(returnId);
-    resolver(data);
-    this.resolvers.delete(returnId);
+    if (resolver) {
+      resolver(data);
+      this.resolvers.delete(returnId);
+    }
   }
 
   /**

@@ -100,5 +100,4 @@ export class Database {
   }
 }
 
-export interface Statement {
-}
+export type Statement = Sqlite3.Statement;
