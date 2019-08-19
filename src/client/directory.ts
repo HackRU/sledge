@@ -3,6 +3,7 @@ import {DebugApp} from "./apps/DebugApp";
 import {PopulateApp} from "./apps/PopulateApp";
 import {DevpostApp} from "./apps/DevpostApp";
 import {LoginApp} from "./apps/LoginApp";
+import {JudgeApp} from "./apps/JudgeApp";
 
 export interface PageListing {
   match: RegExp;
@@ -26,6 +27,10 @@ export const pages: Array<PageListing> = [{
   match: /^#login(\/|$)/,
   canonical: "#login",
   component: LoginApp,
+}, {
+  match: /^#judge(\/|$)/,
+  canonical: "#judge",
+  component: JudgeApp
 }, {
   // Default
   match: /.*/,

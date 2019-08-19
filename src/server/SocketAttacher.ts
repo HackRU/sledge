@@ -16,29 +16,38 @@ export type RecieveHandler = (data: object) => Promise<object>;
  * are server to client and are always sent to everyone.
  */
 export class SocketAttacher {
-  private sio;
+  private sio: any;
+  private requestHandler: (data: object, client: string) => void;
 
-  constructor(private server: HttpServer, private onRecieve: RecieveHandler) {
+  constructor(server: HttpServer) {
     this.sio = socketio(server);
-    this.sio.on("connect", s => this.connectHandler(s));
+    this.sio.on("connect", (s: any) => this.connectHandler(s));
   }
 
-  connectHandler(socket) {
-    socket.on("request", data => {
+  setRequestHandler(newHandler: (data: object, client: string) => void) {
+    this.requestHandler = newHandler;
+  }
+
+  connectHandler(socket: any) {
+    socket.on("request", (data: any) => {
       if (typeof data !== "object") {
-        log(`WARN: Got request event with type ${typeof data}`);
+        log(`WARN: Got request event with type ${typeof data}. Ignoring.`);
+        return;
       }
 
-      this.onRecieve(data).then(res => {
-        socket.emit("response", {
-          ...res,
-          returnId: data["returnId"]
-        });
-      });
+      this.requestHandler(data, socket.sid);
     });
   }
 
   sendUpdate(data: object) {
     this.sio.emit("update",  data);
+  }
+
+  sendResponse(data: object, client: string) {
+    if (!client) {
+      this.sio.emit("response", data);
+    } else {
+      this.sio.to(client).emit("response", data);
+    }
   }
 }

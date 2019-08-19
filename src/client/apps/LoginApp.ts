@@ -16,7 +16,7 @@ export class LoginApp extends React.Component<any,any> {
 
     this.socket = new Socket();
     this.socket.sendRequest({
-      requestName: "GET_JUDGES"
+      requestName: "REQUEST_GET_JUDGES"
     }).then(res => {
       this.setState({
         judges: res["judges"],
@@ -27,6 +27,7 @@ export class LoginApp extends React.Component<any,any> {
 
   selectJudge(judgeId: number) {
     localStorage["judgeId"] = judgeId.toString();
+    window.location.hash = "#judge";
   }
 
   getPageProps(): LoginPageProps {

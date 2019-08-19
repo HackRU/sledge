@@ -31,10 +31,7 @@ CREATE TABLE IF NOT EXISTs Status (
   -- the latest timestamp is valid.
   timestamp INTEGER NOT NULL,
 
-  -- At any moment Sledge can be in one of three phases
-  --    1 - Setup
-  --    2 - Collection
-  --    3 - Results
+  -- Current Phase
   phase INTEGER NOT NULL
 );
 

@@ -1,27 +1,51 @@
 import io from "socket.io-client";
 
 export type UpdateHandler = (data: object) => void;
+export type ConnectionHandler = (socketioEventName: string) => void;
 
 /**
  * Communicates with the Sledge server
  */
 export class Socket {
   updateHandlers: Array<UpdateHandler>;
+  connectionHandlers: Array<ConnectionHandler>;
   socket: SocketIOClient.Socket;
   resolvers: Map<string, (data: object) => void>;
 
   constructor() {
     this.updateHandlers = [];
+    this.connectionHandlers = [];
     this.resolvers = new Map();
 
     this.socket = io(document.location.origin);
     this.socket.on("update", data => this.handleUpdate(data));
     this.socket.on("response", data => this.handleResponse(data));
+
+    [
+      "connect",
+      "connect_error",
+      "connect_timeout",
+      "error",
+      "disconnect",
+      "reconnect",
+      "reconnect_attempt",
+      "reconnecting",
+      "reconnect_error",
+      "reconnect_failed"
+    ].forEach(
+      evtName => this.socket.on(evtName, () => this.handleConnection(evtName))
+    );
   }
 
   private handleUpdate(data: object) {
     for (let h of this.updateHandlers) {
       h(data);
+    }
+  }
+
+  private handleConnection(eventName: string) {
+    for (let h of this.connectionHandlers) {
+      h(eventName);
     }
   }
 
@@ -62,6 +86,10 @@ export class Socket {
 
   onUpdate(handler: UpdateHandler) {
     this.updateHandlers.push(handler);
+  }
+
+  onConnectionEvent(handler: ConnectionHandler) {
+    this.connectionHandlers.push(handler);
   }
 }
 

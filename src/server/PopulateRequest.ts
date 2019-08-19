@@ -1,27 +1,23 @@
 import {log} from "./log";
 
-import integer from "integer";
-
 import {Database} from "./Database";
 import {runMany} from "./DatabaseHelpers";
+import {RequestHandler} from "./Request";
 
 import {PopulateRequestData, checkPopulateRequestData} from "../shared/PopulateRequestTypes";
 
-export class PopulateRequest {
+export class PopulateRequest implements RequestHandler {
   // Sql statements
-  selectPhase;
-  setPhase;
-  insertSubmission;
-  insertJudge;
-  insertCategory;
-  insertPrize;
-  insertSubmissionPrize;
+  selectPhase: any;
+  insertSubmission: any;
+  insertJudge: any;
+  insertCategory: any;
+  insertPrize: any;
+  insertSubmissionPrize: any;
 
   constructor(private db: Database) {
     this.selectPhase = db.prepare(
       "SELECT phase FROM Status ORDER BY timestamp DESC;");
-    this.setPhase = db.prepare(
-      "UPDATE Status SET phase=$phase,timestamp=$timestamp;");
     this.insertSubmission = db.prepare(
       "INSERT INTO Submission(name, location) VALUES($name, $location);");
     this.insertJudge = db.prepare(
@@ -35,7 +31,15 @@ export class PopulateRequest {
         +"VALUES($submissionId, $prizeId, 1);");
   }
 
-  handler(data: object): object | null {
+  canHandle(data: object): boolean {
+    return data["requestName"] === "REQUEST_POPULATE";
+  }
+
+  handle(data: object): Promise<object> {
+    return Promise.resolve(this.handleSync(data));
+  }
+
+  handleSync(data: object): object {
     if (data["requestName"] !== "REQUEST_POPULATE") {
       return null;
     }
@@ -83,12 +87,6 @@ export class PopulateRequest {
       }
     }
     let submissionPrizeIds = runMany(this.insertSubmissionPrize, submissionPrizeRows);
-
-    // Change phase to 2
-    this.setPhase.run({
-      phase: 2,
-      timestamp: integer(Date.now())
-    });
 
     this.db.commit();
 

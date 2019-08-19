@@ -23,6 +23,7 @@ import {log} from "./log";
 import {Database} from "./Database";
 import {SocketAttacher} from "./SocketAttacher";
 import {EventHandler} from "./EventHandler";
+import {ServerSocket} from "./ServerSocket";
 
 export class Server {
   private isInitialized: boolean;
@@ -33,6 +34,7 @@ export class Server {
   private db: Database;
   private eventHandler: EventHandler;
   private socketAttacher: SocketAttacher;
+  private serverSocket: ServerSocket;
 
   constructor(private port: number, private dataDir: string, private publicDir: string) {
     this.isInitialized = false;
@@ -49,8 +51,9 @@ export class Server {
     this.http = new HttpServer(this.express);
 
     this.db = new Database(this.dataDir);
-    this.eventHandler = new EventHandler(this.db);
-    this.socketAttacher = new SocketAttacher(this.http, this.eventHandler.getRequestHandler());
+    this.socketAttacher = new SocketAttacher(this.http);
+    this.serverSocket = new ServerSocket(this.socketAttacher);
+    this.eventHandler = new EventHandler(this.db, this.serverSocket);
 
     this.http.listen(this.port);
     log(`Running on :${this.port}`);

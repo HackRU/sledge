@@ -1,29 +1,24 @@
-import {log} from "./log";
-
-import integer from "integer";
-
 import {Database} from "./Database";
-import {runMany} from "./DatabaseHelpers";
+import {RequestHandler} from "./Request";
 
-export class GetJudgesRequest {
+export class GetJudgesRequest implements RequestHandler {
   // Sql statements
-  selectJudges;
+  selectJudges: any;
 
-  constructor(private db: Database) {
+  constructor(db: Database) {
     this.selectJudges = db.prepare(
       "SELECT id, name FROM Judge ORDER BY name;");
   }
 
-  handler(data: object): object | null {
-    if (data["requestName"] !== "GET_JUDGES") {
-      return null;
-    }
+  canHandle(data: object) {
+    return data["requestName"] === "REQUEST_GET_JUDGES";
+  }
 
+  handle(_: object): Promise<object> {
     let judges = this.selectJudges.all();
 
-    return {
-      success: true,
+    return Promise.resolve({
       judges
-    };
+    });
   }
 }

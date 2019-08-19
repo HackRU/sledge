@@ -1,30 +1,23 @@
-import {log} from "./log";
-
-import integer from "integer";
-
 import {Database} from "./Database";
+import {RequestHandler} from "./Request";
 
-export class GlobalStatusRequest {
-  selectPhase;
+export class GlobalStatusRequest implements RequestHandler {
+  selectPhase: any;
 
-  constructor(private db: Database) {
+  constructor(db: Database) {
     this.selectPhase = db.prepare(
       "SELECT phase FROM Status ORDER BY timestamp DESC;");
   }
 
-  handler(data: object): object | null {
-    if (data["requestName"] !== "REQUEST_GLOBAL_STATUS") {
-      return null;
-    }
+  canHandle(data: object) {
+    return data["requestName"] === "REQUEST_GLOBAL_STATUS";
+  }
 
-    this.db.begin();
-
+  handle(_: object): Promise<object> {
     let phase = this.selectPhase.get().phase;
 
-    this.db.commit();
-
-    return {
+    return Promise.resolve({
       phase
-    };
+    });
   }
 }

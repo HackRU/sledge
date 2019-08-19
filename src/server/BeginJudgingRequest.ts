@@ -1,20 +1,17 @@
-import {log} from "./log";
-
-import integer from "integer";
-
 import {range} from "../shared/util";
-
 import {Database} from "./Database";
 import {runMany} from "./DatabaseHelpers";
+import {RequestHandler} from "./Request";
+import integer from "integer";
 
-export class BeginJudgingRequest {
-  selectPhase;
-  setPhase;
-  countSubmissions;
-  countJudges;
-  countCategories;
-  getSubmissionsByLocations;
-  insertInitialAssignment;
+export class BeginJudgingRequest implements RequestHandler {
+  selectPhase: any;
+  setPhase: any;
+  countSubmissions: any;
+  countJudges: any;
+  countCategories: any;
+  getSubmissionsByLocations: any;
+  insertInitialAssignment: any;
 
   constructor(private db: Database) {
     this.selectPhase = db.prepare(
@@ -38,7 +35,15 @@ export class BeginJudgingRequest {
             +"$submissionId);");
   }
 
-  handler(data: object): object | null {
+  canHandle(data: object): boolean {
+    return data["requestName"] === "REQUEST_BEGIN_JUDGING";
+  }
+
+  handle(data: object): Promise<object> {
+    return Promise.resolve(this.syncHandle(data));
+  }
+
+  syncHandle(data: object): object {
     if (data["requestName"] !== "REQUEST_BEGIN_JUDGING") {
       return null;
     }
@@ -89,9 +94,9 @@ export class BeginJudgingRequest {
       submissionId: submissions[j*spread].id
     })));
 
-    // Change phase to 3
+    // Change phase to 2
     this.setPhase.run({
-      phase: 3,
+      phase: 2,
       timestamp: integer(Date.now())
     });
 

@@ -1,52 +1,46 @@
 import {log} from "./log";
 import {Database} from "./Database";
+import {RequestHandler} from "./Request";
+import {ServerSocket} from "./ServerSocket";
+
 import {PopulateRequest} from "./PopulateRequest";
 import {BeginJudgingRequest} from "./BeginJudgingRequest";
 import {GlobalStatusRequest} from "./GlobalStatusRequest";
 import {GetJudgesRequest} from "./GetJudgesRequest";
 
 export class EventHandler {
-  simpleHandlers: Array<(data: object) => object | null>;
+  handlers: Array<RequestHandler>;
 
-  constructor(private db: Database) {
-    let populateRequest = new PopulateRequest(db);
-    let beginJudgingRequest = new BeginJudgingRequest(db);
-    let globalStatusRequest = new GlobalStatusRequest(db);
-    let getJudgesRequest = new GetJudgesRequest(db);
+  constructor(private db: Database, socket: ServerSocket) {
+    socket.bindRequestHandler((data: object) => this.handleRequest(data));
 
-    this.simpleHandlers = [
-      populateRequest.handler.bind(populateRequest),
-      beginJudgingRequest.handler.bind(beginJudgingRequest),
-      globalStatusRequest.handler.bind(globalStatusRequest),
-      getJudgesRequest.handler.bind(getJudgesRequest)
+    this.handlers = [
+      new PopulateRequest(db),
+      new BeginJudgingRequest(db),
+      new GlobalStatusRequest(db),
+      new GetJudgesRequest(db)
     ];
   }
 
   handleRequest(request: object): Promise<object> {
-    let response = null;
+    const handler = this.handlers.find(handler => handler.canHandle(request));
 
-    for (let handler of this.simpleHandlers) {
-      response = handler(request);
-
-      if (response != null) {
-        break;
-      }
-    }
-
-    if (response == null) {
+    if (handler === undefined) {
       log("WARN: Got request with no handler %O", request);
 
-      response = {
-        error: "No handler would take your request"
-      };
-    } else if (response["error"] != null) {
-      log("WARN: Handler returned an error: %O", response);
+      return Promise.resolve({
+        error: "No handler would take your request."
+      });
     }
 
-    return Promise.resolve(response);
-  }
+    const responsePromise = handler.handle(request);
 
-  getRequestHandler(): (data: object) => Promise<object> {
-    return r => this.handleRequest(r);
+    responsePromise.then(response => {
+      if (response["error"]) {
+        log("WARN: Handler returned an error: %O", response);
+      }
+    });
+
+    return responsePromise;
   }
 }
