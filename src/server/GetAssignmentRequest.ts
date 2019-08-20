@@ -1,6 +1,7 @@
 import {RequestHandler} from "./Request";
 import {Database, Statement} from "./Database";
 import {modulo} from "../shared/util";
+import {GetAssignmentResponseData} from "../shared/GetAssignmentRequestTypes";
 
 export class GetAssignmentRequest implements RequestHandler {
   constructor(private db: Database) {
@@ -89,7 +90,7 @@ export class GetAssignmentRequest implements RequestHandler {
     return newAssignmentId as number;
   }
 
-  getAssignmentDetails(assignmentId: number): any {
+  getAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
     const assignment = this.db.prepare(
       "SELECT id, judgeId, priority, type, active FROM Assignment WHERE id=?;"
     ).get(assignmentId);
@@ -106,14 +107,22 @@ export class GetAssignmentRequest implements RequestHandler {
       "SELECT id, name, location FROM Submission WHERE id=?;"
     ).get(ratingAssignment.submissionId);
 
+    const categories = this.db.prepare(
+      "SELECT id, name FROM Category;"
+    ).all().map(({id, name}) => ({id, name}));
+
     return {
       id: assignment.id,
-      type: assignment.type,
-      isActive: assignment.active,
+      judgeId: assignment.judgeId,
+      assignmentType: assignment.type,
 
-      submissionName: submission.name,
-      submissionId: submission.id,
-      submissionLocation: submission.location
+      ratingAssignment: {
+        submissionId: submission.id,
+        submissionName: submission.name,
+        submissionLocation: submission.location,
+
+        categories
+      }
     };
   }
 

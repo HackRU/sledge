@@ -6,6 +6,16 @@ import {JudgePage, JudgePageProps} from "../components/JudgePage";
 import {ConnectionStatus} from "../JudgeTypes";
 import {GetJudgesResponseData} from "../../shared/GetJudgesRequestTypes";
 import {GlobalStatusResponseData} from "../../shared/GlobalStatusRequestTypes";
+import {
+  GetAssignmentResponseData,
+  RatingAssignment
+} from "../../shared/GetAssignmentRequestTypes";
+import {
+  PHASE_SETUP,
+  PHASE_COLLECTION,
+  PHASE_TALLY,
+  ASSIGNMENT_TYPE_RATING
+} from "../../shared/constants";
 
 export class JudgeApp extends React.Component<any, JudgeAppState> {
   socket: Socket;
@@ -39,16 +49,32 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       this.socket.sendRequest({requestName: "REQUEST_GLOBAL_STATUS"})
     ]).then(([judgesRes, statusRes]: [GetJudgesResponseData, GlobalStatusResponseData]) => {
       let myself = judgesRes.judges.find(judge => judge.id === this.judgeId);
-      if (myself === undefined) {
+      if (!myself) {
         this.setState({subPage: "JUDGE_SUBPAGE_BAD_CREDENTIALS"});
-      } else if (statusRes.phase === 1) {
+      } else if (statusRes.phase === PHASE_SETUP) {
         this.setState({subPage: "JUDGE_SUBPAGE_SETUP"});
-      } else if (statusRes.phase === 2) {
-        this.socket.sendRequest({requestName: "REQUEST_GET_ASSIGNMENT", judgeId: this.judgeId}).then(assignment => {
-          console.log(assignment)
-        });
-      } else if (statusRes.phase === 3) {
+      } else if (statusRes.phase === PHASE_COLLECTION) {
+        this.loadAssignment();
+      } else if (statusRes.phase === PHASE_TALLY) {
         this.setState({subPage: "JUDGE_SUBPAGE_END"});
+      } else {
+        throw new Error(`Unhandled phase ${statusRes.phase}`);
+      }
+    });
+  }
+
+  loadAssignment() {
+    this.socket.sendRequest({
+      requestName: "REQUEST_GET_ASSIGNMENT",
+      judgeId: this.judgeId
+    }).then((res: GetAssignmentResponseData) => {
+      if (res.assignmentType === ASSIGNMENT_TYPE_RATING) {
+        this.setState({
+          subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RATING",
+          ratingAssignment: res.ratingAssignment
+        });
+      } else {
+        throw new Error(`Unhandled assignment type ${res.assignmentType}`);
       }
     });
   }
@@ -57,6 +83,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     return {
       connectionStatus: this.state.connectionStatus,
       subPage: this.state.subPage,
+      ratingAssignment: this.state.ratingAssignment,
 
       onSegue: to => {window.location.hash = to;}
     };
@@ -74,4 +101,5 @@ interface JudgeAppState {
   connectionStatus: ConnectionStatus;
   judgeName?: string;
   subPage: string;
+  ratingAssignment?: RatingAssignment;
 }

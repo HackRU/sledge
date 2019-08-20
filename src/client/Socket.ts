@@ -53,6 +53,10 @@ export class Socket {
     let returnId = data["returnId"];
     let resolver = this.resolvers.get(returnId);
     if (resolver) {
+      if (data["error"]) {
+        console.error(`Response gave error: ${data["error"]}`);
+      }
+
       resolver(data);
       this.resolvers.delete(returnId);
     }

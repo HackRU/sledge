@@ -1,4 +1,5 @@
 import {isArray} from "./util";
+import {MAX_LOCATION} from "./constants";
 
 export interface PopulateRequestData {
   requestName: "REQUEST_POPULATE";
@@ -25,7 +26,8 @@ export function checkPopulateRequestData(data: any): boolean {
   for (let submission of data.submissions) {
     if (
       typeof submission.name !== "string" ||
-      typeof submission.location !== "number"
+      !Number.isInteger(submission.location) ||
+      submission.location <= 0 || submission.location > MAX_LOCATION
     ) {
       return false;
     }
