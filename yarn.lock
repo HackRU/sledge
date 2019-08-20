@@ -328,6 +328,14 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/reactstrap@^8.0.3":
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/@types/reactstrap/-/reactstrap-8.0.3.tgz#b0bcb3b8dcfcb02727b60f7c3a7f3a76d2ee8b9f"
+  integrity sha512-ztleh3D+Y5s5HfPpJSHwn+sqDNxXswDEvuiSaL+4eLDNIYaKpONXOv9F6fLNoRpbbDgf3m4awqoYZIv50W9vLw==
+  dependencies:
+    "@types/react" "*"
+    popper.js "^1.14.1"
+
 "@types/serve-static@*":
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.13.2.tgz#f5ac4d7a6420a99a6a45af4719f4dcd8cd907a48"
@@ -3480,7 +3488,7 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
-popper.js@^1.14.4, popper.js@^1.15.0:
+popper.js@^1.14.1, popper.js@^1.14.4, popper.js@^1.15.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.15.0.tgz#5560b99bbad7647e9faa475c6b8056621f5a4ff2"
   integrity sha512-w010cY1oCUmI+9KwwlWki+r5jxKfTFDVoadl7MSrIujHU5MJ5OR6HTDj6Xo8aoR/QsA56x8jKjA59qGH4ELtrA==

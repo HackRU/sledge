@@ -9,7 +9,7 @@ import {
   Button
 } from "reactstrap";
 import {HeaderWithConnectionStatus} from "./HeaderWithConnectionStatus";
-import {JudgePageAssignmentRating} from "./JudgePageAssignmentRating";
+import {JudgePageAssignmentRating, RatingAssignmentForm} from "./JudgePageAssignmentRating";
 
 import {ConnectionStatus} from "../JudgeTypes";
 import {RatingAssignment} from "../../shared/GetAssignmentRequestTypes";
@@ -31,7 +31,14 @@ export const JudgePage = (props: JudgePageProps) => (
         case "JUDGE_SUBPAGE_ENDED":
           return (<JudgePageEnded />);
         case "JUDGE_SUBPAGE_ASSIGNMENT_RATING":
-          return (<JudgePageAssignmentRating ratingAssignment={props.ratingAssignment} />);
+          return (
+            <JudgePageAssignmentRating
+              ratingAssignment={props.ratingAssignment}
+              ratingAssignmentForm={props.ratingAssignmentForm}
+              onAlterRatingAssignmentForm={props.onAlterRatingAssignmentForm}
+              onSubmit={props.onSubmitRatingAssignmentForm}
+            />
+          );
         default:
           throw new Error(`Unhandled Judge subpage ${props.subPage}`);
       }
@@ -42,7 +49,11 @@ export const JudgePage = (props: JudgePageProps) => (
 export interface JudgePageProps {
   connectionStatus: ConnectionStatus;
   subPage: string;
-  ratingAssignment?: RatingAssignment,
+
+  ratingAssignment?: RatingAssignment;
+  ratingAssignmentForm?: RatingAssignmentForm;
+  onAlterRatingAssignmentForm?: (f: (o: RatingAssignmentForm) => RatingAssignmentForm) => void;
+  onSubmitRatingAssignmentForm?: () => void;
 
   onSegue: (to: string) => void;
 }

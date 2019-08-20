@@ -6,6 +6,7 @@ import {JudgePage, JudgePageProps} from "../components/JudgePage";
 import {ConnectionStatus} from "../JudgeTypes";
 import {GetJudgesResponseData} from "../../shared/GetJudgesRequestTypes";
 import {GlobalStatusResponseData} from "../../shared/GlobalStatusRequestTypes";
+import {RatingAssignmentForm} from "../components/JudgePageAssignmentRating";
 import {
   GetAssignmentResponseData,
   RatingAssignment
@@ -71,7 +72,11 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       if (res.assignmentType === ASSIGNMENT_TYPE_RATING) {
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RATING",
-          ratingAssignment: res.ratingAssignment
+          ratingAssignment: res.ratingAssignment,
+          ratingAssignmentForm: {
+            noShow: false,
+            categoryRating: res.ratingAssignment.categories.map(x => 0)
+          }
         });
       } else {
         throw new Error(`Unhandled assignment type ${res.assignmentType}`);
@@ -84,8 +89,13 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       connectionStatus: this.state.connectionStatus,
       subPage: this.state.subPage,
       ratingAssignment: this.state.ratingAssignment,
+      ratingAssignmentForm: this.state.ratingAssignmentForm,
 
-      onSegue: to => {window.location.hash = to;}
+      onSegue: to => {window.location.hash = to;},
+      onAlterRatingAssignmentForm: f => {
+        this.setState(oldState => ({ratingAssignmentForm: f(oldState.ratingAssignmentForm)}))
+      },
+      onSubmitRatingAssignmentForm: () => alert("NYI")
     };
   }
 
@@ -101,5 +111,7 @@ interface JudgeAppState {
   connectionStatus: ConnectionStatus;
   judgeName?: string;
   subPage: string;
+
   ratingAssignment?: RatingAssignment;
+  ratingAssignmentForm?: RatingAssignmentForm;
 }
