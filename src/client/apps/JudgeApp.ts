@@ -23,6 +23,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
   clientStorage: ClientStorage;
 
   judgeId: number;
+  currentAssignment?: GetAssignmentResponseData;
 
   constructor(props: any) {
     super(props);
@@ -70,6 +71,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       judgeId: this.judgeId
     }).then((res: GetAssignmentResponseData) => {
       if (res.assignmentType === ASSIGNMENT_TYPE_RATING) {
+        this.currentAssignment = res;
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RATING",
           ratingAssignment: res.ratingAssignment,
@@ -84,6 +86,16 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     });
   }
 
+  submitAssignment() {
+    this.socket.sendRequest({
+      requestName: "REQUEST_SUBMIT_ASSIGNMENT",
+      assignmentId: this.currentAssignment.id,
+      ratingAssignmentForm: this.state.ratingAssignmentForm
+    }).then(res => {
+      this.loadAssignment();
+    });
+  }
+
   getPageProps(): JudgePageProps {
     return {
       connectionStatus: this.state.connectionStatus,
@@ -95,7 +107,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       onAlterRatingAssignmentForm: f => {
         this.setState(oldState => ({ratingAssignmentForm: f(oldState.ratingAssignmentForm)}))
       },
-      onSubmitRatingAssignmentForm: () => alert("NYI")
+      onSubmitRatingAssignmentForm: () => this.submitAssignment()
     };
   }
 

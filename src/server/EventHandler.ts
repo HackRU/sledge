@@ -8,6 +8,7 @@ import {BeginJudgingRequest} from "./BeginJudgingRequest";
 import {GlobalStatusRequest} from "./GlobalStatusRequest";
 import {GetJudgesRequest} from "./GetJudgesRequest";
 import {GetAssignmentRequest} from "./GetAssignmentRequest";
+import {SubmitAssignmentRequest} from "./SubmitAssignmentRequest";
 
 export class EventHandler {
   handlers: Array<RequestHandler>;
@@ -20,7 +21,8 @@ export class EventHandler {
       new BeginJudgingRequest(db),
       new GlobalStatusRequest(db),
       new GetJudgesRequest(db),
-      new GetAssignmentRequest(db)
+      new GetAssignmentRequest(db),
+      new SubmitAssignmentRequest(db)
     ];
   }
 

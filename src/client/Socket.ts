@@ -17,7 +17,11 @@ export class Socket {
     this.connectionHandlers = [];
     this.resolvers = new Map();
 
-    this.socket = io(document.location.origin);
+    this.socket = io(document.location.origin, {
+      reconnectionAttempts: 3,
+      reconnectionDelay: 2000
+    });
+
     this.socket.on("update", data => this.handleUpdate(data));
     this.socket.on("response", data => this.handleResponse(data));
 

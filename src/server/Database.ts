@@ -28,7 +28,13 @@ export class Database {
    * Create a Statement
    */
   prepare(source: string): Statement {
-    return this.sql.prepare(source);
+    try {
+      return this.sql.prepare(source);
+    } catch (e) {
+      console.warn("Error during prepare.");
+      console.warn(source);
+      throw e;
+    }
   }
 
   /**

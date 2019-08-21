@@ -108,7 +108,7 @@ export class GetAssignmentRequest implements RequestHandler {
     ).get(ratingAssignment.submissionId);
 
     const categories = this.db.prepare(
-      "SELECT id, name FROM Category;"
+      "SELECT id, name FROM Category ORDER BY id;"
     ).all().map(({id, name}) => ({id, name}));
 
     return {

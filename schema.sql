@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS Rating (
   -- will not be taken into account for weighting purposes.
   score INTEGER NOT NULL,
 
-  FOREIGN KEY(ratingAssignmentId) REFERENCES RatingAssignmentId(id),
+  FOREIGN KEY(ratingAssignmentId) REFERENCES RatingAssignment(id),
   FOREIGN KEY(categoryId) REFERENCES Category(id),
   UNIQUE(ratingAssignmentId, categoryId)
 );
