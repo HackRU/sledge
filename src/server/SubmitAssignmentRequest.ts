@@ -69,6 +69,6 @@ export class SubmitAssignmentRequest implements RequestHandler {
 
     this.db.prepare(
       "UPDATE RatingAssignment SET noShow=?,rating=? WHERE id=?;"
-    ).run(ratingAssignment.id, form.noShow ? 1 : 0, form.rating);
+    ).run(form.noShow ? 1 : 0, form.rating, ratingAssignment.id);
   }
 }
