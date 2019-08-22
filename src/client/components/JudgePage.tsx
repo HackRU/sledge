@@ -9,7 +9,8 @@ import {
   Button
 } from "reactstrap";
 import {HeaderWithConnectionStatus} from "./HeaderWithConnectionStatus";
-import {JudgePageAssignmentRating, RatingAssignmentForm} from "./JudgePageAssignmentRating";
+import {JudgePageAssignmentRating} from "./JudgePageAssignmentRating";
+import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 
 import {ConnectionStatus} from "../JudgeTypes";
 import {RatingAssignment} from "../../shared/GetAssignmentRequestTypes";

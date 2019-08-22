@@ -67,9 +67,12 @@ export class Router {
    * created by them.
    */
   renderReactApp(app: any) {
-    let topElement = createElement(app, {
+    const topElement = createElement(app, {
       originalHash: this.originalHash
     });
-    render(topElement, this.container);
+    const mountedComponent = render(topElement, this.container);
+
+    // For debugging
+    (window as any)["app"] = mountedComponent;
   }
 }

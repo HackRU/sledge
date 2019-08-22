@@ -6,7 +6,7 @@ import {JudgePage, JudgePageProps} from "../components/JudgePage";
 import {ConnectionStatus} from "../JudgeTypes";
 import {GetJudgesResponseData} from "../../shared/GetJudgesRequestTypes";
 import {GlobalStatusResponseData} from "../../shared/GlobalStatusRequestTypes";
-import {RatingAssignmentForm} from "../components/JudgePageAssignmentRating";
+import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 import {
   GetAssignmentResponseData,
   RatingAssignment
@@ -77,7 +77,8 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
           ratingAssignment: res.ratingAssignment,
           ratingAssignmentForm: {
             noShow: false,
-            categoryRating: res.ratingAssignment.categories.map(x => 0)
+            categoryRatings: res.ratingAssignment.categories.map(x => 0),
+            rating: 0
           }
         });
       } else {

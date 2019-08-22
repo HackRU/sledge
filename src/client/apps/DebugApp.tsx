@@ -13,7 +13,7 @@ import {Socket} from "../Socket";
 
 export class DebugApp extends React.Component<any,any> {
   socket: Socket;
-  templates;
+  templates: Map<string, string>;
 
   constructor(props: any) {
     super(props);
@@ -25,9 +25,27 @@ export class DebugApp extends React.Component<any,any> {
       userEvent: "{}"
     };
 
+    this.loadTemplates();
+
     this.templates = new Map([
       ["status", "{\"requestName\": \"REQUEST_GLOBAL_STATUS\"}"]
     ]);
+  }
+
+  loadTemplates() {
+    const xhr = new XMLHttpRequest();
+    const outsideThis = this;
+    xhr.addEventListener("load", function () {
+      const templateData = JSON.parse(this.responseText);
+      const keys = Object.keys(templateData);
+      for (let key of keys) {
+        if (!outsideThis.templates.has(key)) {
+          outsideThis.templates.set(key, JSON.stringify(templateData[key]))
+        }
+      }
+    });
+    xhr.open("GET", "/templates.json");
+    xhr.send();
   }
 
   setUserEvent(json) {
@@ -72,7 +90,14 @@ export class DebugApp extends React.Component<any,any> {
         <ButtonGroup>
           <Button
             onClick={() => this.loadTemplate("status")}
-          >{`Global Status`}</Button>
+          >
+            {`Global Status`}
+          </Button>
+          <Button
+            onClick={() => this.loadTemplate("samplePopulate")}
+          >
+            {`Load Sample Populate Data`}
+          </Button>
         </ButtonGroup>
 
         <h2>{`Response`}</h2>

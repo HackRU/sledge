@@ -38,7 +38,7 @@ export class GetAssignmentRequest implements RequestHandler {
     ).get(judgeId);
 
     if (highestPriorityAssignment) {
-      return highestPriorityAssignment.priority;
+      return highestPriorityAssignment.priority + 1;
     } else {
       return 1;
     }

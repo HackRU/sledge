@@ -120,7 +120,6 @@ CREATE TABLE IF NOT EXISTS Assignment (
   priority INTEGER NOT NULL,
 
   type INTEGER NOT NULL,
-
   active INTEGER NOT NULL,
 
   FOREIGN KEY(judgeId) REFERENCES Judge(id),
@@ -132,6 +131,9 @@ CREATE TABLE IF NOT EXISTS RatingAssignment (
 
   assignmentId INTEGER NOT NULL,
   submissionId INTEGER NOT NULL,
+
+  noShow INTEGER,
+  rating INTEGER,
 
   FOREIGN KEY(assignmentId) REFERENCES Assignment(id),
   FOREIGN KEY(submissionId) REFERENCES Submission(id),

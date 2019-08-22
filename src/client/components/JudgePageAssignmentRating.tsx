@@ -10,6 +10,7 @@ import {
 import {RadioButtonGroup} from "./RadioButtonGroup";
 
 import {RatingAssignment} from "../../shared/GetAssignmentRequestTypes";
+import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 import {range} from "../../shared/util";
 
 export const JudgePageAssignmentRating = (props: JudgePageAssignmentRatingProps) => (
@@ -32,13 +33,13 @@ export const JudgePageAssignmentRating = (props: JudgePageAssignmentRatingProps)
         </CardTitle>
         <RadioButtonGroup
           options={[
-            { label: "Yes", value: 1 },
-            { label: "No", value: 0 }
+            { label: "Yes", value: 0 },
+            { label: "No", value: 1 }
           ]}
           value={props.ratingAssignmentForm.noShow ? 1 : 0}
-          onChange={newValue => props.onAlterRatingAssignmentForm(
-            (form) => ({...form, noShow: !!newValue})
-          )}
+          onChange={
+            newValue => props.onAlterRatingAssignmentForm(createAlterNoShowStatus(!!newValue))
+          }
           size="lg"
         />
       </CardBody>
@@ -57,14 +58,9 @@ export const JudgePageAssignmentRating = (props: JudgePageAssignmentRatingProps)
               {label: "4", value: 4},
               {label: "5", value: 5}
             ]}
-            value={props.ratingAssignmentForm.categoryRating[i]}
+            value={props.ratingAssignmentForm.categoryRatings[i]}
             onChange={newValue => props.onAlterRatingAssignmentForm(
-              ({categoryRating, ...form}) => ({
-                ...form,
-                categoryRating: categoryRating.map(
-                  (v,j) => i === j ? newValue : v
-                )
-              })
+              createAlterCategoryRating(i, newValue)
             )}
           />
         </div>
@@ -94,17 +90,42 @@ export interface JudgePageAssignmentRatingProps {
   onSubmit: () => void;
 }
 
-export interface RatingAssignmentForm {
-  noShow: boolean;
-  categoryRating: Array<number>;
+const createAlterNoShowStatus = (newNoShowStatus: boolean) => (form: RatingAssignmentForm) => {
+  return setCorrectRating({
+    ...form,
+    noShow: newNoShowStatus
+  });
 }
+
+const createAlterCategoryRating = (categoryIndex: number, newRating: number) => (form: RatingAssignmentForm) => {
+  return setCorrectRating({
+    ...form,
+    noShow: false,
+    categoryRatings: form.categoryRatings.map((v, i) => i === categoryIndex ? newRating : v)
+  });
+}
+
+function setCorrectRating(form: RatingAssignmentForm): RatingAssignmentForm {
+  if (form.noShow) {
+    return {
+      ...form,
+      rating: -1
+    };
+  } else {
+    return {
+      ...form,
+      rating: form.categoryRatings.reduce((a,b) => a+b, 0)
+    };
+  }
+}
+
 
 function validateForm(form: RatingAssignmentForm) {
   if (form.noShow) {
     return true;
   }
 
-  for (let categoryRating of form.categoryRating) {
+  for (let categoryRating of form.categoryRatings) {
     if (!Number.isInteger(categoryRating) || categoryRating > 5 || categoryRating < 1) {
       return false;
     }
