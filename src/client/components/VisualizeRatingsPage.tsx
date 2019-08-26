@@ -5,78 +5,92 @@ import {
   Button
 } from "reactstrap";
 
-export const VisualizeRatingsPage = props => {
-  console.log(props.response);
-  console.log(props.ready && responseToTabular(props.response));
+import {range} from "../../shared/util";
 
-  const tabular = props.ready && responseToTabular(props.response);
+import {GetRatingScoresRequestResponseData} from "../../shared/GetRatingScoresRequestTypes";
+
+export const VisualizeRatingsPage = (props: VisualizeRatingsPageProps) => {
+  const tabular = tabulateResponse(props.response);
 
   return (
     <Container id="VisualizeRatingsPage">
       <h1>{`Visualize Ratings`}</h1>
 
-      <Button onClick={props.onLoadVisualization}>{`Reload`}</Button>
+      <Button onClick={props.onReload}>{`Reload`}</Button>
+      <span><span>{`Last Update: `}</span><em>{(new Date(props.timestamp)).toString()}</em></span>
 
-      {props.ready && (
-        <table border={3}>
-          <tr>
-            <td />
-            {props.response.submissions.map((s, i) => (
-              <td>{s.location}</td>
-            ))}
-          </tr>
-          {props.response.judges.map((j, i) => (
-            <tr key={i}>
-              <td>{j.name}</td>
-              {props.response.submissions.map((s,k) => (
-                <td
-                  style={{backgroundColor: tabular[i][k].color, width: "10px", height: "10px"}}
-                >
-                  {tabular[i][k].text}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </table>
-      )}
+      <h2>{`Ratings Table`}</h2>
+
+      <RatingsTable
+        ratings={tabular}
+        judges={props.response.judges}
+        submissions={props.response.submissions}
+      />
     </Container>
   );
 };
 
+export interface VisualizeRatingsPageProps {
+  response: GetRatingScoresRequestResponseData;
+  timestamp: number;
 
-function responseToTabular(response) {
-  // tabular[judge][submission]
-  let tabular = [];
-  for (let i=0;i<response.judges.length;i++) {
-    let arr = [];
-    for (let j=0;j<response.submissions.length;j++) {
-      arr.push({
-        color: "",
-        text: ""
-      });
-    }
-    tabular.push(arr);
+  onReload: () => void;
+};
+
+const RatingsTable = (props: {
+  ratings: Array<Array<number>>,
+  judges: Array<{id: number, name: string}>,
+  submissions: Array<{id: number, location: number}>
+}) => (
+<table>
+  <tbody>
+    <tr>
+      <td/>
+        {props.submissions.map(s => (
+          <td key={s.id}>{s.location.toString()}</td>
+        ))}
+    </tr>
+    {props.judges.map((j, ji) => (
+      <tr key={j.id}>
+        <td>{j.name}</td>
+        {props.submissions.map((s,si) => (
+          <RatingCell
+            key={s.id}
+            rating={props.ratings[ji][si]}
+          />
+        ))}
+        </tr>
+    ))}
+  </tbody>
+</table>
+);
+
+const RatingCell = (props: {rating: number}) => {
+  const classes = ["rating-cell"];
+  if (props.rating === -3) {
+    classes.push("bg-grey");
+  } else if (props.rating === -2) {
+    classes.push("bg-yellow");
+  } else if (props.rating === -1) {
+    classes.push("bg-red");
+  } else if (props.rating >= 0) {
+    classes.push("bg-green");
   }
 
+  return (
+    <td className={classes.join(" ")}>{props.rating >= 0 ? props.rating.toString() : ""}</td>
+  );
+}
+
+/**
+ * Converts the response into a 2d array such that arr[judgeIndex][submissionIndex] means
+ * no-show if -1, still active if -2 and no assignment if -3, otherwise the rating.
+ */
+function tabulateResponse(response: GetRatingScoresRequestResponseData): Array<Array<number>> {
+  let tabular = range(response.judges.length).map(_ => range(response.submissions.length).map(_ => (-3)));
+
   for (let ass of response.scores) {
-    if (!ass.active) {
-      if (ass.rating < 0) {
-        tabular[ass.judgeIndex][ass.submissionIndex] = {
-          color: "red",
-          text: ""
-        };
-      } else {
-        tabular[ass.judgeIndex][ass.submissionIndex] = {
-          color: "green",
-          text: ""+ass.rating
-        };
-      }
-    } else {
-      tabular[ass.judgeIndex][ass.submissionIndex] = {
-        color: "yellow",
-        text: ""
-      };
-    }
+    tabular[ass.judgeIndex][ass.submissionIndex] = ass.active ? -2 : ass.rating;
   }
 
   return tabular;

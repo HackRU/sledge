@@ -28,7 +28,8 @@ export class DebugApp extends React.Component<any,any> {
     this.loadTemplates();
 
     this.templates = new Map([
-      ["status", "{\"requestName\": \"REQUEST_GLOBAL_STATUS\"}"]
+      ["status", "{\"requestName\": \"REQUEST_GLOBAL_STATUS\"}"],
+      ["beginJudging", "{\"requestName\": \"REQUEST_BEGIN_JUDGING\"}"]
     ]);
   }
 
@@ -92,6 +93,11 @@ export class DebugApp extends React.Component<any,any> {
             onClick={() => this.loadTemplate("status")}
           >
             {`Global Status`}
+          </Button>
+          <Button
+            onClick={() => this.loadTemplate("beginJudging")}
+          >
+            {`Begin Judging`}
           </Button>
           <Button
             onClick={() => this.loadTemplate("samplePopulate")}

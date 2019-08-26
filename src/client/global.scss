@@ -1,0 +1,28 @@
+#VisualizeRatingsPage {
+  table {
+    td {
+      border: 1px solid black;
+    }
+
+    td.rating-cell {
+      width: 20px;
+      height: 20px;
+    }
+
+    td.bg-red {
+      background: red;
+    }
+
+    td.bg-green {
+      background: green;
+    }
+
+    td.bg-yellow {
+      background: yellow;
+    }
+
+    td.bg-grey {
+      background: grey;
+    }
+  }
+}
