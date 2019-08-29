@@ -19,7 +19,16 @@ export class VisualizePrizesApp extends React.Component {
   }
 
   getPageProps(): VisualizePrizesPageProps {
-    return {};
+    return {
+      judges: ["Bob", "Sally"],
+      prizeTables: [{
+        name: "Test Prize",
+        locations: [5,8,9],
+        judgeLocationStatuses: [
+          [1,2,3], [4,5,6]
+        ]
+      }]
+    };
   }
 
   render() {
