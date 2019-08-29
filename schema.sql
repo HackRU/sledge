@@ -24,109 +24,82 @@
 
 BEGIN;
 
--- The Status table is used to store the overall state of Sledge. Should always
--- have at least one entry.
-CREATE TABLE IF NOT EXISTs Status (
+-------------------
+-- CREATE TABLES --
+-------------------
+
+CREATE TABLE Status (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- The unix timestamp of when the state was recorded. At any given time only
-  -- the latest timestamp is valid.
   timestamp INTEGER NOT NULL,
 
-  -- Current Phase
   phase INTEGER NOT NULL,
 
   CHECK(id=1)
 );
 
--- A Submission is something that needs to be judged. All submissions are
--- considered for the overall prize, and may run for additional prizes as well.
-CREATE TABLE IF NOT EXISTS Submission (
+CREATE TABLE Submission (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- A human-readable name shown to judges
   name TEXT NOT NULL,
+  location INTEGER NOT NULL,
 
-  -- The physical location relative to other submissions. Judges are given the
-  -- location to know where to go, and we prefer to give judges submissions that
-  -- are close to their previous judged submission.
-  location INTEGER NOT NULL
+  CHECK(location > 0)
 );
 
--- A Judge has the responsibility of rating or comparing submissions to
--- determine which is best
-CREATE TABLE IF NOT EXISTS Judge (
+CREATE TABLE Judge (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- Name of the Judge, so they can differentiate themselves from other judges
   name TEXT NOT NULL,
 
   anchor INTEGER
 );
 
--- A Prize is a specific item a Submission is eligible to win
-CREATE TABLE IF NOT EXISTS Prize (
+CREATE TABLE Prize (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- The name of the Submission
   name TEXT NOT NULL,
-
-  -- Determines if the prize is the overall prize. There must be exactly one
-  -- overall prize. A 1 indicates the prize is the overall prize, otherwise 0.
-  isOverall INTEGER NOT NULL
+  isOverall INTEGER
 );
 
--- A Category is a specific metric used to determine how good a submission is
--- overall. For the Judge's sake numeric ratings are collected as ratings of
--- multiple categories which are summed.
-CREATE TABLE IF NOT EXISTS Category (
+CREATE TABLE Category (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- The name of the Category (ex. Functionality)
   name TEXT NOT NULL
 );
 
--- A SubmissionPrize denotes the eligibility of a submission to win a prize.
--- Submissions are not considered for a prize unless they are eligible. This
--- table is ignored for the overall prize, where all submissions are eligible.
-CREATE TABLE IF NOT EXISTS SubmissionPrize (
+CREATE TABLE SubmissionPrize (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- References the Submission
   submissionId INTEGER NOT NULL,
-
-  -- References the Prize
   prizeId INTEGER NOT NULL,
 
-  -- Whether the submission is eligible for the prize, and a 0 denotes the
-  -- submission is not eligible for the prize. Implicitly this is 0 if no row
-  -- exists for a judge and submission.
   eligibility INTEGER NOT NULL,
 
   FOREIGN KEY(submissionId) REFERENCES Submission(id),
   FOREIGN KEY(prizeId) REFERENCES Prize(id),
-  UNIQUE(submissionId, prizeId)
+  UNIQUE(submissionId, prizeId),
+  CHECK((eligibility = 0) OR (eligibility = 1))
 );
 
--- An Assignment is a task for a Judge to complete
-CREATE TABLE IF NOT EXISTS Assignment (
+CREATE TABLE Assignment (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- References the Judge completing the Assignment
   judgeId INTEGER NOT NULL,
-
-  -- The order the Judge should complete the assignment relative to his other
-  -- assignments
   priority INTEGER NOT NULL,
 
+  -- Whereas 1 is numerical (RatingAssignment) and 2 is comparative (RankingAssignment)
   type INTEGER NOT NULL,
   active INTEGER NOT NULL,
 
   FOREIGN KEY(judgeId) REFERENCES Judge(id),
-  UNIQUE(judgeId, priority)
+  UNIQUE(judgeId, priority),
+  CHECK(priority > 0),
+  CHECK((type = 1) OR (type = 2)),
+  CHECK((active = 0) OR (active = 1))
 );
 
-CREATE TABLE IF NOT EXISTS RatingAssignment (
+CREATE TABLE RatingAssignment (
   id INTEGER NOT NULL PRIMARY KEY,
 
   assignmentId INTEGER NOT NULL,
@@ -137,22 +110,15 @@ CREATE TABLE IF NOT EXISTS RatingAssignment (
 
   FOREIGN KEY(assignmentId) REFERENCES Assignment(id),
   FOREIGN KEY(submissionId) REFERENCES Submission(id),
-  UNIQUE(assignmentId)
+  UNIQUE(assignmentId),
+  CHECK((noShow = 0) OR (noShow = 1))
 );
 
--- A rating for a particular assignment and category. Generally, for every rated
--- assignment there will be one Rating per category.
-CREATE TABLE IF NOT EXISTS Rating (
+CREATE TABLE Rating (
   id INTEGER NOT NULL PRIMARY KEY,
 
   ratingAssignmentId INTEGER NOT NULL,
   categoryId INTEGER NOT NULL,
-
-  -- A number -1 to 5 indicating a judge's score or the current rating state. A
-  -- -1 indicates the rating has not been filled out. A 0 indicates the
-  -- submission could not receive a rating (eg, the submission did not show up)
-  -- and 1-5 indicates the judge's score.  A score of 0 is special in that it
-  -- will not be taken into account for weighting purposes.
   score INTEGER NOT NULL,
 
   FOREIGN KEY(ratingAssignmentId) REFERENCES RatingAssignment(id),
@@ -160,20 +126,35 @@ CREATE TABLE IF NOT EXISTS Rating (
   UNIQUE(ratingAssignmentId, categoryId)
 );
 
--- A ranking for a particular assignment and submission. For a ranked assignment
--- there will be a Ranking for every Submission within that assignment.
-CREATE TABLE IF NOT EXISTS Ranking (
+CREATE TABLE RankingAssignment (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  -- References the assignment to complete this ranking for
   assignmentId INTEGER NOT NULL,
+  prizeId INTEGER NOT NULL,
 
-  -- References the submission to rank
+  FOREIGN KEY(assignmentId) REFERENCES Assignment(id),
+  FOREIGN KEY(prizeId) REFERENCES Prize(id),
+  UNIQUE(assignmentId)
+);
+
+CREATE TABLE Ranking (
+  id INTEGER NOT NULL PRIMARY KEY,
+
+  rankingAssignmentId INTEGER NOT NULL,
   submissionId INTEGER NOT NULL,
 
-  -- A number from 0 to rankingCount (on the referenced Assignment), whereas 0
-  -- is unranked and 1 or greater is the ranking where lower is better
-  rank INTEGER NOT NULL
+  rank INTEGER,
+  score INTEGER,
+
+  FOREIGN KEY(rankingAssignmentId) REFERENCES RankingAssignment(id),
+  FOREIGN KEY(submissionId) REFERENCES Submission(id)
 );
+
+----------------
+-- Data Setup --
+----------------
+
+-- We expect sqlite to automatically convert strftime to an integer
+INSERT INTO Status(timestamp, phase) VALUES(strftime('%s', 'now'), 1);
 
 COMMIT;

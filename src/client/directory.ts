@@ -5,6 +5,8 @@ import {DevpostApp} from "./apps/DevpostApp";
 import {LoginApp} from "./apps/LoginApp";
 import {JudgeApp} from "./apps/JudgeApp";
 import {VisualizeRatingsApp} from "./apps/VisualizeRatingsApp";
+import {ControlPanelApp} from "./apps/ControlPanelApp";
+import {VisualizePrizesApp} from "./apps/VisualizePrizesApp";
 
 export interface PageListing {
   match: RegExp;
@@ -36,6 +38,14 @@ export const pages: Array<PageListing> = [{
   match: /^#visualizeRatings(\/|$)/,
   canonical: "#visualizeRatings",
   component: VisualizeRatingsApp
+}, {
+  match: /^#visualizePrizes(\/|$)/,
+  canonical: "#visualizePrizes",
+  component: VisualizePrizesApp
+}, {
+  match: /^#controlPanel(\/|$)/,
+  canonical: "#controlPanel",
+  component: ControlPanelApp
 }, {
   // Default
   match: /.*/,
