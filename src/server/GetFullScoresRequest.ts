@@ -46,6 +46,18 @@ export class GetFullScoresRequest implements RequestHandler {
     }> = this.db.prepare(
       "SELECT id, name FROM Category ORDER BY id;"
     ).all();
+    const dbPrizes: Array<{
+      id: number,
+      name: string
+    }> = this.db.prepare(
+      "SELECT id, name FROM Prize ORDER BY id;"
+    ).all();
+    const submissionPrizes: Array<{
+      submissionId: number,
+      prizeId: number
+    }> = this.db.prepare(
+      "SELECT submissionId, prizeId FROM SubmissionPrize WHERE eligibility=1 ORDER BY submissionId;"
+    ).all();
     const dbAssignments: Array<{
       id: number,
       type: number,
@@ -93,6 +105,19 @@ export class GetFullScoresRequest implements RequestHandler {
     const submissionIdxMap = createIdIndexMapping(submissions);
     const judgeIdxMap = createIdIndexMapping(judges);
     const categoryIdxMap = createIdIndexMapping(categories);
+    const prizeIdxMap = createIdIndexMapping(dbPrizes);
+
+    // Construct the prizes array, when when returns also contains a list of eligible submissions
+    const prizes = dbPrizes.map(p => ({
+      id: p.id,
+      name: p.name,
+      eligibleSubmissions: []
+    }));
+    for (let sp of submissionPrizes) {
+      const prizeIndex = prizeIdxMap.get(sp.prizeId);
+      const submissionIndex = submissionIdxMap.get(sp.submissionId);
+      prizes[prizeIndex].eligibleSubmissions.push(submissionIndex);
+    }
 
     // We go up the list of assignments and full in additional information from walking up other arrays. Since our
     // SQL data is sorted by Assignment.id, we can just walk up other arrays as we search.
@@ -138,6 +163,7 @@ export class GetFullScoresRequest implements RequestHandler {
       submissions,
       judges,
       categories,
+      prizes,
 
       assignments
     };

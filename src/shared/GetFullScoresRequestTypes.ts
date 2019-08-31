@@ -7,6 +7,7 @@ export interface GetFullScoresResponseData {
   submissions: Array<{id: number, name: string, location: number}>;
   judges: Array<{id: number, name: string, anchor: number}>;
   categories: Array<{id: number, name: string}>;
+  prizes: Array<{id: number, name: string, eligibleSubmissions: Array<number>}>;
   assignments: Array<Assignment>;
 }
 

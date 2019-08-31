@@ -37,9 +37,11 @@ export const VisualizePrizesPage = props => (
 
 export interface VisualizePrizesPageProps {
   judges: Array<string>;
-  prizeTables: Array<{
-    name: string,
-    locations: Array<number>,
-    judgeLocationStatuses: Array<Array<number>>
-  }>;
+  prizeTables: Array<PrizeTable>;
+};
+
+export interface PrizeTable {
+  name: string;
+  locations: Array<number>;
+  judgeLocationStatuses: Array<Array<number>>;
 };
