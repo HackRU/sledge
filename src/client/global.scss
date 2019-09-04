@@ -32,3 +32,15 @@
     border: 1px solid black;
   }
 }
+
+#ControlPanelPage {
+  form {
+    padding: 15px 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+}

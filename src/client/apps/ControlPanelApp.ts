@@ -11,7 +11,16 @@ export class ControlPanelApp extends React.Component {
   }
 
   getPageProps() {
-    return {};
+    return {
+      judges: [],
+      prizes: [],
+      assignPrizeToJudgeForm: {
+        judgeIndex: -1,
+        prizeIndex: -1
+      },
+
+      onAlterAssignPrizeToJudgeForm: f => alert()
+    };
   }
 
   render() {
