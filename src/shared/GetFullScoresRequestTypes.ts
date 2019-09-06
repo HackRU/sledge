@@ -24,3 +24,13 @@ export interface Assignment {
   rating?: number,
   ratings?: Array<number>
 }
+
+export function getPlaceholderFullScoresResponseData(): GetFullScoresResponseData {
+  return {
+    submissions: [],
+    judges: [],
+    categories: [],
+    prizes: [],
+    assignments: []
+  };
+}

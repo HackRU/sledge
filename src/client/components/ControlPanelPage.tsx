@@ -27,7 +27,12 @@ export const ControlPanelPage = (props: ControlPanelPageProps) => (
           choices={props.judges}
           choiceIndex={props.assignPrizeToJudgeForm.judgeIndex}
           placeholderItem="Judge"
-          onChange={(i) => alert(i)}
+          onChange={
+            i => props.onAlterAssignPrizeToJudgeForm(form => ({
+              ...form,
+              judgeIndex: i
+            }))
+          }
         />
       </FormGroup>
 
@@ -37,13 +42,18 @@ export const ControlPanelPage = (props: ControlPanelPageProps) => (
           choices={props.prizes}
           choiceIndex={props.assignPrizeToJudgeForm.prizeIndex}
           placeholderItem="Prize"
-          onChange={(i) => alert(i)}
+          onChange={
+            i => props.onAlterAssignPrizeToJudgeForm(form => ({
+              ...form,
+              prizeIndex: i
+            }))
+          }
         />
       </FormGroup>
 
       <Button
         disabled={!isAssignPrizeToJudgeFormValid(props.assignPrizeToJudgeForm)}
-        onClick={() => alert()}
+        onClick={() => props.onSubmitAssignPrizeToJudgeForm()}
       >
         {`GO`}
       </Button>
@@ -57,6 +67,7 @@ export interface ControlPanelPageProps {
   assignPrizeToJudgeForm: AssignPrizeToJudgeForm;
 
   onAlterAssignPrizeToJudgeForm: (f: (o: AssignPrizeToJudgeForm) => AssignPrizeToJudgeForm) => void;
+  onSubmitAssignPrizeToJudgeForm: () => void;
 };
 
 export interface AssignPrizeToJudgeForm {

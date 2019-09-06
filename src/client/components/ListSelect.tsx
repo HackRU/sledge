@@ -13,7 +13,7 @@ export const ListSelect = (props: ListSelectProps) => (
       props.choices.map((label, value) => ({label, value}))
     }
     onChange={
-      (v, t) => t.action === "set-value" && props.onChange((v as any).value)
+      (v, t) => t.action === "select-option" && props.onChange((v as any).value)
     }
   />
 );
