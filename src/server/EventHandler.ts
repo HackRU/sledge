@@ -45,6 +45,10 @@ export class EventHandler {
 
     const responsePromise = handler.handle(request);
 
+    if (this.db.isInTransaction()) {
+      throw new Error(`Still in transaction after request (requestName=${request["requestName"]})`);
+    }
+
     responsePromise.then(response => {
       if (response["error"]) {
         log("WARN: Handler returned an error: %O", response);

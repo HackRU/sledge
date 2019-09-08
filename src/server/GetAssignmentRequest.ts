@@ -190,6 +190,7 @@ export class GetAssignmentRequest implements RequestHandler {
     this.db.begin();
     const currentActiveAssignment = this.getNextActiveAssignment(judge.id);
     if (currentActiveAssignment) {
+      this.db.commit();
       return this.getAssignmentDetails(currentActiveAssignment);
     }
 

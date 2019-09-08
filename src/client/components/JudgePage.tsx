@@ -10,10 +10,11 @@ import {
 } from "reactstrap";
 import {HeaderWithConnectionStatus} from "./HeaderWithConnectionStatus";
 import {JudgePageAssignmentRating} from "./JudgePageAssignmentRating";
-import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
+import {JudgePageAssignmentRanking} from "./JudgePageAssignmentRanking";
+import {RatingAssignmentForm, RankingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 
 import {ConnectionStatus} from "../JudgeTypes";
-import {RatingAssignment} from "../../shared/GetAssignmentRequestTypes";
+import {RatingAssignment, RankingAssignment} from "../../shared/GetAssignmentRequestTypes";
 
 export const JudgePage = (props: JudgePageProps) => (
   <Container id="JudgePage">
@@ -40,6 +41,15 @@ export const JudgePage = (props: JudgePageProps) => (
               onSubmit={props.onSubmitRatingAssignmentForm}
             />
           );
+        case "JUDGE_SUBPAGE_ASSIGNMENT_RANKING":
+          return (
+            <JudgePageAssignmentRanking
+              rankingAssignment={props.rankingAssignment}
+              rankingAssignmentForm={props.rankingAssignmentForm}
+              onAlterRankingAssignmentForm={props.onAlterRankingAssignmentForm}
+              onSubmit={props.onSubmitRankingAssignmentForm}
+            />
+          );
         default:
           throw new Error(`Unhandled Judge subpage ${props.subPage}`);
       }
@@ -55,6 +65,11 @@ export interface JudgePageProps {
   ratingAssignmentForm?: RatingAssignmentForm;
   onAlterRatingAssignmentForm?: (f: (o: RatingAssignmentForm) => RatingAssignmentForm) => void;
   onSubmitRatingAssignmentForm?: () => void;
+
+  rankingAssignment?: RankingAssignment;
+  rankingAssignmentForm?: RankingAssignmentForm;
+  onAlterRankingAssignmentForm?: (f: (o: RankingAssignmentForm) => RankingAssignmentForm) => void;
+  onSubmitRankingAssignmentForm?: () => void;
 
   onSegue: (to: string) => void;
 }

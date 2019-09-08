@@ -6,16 +6,18 @@ import {JudgePage, JudgePageProps} from "../components/JudgePage";
 import {ConnectionStatus} from "../JudgeTypes";
 import {GetJudgesResponseData} from "../../shared/GetJudgesRequestTypes";
 import {GlobalStatusResponseData} from "../../shared/GlobalStatusRequestTypes";
-import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
+import {RatingAssignmentForm, RankingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 import {
   GetAssignmentResponseData,
-  RatingAssignment
+  RatingAssignment,
+  RankingAssignment
 } from "../../shared/GetAssignmentRequestTypes";
 import {
   PHASE_SETUP,
   PHASE_COLLECTION,
   PHASE_TALLY,
-  ASSIGNMENT_TYPE_RATING
+  ASSIGNMENT_TYPE_RATING,
+  ASSIGNMENT_TYPE_RANKING
 } from "../../shared/constants";
 
 export class JudgeApp extends React.Component<any, JudgeAppState> {
@@ -81,6 +83,14 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
             rating: 0
           }
         });
+      } else if (res.assignmentType === ASSIGNMENT_TYPE_RANKING) {
+        this.setState({
+          subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RANKING",
+          rankingAssignment: res.rankingAssignment,
+          rankingAssignmentForm: {
+            topSubmissionIds: []
+          }
+        });
       } else {
         console.log(res);
         throw new Error(`Unhandled assignment type ${res.assignmentType}`);
@@ -104,12 +114,18 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       subPage: this.state.subPage,
       ratingAssignment: this.state.ratingAssignment,
       ratingAssignmentForm: this.state.ratingAssignmentForm,
+      rankingAssignment: this.state.rankingAssignment,
+      rankingAssignmentForm: this.state.rankingAssignmentForm,
 
       onSegue: to => {window.location.hash = to;},
       onAlterRatingAssignmentForm: f => {
         this.setState(oldState => ({ratingAssignmentForm: f(oldState.ratingAssignmentForm)}))
       },
-      onSubmitRatingAssignmentForm: () => this.submitAssignment()
+      onSubmitRatingAssignmentForm: () => this.submitAssignment(),
+      onAlterRankingAssignmentForm: f => {
+        this.setState(oldState => ({rankingAssignmentForm: f(oldState.rankingAssignmentForm)}))
+      },
+      onSubmitRankingAssignmentForm: () => this.submitAssignment()
     };
   }
 
@@ -128,4 +144,7 @@ interface JudgeAppState {
 
   ratingAssignment?: RatingAssignment;
   ratingAssignmentForm?: RatingAssignmentForm;
+
+  rankingAssignment?: RankingAssignment;
+  rankingAssignmentForm?: RankingAssignmentForm;
 }

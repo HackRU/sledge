@@ -9,6 +9,7 @@ import integer from "integer";
  */
 export class Database {
   private sql: any;
+  private inTransaction: boolean;
 
   private beginStmt;
   private commitStmt;
@@ -20,6 +21,7 @@ export class Database {
       this.initTables();
     }
 
+    this.inTransaction = false;
     this.beginStmt = this.sql.prepare("BEGIN;");
     this.commitStmt = this.sql.prepare("END;");
     this.rollbackStmt = this.sql.prepare("ROLLBACK;");
@@ -42,6 +44,7 @@ export class Database {
    * Start a Transaction
    */
   begin() {
+    this.inTransaction = true;
     this.beginStmt.run();
   }
 
@@ -49,6 +52,7 @@ export class Database {
    * Rollback a Transaction
    */
   rollback() {
+    this.inTransaction = false;
     this.rollbackStmt.run();
   }
 
@@ -56,7 +60,15 @@ export class Database {
    * End and commit a Transaction
    */
   commit() {
+    this.inTransaction = false;
     this.commitStmt.run();
+  }
+
+  /**
+   * Based on begin and commit calls, returns if we are currently in a transaction
+   */
+  isInTransaction(): boolean {
+    return this.inTransaction;
   }
 
   /**

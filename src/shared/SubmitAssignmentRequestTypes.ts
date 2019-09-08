@@ -13,6 +13,10 @@ export interface RatingAssignmentForm {
   categoryRatings: Array<number>;
 }
 
+export interface RankingAssignmentForm {
+  topSubmissionIds: Array<number>;
+}
+
 export function checkSubmitAssignmentRequestData(data: any): boolean {
   if (
     data["requestName"] !== "REQUEST_SUBMIT_ASSIGNMENT" ||
