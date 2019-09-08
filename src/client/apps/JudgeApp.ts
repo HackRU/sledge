@@ -82,6 +82,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
           }
         });
       } else {
+        console.log(res);
         throw new Error(`Unhandled assignment type ${res.assignmentType}`);
       }
     });

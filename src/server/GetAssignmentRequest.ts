@@ -92,12 +92,24 @@ export class GetAssignmentRequest implements RequestHandler {
 
   getAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
     const assignment = this.db.prepare(
-      "SELECT id, judgeId, priority, type, active FROM Assignment WHERE id=?;"
+      "SELECT type FROM Assignment WHERE id=?;"
     ).get(assignmentId);
 
     if (!assignment) {
       return null;
+    } else if (assignment.type === 1) {
+      return this.getRatingAssignmentDetails(assignmentId);
+    } else if (assignment.type === 2) {
+      return this.getRankingAssignmentDetails(assignmentId);
+    } else {
+      throw new Error(`Unknown assignment type ${assignment.type}`);
     }
+  }
+
+  getRatingAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
+    const assignment = this.db.prepare(
+      "SELECT id, judgeId, priority, type, active FROM Assignment WHERE id=?;"
+    ).get(assignmentId);
 
     const ratingAssignment = this.db.prepare(
       "SELECT id, assignmentId, submissionId FROM RatingAssignment WHERE assignmentId=?;"
@@ -126,6 +138,41 @@ export class GetAssignmentRequest implements RequestHandler {
     };
   }
 
+  getRankingAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
+    const assignment: {
+      id: number, judgeId: number, priority: number, type: number, active: number,
+      rankingAssignmentId: number, prizeId: number, prizeName: string
+    } = this.db.prepare(
+      "SELECT "+
+          "assignmentId AS id, judgeId, priority, type, active, "+
+          "RankingAssignment.id AS rankingAssignmentId, prizeId, "+
+          "Prize.name AS prizeName "+
+        "FROM RankingAssignment "+
+        "LEFT JOIN Assignment ON assignmentId=Assignment.id "+
+        "LEFT JOIN Prize ON prizeId=Prize.id "+
+        "WHERE assignmentId=?;"
+    ).get(assignmentId);
+
+    const submissions = this.db.prepare(
+      "SELECT submissionId AS id, name, location "+
+        "FROM Ranking "+
+        "LEFT JOIN Submission ON submissionId=Submission.id "+
+        "WHERE rankingAssignmentId=?;"
+    ).all(assignment.rankingAssignmentId);
+
+    return {
+      id: assignment.id,
+      judgeId: assignment.judgeId,
+      assignmentType: assignment.type,
+
+      rankingAssignment: {
+        prizeId: assignment.prizeId,
+        prizeName: assignment.prizeName,
+        submissions
+      }
+    };
+  }
+
   syncHandle(data: object): object {
     if (!Number.isInteger(data["judgeId"])) {
       return {
@@ -140,12 +187,12 @@ export class GetAssignmentRequest implements RequestHandler {
       };
     }
 
+    this.db.begin();
     const currentActiveAssignment = this.getNextActiveAssignment(judge.id);
     if (currentActiveAssignment) {
       return this.getAssignmentDetails(currentActiveAssignment);
     }
 
-    this.db.begin();
     const newAssignmentId = this.createRatingAssignment(judge.id, judge.anchor);
     this.db.commit();
 

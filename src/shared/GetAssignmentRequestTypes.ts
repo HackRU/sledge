@@ -3,7 +3,8 @@ export interface GetAssignmentResponseData {
   judgeId: number;
   assignmentType: number;
 
-  ratingAssignment: RatingAssignment;
+  ratingAssignment?: RatingAssignment;
+  rankingAssignment?: RankingAssignment;
 }
 
 export interface RatingAssignment {
@@ -11,4 +12,10 @@ export interface RatingAssignment {
   submissionName: string;
   submissionLocation: number;
   categories: Array<{id: number, name: string}>;
+}
+
+export interface RankingAssignment {
+  prizeId: number;
+  prizeName: string;
+  submissions: Array<{id: number, name: string, location: number}>;
 }
