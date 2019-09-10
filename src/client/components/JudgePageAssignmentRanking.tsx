@@ -18,13 +18,29 @@ export const JudgePageAssignmentRanking = (props: JudgePageAssignmentRankingProp
         <CardTitle>{`Rank favorite submissions for prize ${props.rankingAssignment.prizeName}`}</CardTitle>
 
         <ListGroup>
-        {props.rankingAssignment.submissions.map(s => (
+        <ListGroupItem
+          tag="button"
+          onClick={
+            () => props.onAlterRankingAssignmentForm(f => ({topSubmissionIds: []}))
+          }
+        >
+          {`RESET`}
+        </ListGroupItem>
+        {props.rankingAssignment.submissions.map((s, i) => (
           <ListGroupItem
             key={s.id}
             tag="button"
-            onClick={() => alert()}
+            onClick={
+              () => props.onAlterRankingAssignmentForm(f => {
+                if (f.topSubmissionIds.indexOf(i) < 0 && f.topSubmissionIds.length < 3) {
+                  return {topSubmissionIds: [...f.topSubmissionIds, i]}
+                } else {
+                  return f;
+                }
+              })
+            }
           >
-            {s.name}
+            {(j => j < 0 ? s.name : `(${j+1}) ${s.name}`)(props.rankingAssignmentForm.topSubmissionIds.indexOf(i))}
           </ListGroupItem>
         ))}
         </ListGroup>
