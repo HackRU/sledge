@@ -84,6 +84,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
           }
         });
       } else if (res.assignmentType === ASSIGNMENT_TYPE_RANKING) {
+        this.currentAssignment = res;
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RANKING",
           rankingAssignment: res.rankingAssignment,
@@ -99,13 +100,25 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
   }
 
   submitAssignment() {
-    this.socket.sendRequest({
-      requestName: "REQUEST_SUBMIT_ASSIGNMENT",
-      assignmentId: this.currentAssignment.id,
-      ratingAssignmentForm: this.state.ratingAssignmentForm
-    }).then(res => {
-      this.loadAssignment();
-    });
+    if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RATING") {
+      this.socket.sendRequest({
+        requestName: "REQUEST_SUBMIT_ASSIGNMENT",
+        assignmentId: this.currentAssignment.id,
+        ratingAssignmentForm: this.state.ratingAssignmentForm
+      }).then(res => {
+        this.loadAssignment();
+      });
+    } else if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RANKING") {
+      this.socket.sendRequest({
+        requestName: "REQUEST_SUBMIT_ASSIGNMENT",
+        assignmentId: this.currentAssignment.id,
+        rankingAssignmentForm: this.state.rankingAssignmentForm
+      }).then(res => {
+        this.loadAssignment();
+      });
+    } else {
+      throw new Error(`Unknown Judge subpage ${this.state.subPage}`);
+    }
   }
 
   getPageProps(): JudgePageProps {
