@@ -98,6 +98,19 @@ export class GetFullScoresRequest implements RequestHandler {
       "LEFT JOIN Assignment ON RatingAssignment.assignmentId = Assignment.id "+
       "ORDER BY Assignment.id, Rating.categoryId;"
     ).all();
+    const dbRankings: Array<{
+      assignmentId: number,
+      submissionId: number,
+      score: number
+    }> = this.db.prepare(
+      "SELECT "+
+        "assignmentId, "+
+        "submissionId, "+
+        "score "+
+      "FROM Ranking "+
+      "LEFT JOIN RankingAssignment ON rankingAssignmentId=RankingAssignment.id "+
+      "ORDER BY assignmentId, rank;"
+    ).all();
     this.db.commit();
 
     // In the data we return, Judges, Categories and Submissions are references by indexes into their corresponding
@@ -123,6 +136,8 @@ export class GetFullScoresRequest implements RequestHandler {
     // SQL data is sorted by Assignment.id, we can just walk up other arrays as we search.
     const ratingQueue  = new DoubleEndedQueue(dbRatings);
     ratingQueue.enqueue(null);
+    const rankingQueue = new DoubleEndedQueue(dbRankings);
+    rankingQueue.enqueue(null);
 
     const assignments: Array<Assignment> = [];
     for (let dbAss of dbAssignments) {
@@ -153,6 +168,31 @@ export class GetFullScoresRequest implements RequestHandler {
           noShow: !!dbAss.noShow,
           rating: dbAss.rating,
           ratings
+        });
+      } else if (dbAss.type == ASSIGNMENT_TYPE_RANKING) {
+        const rankings: Array<{submissionIndex: number, score: number}> = [];
+        let ranking = rankingQueue.next();
+        while (ranking && ranking.assignmentId <= dbAss.id) {
+          if (ranking.assignmentId === dbAss.id) {
+            rankings.push({
+              submissionIndex: submissionIdxMap.get(ranking.submissionId),
+              score: ranking.score
+            });
+          }
+
+          ranking = rankingQueue.next();
+        }
+        rankingQueue.append(ranking);
+
+        assignments.push({
+          id: dbAss.id,
+          type: ASSIGNMENT_TYPE_RANKING,
+          judgeIndex: judgeIdxMap.get(dbAss.judgeId),
+          priority: dbAss.priority,
+          active: !!dbAss.active,
+
+          prizeIndex: prizeIdxMap.get(dbAss.prizeId),
+          rankings
         });
       } else {
         throw new Error(`Unknown assignment type ${dbAss.type}`);

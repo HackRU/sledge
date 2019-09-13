@@ -23,6 +23,13 @@ export interface Assignment {
   noShow?: boolean,
   rating?: number,
   ratings?: Array<number>
+
+  // For Ranking Assignments
+  prizeIndex?: number,
+  rankings?: Array<{
+    submissionIndex: number,
+    score:number
+  }>
 }
 
 export function getPlaceholderFullScoresResponseData(): GetFullScoresResponseData {
