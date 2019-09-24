@@ -1,6 +1,6 @@
 import React from "react";
 
-import {VisualizePrizesPage, VisualizePrizesPageProps, PrizeTable} from "../components/VisualizePrizesPage";
+import {VisualizePrizesPage, VisualizePrizesPageProps, PrizeTable, JudgeSubmissionStatus} from "../components/VisualizePrizesPage";
 import {GetFullScoresResponseData} from "../../shared/GetFullScoresRequestTypes";
 
 import {Socket} from "../Socket";
@@ -55,19 +55,54 @@ function judgeNamesFromResponse(res: GetFullScoresResponseData): Array<string> {
 }
 
 function prizeTablesFromResponse(res: GetFullScoresResponseData): Array<PrizeTable> {
-  return res.prizes.map(prize => {
-    const locations = prize.eligibleSubmissions.map(
-      submissionIndex => res.submissions[submissionIndex].location
-    );
+  const statusMap: Array<Array<Array<{
+    prizeIndex: number,
+    statusObj: JudgeSubmissionStatus
+  }>>> = res.submissions.map(
+    sub => res.judges.map(j => [])
+  );
 
-    const judgeLocationStatuses = res.judges.map(
-      j => locations.map(l => -1)
-    );
+  // Initialize prize tables and populate submissionIndexStatuses map
+  const prizeTables: Array<PrizeTable> = [];
+  for (let i=0;i<res.prizes.length;i++) {
+    const prize = res.prizes[i];
+    const statuses = res.judges.map(j => []);
 
-    return {
+    for (let eligibleSubmissionIndex of prize.eligibleSubmissions) {
+      for (let j=0;j<res.judges.length;j++) {
+        const statusObj = {
+          status: "JSSTATUS_NONE"
+        };
+
+        statuses[j].push(statusObj);
+        statusMap[eligibleSubmissionIndex][j].push({
+          prizeIndex: i,
+          statusObj
+        });
+      }
+    }
+
+    prizeTables.push({
       name: prize.name,
-      locations,
-      judgeLocationStatuses
-    };
-  });
+      locations: prize.eligibleSubmissions.map(
+        submissionIndex => res.submissions[submissionIndex].location
+      ),
+      statuses
+    });
+  }
+
+  for (let ass of res.assignments) {
+    if (ass.type === 1) {
+      const statuses = statusMap[ass.submissionIndex][ass.judgeIndex];
+      for (let status of statuses) {
+        status.statusObj.status = ass.active ? "JSSTATUS_ACTIVE" : (
+          ass.noShow ? "JSSTATUS_NOSHOW" : "JSSTATUS_COMPLETE"
+        );
+      }
+    }
+  }
+
+  console.log(prizeTables);
+
+  return prizeTables;
 }

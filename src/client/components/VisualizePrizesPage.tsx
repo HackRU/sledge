@@ -4,7 +4,7 @@ import {
   Container
 } from "reactstrap";
 
-export const VisualizePrizesPage = props => (
+export const VisualizePrizesPage = (props: VisualizePrizesPageProps) => (
   <Container id="VisualizePrizesPage">
     <h1>{`Visualize Prizes`}</h1>
 
@@ -24,7 +24,12 @@ export const VisualizePrizesPage = props => (
               <tr key={ji}>
                 <td>{name}</td>
                 {pt.locations.map((l, li) => (
-                  <td key={li}>{pt.judgeLocationStatuses[ji][li].toString()}</td>
+                  <td
+                    key={li}
+                    style={{background: colorFromStatus(pt.statuses[ji][li])}}
+                  >
+                    {' '}
+                  </td>
                 ))}
               </tr>
             ))}
@@ -35,6 +40,20 @@ export const VisualizePrizesPage = props => (
   </Container>
 );
 
+function colorFromStatus(statusObj: JudgeSubmissionStatus) {
+  if (statusObj.status === "JSSTATUS_NONE") {
+    return "gray";
+  } else if (statusObj.status === "JSSTATUS_ACTIVE") {
+    return "yellow";
+  } else if (statusObj.status === "JSSTATUS_NOSHOW") {
+    return "red";
+  } else if (statusObj.status === "JSSTATUS_COMPLETE") {
+    return "green";
+  } else {
+    return "orange";
+  }
+}
+
 export interface VisualizePrizesPageProps {
   judges: Array<string>;
   prizeTables: Array<PrizeTable>;
@@ -43,5 +62,11 @@ export interface VisualizePrizesPageProps {
 export interface PrizeTable {
   name: string;
   locations: Array<number>;
-  judgeLocationStatuses: Array<Array<number>>;
+
+  // statuses[judgeIndex][submissionEligibilityIndex]
+  statuses: Array<Array<JudgeSubmissionStatus>>;
+};
+
+export interface JudgeSubmissionStatus {
+  status: string;
 };
