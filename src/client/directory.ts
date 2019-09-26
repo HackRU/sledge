@@ -7,6 +7,7 @@ import {JudgeApp} from "./apps/JudgeApp";
 import {VisualizeRatingsApp} from "./apps/VisualizeRatingsApp";
 import {ControlPanelApp} from "./apps/ControlPanelApp";
 import {VisualizePrizesApp} from "./apps/VisualizePrizesApp";
+import {SubmissionManagementApp} from "./apps/SubmissionManagementApp";
 
 export interface PageListing {
   match: RegExp;
@@ -46,6 +47,10 @@ export const pages: Array<PageListing> = [{
   match: /^#controlPanel(\/|$)/,
   canonical: "#controlPanel",
   component: ControlPanelApp
+}, {
+  match: /^#submissionManagement(\/|$)/,
+  canonical: "#submissionManagement",
+  component: SubmissionManagementApp
 }, {
   // Default
   match: /.*/,
