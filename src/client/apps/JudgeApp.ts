@@ -58,6 +58,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       } else if (statusRes.phase === PHASE_SETUP) {
         this.setState({subPage: "JUDGE_SUBPAGE_SETUP"});
       } else if (statusRes.phase === PHASE_COLLECTION) {
+        this.setState({judgeName: myself.name});
         this.loadAssignment();
       } else if (statusRes.phase === PHASE_TALLY) {
         this.setState({subPage: "JUDGE_SUBPAGE_END"});
@@ -125,6 +126,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     return {
       connectionStatus: this.state.connectionStatus,
       subPage: this.state.subPage,
+      judgeName: this.state.judgeName,
       ratingAssignment: this.state.ratingAssignment,
       ratingAssignmentForm: this.state.ratingAssignmentForm,
       rankingAssignment: this.state.rankingAssignment,

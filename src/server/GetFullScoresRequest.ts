@@ -26,12 +26,13 @@ export class GetFullScoresRequest implements RequestHandler {
   handleSync(data: object): GetFullScoresResponseData {
     // Get all the data within transaction before processing. Order by id or corresponding Assignment id.
     this.db.begin();
-    const submissions: Array<{
+    const dbSubmissions: Array<{
       id: number,
       name: string,
+      trackId: number,
       location: number
     }> = this.db.prepare(
-      "SELECT id, name, location FROM Submission ORDER BY id;"
+      "SELECT id, name, trackId, location FROM Submission ORDER BY id;"
     ).all();
     const judges: Array<{
       id: number,
@@ -40,11 +41,18 @@ export class GetFullScoresRequest implements RequestHandler {
     }> = this.db.prepare(
       "SELECT id, name, anchor FROM Judge ORDER BY id;"
     ).all();
-    const categories: Array<{
+    const tracks: Array<{
       id: number,
       name: string
     }> = this.db.prepare(
-      "SELECT id, name FROM Category ORDER BY id;"
+      "SELECT id, name FROM Track ORDER BY id;"
+    ).all();
+    const dbCategories: Array<{
+      id: number,
+      name: string,
+      trackId: number
+    }> = this.db.prepare(
+      "SELECT id, name, trackId FROM Category ORDER BY id;"
     ).all();
     const dbPrizes: Array<{
       id: number,
@@ -115,10 +123,24 @@ export class GetFullScoresRequest implements RequestHandler {
 
     // In the data we return, Judges, Categories and Submissions are references by indexes into their corresponding
     // arrays, however the SQL response references ids. We make a mapping for each from id to index.
-    const submissionIdxMap = createIdIndexMapping(submissions);
+    const submissionIdxMap = createIdIndexMapping(dbSubmissions);
     const judgeIdxMap = createIdIndexMapping(judges);
-    const categoryIdxMap = createIdIndexMapping(categories);
+    const trackIdxMap = createIdIndexMapping(tracks);
+    const categoryIdxMap = createIdIndexMapping(dbCategories);
     const prizeIdxMap = createIdIndexMapping(dbPrizes);
+
+    // Get mappings from category ids to rating indexes for each track
+    const trackRatingMap: Map<number, Map<number, number>> = new Map();
+    const trackNextIndex: Map<number, number> = new Map();
+    for (let track of tracks) {
+      trackRatingMap.set(track.id, new Map());
+      trackNextIndex.set(track.id, 0);
+    }
+    for (let dbCategory of dbCategories) {
+      const nextIndex = trackNextIndex.get(dbCategory.trackId);
+      trackRatingMap.get(dbCategory.trackId).set(dbCategory.id, nextIndex);
+      trackNextIndex.set(dbCategory.trackId, nextIndex+1);
+    }
 
     // Construct the prizes array, when when returns also contains a list of eligible submissions
     const prizes = dbPrizes.map(p => ({
@@ -142,15 +164,16 @@ export class GetFullScoresRequest implements RequestHandler {
     const assignments: Array<Assignment> = [];
     for (let dbAss of dbAssignments) {
       if (dbAss.type === ASSIGNMENT_TYPE_RATING) {
+        const submission = dbSubmissions[submissionIdxMap.get(dbAss.submissionId)];
         // Get all the corresponding scores in a parallel array to Categories
         const ratings: Array<number> = [];
-        for (let i=0;i<categories.length;i++) {
+        for (let i=0;i<trackNextIndex.get(submission.trackId);i++) {
           ratings.push(null);
         }
         let rating = ratingQueue.next();
         while (rating && rating.assignmentId <= dbAss.id) {
           if (rating.assignmentId === dbAss.id) {
-            ratings[submissionIdxMap.get(rating.categoryId)] = rating.score;
+            ratings[trackRatingMap.get(submission.trackId).get(rating.categoryId)] = rating.score;
           }
 
           rating = ratingQueue.next();
@@ -199,11 +222,34 @@ export class GetFullScoresRequest implements RequestHandler {
       }
     }
 
+    const submissions: Array<{
+      id: number,
+      name: string,
+      trackIndex: number,
+      location: number
+    }> = dbSubmissions.map(sub => ({
+      id: sub.id,
+      name: sub.name,
+      trackIndex: trackIdxMap.get(sub.trackId),
+      location: sub.location
+    }));
+
+  const categories: Array<{
+    id: number,
+    name: string,
+    trackIndex: number
+  }> = dbCategories.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    trackIndex: trackIdxMap.get(cat.trackId)
+  }));
+
     return {
       submissions,
       judges,
       categories,
       prizes,
+      tracks,
 
       assignments
     };

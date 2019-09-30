@@ -38,12 +38,20 @@ CREATE TABLE Status (
   CHECK(id=1)
 );
 
+CREATE TABLE Track (
+  id INTEGER NOT NULL PRIMARY KEY,
+
+  name TEXT NOT NULL
+);
+
 CREATE TABLE Submission (
   id INTEGER NOT NULL PRIMARY KEY,
 
   name TEXT NOT NULL,
+  trackId INTEGER DEFAULT 1,
   location INTEGER NOT NULL,
 
+  FOREIGN KEY(trackId) REFERENCES Track(id),
   CHECK(location > 0)
 );
 
@@ -65,7 +73,10 @@ CREATE TABLE Prize (
 CREATE TABLE Category (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  name TEXT NOT NULL
+  trackId INTEGER DEFAULT 1,
+  name TEXT NOT NULL,
+
+  FOREIGN KEY(trackId) REFERENCES Track(id)
 );
 
 CREATE TABLE SubmissionPrize (
@@ -156,5 +167,7 @@ CREATE TABLE Ranking (
 
 -- We expect sqlite to automatically convert strftime to an integer
 INSERT INTO Status(timestamp, phase) VALUES(strftime('%s', 'now'), 1);
+
+INSERT INTO Track(id, name) VALUES(1, 'Default Track');
 
 COMMIT;

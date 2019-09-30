@@ -1,7 +1,15 @@
 import React from "react";
 
-import {VisualizePrizesPage, VisualizePrizesPageProps, PrizeTable, JudgeSubmissionStatus} from "../components/VisualizePrizesPage";
-import {GetFullScoresResponseData} from "../../shared/GetFullScoresRequestTypes";
+import {
+  VisualizePrizesPage,
+  VisualizePrizesPageProps,
+  PrizeTable,
+  JudgeSubmissionStatus
+} from "../components/VisualizePrizesPage";
+import {
+  GetFullScoresResponseData,
+  getPlaceholderFullScoresResponseData
+} from "../../shared/GetFullScoresRequestTypes";
 
 import {Socket} from "../Socket";
 
@@ -12,13 +20,7 @@ export class VisualizePrizesApp extends React.Component<any, VisualizePrizeAppsS
     super(props);
 
     this.state = {
-      response: {
-        assignments: [],
-        categories: [],
-        judges: [],
-        prizes: [],
-        submissions: []
-      }
+      response: getPlaceholderFullScoresResponseData()
     };
 
     this.socket = new Socket();

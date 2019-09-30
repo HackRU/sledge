@@ -62,8 +62,13 @@ export class SubmitAssignmentRequest implements RequestHandler {
       "SELECT id FROM RatingAssignment WHERE assignmentId=?;"
     ).get(assignmentId);
     const categories = this.db.prepare(
-      "SELECT id FROM Category ORDER BY id;"
-    ).all();
+      "SELECT Category.id AS id FROM Category "+
+        "LEFT JOIN Assignment ON Assignment.id=? "+
+        "LEFT JOIN RatingAssignment ON assignmentId=Assignment.id "+
+        "LEFT JOIN Submission ON submissionId=Submission.id "+
+        "WHERE Category.trackId=Submission.trackId "+
+        "ORDER BY id;"
+    ).all(assignmentId);
 
     for (let i=0;i<categories.length;i++) {
       this.db.prepare(

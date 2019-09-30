@@ -22,6 +22,8 @@ export const JudgePage = (props: JudgePageProps) => (
       connectionStatus={props.connectionStatus}
     />
 
+    <div>{`Hello ${props.judgeName}!`}</div>
+
     {(() => {
       switch (props.subPage) {
         case "JUDGE_SUBPAGE_LOADING":
@@ -60,6 +62,7 @@ export const JudgePage = (props: JudgePageProps) => (
 export interface JudgePageProps {
   connectionStatus: ConnectionStatus;
   subPage: string;
+  judgeName: string;
 
   ratingAssignment?: RatingAssignment;
   ratingAssignmentForm?: RatingAssignmentForm;

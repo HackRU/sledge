@@ -39,6 +39,7 @@ export class SubmissionManagementApp extends React.Component<any, SubmissionMana
         return {
           location: sub.location,
           name: sub.name,
+          track: this.state.response.tracks[sub.trackIndex].name,
           averageRating:ratingInfo[i].averageScore,
           normalizedRating: ratingInfo[i].judgeNormalizedAverage
         };

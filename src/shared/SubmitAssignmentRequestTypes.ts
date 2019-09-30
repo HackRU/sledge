@@ -2,7 +2,7 @@ import {isArray} from "./util";
 
 export interface SubmitAssignmentRequestData {
   requestName: "REQUEST_SUBMIT_ASSIGNMENT";
-  assignmentId: number;
+  assignmentId: number;
 
   ratingAssignmentForm?: RatingAssignmentForm;
 }
