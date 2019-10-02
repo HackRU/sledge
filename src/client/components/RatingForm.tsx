@@ -42,6 +42,7 @@ export const RatingForm = (props: RatingFormProps) => (
           <div key={i} style={{width: "100%"}}>
             <h3 style={{textAlign: "center"}}>{catName}</h3>
             <RadioButtonGroup
+              size="lg"
               disabled={props.noShow}
               options={[
                 { label: "1", value: 1 },

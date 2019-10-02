@@ -36,36 +36,52 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     };
 
     this.socket = new Socket();
-    this.socket.onConnectionEvent(evt => {
-      if (evt === "connect")
-        this.setState({connectionStatus: ConnectionStatus.Good});
-      if (evt === "disconnect")
-        this.setState({connectionStatus: ConnectionStatus.Weak});
-      if (evt === "reconnect_failed")
-        this.setState({connectionStatus: ConnectionStatus.Disconnected});
-    });
+    this.socket.onConnectionEvent(evt => this.handleSocketConnectionEvent(evt));
 
     this.clientStorage = new ClientStorage();
     this.judgeId = this.clientStorage.getJudgeId();
 
-    Promise.all([
-      this.socket.sendRequest({requestName: "REQUEST_GET_JUDGES"}),
-      this.socket.sendRequest({requestName: "REQUEST_GLOBAL_STATUS"})
-    ]).then(([judgesRes, statusRes]: [GetJudgesResponseData, GlobalStatusResponseData]) => {
-      let myself = judgesRes.judges.find(judge => judge.id === this.judgeId);
-      if (!myself) {
-        this.setState({subPage: "JUDGE_SUBPAGE_BAD_CREDENTIALS"});
-      } else if (statusRes.phase === PHASE_SETUP) {
+    this.initializePhase();
+  }
+
+  initializePhase() {
+    this.socket.sendRequest({
+      requestName: "REQUEST_GLOBAL_STATUS"
+    }).then((res: GlobalStatusResponseData) => {
+      if (res.phase === PHASE_SETUP) {
         this.setState({subPage: "JUDGE_SUBPAGE_SETUP"});
-      } else if (statusRes.phase === PHASE_COLLECTION) {
-        this.setState({judgeName: myself.name});
-        this.loadAssignment();
-      } else if (statusRes.phase === PHASE_TALLY) {
+      } else if (res.phase === PHASE_COLLECTION) {
+        this.initializeJudge();
+      } else if (res.phase === PHASE_TALLY) {
         this.setState({subPage: "JUDGE_SUBPAGE_END"});
       } else {
-        throw new Error(`Unhandled phase ${statusRes.phase}`);
+        throw new Error(`Bad phase ${res.phase}`);
       }
     });
+  }
+
+  initializeJudge() {
+    this.socket.sendRequest({
+      requestName: "REQUEST_GET_JUDGES"
+    }).then((res: GetJudgesResponseData) => {
+      const myself = res.judges.find(judge => judge.id === this.judgeId);
+      if (myself) {
+        this.setState({judgeName: myself.name});
+        this.loadAssignment();
+      } else {
+        this.setState({subPage: "JUDGE_SUBPAGE_BAD_CREDENTIALS"});
+      }
+    });
+  }
+
+  handleSocketConnectionEvent(evt: string) {
+    if (evt === "connect") {
+      this.setState({connectionStatus: ConnectionStatus.Good});
+    } else if (evt === "disconnect") {
+      this.setState({connectionStatus: ConnectionStatus.Weak});
+    } else if (evt === "reconnect_failed") {
+      this.setState({connectionStatus: ConnectionStatus.Disconnected});
+    }
   }
 
   loadAssignment() {
@@ -73,25 +89,19 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
       requestName: "REQUEST_GET_ASSIGNMENT",
       judgeId: this.judgeId
     }).then((res: GetAssignmentResponseData) => {
+      this.currentAssignment = res;
+
       if (res.assignmentType === ASSIGNMENT_TYPE_RATING) {
-        this.currentAssignment = res;
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RATING",
-          ratingAssignment: res.ratingAssignment,
-          ratingAssignmentForm: {
-            noShow: false,
-            categoryRatings: res.ratingAssignment.categories.map(x => 0),
-            rating: 0
-          }
+          currentAssignmentId: res.id,
+          ratingAssignment: res.ratingAssignment
         });
       } else if (res.assignmentType === ASSIGNMENT_TYPE_RANKING) {
-        this.currentAssignment = res;
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RANKING",
-          rankingAssignment: res.rankingAssignment,
-          rankingAssignmentForm: {
-            topSubmissionIds: []
-          }
+          currentAssignmentId: res.id,
+          rankingAssignment: res.rankingAssignment
         });
       } else {
         console.log(res);
@@ -100,48 +110,54 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     });
   }
 
-  submitAssignment() {
-    if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RATING") {
-      this.socket.sendRequest({
-        requestName: "REQUEST_SUBMIT_ASSIGNMENT",
-        assignmentId: this.currentAssignment.id,
-        ratingAssignmentForm: this.state.ratingAssignmentForm
-      }).then(res => {
-        this.loadAssignment();
-      });
-    } else if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RANKING") {
-      this.socket.sendRequest({
-        requestName: "REQUEST_SUBMIT_ASSIGNMENT",
-        assignmentId: this.currentAssignment.id,
-        rankingAssignmentForm: this.state.rankingAssignmentForm
-      }).then(res => {
-        this.loadAssignment();
-      });
-    } else {
-      throw new Error(`Unknown Judge subpage ${this.state.subPage}`);
-    }
+  submitRatingAssignment(form: RatingAssignmentForm) {
+    this.socket.sendRequest({
+      requestName: "REQUEST_SUBMIT_ASSIGNMENT",
+      assignmentId: this.currentAssignment.id,
+      ratingAssignmentForm: form
+    }).then(res => {
+      this.loadAssignment();
+    });
+  }
+
+  submitRankingAssignment(form: RankingAssignmentForm) {
+    this.socket.sendRequest({
+      requestName: "REQUEST_SUBMIT_ASSIGNMENT",
+      assignmentId: this.currentAssignment.id,
+      rankingAssignmentForm: form
+    }).then(res => {
+      this.loadAssignment();
+    });
   }
 
   getPageProps(): JudgePageProps {
-    return {
-      connectionStatus: this.state.connectionStatus,
+    const baseProps: JudgePageProps = {
       subPage: this.state.subPage,
-      judgeName: this.state.judgeName,
-      ratingAssignment: this.state.ratingAssignment,
-      ratingAssignmentForm: this.state.ratingAssignmentForm,
-      rankingAssignment: this.state.rankingAssignment,
-      rankingAssignmentForm: this.state.rankingAssignmentForm,
-
-      onSegue: to => {window.location.hash = to;},
-      onAlterRatingAssignmentForm: f => {
-        this.setState(oldState => ({ratingAssignmentForm: f(oldState.ratingAssignmentForm)}))
-      },
-      onSubmitRatingAssignmentForm: () => this.submitAssignment(),
-      onAlterRankingAssignmentForm: f => {
-        this.setState(oldState => ({rankingAssignmentForm: f(oldState.rankingAssignmentForm)}))
-      },
-      onSubmitRankingAssignmentForm: () => this.submitAssignment()
+      connectionStatus: this.state.connectionStatus,
+      onSegue: to => {window.location.hash = to;}
     };
+
+    if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RATING") {
+      return {
+        ...baseProps,
+
+        judgeName: this.state.judgeName,
+        assignmentId: this.state.currentAssignmentId,
+        ratingAssignment: this.state.ratingAssignment,
+        onSubmitRatingAssignment: f => this.submitRatingAssignment(f)
+      };
+    } else if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RANKING") {
+      return {
+        ...baseProps,
+
+        judgeName: this.state.judgeName,
+        assignmentId: this.state.currentAssignmentId,
+        rankingAssignment: this.state.rankingAssignment,
+        onSubmitRankingAssignment: f =>this.submitRankingAssignment(f)
+      };
+    } else {
+      return baseProps;
+    }
   }
 
   render() {
@@ -157,9 +173,7 @@ interface JudgeAppState {
   judgeName?: string;
   subPage: string;
 
+  currentAssignmentId?: number;
   ratingAssignment?: RatingAssignment;
-  ratingAssignmentForm?: RatingAssignmentForm;
-
   rankingAssignment?: RankingAssignment;
-  rankingAssignmentForm?: RankingAssignmentForm;
 }

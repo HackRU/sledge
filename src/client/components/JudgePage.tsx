@@ -9,9 +9,10 @@ import {
   Button
 } from "reactstrap";
 import {HeaderWithConnectionStatus} from "./HeaderWithConnectionStatus";
-import {JudgePageAssignmentRating} from "./JudgePageAssignmentRating";
 import {JudgePageAssignmentRanking} from "./JudgePageAssignmentRanking";
 import {RatingAssignmentForm, RankingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
+
+import {RatingFormController} from "../components/RatingFormController";
 
 import {ConnectionStatus} from "../JudgeTypes";
 import {RatingAssignment, RankingAssignment} from "../../shared/GetAssignmentRequestTypes";
@@ -22,60 +23,35 @@ export const JudgePage = (props: JudgePageProps) => (
       connectionStatus={props.connectionStatus}
     />
 
-    <div>{`Hello ${props.judgeName}!`}</div>
-
-    {(() => {
-      switch (props.subPage) {
-        case "JUDGE_SUBPAGE_LOADING":
-          return (<JudgePageLoading />);
-        case "JUDGE_SUBPAGE_BAD_CREDENTIALS":
-          return (<JudgePageBadCredentials onSegue={props.onSegue} />);
-        case "JUDGE_SUBPAGE_SETUP":
-          return (<JudgePageSetup />);
-        case "JUDGE_SUBPAGE_ENDED":
-          return (<JudgePageEnded />);
-        case "JUDGE_SUBPAGE_ASSIGNMENT_RATING":
-          return (
-            <JudgePageAssignmentRating
-              ratingAssignment={props.ratingAssignment}
-              ratingAssignmentForm={props.ratingAssignmentForm}
-              onAlterRatingAssignmentForm={props.onAlterRatingAssignmentForm}
-              onSubmit={props.onSubmitRatingAssignmentForm}
-            />
-          );
-        case "JUDGE_SUBPAGE_ASSIGNMENT_RANKING":
-          return (
-            <JudgePageAssignmentRanking
-              rankingAssignment={props.rankingAssignment}
-              rankingAssignmentForm={props.rankingAssignmentForm}
-              onAlterRankingAssignmentForm={props.onAlterRankingAssignmentForm}
-              onSubmit={props.onSubmitRankingAssignmentForm}
-            />
-          );
-        default:
-          throw new Error(`Unhandled Judge subpage ${props.subPage}`);
-      }
-    })()}
+    <JudgeSubPage
+      {...props}
+    />
   </Container>
 );
 
-export interface JudgePageProps {
-  connectionStatus: ConnectionStatus;
-  subPage: string;
-  judgeName: string;
-
-  ratingAssignment?: RatingAssignment;
-  ratingAssignmentForm?: RatingAssignmentForm;
-  onAlterRatingAssignmentForm?: (f: (o: RatingAssignmentForm) => RatingAssignmentForm) => void;
-  onSubmitRatingAssignmentForm?: () => void;
-
-  rankingAssignment?: RankingAssignment;
-  rankingAssignmentForm?: RankingAssignmentForm;
-  onAlterRankingAssignmentForm?: (f: (o: RankingAssignmentForm) => RankingAssignmentForm) => void;
-  onSubmitRankingAssignmentForm?: () => void;
-
-  onSegue: (to: string) => void;
-}
+const JudgeSubPage = (props: JudgePageProps) => {
+  switch (props.subPage) {
+    case "JUDGE_SUBPAGE_LOADING":
+      return (<JudgePageLoading />);
+    case "JUDGE_SUBPAGE_BAD_CREDENTIALS":
+      return (<JudgePageBadCredentials onSegue={props.onSegue} />);
+    case "JUDGE_SUBPAGE_SETUP":
+      return (<JudgePageSetup />);
+    case "JUDGE_SUBPAGE_ENDED":
+      return (<JudgePageEnded />);
+    case "JUDGE_SUBPAGE_ASSIGNMENT_RATING":
+      return (
+        <JudgePageAssignmentRating
+          assignmentId={props.assignmentId}
+          judgeName={props.judgeName}
+          ratingAssignment={props.ratingAssignment}
+          onSubmitRatingAssignment={props.onSubmitRatingAssignment}
+        />
+      );
+    default:
+      throw new Error(`Unhandled Judge subpage ${props.subPage}`);
+  }
+};
 
 const JudgePageLoading = () => (
   <div>
@@ -136,3 +112,48 @@ const JudgePageEnded = () => (
     </Card>
   </div>
 );
+
+const JudgePageAssignmentRating = (props: {
+  assignmentId: number,
+  judgeName: string,
+  ratingAssignment: RatingAssignment,
+  onSubmitRatingAssignment: (f: RatingAssignmentForm) => void
+}) => (
+  <div>
+    <JudgeNameCard
+      judgeName={props.judgeName}
+    />
+
+    <RatingFormController
+      key={props.assignmentId}
+      ratingAssignment={props.ratingAssignment}
+      onSubmit={props.onSubmitRatingAssignment}
+    />
+  </div>
+);
+
+const JudgeNameCard = (props: {judgeName: string}) => (
+  <Card>
+    <CardBody>
+      <CardText>
+        {`Hello ${props.judgeName}!`}
+      </CardText>
+    </CardBody>
+  </Card>
+);
+
+export interface JudgePageProps {
+  subPage: string;
+  connectionStatus: ConnectionStatus;
+
+  judgeName?: string;
+  assignmentId?: number;
+
+  ratingAssignment?: RatingAssignment;
+  onSubmitRatingAssignment?: (f: RatingAssignmentForm) => void;
+
+  rankingAssignment?: RankingAssignment;
+  onSubmitRankingAssignment?: (f: RankingAssignmentForm) => void;
+
+  onSegue: (to: string) => void;
+}

@@ -5,8 +5,12 @@ import {RatingAssignment} from "../../shared/GetAssignmentRequestTypes";
 import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 
 export class RatingFormController extends React.Component<RatingFormControllerProps, RatingFormControllerState> {
+  assignment: RatingAssignment;
+
   constructor(props) {
     super(props);
+
+    this.assignment = props.ratingAssignment;
 
     this.state = {
       noShow: false,
@@ -45,6 +49,12 @@ export class RatingFormController extends React.Component<RatingFormControllerPr
   }
 
   render() {
+    if (this.props.ratingAssignment !== this.assignment) {
+      console.warn("Sanity Check failed!")
+      console.log("original", this.assignment);
+      console.log("new", this.props.ratingAssignment);
+    }
+
     return (
       <RatingForm
         submissionName={this.props.ratingAssignment.submissionName}
