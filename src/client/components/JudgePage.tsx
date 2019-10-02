@@ -9,10 +9,10 @@ import {
   Button
 } from "reactstrap";
 import {HeaderWithConnectionStatus} from "./HeaderWithConnectionStatus";
-import {JudgePageAssignmentRanking} from "./JudgePageAssignmentRanking";
 import {RatingAssignmentForm, RankingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 
 import {RatingFormController} from "../components/RatingFormController";
+import {RankingFormController} from "./RankingFormController";
 
 import {ConnectionStatus} from "../JudgeTypes";
 import {RatingAssignment, RankingAssignment} from "../../shared/GetAssignmentRequestTypes";
@@ -46,6 +46,15 @@ const JudgeSubPage = (props: JudgePageProps) => {
           judgeName={props.judgeName}
           ratingAssignment={props.ratingAssignment}
           onSubmitRatingAssignment={props.onSubmitRatingAssignment}
+        />
+      );
+    case "JUDGE_SUBPAGE_ASSIGNMENT_RANKING":
+      return (
+        <JudgePageAssignmentRanking
+          assignmentId={props.assignmentId}
+          judgeName={props.judgeName}
+          rankingAssignment={props.rankingAssignment}
+          onSubmitRankingAssignment={props.onSubmitRankingAssignment}
         />
       );
     default:
@@ -128,6 +137,25 @@ const JudgePageAssignmentRating = (props: {
       key={props.assignmentId}
       ratingAssignment={props.ratingAssignment}
       onSubmit={props.onSubmitRatingAssignment}
+    />
+  </div>
+);
+
+const JudgePageAssignmentRanking = (props: {
+  assignmentId: number,
+  judgeName: string,
+  rankingAssignment: RankingAssignment,
+  onSubmitRankingAssignment: (f: RankingAssignmentForm) => void
+}) => (
+  <div>
+    <JudgeNameCard
+      judgeName={props.judgeName}
+    />
+
+    <RankingFormController
+      key={props.assignmentId}
+      rankingAssignment={props.rankingAssignment}
+      onSubmit={props.onSubmitRankingAssignment}
     />
   </div>
 );
