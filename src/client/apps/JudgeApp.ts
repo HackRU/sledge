@@ -103,6 +103,11 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
           currentAssignmentId: res.id,
           rankingAssignment: res.rankingAssignment
         });
+      } else if (res.assignmentType === 0) {
+        this.setState({
+          subPage: "JUDGE_SUBPAGE_ASSIGNMENT_NONE",
+          currentAssignmentId: 0
+        });
       } else {
         console.log(res);
         throw new Error(`Unhandled assignment type ${res.assignmentType}`);

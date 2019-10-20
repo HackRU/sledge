@@ -199,7 +199,9 @@ export class GetAssignmentRequest implements RequestHandler {
 
     if (!newAssignmentId) {
       return {
-        error: "NYI: Out of Submissions"
+        id: 0,
+        judgeId: judge.id,
+        assignmentType: 0
       };
     }
 

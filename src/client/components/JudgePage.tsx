@@ -57,6 +57,10 @@ const JudgeSubPage = (props: JudgePageProps) => {
           onSubmitRankingAssignment={props.onSubmitRankingAssignment}
         />
       );
+    case "JUDGE_SUBPAGE_ASSIGNMENT_NONE":
+      return (
+        <JudgePageAssignmentNone />
+      );
     default:
       throw new Error(`Unhandled Judge subpage ${props.subPage}`);
   }
@@ -101,10 +105,6 @@ const JudgePageSetup = () => (
         <CardTitle>
           <h2>{`Hang Tight! Judging hasn't started yet.`}</h2>
         </CardTitle>
-        <CardText>
-          {`When judging begins this page will automatically bring you to your first assignment. In the meantime `+
-            `listen to hackathon organizers for instructions`}
-        </CardText>
       </CardBody>
     </Card>
   </div>
@@ -165,6 +165,16 @@ const JudgeNameCard = (props: {judgeName: string}) => (
     <CardBody>
       <CardText>
         {`Hello ${props.judgeName}!`}
+      </CardText>
+    </CardBody>
+  </Card>
+);
+
+const JudgePageAssignmentNone = (props: {}) => (
+  <Card>
+    <CardBody>
+      <CardText>
+        <h2>{`No more assignments`}</h2>
       </CardText>
     </CardBody>
   </Card>
