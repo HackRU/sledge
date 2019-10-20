@@ -8,6 +8,7 @@ import {VisualizeRatingsApp} from "./apps/VisualizeRatingsApp";
 import {ControlPanelApp} from "./apps/ControlPanelApp";
 import {VisualizePrizesApp} from "./apps/VisualizePrizesApp";
 import {SubmissionManagementApp} from "./apps/SubmissionManagementApp";
+import {HomeApp} from "./apps/HomeApp";
 
 export interface PageListing {
   match: RegExp;
@@ -16,6 +17,10 @@ export interface PageListing {
 };
 
 export const pages: Array<PageListing> = [{
+  match: /^(#?$|#home($|\/))/,
+  canonical: "#home",
+  component: HomeApp,
+}, {
   match: /^#debug($|\/)/,
   canonical: "#debug",
   component: DebugApp
