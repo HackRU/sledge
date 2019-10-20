@@ -58,7 +58,7 @@ export class GetAssignmentRequest implements RequestHandler {
     }
 
     const submissionLocationsStmt = this.db.prepare(
-      "SELECT id, location FROM Submission;"
+      "SELECT id, location, active FROM Submission;"
     );
 
     let closestSubmissionId = 0;
@@ -67,7 +67,7 @@ export class GetAssignmentRequest implements RequestHandler {
       const distance = modulo(submission.location - anchor, 10000);
       const seen = seenSubmissions.has(submission.id);
 
-      if (!seen && distance < closestSubmissionDistance) {
+      if (submission.active && !seen && distance < closestSubmissionDistance) {
         closestSubmissionId = submission.id;
         closestSubmissionDistance = distance;
       }
