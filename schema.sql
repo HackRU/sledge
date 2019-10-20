@@ -50,6 +50,7 @@ CREATE TABLE Submission (
   name TEXT NOT NULL,
   trackId INTEGER DEFAULT 1,
   location INTEGER NOT NULL,
+  active INTEGER DEFAULT 1,
 
   FOREIGN KEY(trackId) REFERENCES Track(id),
   CHECK(location > 0)
