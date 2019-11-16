@@ -5,15 +5,11 @@ export class GetRatingScoresRequest implements RequestHandler {
   constructor(private db: Database) {
   }
 
-  canHandle(data: object) {
-    return data["requestName"] === "REQUEST_GET_RATING_SCORES";
+  canHandle(requestName: string) {
+    return requestName === "REQUEST_GET_RATINGS_SCORES";
   }
 
-  handle(_: object): Promise<object> {
-    return Promise.resolve(this.handleSync());
-  }
-
-  handleSync(): object {
+  handleSync(data: any): object {
     this.db.begin();
     const submissions = this.db.prepare(
       "SELECT id, name, location FROM Submission ORDER BY id;"

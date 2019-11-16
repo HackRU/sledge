@@ -25,22 +25,19 @@ import {pages} from "./directory";
  * Decide which page to load
  */
 export class Router {
-  hash: string;
-  originalHash: string;
-  container: HTMLElement;
+  hash?: string;
+  originalHash?: string;
+  container?: HTMLElement;
   page: any;
 
   start() {
-    this.hash = window.location.hash;
+    const hash = window.location.hash;
+    this.hash = hash;
     this.originalHash = this.hash;
-    this.container = document.getElementById("app");
-    this.page = pages.find(p => p.match.test(this.hash));
+    this.container = getAppContainer();
+    this.page = pages.find(p => p.match.test(hash));
 
-    if (this.page.html) {
-      this.renderHtmlApp(this.page.html);
-    } else {
-      this.renderReactApp(this.page.component);
-    }
+    this.renderReactApp(this.page.component);
 
     document.location.hash = this.page.canonical;
     this.hash = this.page.canonical;
@@ -54,10 +51,6 @@ export class Router {
     });
   }
 
-  renderHtmlApp(html: string) {
-    this.container.innerHTML = html;
-  }
-
   /**
    * Renders a react app to the "app" div on the page. The app argument is passed
    * to React.createElement
@@ -67,12 +60,22 @@ export class Router {
    * created by them.
    */
   renderReactApp(app: any) {
-    const topElement = createElement(app, {
-      originalHash: this.originalHash
-    });
+    const topElement = createElement("div", {},
+      createElement(app, {
+        originalHash: this.originalHash
+      })
+    );
     const mountedComponent = render(topElement, this.container);
 
     // For debugging
     (window as any)["app"] = mountedComponent;
   }
+}
+
+function getAppContainer(): HTMLElement {
+  let container = document.getElementById("app");
+  if (!container) {
+    throw new Error("Could not find app container");
+  }
+  return container;
 }

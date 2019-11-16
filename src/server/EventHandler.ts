@@ -1,6 +1,11 @@
 import {log} from "./log";
 import {Database} from "./Database";
-import {RequestHandler} from "./Request";
+import {
+  RequestHandler,
+  StrictRequestHandler,
+  RequestValidationError,
+  ResponseObject
+} from "./Request";
 import {ServerSocket} from "./ServerSocket";
 
 import {PopulateRequest} from "./PopulateRequest";
@@ -14,12 +19,12 @@ import {GetFullScoresRequest} from "./GetFullScoresRequest";
 import {AssignPrizeToJudgeRequest} from "./AssignPrizeToJudgeRequest";
 
 export class EventHandler {
-  handlers: Array<RequestHandler>;
+  handlers: Array<StrictRequestHandler>;
 
   constructor(private db: Database, socket: ServerSocket) {
     socket.bindRequestHandler((data: object) => this.handleRequest(data));
 
-    this.handlers = [
+    const looseHandlers: Array<RequestHandler> = [
       new PopulateRequest(db),
       new BeginJudgingRequest(db),
       new GlobalStatusRequest(db),
@@ -30,10 +35,20 @@ export class EventHandler {
       new GetFullScoresRequest(db),
       new AssignPrizeToJudgeRequest(db)
     ];
+    this.handlers = looseHandlers.map(toStrictHandler);
   }
 
-  handleRequest(request: object): Promise<object> {
-    const handler = this.handlers.find(handler => handler.canHandle(request));
+  handleRequest(request: any): Promise<object> {
+    if (typeof request !== "object") {
+      throw new Error("Got request that is not an object");
+    }
+
+    if (typeof request.requestName !== "string") {
+      return Promise.resolve({ error: "Got request with requestName not a string" });
+    }
+
+    const requestName: string = request.requestName;
+    const handler = this.handlers.find(handler => handler.canHandle(requestName));
 
     if (handler === undefined) {
       log("WARN: Got request with no handler %O", request);
@@ -50,11 +65,39 @@ export class EventHandler {
     }
 
     responsePromise.then(response => {
-      if (response["error"]) {
+      if (response.error) {
         log("WARN: Handler returned an error: %O", response);
       }
     });
 
     return responsePromise;
   }
+}
+
+function toStrictHandler(handler: RequestHandler): StrictRequestHandler {
+  return {
+    canHandle: requestName => handler.canHandle(requestName),
+    validate: data => {
+      if (handler.validate) {
+        return handler.validate(data)
+      } else if (handler.simpleValidate) {
+        if (handler.simpleValidate(data)) {
+          return { valid: true };
+        } else {
+          return { valid: false, error: "Simple validate returned false" };
+        }
+      } else {
+        throw new Error("Neither validate nor simple validate defined on handler");
+      }
+    },
+    handle: data => {
+      if (handler.handle) {
+        return handler.handle(data);
+      } else if (handler.handleSync) {
+        return Promise.resolve(handler.handleSync(data));
+      } else {
+        throw new Error("Neither handle nor handleSync defined on handler");
+      }
+    }
+  };
 }

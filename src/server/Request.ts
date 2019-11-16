@@ -1,4 +1,24 @@
 export interface RequestHandler {
-  canHandle(data: object): boolean;
-  handle(data: object): Promise<object>;
+  canHandle(requestName: string): boolean;
+
+  validate?(data: any): RequestValidationError;
+  simpleValidate?(data: any): boolean;
+
+  handle?(data: any): Promise<ResponseObject>;
+  handleSync?(data: any): ResponseObject;
+}
+
+export interface StrictRequestHandler {
+  canHandle(requestName: string): boolean;
+  validate(data: any): RequestValidationError;
+  handle(data: any): Promise<ResponseObject>;
+}
+
+export interface RequestValidationError {
+  error?: string;
+}
+
+export interface ResponseObject {
+  error?: string;
+  [k: string]: any;
 }

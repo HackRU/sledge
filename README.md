@@ -3,18 +3,15 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/HackRU/sledge.svg?branch=master)](https://travis-ci.org/HackRU/sledge)
 
-Sledge is a real-time judging platform used for HackRU and HackHers. Sledge is
+Sledge is a real-time judging platform primarily used  for HackRU. Sledge is
 responsible for assigning judges to hacks, collecting ratings from judges and
 calculating the overall winners and prize winners.
-
-Sledge is built by architects on the RnD team. If you are an architect
-interested in joining sledge please read [`docs/Contributing.md`][contributing].
 
 [contributing]: docs/Contributing.md
 
 ## Quick Start
 
-Sledge requires nodejs 11+, yarn 1+ and a complete GNU/Linux installation. See
+Sledge requires nodejs 13, yarn 1+ and a complete GNU/Linux installation. See
 the `docs` folder for more detailed instructions.
 
 ```
@@ -41,7 +38,7 @@ hacks to apply for additional prizes.
 
 ```
 Sledge - A judging system for Hackathons
-Copyright (C) 2018 The Sledge Authors
+Copyright (C) 2019 The Sledge Authors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as

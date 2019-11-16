@@ -3,6 +3,7 @@ import {log} from "./log";
 import {Database} from "./Database";
 import {runMany} from "./DatabaseHelpers";
 import {RequestHandler} from "./Request";
+import * as tc from "./TypeCheck";
 
 import {PopulateRequestData, checkPopulateRequestData} from "../shared/PopulateRequestTypes";
 
@@ -31,15 +32,11 @@ export class PopulateRequest implements RequestHandler {
         +"VALUES($submissionId, $prizeId, 1);");
   }
 
-  canHandle(data: object): boolean {
-    return data["requestName"] === "REQUEST_POPULATE";
+  canHandle(requestName: string): boolean {
+    return requestName === "REQUEST_POPULATE";
   }
 
-  handle(data: object): Promise<object> {
-    return Promise.resolve(this.handleSync(data));
-  }
-
-  handleSync(data: object): object {
+  handleSync(data: any): object {
     if (data["requestName"] !== "REQUEST_POPULATE") {
       return null;
     }

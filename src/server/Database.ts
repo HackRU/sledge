@@ -11,9 +11,9 @@ export class Database {
   private sql: any;
   private inTransaction: boolean;
 
-  private beginStmt;
-  private commitStmt;
-  private rollbackStmt;
+  private beginStmt: Statement;
+  private commitStmt: Statement;
+  private rollbackStmt: Statement;
 
   constructor(private datadir: string) {
     let existed = this.openDatabase();

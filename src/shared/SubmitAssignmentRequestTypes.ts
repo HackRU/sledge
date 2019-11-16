@@ -2,9 +2,10 @@ import {isArray} from "./util";
 
 export interface SubmitAssignmentRequestData {
   requestName: "REQUEST_SUBMIT_ASSIGNMENT";
-  assignmentId: number;
+  assignmentId: number;
 
   ratingAssignmentForm?: RatingAssignmentForm;
+  rankingAssignmentForm?: RankingAssignmentForm;
 }
 
 export interface RatingAssignmentForm {
@@ -15,34 +16,4 @@ export interface RatingAssignmentForm {
 
 export interface RankingAssignmentForm {
   topSubmissionIds: Array<number>;
-}
-
-export function checkSubmitAssignmentRequestData(data: any): boolean {
-  if (
-    data["requestName"] !== "REQUEST_SUBMIT_ASSIGNMENT" ||
-    typeof data["assignmentId"] !== "number" ||
-    !(!data["ratingAssignmentForm"] || checkRatingAssignmentForm(data["ratingAssignmentForm"]))
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-export function checkRatingAssignmentForm(data: any): boolean {
-  if (
-    typeof data !== "object" ||
-    typeof data["noShow"] !== "boolean" ||
-    !isArray(data["categoryRatings"])
-  ) {
-    return false;
-  }
-
-  for (let rating of data["categoryRatings"]) {
-    if (typeof rating !== "number") {
-      return false;
-    }
-  }
-
-  return true;
 }

@@ -1,21 +1,30 @@
 import {RequestHandler} from "./Request";
 import {Database} from "./Database";
+import {
+  AssignPrizeToJudgeRequestData
+} from "../shared/AssignPrizeToJudgeRequestTypes";
+import * as tc from "./TypeCheck";
+
+const validator = tc.hasShape({
+  judgeId: tc.isId,
+  prizeId: tc.isId
+});
 
 export class AssignPrizeToJudgeRequest implements RequestHandler {
   constructor (private db: Database) {
   }
 
-  canHandle(data: object) {
-    return data["requestName"] === "REQUEST_ASSIGN_PRIZE_TO_JUDGE";
+  canHandle(requestName: string) {
+    return requestName === "REQUEST_ASSIGN_PRIZE_TO_JUDGE";
   }
 
-  handle(data: object): Promise<object> {
-    return Promise.resolve(this.handleSync(data));
+  simpleValidate(data: any) {
+    return validator(data);
   }
 
-  handleSync(data: object): object {
-    const judgeId: number = data["judgeId"];
-    const prizeId: number = data["prizeId"];
+  handleSync(data: any): object {
+    const request: AssignPrizeToJudgeRequestData = data;
+    const {prizeId, judgeId} = request;
 
     this.db.begin();
     // First, create assignments for all relevant submissions which they haven't rated

@@ -9,8 +9,12 @@ export class GlobalStatusRequest implements RequestHandler {
       "SELECT phase FROM Status ORDER BY timestamp DESC;");
   }
 
-  canHandle(data: object) {
-    return data["requestName"] === "REQUEST_GLOBAL_STATUS";
+  canHandle(requestName: string) {
+    return requestName === "REQUST_GLOBAL_STATUS";
+  }
+
+  simpleValidate(data: any) {
+    return true;
   }
 
   handle(_: object): Promise<object> {

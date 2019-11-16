@@ -15,15 +15,17 @@ export class GetFullScoresRequest implements RequestHandler {
   constructor(private db: Database) {
   }
 
-  canHandle(data: object): boolean {
-    return data["requestName"] === "REQUEST_GET_FULL_SCORES";
+  canHandle(requestName: string): boolean {
+    return requestName === "REQUEST_GET_FULL_SCORES";
   }
 
-  handle(data: object): Promise<object> {
-    return Promise.resolve(this.handleSync(data));
+  simpleValidate(data: any) {
+    return true;
   }
 
   handleSync(data: object): GetFullScoresResponseData {
+    // TODO: Messy Code
+
     // Get all the data within transaction before processing. Order by id or corresponding Assignment id.
     this.db.begin();
     const dbSubmissions: Array<{
@@ -137,8 +139,8 @@ export class GetFullScoresRequest implements RequestHandler {
       trackNextIndex.set(track.id, 0);
     }
     for (let dbCategory of dbCategories) {
-      const nextIndex = trackNextIndex.get(dbCategory.trackId);
-      trackRatingMap.get(dbCategory.trackId).set(dbCategory.id, nextIndex);
+      const nextIndex = trackNextIndex.get(dbCategory.trackId)!;
+      trackRatingMap.get(dbCategory.trackId)!.set(dbCategory.id, nextIndex);
       trackNextIndex.set(dbCategory.trackId, nextIndex+1);
     }
 
@@ -146,34 +148,34 @@ export class GetFullScoresRequest implements RequestHandler {
     const prizes = dbPrizes.map(p => ({
       id: p.id,
       name: p.name,
-      eligibleSubmissions: []
+      eligibleSubmissions: [] as Array<number>
     }));
     for (let sp of submissionPrizes) {
-      const prizeIndex = prizeIdxMap.get(sp.prizeId);
-      const submissionIndex = submissionIdxMap.get(sp.submissionId);
+      const prizeIndex = prizeIdxMap.get(sp.prizeId)!;
+      const submissionIndex = submissionIdxMap.get(sp.submissionId)!;
       prizes[prizeIndex].eligibleSubmissions.push(submissionIndex);
     }
 
     // We go up the list of assignments and full in additional information from walking up other arrays. Since our
     // SQL data is sorted by Assignment.id, we can just walk up other arrays as we search.
-    const ratingQueue  = new DoubleEndedQueue(dbRatings);
+    const ratingQueue  = new DoubleEndedQueue<typeof dbRatings[0] | null>(dbRatings);
     ratingQueue.enqueue(null);
-    const rankingQueue = new DoubleEndedQueue(dbRankings);
+    const rankingQueue = new DoubleEndedQueue<typeof dbRankings[0] | null>(dbRankings);
     rankingQueue.enqueue(null);
 
     const assignments: Array<Assignment> = [];
     for (let dbAss of dbAssignments) {
       if (dbAss.type === ASSIGNMENT_TYPE_RATING) {
-        const submission = dbSubmissions[submissionIdxMap.get(dbAss.submissionId)];
+        const submission = dbSubmissions[submissionIdxMap.get(dbAss.submissionId!)!];
         // Get all the corresponding scores in a parallel array to Categories
-        const ratings: Array<number> = [];
-        for (let i=0;i<trackNextIndex.get(submission.trackId);i++) {
+        const ratings: Array<number | null> = [];
+        for (let i=0;i<trackNextIndex.get(submission.trackId)!;i++) {
           ratings.push(null);
         }
         let rating = ratingQueue.next();
         while (rating && rating.assignmentId <= dbAss.id) {
           if (rating.assignmentId === dbAss.id) {
-            ratings[trackRatingMap.get(submission.trackId).get(rating.categoryId)] = rating.score;
+            ratings[trackRatingMap.get(submission.trackId)!.get(rating.categoryId)!] = rating.score;
           }
 
           rating = ratingQueue.next();
@@ -183,14 +185,14 @@ export class GetFullScoresRequest implements RequestHandler {
         assignments.push({
           id: dbAss.id,
           type: ASSIGNMENT_TYPE_RATING,
-          judgeIndex: judgeIdxMap.get(dbAss.judgeId),
+          judgeIndex: judgeIdxMap.get(dbAss.judgeId)!,
           priority: dbAss.priority,
           active: !!dbAss.active,
 
-          submissionIndex: submissionIdxMap.get(dbAss.submissionId),
+          submissionIndex: submissionIdxMap.get(dbAss.submissionId!),
           noShow: !!dbAss.noShow,
           rating: dbAss.rating,
-          ratings
+          ratings: ratings.map(x => x!)
         });
       } else if (dbAss.type == ASSIGNMENT_TYPE_RANKING) {
         const rankings: Array<{submissionIndex: number, score: number}> = [];
@@ -198,7 +200,7 @@ export class GetFullScoresRequest implements RequestHandler {
         while (ranking && ranking.assignmentId <= dbAss.id) {
           if (ranking.assignmentId === dbAss.id) {
             rankings.push({
-              submissionIndex: submissionIdxMap.get(ranking.submissionId),
+              submissionIndex: submissionIdxMap.get(ranking.submissionId)!,
               score: ranking.score
             });
           }
@@ -210,11 +212,11 @@ export class GetFullScoresRequest implements RequestHandler {
         assignments.push({
           id: dbAss.id,
           type: ASSIGNMENT_TYPE_RANKING,
-          judgeIndex: judgeIdxMap.get(dbAss.judgeId),
+          judgeIndex: judgeIdxMap.get(dbAss.judgeId)!,
           priority: dbAss.priority,
           active: !!dbAss.active,
 
-          prizeIndex: prizeIdxMap.get(dbAss.prizeId),
+          prizeIndex: prizeIdxMap.get(dbAss.prizeId!),
           rankings
         });
       } else {
@@ -230,7 +232,7 @@ export class GetFullScoresRequest implements RequestHandler {
     }> = dbSubmissions.map(sub => ({
       id: sub.id,
       name: sub.name,
-      trackIndex: trackIdxMap.get(sub.trackId),
+      trackIndex: trackIdxMap.get(sub.trackId)!,
       location: sub.location
     }));
 
@@ -241,7 +243,7 @@ export class GetFullScoresRequest implements RequestHandler {
   }> = dbCategories.map(cat => ({
     id: cat.id,
     name: cat.name,
-    trackIndex: trackIdxMap.get(cat.trackId)
+    trackIndex: trackIdxMap.get(cat.trackId)!
   }));
 
     return {

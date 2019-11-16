@@ -28,12 +28,12 @@ export class BeginJudgingRequest implements RequestHandler {
       "SELECT id, name, location FROM Submission ORDER BY LOCATION;");
   }
 
-  canHandle(data: object): boolean {
-    return data["requestName"] === "REQUEST_BEGIN_JUDGING";
+  canHandle(requestName: string): boolean {
+    return requestName === "REQUEST_BEGIN_JUDGING";
   }
 
-  handle(data: object): Promise<object> {
-    return Promise.resolve(this.syncHandle(data));
+  simpleValidate(data: any): boolean {
+    return true;
   }
 
   syncHandle(data: object): object {

@@ -1,7 +1,7 @@
 import React from "react";
 import {Socket} from "../Socket";
 
-import {ClientStorage} from "../ClientStorage";
+import {getLoggedInJudgeId} from "../ClientStorage";
 import {JudgePage, JudgePageProps} from "../components/JudgePage";
 import {ConnectionStatus} from "../JudgeTypes";
 import {GetJudgesResponseData} from "../../shared/GetJudgesRequestTypes";
@@ -22,7 +22,6 @@ import {
 
 export class JudgeApp extends React.Component<any, JudgeAppState> {
   socket: Socket;
-  clientStorage: ClientStorage;
 
   judgeId: number;
   currentAssignment?: GetAssignmentResponseData;
@@ -38,8 +37,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     this.socket = new Socket();
     this.socket.onConnectionEvent(evt => this.handleSocketConnectionEvent(evt));
 
-    this.clientStorage = new ClientStorage();
-    this.judgeId = this.clientStorage.getJudgeId();
+    this.judgeId = getLoggedInJudgeId();
 
     this.initializePhase();
   }

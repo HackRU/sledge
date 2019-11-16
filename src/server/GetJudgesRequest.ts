@@ -10,11 +10,15 @@ export class GetJudgesRequest implements RequestHandler {
       "SELECT id, name FROM Judge ORDER BY name;");
   }
 
-  canHandle(data: object) {
-    return data["requestName"] === "REQUEST_GET_JUDGES";
+  canHandle(requestName: string) {
+    return requestName === "REQUEST_GET_JUDGES";
   }
 
-  handle(_: object): Promise<object> {
+  simpleValidate(data: any) {
+    return true;
+  }
+
+  handle(data: any): Promise<object> {
     let judges = this.selectJudges.all();
 
     return Promise.resolve({

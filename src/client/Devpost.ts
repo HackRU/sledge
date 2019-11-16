@@ -1,9 +1,11 @@
 import {parse} from "papaparse";
 
 /**
- * Parses a Devpost CSV
+ * Parses an exported CSV from the export functionality in devpost. This
+ * function should work whether or not the option to include personably
+ * identifiable information is checked.
  */
-export function parseDevpostData(csvContent: string) {
+export function parseDevpostData(csvContent: string): DevpostData | DevpostParseError {
   let csv = parse(csvContent, {delimiter: ","});
   if (csv.errors.length > 0 || csv.data.length < 1) {
     return {error: "Unable to parse csv", csv};
@@ -73,7 +75,24 @@ export function parseDevpostData(csvContent: string) {
     return x.table - y.table;
   });
 
-  return { submissions, prizes };
+  return { submissions, prizes, error: null };
 }
+
+export interface DevpostData {
+  error: null;
+  prizes: Array<string>;
+  submissions: Array<{
+    name: string,
+    table: number,
+    prizes: Array<number>
+  }>;
+};
+
+export interface DevpostParseError {
+  error: string;
+  csv: any;
+  row?: any;
+  hackPrizes?: any;
+};
 
 export const TEST_CSV_URL = "https://s3.amazonaws.com/sledge-assets/hackru-sp2019.csv";

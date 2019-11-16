@@ -1,49 +1,74 @@
 import {Database} from "./Database";
-import {RequestHandler} from "./Request";
 import {
-  ASSIGNMENT_TYPE_RATING
+  RequestHandler,
+  RequestValidationError,
+  ResponseObject
+} from "./Request";
+import {
+  ASSIGNMENT_TYPE_RATING,
+  ASSIGNMENT_TYPE_RANKING
 } from "../shared/constants";
+import * as tc from "./TypeCheck";
 import {
   RatingAssignmentForm,
-  SubmitAssignmentRequestData,
-  checkSubmitAssignmentRequestData
+  RankingAssignmentForm,
+  SubmitAssignmentRequestData
 } from "../shared/SubmitAssignmentRequestTypes";
+
+const validator = tc.hasShape({
+  requestName: tc.isConstant("REQUEST_SUBMIT_ASSIGNMENT"),
+  assignmentId: tc.isId,
+
+  ratingAssignmentForm: tc.isOptional(tc.hasShape({
+    noShow: tc.isBoolean,
+    rating: tc.isInteger,
+    categoryRatings: tc.isArrayOf(tc.isInteger)
+  })),
+  rankingAssignmentForm: tc.isOptional(tc.hasShape({
+    topSubmissionIds: tc.isFixedLengthArrayOf(tc.isId, 3)
+  }))
+});
 
 export class SubmitAssignmentRequest implements RequestHandler {
   constructor(private db: Database) {
   }
 
-  canHandle(data: object) {
-    return data["requestName"] === "REQUEST_SUBMIT_ASSIGNMENT";
+  canHandle(requestName: string) {
+    return requestName === "REQUEST_SUBMIT_ASSIGNMENT";
   }
 
-  handle(data: object): Promise<object> {
-    return Promise.resolve(this.handleSync(data));
+  simpleValidate(data: any): boolean {
+    return validator(data);
   }
 
-  handleSync(data: object): object {
-    if (!checkSubmitAssignmentRequestData(data)) {
-      return {
-        error: "Bad request data"
-      };
-    }
-
+  handleSync(data: any): ResponseObject {
     const requestData = data as SubmitAssignmentRequestData;
 
     this.db.begin();
 
     const assignment = this.db.prepare(
       "SELECT id, type, active FROM Assignment WHERE id=?;"
-    ).get(requestData["assignmentId"]);
-    if ((assignment.type !== ASSIGNMENT_TYPE_RATING && assignment.type !== 2) || !assignment.active) {
+    ).get(requestData.assignmentId);
+
+    if (!assignment.active) {
       this.db.rollback();
-      return {error: "Bad request"};
+      return { error: "Submitted assignment is not active" };
     }
 
-    if (assignment.type === 1) {
+    if (assignment.type === ASSIGNMENT_TYPE_RATING) {
+      if (!requestData.ratingAssignmentForm) {
+        this.db.rollback();
+        return { error: "Incorrect submission for rating assignment" };
+      }
+
       this.submitRatingAssignment(requestData.assignmentId, requestData.ratingAssignmentForm);
-    } else if (assignment.type === 2) {
-      this.submitRankingAssignment(requestData.assignmentId, requestData["rankingAssignmentForm"]);
+    } else if (assignment.type === ASSIGNMENT_TYPE_RANKING) {
+      if (!requestData.rankingAssignmentForm) {
+        this.db.rollback();
+        return { error: "Incorrect submission for ranking assignment" };
+      }
+
+      this.submitRankingAssignment(requestData.assignmentId, requestData.rankingAssignmentForm);
     }
 
     this.db.prepare(
@@ -82,7 +107,7 @@ export class SubmitAssignmentRequest implements RequestHandler {
     ).run(form.noShow ? 1 : 0, form.rating, ratingAssignment.id);
   }
 
-  submitRankingAssignment(assignmentId: number, form: any) {
+  submitRankingAssignment(assignmentId: number, form: RankingAssignmentForm) {
     const rankingAssignment = this.db.prepare(
       "SELECT id AS rankingAssignmentId "+
         "FROM RankingAssignment "+

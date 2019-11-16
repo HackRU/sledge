@@ -2,13 +2,18 @@ export class DoubleEndedQueue<T> {
   private top: Array<T>;
   private middle: Iterator<T>;
   private middleDone: boolean;
-  private bottom: Array<T>;
+  private bottom: Array<T | null>;
   private bottomIndex: number;
 
   constructor(initial?: Iterable<T>) {
     if (initial) {
       this.middle = initial[Symbol.iterator]();
+    } else {
+      this.middle = {
+        next: () => ({done: true, value: null})
+      };
     }
+
     this.top = [];
     this.middleDone = false;
     this.bottom = [];
@@ -17,7 +22,7 @@ export class DoubleEndedQueue<T> {
 
   next(): T {
     if (this.top.length > 0) {
-      return this.top.pop();
+      return this.top.pop()!;
     }
 
     if (!this.middleDone) {
@@ -30,7 +35,9 @@ export class DoubleEndedQueue<T> {
     }
 
     if (this.bottomIndex < this.bottom.length) {
-      return this.bottom[this.bottomIndex++];
+      let next = this.bottom[this.bottomIndex];
+      this.bottom[this.bottomIndex] = null;
+      return next!;
     }
 
     throw new Error("DoubleEndedQueue: Queue is empty!");
