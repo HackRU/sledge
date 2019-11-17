@@ -9,7 +9,7 @@ import {
 } from "reactstrap";
 
 export class TextSubmit extends React.Component<TextSubmitProps, any> {
-  constructor(props) {
+  constructor(props: TextSubmitProps) {
     super(props);
 
     this.state = {
@@ -17,11 +17,11 @@ export class TextSubmit extends React.Component<TextSubmitProps, any> {
     };
   }
 
-  onChange(evt) {
+  onChange(evt: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ textValue: evt.target.value });
   }
 
-  handleKeyPress(evt) {
+  handleKeyPress(evt: React.KeyboardEvent<HTMLInputElement>) {
     if (evt.ctrlKey && evt.key === "Enter") {
       this.submit();
     }

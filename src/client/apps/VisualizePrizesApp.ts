@@ -16,7 +16,7 @@ import {Socket} from "../Socket";
 export class VisualizePrizesApp extends React.Component<any, VisualizePrizeAppsState> {
   socket: Socket;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
     this.state = {
@@ -68,7 +68,7 @@ function prizeTablesFromResponse(res: GetFullScoresResponseData): Array<PrizeTab
   const prizeTables: Array<PrizeTable> = [];
   for (let i=0;i<res.prizes.length;i++) {
     const prize = res.prizes[i];
-    const statuses = res.judges.map(j => []);
+    const statuses: Array<Array<{status: string}>> = res.judges.map(j => []);
 
     for (let eligibleSubmissionIndex of prize.eligibleSubmissions) {
       for (let j=0;j<res.judges.length;j++) {
@@ -95,7 +95,7 @@ function prizeTablesFromResponse(res: GetFullScoresResponseData): Array<PrizeTab
 
   for (let ass of res.assignments) {
     if (ass.type === 1) {
-      const statuses = statusMap[ass.submissionIndex][ass.judgeIndex];
+      const statuses = statusMap[ass.submissionIndex!][ass.judgeIndex];
       for (let status of statuses) {
         status.statusObj.status = ass.active ? "JSSTATUS_ACTIVE" : (
           ass.noShow ? "JSSTATUS_NOSHOW" : "JSSTATUS_COMPLETE"

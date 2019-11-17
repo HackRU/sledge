@@ -9,7 +9,7 @@ import {VisualizeRatingsPageProps} from "../components/VisualizeRatingsPage";
 export class VisualizeRatingsApp extends React.Component<any, VisualizeRatingsAppState> {
   socket: Socket;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
     this.state = {

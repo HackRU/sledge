@@ -22,8 +22,8 @@ export class Socket {
       reconnectionDelay: 2000
     });
 
-    this.socket.on("update", data => this.handleUpdate(data));
-    this.socket.on("response", data => this.handleResponse(data));
+    this.socket.on("update", (data: unknown) => this.handleUpdate(data));
+    this.socket.on("response", (data: unknown) => this.handleResponse(data));
 
     [
       "connect",
@@ -41,7 +41,7 @@ export class Socket {
     );
   }
 
-  private handleUpdate(data: object) {
+  private handleUpdate(data: any) {
     for (let h of this.updateHandlers) {
       h(data);
     }
@@ -53,7 +53,7 @@ export class Socket {
     }
   }
 
-  private handleResponse(data: object) {
+  private handleResponse(data: any) {
     let returnId = data["returnId"];
     let resolver = this.resolvers.get(returnId);
     if (resolver) {
@@ -70,7 +70,7 @@ export class Socket {
    * Sends a request to the server and returns a Promise giving
    * the response. Before sending the returnId is set.
    */
-  sendRequest(data: object): Promise<object> {
+  sendRequest(data: object): Promise<any> {
     let returnId = generateUniqueReturnId();
     let wireData = {
       ...data, returnId

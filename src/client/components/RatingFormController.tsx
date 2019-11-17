@@ -7,7 +7,7 @@ import {RatingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 export class RatingFormController extends React.Component<RatingFormControllerProps, RatingFormControllerState> {
   assignment: RatingAssignment;
 
-  constructor(props) {
+  constructor(props: RatingFormControllerProps) {
     super(props);
 
     this.assignment = props.ratingAssignment;

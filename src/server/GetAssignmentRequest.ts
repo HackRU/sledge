@@ -1,18 +1,27 @@
 import {RequestHandler} from "./Request";
 import {Database, Statement} from "./Database";
 import {modulo} from "../shared/util";
-import {GetAssignmentResponseData} from "../shared/GetAssignmentRequestTypes";
+import {
+  GetAssignmentRequestData,
+  GetAssignmentResponseData
+} from "../shared/GetAssignmentRequestTypes";
+import * as tc from "./TypeCheck";
+
+const validator = tc.hasShape({
+  requestName: tc.isConstant("REQUEST_GET_ASSIGNMENT"),
+  judgeId: tc.isId
+});
 
 export class GetAssignmentRequest implements RequestHandler {
   constructor(private db: Database) {
   }
 
-  canHandle(data: object) {
-    return data["requestName"] === "REQUEST_GET_ASSIGNMENT";
+  canHandle(requestName: string) {
+    return requestName === "REQUEST_GET_ASSIGNMENT";
   }
 
-  handle(data: object) {
-    return Promise.resolve(this.syncHandle(data));
+  simpleValidate(data: any) {
+    return validator(data);
   }
 
   getJudgeInfo(judgeId: number): {id: number, name: string, anchor: number} | null {
@@ -90,7 +99,7 @@ export class GetAssignmentRequest implements RequestHandler {
     return newAssignmentId as number;
   }
 
-  getAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
+  getAssignmentDetails(assignmentId: number): GetAssignmentResponseData | null {
     const assignment = this.db.prepare(
       "SELECT type FROM Assignment WHERE id=?;"
     ).get(assignmentId);
@@ -173,14 +182,10 @@ export class GetAssignmentRequest implements RequestHandler {
     };
   }
 
-  syncHandle(data: object): object {
-    if (!Number.isInteger(data["judgeId"])) {
-      return {
-        error: "Recieved bad data, judgeId must be an integer"
-      };
-    }
+  handleSync(data: any): GetAssignmentResponseData | { error: string } {
+    const request: GetAssignmentRequestData = data;
 
-    const judge = this.getJudgeInfo(data["judgeId"]);
+    const judge = this.getJudgeInfo(request.judgeId);
     if (!judge) {
       return {
         error: `No Judge with id ${data["judgeId"]}`
@@ -190,8 +195,13 @@ export class GetAssignmentRequest implements RequestHandler {
     this.db.begin();
     const currentActiveAssignment = this.getNextActiveAssignment(judge.id);
     if (currentActiveAssignment) {
+      const assignmnet = this.getAssignmentDetails(currentActiveAssignment);
       this.db.commit();
-      return this.getAssignmentDetails(currentActiveAssignment);
+
+      if (!assignmnet) {
+        throw new Error("Can't refind assignment");
+      }
+      return assignmnet;
     }
 
     const newAssignmentId = this.createRatingAssignment(judge.id, judge.anchor);
@@ -205,6 +215,11 @@ export class GetAssignmentRequest implements RequestHandler {
       };
     }
 
-    return this.getAssignmentDetails(newAssignmentId);
+    const newAssignment = this.getAssignmentDetails(newAssignmentId);
+    if (!newAssignment) {
+      throw new Error("Can't find new assignment");
+    }
+
+    return newAssignment;
   }
 }

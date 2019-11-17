@@ -10,7 +10,7 @@ export class GlobalStatusRequest implements RequestHandler {
   }
 
   canHandle(requestName: string) {
-    return requestName === "REQUST_GLOBAL_STATUS";
+    return requestName === "REQUEST_GLOBAL_STATUS";
   }
 
   simpleValidate(data: any) {

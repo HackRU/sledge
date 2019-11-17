@@ -36,7 +36,7 @@ export class BeginJudgingRequest implements RequestHandler {
     return true;
   }
 
-  syncHandle(data: object): object {
+  handleSync(data: object): object {
     // We can only begin judging in phase 2
     let phase = this.selectPhase.get().phase;
     if (phase !== 1) {

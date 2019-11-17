@@ -8,7 +8,7 @@ import { BadRoutePage } from "../components/BadRoutePage";
 export class BadRouteApp extends React.Component<any, any> {
   pageHash: string;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.pageHash = document.location.hash;
   }

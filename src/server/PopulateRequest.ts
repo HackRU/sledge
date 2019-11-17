@@ -5,7 +5,28 @@ import {runMany} from "./DatabaseHelpers";
 import {RequestHandler} from "./Request";
 import * as tc from "./TypeCheck";
 
-import {PopulateRequestData, checkPopulateRequestData} from "../shared/PopulateRequestTypes";
+import {PopulateRequestData} from "../shared/PopulateRequestTypes";
+
+const validator = tc.hasShape({
+  requestName: tc.isConstant("REQUEST_POPULATE"),
+  submissions: tc.isArrayOf(tc.hasShape({
+    name: tc.isString,
+    location: tc.isInteger
+  })),
+  judges: tc.isArrayOf(tc.hasShape({
+    name: tc.isString
+  })),
+  categories: tc.isArrayOf(tc.hasShape({
+    name: tc.isString
+  })),
+  prizes: tc.isArrayOf(tc.hasShape({
+    name: tc.isString
+  })),
+  submissionPrizes: tc.isArrayOf(tc.hasShape({
+    submission: tc.isInteger,
+    prize: tc.isInteger
+  }))
+});
 
 export class PopulateRequest implements RequestHandler {
   // Sql statements
@@ -36,10 +57,12 @@ export class PopulateRequest implements RequestHandler {
     return requestName === "REQUEST_POPULATE";
   }
 
+  simpleValidator(data: any): boolean {
+    return validator(data);
+  }
+
   handleSync(data: any): object {
-    if (data["requestName"] !== "REQUEST_POPULATE") {
-      return null;
-    }
+    const request: PopulateRequestData = data;
 
     this.db.begin();
 
@@ -54,23 +77,15 @@ export class PopulateRequest implements RequestHandler {
       };
     }
 
-    if (!checkPopulateRequestData(data)) {
-      this.db.commit();
-
-      return {
-        error: "Recieved bad data for request"
-      };
-    }
-
     // Insert submissions, judges, categories and prizes
-    let submissionIds = runMany(this.insertSubmission, data["submissions"]);
-    let judgeIds = runMany(this.insertJudge, data["judges"]);
-    let categoryIds = runMany(this.insertCategory, data["categories"]);
-    let prizeIds = runMany(this.insertPrize, data["prizes"]);
+    const submissionIds = runMany(this.insertSubmission, request.submissions);
+    const judgeIds = runMany(this.insertJudge, request.judges);
+    const categoryIds = runMany(this.insertCategory, request.categories);
+    const prizeIds = runMany(this.insertPrize, request.prizes);
 
     // The submissions prizes are encoded by their index into submissions
     // and prizes
-    let submissionPrizeRows = data["submissionPrizes"].map(sp => ({
+    let submissionPrizeRows = request.submissionPrizes.map(sp => ({
       submissionId: submissionIds[sp["submission"]],
       prizeId: prizeIds[sp["prize"]]
     }));

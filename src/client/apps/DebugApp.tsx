@@ -49,7 +49,7 @@ export class DebugApp extends React.Component<any,any> {
     xhr.send();
   }
 
-  setUserEvent(json) {
+  setUserEvent(json: string) {
     this.setState({ userEvent: json });
   }
 
@@ -65,7 +65,7 @@ export class DebugApp extends React.Component<any,any> {
     });
   }
 
-  loadTemplate(name) {
+  loadTemplate(name: string) {
     this.setState({ userEvent: this.templates.get(name) });
   }
 

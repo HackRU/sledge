@@ -80,7 +80,7 @@ export const PopulatePage = (props: PopulatePageProps) => (
       }, {
         name: "Change Location",
         cb: idx => {
-          let newTableNumber = parseInt(prompt("New Loaction"));
+          let newTableNumber = parseInt(prompt("New Loaction")||"0");
           if (!Number.isNaN(newTableNumber)) {
             props.onChangeSubmissionLocation(idx, newTableNumber);
           }

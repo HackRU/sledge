@@ -28,13 +28,13 @@ import {ServerSocket} from "./ServerSocket";
 export class Server {
   private isInitialized: boolean;
 
-  private express: express.Express;
-  private http: HttpServer;
+  private express?: express.Express;
+  private http?: HttpServer;
 
-  private db: Database;
-  private eventHandler: EventHandler;
-  private socketAttacher: SocketAttacher;
-  private serverSocket: ServerSocket;
+  private db?: Database;
+  private eventHandler?: EventHandler;
+  private socketAttacher?: SocketAttacher;
+  private serverSocket?: ServerSocket;
 
   constructor(private port: number, private dataDir: string, private publicDir: string) {
     this.isInitialized = false;

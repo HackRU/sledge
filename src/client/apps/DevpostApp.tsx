@@ -8,7 +8,11 @@ import {
 
 import {TextSubmit} from "../components/TextSubmit";
 import {Socket} from "../Socket";
-import {parseDevpostData, TEST_CSV_URL} from "../Devpost";
+import {
+  parseDevpostData,
+  DevpostData,
+  TEST_CSV_URL
+} from "../Devpost";
 
 export class DevpostApp extends React.Component<any,any> {
   socket: Socket;
@@ -24,13 +28,13 @@ export class DevpostApp extends React.Component<any,any> {
     };
   }
 
-  private onChanged(csv) {
+  private onChanged(csv: string) {
     let parsed = parseDevpostData(csv);
     let json = JSON.stringify(parsed);
 
     if (!parsed.error) {
 
-      localStorage["setup"] = JSON.stringify(convertDevpostToSetupData(parsed));
+      localStorage["setup"] = JSON.stringify(convertDevpostToSetupData(parsed as DevpostData));
 
       this.setState({
         result: json,
@@ -51,7 +55,7 @@ export class DevpostApp extends React.Component<any,any> {
       let json = JSON.stringify(parsed);
 
       if (!parsed.error) {
-        localStorage["setup"] = JSON.stringify(convertDevpostToSetupData(parsed));
+        localStorage["setup"] = JSON.stringify(convertDevpostToSetupData(parsed as DevpostData));
         this.setState({
           result: json,
           status: `Successfully loaded from ${TEST_CSV_URL}`
@@ -96,7 +100,7 @@ export class DevpostApp extends React.Component<any,any> {
   }
 }
 
-function convertDevpostToSetupData(devpostData) {
+function convertDevpostToSetupData(devpostData: DevpostData) {
   return {
     prizes: devpostData.prizes,
     submissions: devpostData.submissions.map(d => ({

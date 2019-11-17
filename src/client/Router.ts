@@ -65,7 +65,7 @@ export class Router {
         originalHash: this.originalHash
       })
     );
-    const mountedComponent = render(topElement, this.container);
+    const mountedComponent = render(topElement as any, this.container as any);
 
     // For debugging
     (window as any)["app"] = mountedComponent;

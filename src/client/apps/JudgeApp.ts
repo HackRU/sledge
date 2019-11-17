@@ -116,7 +116,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
   submitRatingAssignment(form: RatingAssignmentForm) {
     this.socket.sendRequest({
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
-      assignmentId: this.currentAssignment.id,
+      assignmentId: this.currentAssignment!.id,
       ratingAssignmentForm: form
     }).then(res => {
       this.loadAssignment();
@@ -126,7 +126,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
   submitRankingAssignment(form: RankingAssignmentForm) {
     this.socket.sendRequest({
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
-      assignmentId: this.currentAssignment.id,
+      assignmentId: this.currentAssignment!.id,
       rankingAssignmentForm: form
     }).then(res => {
       this.loadAssignment();

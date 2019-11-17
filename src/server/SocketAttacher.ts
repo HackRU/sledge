@@ -17,7 +17,7 @@ export type RecieveHandler = (data: object) => Promise<object>;
  */
 export class SocketAttacher {
   private sio: any;
-  private requestHandler: (data: object, client: string) => void;
+  private requestHandler?: (data: object, client: string) => void;
 
   constructor(server: HttpServer) {
     this.sio = socketio(server);
@@ -33,6 +33,10 @@ export class SocketAttacher {
       if (typeof data !== "object") {
         log(`WARN: Got request event with type ${typeof data}. Ignoring.`);
         return;
+      }
+
+      if (!this.requestHandler) {
+        throw new Error("No request handler!");
       }
 
       this.requestHandler(data, socket.sid);

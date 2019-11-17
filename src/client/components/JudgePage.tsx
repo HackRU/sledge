@@ -42,19 +42,19 @@ const JudgeSubPage = (props: JudgePageProps) => {
     case "JUDGE_SUBPAGE_ASSIGNMENT_RATING":
       return (
         <JudgePageAssignmentRating
-          assignmentId={props.assignmentId}
-          judgeName={props.judgeName}
-          ratingAssignment={props.ratingAssignment}
-          onSubmitRatingAssignment={props.onSubmitRatingAssignment}
+          assignmentId={props.assignmentId!}
+          judgeName={props.judgeName!}
+          ratingAssignment={props.ratingAssignment!}
+          onSubmitRatingAssignment={props.onSubmitRatingAssignment!}
         />
       );
     case "JUDGE_SUBPAGE_ASSIGNMENT_RANKING":
       return (
         <JudgePageAssignmentRanking
-          assignmentId={props.assignmentId}
-          judgeName={props.judgeName}
-          rankingAssignment={props.rankingAssignment}
-          onSubmitRankingAssignment={props.onSubmitRankingAssignment}
+          assignmentId={props.assignmentId!}
+          judgeName={props.judgeName!}
+          rankingAssignment={props.rankingAssignment!}
+          onSubmitRankingAssignment={props.onSubmitRankingAssignment!}
         />
       );
     case "JUDGE_SUBPAGE_ASSIGNMENT_NONE":

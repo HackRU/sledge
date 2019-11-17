@@ -5,9 +5,10 @@ import {RankingForm} from "./RankingForm";
 import {RankingAssignment} from "../../shared/GetAssignmentRequestTypes";
 import {RankingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
 
-export class RankingFormController extends React.Component<RankingFormControllerProps,
-RankingFormControllerState> {
-  constructor(props) {
+export class RankingFormController extends
+  React.Component<RankingFormControllerProps, RankingFormControllerState> {
+
+  constructor(props: RankingFormControllerProps) {
     super(props);
 
     this.state = {

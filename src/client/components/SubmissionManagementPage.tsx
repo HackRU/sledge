@@ -8,7 +8,7 @@ import {
   TabularActions
 } from "./TabularActions";
 
-export const SubmissionManagementPage = props => (
+export const SubmissionManagementPage = (props: SubmissionManagementPageProps) => (
   <Container id="SubmissionManagementPage">
     <h1>{`Submission Management`}</h1>
 

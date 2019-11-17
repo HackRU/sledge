@@ -1,7 +1,7 @@
 import {SocketAttacher} from "./SocketAttacher";
 
 export class ServerSocket {
-  requestHandler: RequestHandler;
+  requestHandler?: RequestHandler;
 
   constructor(private socketAttacher: SocketAttacher) {
     socketAttacher.setRequestHandler((data: object, client: string) => this.handleRequest(data, client));
@@ -19,7 +19,7 @@ export class ServerSocket {
     this.socketAttacher.sendUpdate(data);
   }
 
-  private handleRequest(data: object, client: string) {
+  private handleRequest(data: any, client: string) {
     if (typeof this.requestHandler === "undefined") {
       throw new Error("Recieved request before requestHandler bound.");
     }

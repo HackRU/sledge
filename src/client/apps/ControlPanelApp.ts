@@ -15,7 +15,7 @@ import {Socket} from "../Socket";
 export class ControlPanelApp extends React.Component<any, ControlPanelAppState> {
   socket: Socket;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
     this.socket = new Socket();

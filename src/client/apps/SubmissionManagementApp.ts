@@ -15,7 +15,7 @@ import {Socket} from "../Socket";
 export class SubmissionManagementApp extends React.Component<any, SubmissionManagementAppState> {
   socket: Socket;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
     this.state = {
@@ -75,10 +75,10 @@ function getRatingInformation(response: GetFullScoresResponseData): Array<Submis
   for (let ass of response.assignments) {
     if (ass.type === 1) {
       if (!ass.active && !ass.noShow) {
-        rawScores[ass.submissionIndex].push(ass.rating);
-        normalizedScores[ass.submissionIndex].push(normalizationFactors[ass.judgeIndex] * ass.rating);
+        rawScores[ass.submissionIndex!].push(ass.rating!);
+        normalizedScores[ass.submissionIndex!].push(normalizationFactors[ass.judgeIndex] * ass.rating!);
       } else {
-        activeAssignments[ass.submissionIndex]++;
+        activeAssignments[ass.submissionIndex!]++;
       }
     }
   }
@@ -105,7 +105,7 @@ function calculateJudgeNormalizationFactors(response: GetFullScoresResponseData)
   for (let ass of response.assignments) {
     if (ass.type === 1) {
       if (!ass.active) {
-        judgeScores[ass.judgeIndex].push(ass.rating);
+        judgeScores[ass.judgeIndex].push(ass.rating!);
       }
     }
   }

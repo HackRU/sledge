@@ -6,7 +6,7 @@ import {
 } from "reactstrap";
 
 export class Hideable extends React.Component<HideableProps, any> {
-  constructor(props) {
+  constructor(props: HideableProps) {
     super(props);
 
     this.state = {

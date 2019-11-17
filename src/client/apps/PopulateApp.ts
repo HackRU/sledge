@@ -136,7 +136,7 @@ export class PopulateApp extends React.Component<any, PopulateState> {
         sub.prizes.map(prizeIdx => ({
           submission: subIdx,
           prize: prizeIdx
-        }))
+        })) as any
       ), []
     );
 

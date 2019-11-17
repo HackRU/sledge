@@ -1,3 +1,8 @@
+export interface GetAssignmentRequestData {
+  requestName: "REQUEST_GET_ASSIGNMENT";
+  judgeId: number;
+}
+
 export interface GetAssignmentResponseData {
   id: number;
   judgeId: number;
