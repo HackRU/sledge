@@ -25,30 +25,15 @@ import {pages} from "./directory";
  * Decide which page to load
  */
 export class Router {
-  hash?: string;
-  originalHash?: string;
-  container?: HTMLElement;
-  page: any;
-
   start() {
-    const hash = window.location.hash;
-    this.hash = hash;
-    this.originalHash = this.hash;
-    this.container = getAppContainer();
-    this.page = pages.find(p => p.match.test(hash));
+    let path = (window as any)["CURRENT_PAGE"];
+    let page = pages.find(p => p.path === path);
 
-    this.renderReactApp(this.page.component);
+    if (!page) {
+      throw new Error(`Page not found: ${path}`);
+    }
 
-    document.location.hash = this.page.canonical;
-    this.hash = this.page.canonical;
-
-    // The browser won't automatically reload if only the hash changes, so
-    // we do this manually
-    window.addEventListener("hashchange", () => {
-      if (this.hash !== window.location.hash) {
-        window.location.reload();
-      }
-    });
+    this.renderReactApp(page.component);
   }
 
   /**
@@ -60,12 +45,9 @@ export class Router {
    * created by them.
    */
   renderReactApp(app: any) {
-    const topElement = createElement("div", {},
-      createElement(app, {
-        originalHash: this.originalHash
-      })
-    );
-    const mountedComponent = render(topElement as any, this.container as any);
+    const topElement = createElement(app);
+    const container = getAppContainer();
+    const mountedComponent = render(topElement, container);
 
     // For debugging
     (window as any)["app"] = mountedComponent;

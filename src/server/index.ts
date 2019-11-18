@@ -18,6 +18,8 @@
 import {resolve} from "path";
 
 import {Server} from "./Server";
+import {generateStaticHtmlFiles} from "./HTMLGenerator";
+
 import {VERSION} from "../version";
 
 const DEFAULT_PORT = 8080;
@@ -44,6 +46,9 @@ OPTIONS
 
    --datadir <DIR>
         Set the data directory (default ./data)
+
+   --generate-html <DIR>
+        Generate static HTML, output to directory and exit
 
    --initonly, --no-initonly
         Exit immediately after starting if enabled (default disabled)
@@ -94,14 +99,17 @@ export function start(opts: Options) {
     process.stdout.write(`Sledge ${VERSION}\n`);
     process.exit(EXIT_SUCCESS);
 
+  } else if (opts.generateHtml) {
+    process.stdout.write(`Sledge ${VERSION}\n`);
+    process.stdout.write(`Generating HTML to ${opts.htmlOutDir}...\n`);
+    generateStaticHtmlFiles(opts.htmlOutDir!);
+    process.stdout.write(`Done.\n`);
+    process.exit(EXIT_SUCCESS);
+
   } else {
     process.stdout.write(`Sledge ${VERSION} - A judging system for hackathons\n`);
     let server = new Server(opts.port, opts.dataDir, opts.publicDir);
     server.init();
-
-    if (process.send) {
-      process.send("bound");
-    }
 
     if (opts.exitAfterInit) {
       process.exit(EXIT_SUCCESS);
@@ -120,7 +128,8 @@ function parseArgs(args: string[]): Options {
     port: DEFAULT_PORT,
     publicDir: resolve(process.cwd(), "public"),
     dataDir: resolve(process.cwd(), "data"),
-    exitAfterInit: false
+    exitAfterInit: false,
+    generateHtml: false
   };
 
   let i = 0;
@@ -176,6 +185,18 @@ function parseArgs(args: string[]): Options {
       opts.exitAfterInit = false;
       i += 1;
 
+    } else if (arg === "--generate-html") {
+      let htmlOutDir = args[i+1];
+      if (htmlOutDir == null) {
+        opts.hasError = true;
+        opts.errorString = "You did not specify an HTML output directory";
+        return opts;
+      }
+
+      opts.htmlOutDir = args[i+1];
+      opts.generateHtml = true;
+      return opts;
+
     } else {
       opts.hasError = true;
       opts.errorString = `Invalid option: ${arg}`;
@@ -203,6 +224,10 @@ export interface Options {
   publicDir: string;
   /** Directory to store persistent data in */
   dataDir: string;
+  /** Generate HTMl */
+  generateHtml: boolean;
+  /** Directory to generate HTML */
+  htmlOutDir?: string;
   /** If true, server exits immediately after starting */
   exitAfterInit: boolean;
 }

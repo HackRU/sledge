@@ -11,6 +11,10 @@ build-client-static:
 	cp static/* public
 	cp -R src public/src
 
+.PHONY: build-client-html
+build-client-html: build-client-static build-server
+	sledge --generate-html ${CURDIR}
+
 .PHONY: build-client-webpack
 build-client-webpack:
 	webpack

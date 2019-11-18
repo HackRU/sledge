@@ -10,55 +10,50 @@ import {VisualizePrizesApp} from "./apps/VisualizePrizesApp";
 import {SubmissionManagementApp} from "./apps/SubmissionManagementApp";
 import {HomeApp} from "./apps/HomeApp";
 
+export interface ApplicationConstructor {
+  new(props: {}): React.Component<{}, any>;
+}
+
 export interface PageListing {
-  match: RegExp;
-  canonical: string;
-  component: any;
+  name: string;
+  path: string;
+  component: ApplicationConstructor;
 };
 
 export const pages: Array<PageListing> = [{
-  match: /^(#?$|#home($|\/))/,
-  canonical: "#home",
-  component: HomeApp,
-}, {
-  match: /^#debug($|\/)/,
-  canonical: "#debug",
+  name: "Socket Debugger",
+  path: "debug",
   component: DebugApp
 }, {
-  match: /^#populate(\/|$)/,
-  canonical: "#populate",
+  name: "Populate",
+  path: "populate",
   component: PopulateApp
 }, {
-  match: /^#devpost(\/|$)/,
-  canonical: "#devpost",
+  name: "Devpost Importer",
+  path: "devpost",
   component: DevpostApp
 }, {
-  match: /^#login(\/|$)/,
-  canonical: "#login",
-  component: LoginApp,
+  name: "Login",
+  path: "login",
+  component: LoginApp
 }, {
-  match: /^#judge(\/|$)/,
-  canonical: "#judge",
+  name: "Judge",
+  path: "judge",
   component: JudgeApp
 }, {
-  match: /^#visualizeRatings(\/|$)/,
-  canonical: "#visualizeRatings",
+  name: "Visualize Ratings",
+  path: "visualizeratings",
   component: VisualizeRatingsApp
 }, {
-  match: /^#visualizePrizes(\/|$)/,
-  canonical: "#visualizePrizes",
+  name: "Visualize Prizes",
+  path: "visualizeprizes",
   component: VisualizePrizesApp
 }, {
-  match: /^#controlPanel(\/|$)/,
-  canonical: "#controlPanel",
+  name: "Control Panel",
+  path: "controlpanel",
   component: ControlPanelApp
 }, {
-  match: /^#submissionManagement(\/|$)/,
-  canonical: "#submissionManagement",
+  name: "Submission Management",
+  path: "submissionmanagement",
   component: SubmissionManagementApp
-}, {
-  // Default
-  match: /.*/,
-  canonical: "#error",
-  component: BadRouteApp
 }];
