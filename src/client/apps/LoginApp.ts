@@ -2,6 +2,7 @@ import React from "react";
 import {Socket} from "../Socket";
 
 import {LoginPage, LoginPageProps} from "../components/LoginPage";
+import {segue} from "../util";
 
 export class LoginApp extends React.Component<any,any> {
   socket: Socket;
@@ -27,7 +28,7 @@ export class LoginApp extends React.Component<any,any> {
 
   selectJudge(judgeId: number) {
     localStorage["judgeId"] = judgeId.toString();
-    window.location.hash = "#judge";
+    segue("/judge");
   }
 
   getPageProps(): LoginPageProps {

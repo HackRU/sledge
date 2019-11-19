@@ -1,6 +1,7 @@
 import React from "react";
 
 import {HomePage, HomePageProps} from "../components/HomePage";
+import {segue} from "../util";
 
 export class HomeApp extends React.Component<any, any> {
   constructor(props: any) {
@@ -9,7 +10,7 @@ export class HomeApp extends React.Component<any, any> {
 
   getPageProps(): HomePageProps {
     return {
-      onSegue: to => {window.location.hash = to;}
+      onSegue: segue
     };
   }
 

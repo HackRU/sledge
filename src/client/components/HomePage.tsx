@@ -19,14 +19,14 @@ export const HomePage = (props: HomePageProps) => (
           </CardTitle>
       <div style={{margin: "10px"}}>
         <Button
-          onClick={() => props.onSegue("#login")}
+        onClick={() => props.onSegue("/login")}
         >
           {`Login`}
         </Button>
       </div>
       <div style={{margin: "10px"}}>
         <Button
-          onClick={() => props.onSegue("#judge")}
+        onClick={() => props.onSegue("/judge")}
         >
           {`Start Judging!`}
         </Button>

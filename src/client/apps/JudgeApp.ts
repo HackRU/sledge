@@ -7,6 +7,7 @@ import {ConnectionStatus} from "../JudgeTypes";
 import {GetJudgesResponseData} from "../../shared/GetJudgesRequestTypes";
 import {GlobalStatusResponseData} from "../../shared/GlobalStatusRequestTypes";
 import {RatingAssignmentForm, RankingAssignmentForm} from "../../shared/SubmitAssignmentRequestTypes";
+import {segue} from "../util";
 import {
   GetAssignmentResponseData,
   RatingAssignment,
@@ -137,7 +138,7 @@ export class JudgeApp extends React.Component<any, JudgeAppState> {
     const baseProps: JudgePageProps = {
       subPage: this.state.subPage,
       connectionStatus: this.state.connectionStatus,
-      onSegue: to => {window.location.hash = to;}
+      onSegue: segue
     };
 
     if (this.state.subPage === "JUDGE_SUBPAGE_ASSIGNMENT_RATING") {

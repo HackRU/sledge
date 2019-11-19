@@ -89,7 +89,7 @@ const JudgePageBadCredentials = (props: {onSegue: (page: string) => void}) => (
           <h2>{`You are not logged in.`}</h2>
         </CardTitle>
         <Button
-          onClick={() => props.onSegue("#login")}
+        onClick={() => props.onSegue("/login")}
         >
           {`Go to Login Page`}
         </Button>
