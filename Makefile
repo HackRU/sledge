@@ -3,7 +3,7 @@ export PATH := $(CURDIR)/bin:$(CURDIR)/node_modules/.bin:$(PATH)
 export DEBUG=sledge
 
 .PHONY: build
-build: build-client-static build-client-webpack build-server
+build: build-client-static build-client-html build-client-webpack build-server
 
 .PHONY: build-client-static
 build-client-static:
@@ -13,7 +13,7 @@ build-client-static:
 
 .PHONY: build-client-html
 build-client-html: build-client-static build-server
-	sledge --generate-html ${CURDIR}
+	sledge --generate-html ${CURDIR}/public
 
 .PHONY: build-client-webpack
 build-client-webpack:
