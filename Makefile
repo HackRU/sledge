@@ -26,3 +26,7 @@ build-server:
 .PHONY: start
 start: build
 	sledge
+
+.PHONY: test
+test: build
+	jest
