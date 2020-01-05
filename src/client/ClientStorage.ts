@@ -35,3 +35,51 @@ export function getLoggedInJudgeId(): number {
 export function setLoggedInJudgeId(judgeId: number) {
   localStorage["judgeId"] = judgeId.toString();
 }
+
+/**
+ * Gets the Setup data from local storage
+ */
+export function getSetupData(): SetupData {
+  const localStorageJson = localStorage["setup"];
+  if (localStorageJson) {
+    return {
+      ...getDefaultSetupData(),
+      ...JSON.parse(localStorageJson)
+    };
+  } else {
+    return getDefaultSetupData();
+  }
+}
+
+/**
+ * Sets the setup data in local storage
+ */
+export function setSetupData(data: SetupData) {
+  localStorage["setup"] = JSON.stringify(data);
+}
+
+/**
+ * Resets setup data in local storage to the default
+ */
+export function resetSetupData() {
+  localStorage["setup"] = JSON.stringify(getDefaultSetupData());
+}
+
+/**
+ * Returns the default setup data
+ */
+function getDefaultSetupData(): SetupData {
+  return {
+    submissions: [],
+    prizes: [],
+    judges: [],
+    categories: []
+  };
+};
+
+export interface SetupData {
+  submissions: Array<{name: string, location: number, prizes: Array<number>}>;
+  prizes: Array<string>;
+  judges: Array<string>;
+  categories: Array<string>;
+};

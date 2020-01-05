@@ -3,6 +3,8 @@ import io from "socket.io-client";
 export type UpdateHandler = (data: object) => void;
 export type ConnectionHandler = (socketioEventName: string) => void;
 
+let singleton: Socket;
+
 /**
  * Communicates with the Sledge server
  */
@@ -13,6 +15,11 @@ export class Socket {
   resolvers: Map<string, (data: object) => void>;
 
   constructor() {
+    if (singleton) {
+      throw new Error("Socket should only have one instance");
+    }
+    singleton = this;
+
     this.updateHandlers = [];
     this.connectionHandlers = [];
     this.resolvers = new Map();
@@ -101,6 +108,13 @@ export class Socket {
   onConnectionEvent(handler: ConnectionHandler) {
     this.connectionHandlers.push(handler);
   }
+}
+
+/**
+ * Gets the socket singleton instance
+ */
+export function getSocket(): Socket {
+  return singleton;
 }
 
 /**

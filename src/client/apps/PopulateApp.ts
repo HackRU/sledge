@@ -3,6 +3,7 @@ import React from "react";
 import {PopulatePage, PopulatePageProps} from "../components/PopulatePage";
 import {range} from "../../shared/util";
 import {Socket} from "../Socket";
+import {getSetupData, setSetupData, resetSetupData, SetupData} from "../ClientStorage";
 
 import {PopulateRequestData} from "../../shared/PopulateRequestTypes";
 
@@ -13,24 +14,12 @@ export class PopulateApp extends React.Component<any, PopulateState> {
     super(props);
     this.socket = new Socket();
 
-    let setupData = this.getSetupDataFromLocalStorage();
+    let setupData = getSetupData();
     this.state = {
       setupData,
       json: JSON.stringify(setupData),
       response: ""
     };
-  }
-
-  getSetupDataFromLocalStorage(): SetupData {
-    let localStorageJson = localStorage["setup"];
-    if (localStorageJson) {
-      return {
-        ...getDefaultSetupData(),
-        ...JSON.parse(localStorageJson)
-      };
-    } else {
-      return getDefaultSetupData();
-    }
   }
 
   alterSetupData(f: (data: SetupData) => SetupData) {
@@ -41,15 +30,20 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       setupData: newSetupData,
       json: JSON.stringify(newSetupData)
     });
-    this.saveToLocalStorage(newSetupData);
+    setSetupData(newSetupData);
   }
 
-  saveToLocalStorage(setupData: SetupData) {
-    localStorage["setup"] = JSON.stringify(setupData);
+  reloadSetupData() {
+    let newSetupData = getSetupData();
+    this.setState({
+      setupData: newSetupData,
+      json: JSON.stringify(newSetupData)
+    });
   }
 
   reset() {
-    this.alterSetupData(d => getDefaultSetupData());
+    resetSetupData();
+    this.reloadSetupData();
   }
 
   removeHack(index: number) {
@@ -177,7 +171,7 @@ export class PopulateApp extends React.Component<any, PopulateState> {
 
       onLoadFromJson: json => this.alterSetupData(old => JSON.parse(json)),
       onReset: () => this.reset(),
-      onReloadFromLocalStorage: () => this.alterSetupData(old => this.getSetupDataFromLocalStorage()),
+      onReloadFromLocalStorage: () => this.alterSetupData(old => getSetupData()),
       onRemoveSubmission: idx => this.removeHack(idx),
       onAssignSubmissionAllPrizes: idx => this.assignAllPrizesToHack(idx),
       onChangeSubmissionLocation: (idx, loc) => this.changeTableNumber(idx, loc),
@@ -200,24 +194,8 @@ export class PopulateApp extends React.Component<any, PopulateState> {
   }
 }
 
-function getDefaultSetupData(): SetupData {
-  return {
-    submissions: [],
-    prizes: [],
-    judges: [],
-    categories: []
-  };
-};
-
 interface PopulateState {
   setupData: SetupData;
   json: string;
   response: string;
-};
-
-interface SetupData {
-  submissions: Array<{name: string, location: number, prizes: Array<number>}>;
-  prizes: Array<string>;
-  judges: Array<string>;
-  categories: Array<string>;
-};
+}

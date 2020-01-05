@@ -10,6 +10,7 @@ import {
 import {catchOnly} from "../../shared/util";
 
 import {Socket} from "../Socket";
+import { DebugPage, DebugPageProps } from "../components/DebugPage";
 
 export class DebugApp extends React.Component<any,any> {
   socket: Socket;
@@ -22,7 +23,7 @@ export class DebugApp extends React.Component<any,any> {
     (window as any).socket = this.socket;
 
     this.state = {
-      userEvent: "{}"
+      templatesReady: false
     };
 
     this.loadTemplates();
@@ -34,6 +35,7 @@ export class DebugApp extends React.Component<any,any> {
   }
 
   loadTemplates() {
+    let that = this;
     const xhr = new XMLHttpRequest();
     const outsideThis = this;
     xhr.addEventListener("load", function () {
@@ -44,72 +46,23 @@ export class DebugApp extends React.Component<any,any> {
           outsideThis.templates.set(key, JSON.stringify(templateData[key]))
         }
       }
+      that.setState({templatesReady: true});
     });
     xhr.open("GET", "/templates.json");
     xhr.send();
   }
 
-  setUserEvent(json: string) {
-    this.setState({ userEvent: json });
-  }
-
-  sendRequest() {
-    let obj = catchOnly("SyntaxError", () => JSON.parse(this.state.userEvent));
-    if (obj instanceof Error) {
-      this.setState({ response: obj.message });
-      return;
-    }
-    this.socket.sendDebug(obj).then(res => {
-      let json = JSON.stringify(res);
-      this.setState({ response: json });
-    });
-  }
-
-  loadTemplate(name: string) {
-    this.setState({ userEvent: this.templates.get(name) });
+  getPageProps(): DebugPageProps {
+    return {
+      templatesReady: this.state.templatesReady,
+      templates: this.templates
+    };
   }
 
   render() {
-    return (
-      <Container id="DebugApp">
-        <h1>{`Debug`}</h1>
-
-        <p>{`This page is to assist with client-side debugging.`}</p>
-
-        <h2>{`Send Events`}</h2>
-        <Input
-          type="textarea"
-          value={this.state.userEvent}
-          onChange={evt => this.setUserEvent(evt.target.value)}
-        />
-        <div>
-          <Button
-            onClick={() => this.sendRequest()}
-          >{`Send`}</Button>
-        </div>
-        <span>{`Templates:`}</span>
-        <ButtonGroup>
-          <Button
-            onClick={() => this.loadTemplate("status")}
-          >
-            {`Global Status`}
-          </Button>
-          <Button
-            onClick={() => this.loadTemplate("beginJudging")}
-          >
-            {`Begin Judging`}
-          </Button>
-          <Button
-            onClick={() => this.loadTemplate("samplePopulate")}
-          >
-            {`Load Sample Populate Data`}
-          </Button>
-        </ButtonGroup>
-
-        <h2>{`Response`}</h2>
-        <Input type="textarea" readOnly value={this.state.response} />
-
-      </Container>
+    return React.createElement(
+      DebugPage,
+      this.getPageProps()
     );
   }
 }

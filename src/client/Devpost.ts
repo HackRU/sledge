@@ -1,5 +1,7 @@
 import {parse} from "papaparse";
 
+import {SetupData} from "./ClientStorage";
+
 /**
  * Parses an exported CSV from the export functionality in devpost. This
  * function should work whether or not the option to include personably
@@ -76,6 +78,49 @@ export function parseDevpostData(csvContent: string): DevpostData | DevpostParse
   });
 
   return { submissions, prizes, error: null };
+}
+
+/**
+ * Merge devpost data into setup data and return the new data. Prizes and submissions are matched
+ * by name
+ */
+export function mergeDevpostToSetupData(devpost: DevpostData, setup: SetupData): SetupData {
+  let data = {
+    submissions: setup.submissions.map(xs => ({...xs})),
+    prizes: setup.prizes.slice(),
+    judges: setup.judges.slice(),
+    categories: setup.categories.slice()
+  };
+
+  let prizeIndexes: Array<number> = [];
+  for (let i=0;i<devpost.prizes.length;i++) {
+    let idx = data.prizes.indexOf(devpost.prizes[i]);
+    if (idx < 0) {
+      idx = data.prizes.push(devpost.prizes[i])-1;
+    }
+    prizeIndexes[i] = idx;
+  }
+
+  for (let submission of devpost.submissions) {
+    let obj = data.submissions.find(sub => sub.name === submission.name);
+    if (obj) {
+      obj.location = submission.table;
+      for (let prizeOldIndex of submission.prizes) {
+        let prizeIdx = prizeIndexes[prizeOldIndex];
+        if (obj.prizes.indexOf(prizeIdx) < 0) {
+          obj.prizes.push(prizeIdx);
+        }
+      }
+    } else {
+      data.submissions.push({
+        name: submission.name,
+        location: submission.table,
+        prizes: submission.prizes.map(p => prizeIndexes[p])
+      });
+    }
+  }
+
+  return data;
 }
 
 export interface DevpostData {
