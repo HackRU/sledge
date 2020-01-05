@@ -1,7 +1,7 @@
 # Sledge
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/HackRU/sledge.svg?branch=master)](https://travis-ci.org/HackRU/sledge)
+[![Actions Status](https://github.com/hackru/sledge/workflows/CI/badge.svg)](https://github.com/hackru/sledge/actions)
 
 Sledge is a real-time judging platform primarily used  for HackRU. Sledge is
 responsible for assigning judges to hacks, collecting ratings from judges and
