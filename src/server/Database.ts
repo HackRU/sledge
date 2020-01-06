@@ -72,6 +72,47 @@ export class Database {
   }
 
   /**
+   * Creates and immediately calls run on a prepared statement. Returns the last created row id.
+   */
+  run(stmt: string, bindParameters: any): number {
+    let prepared = this.prepare(stmt);
+    let result = prepared.run(bindParameters);
+    if (typeof result.lastInsertRowid !== "number") {
+      throw new Error("Bad lastInsertRowid");
+    }
+    return result.lastInsertRowid;
+  }
+
+  runMany(stmt: string, bindParameters: any[]): any[] {
+    let prepared = this.prepare(stmt);
+    let inserted: Array<number> = [];
+    for (let params of bindParameters) {
+      const rowId = prepared.run(params).lastInsertRowid;
+      if (typeof rowId !== "number") {
+        throw new Error("Bad lastInsertRowid");
+      }
+      inserted.push(rowId);
+    }
+    return inserted;
+  }
+
+  /**
+   * Creates and immediately calls get on a prepared statement. Returns the result.
+   */
+  get<A>(stmt: string, bindParameters: any): A {
+    let prepared = this.prepare(stmt);
+    return prepared.get(bindParameters);
+  }
+
+  /**
+   * Creates an immediately calls all on a prepared statement.
+   */
+  all<A>(stmt: string, bindParameters: any): Array<A> {
+    let prepared = this.prepare(stmt);
+    return prepared.all(bindParameters);
+  }
+
+  /**
    * Open the Sqlite3 database file, or create if it doesn't exist
    */
   private openDatabase() {

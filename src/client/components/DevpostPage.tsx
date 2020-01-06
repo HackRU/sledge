@@ -8,6 +8,7 @@ import {
 
 import {TextSubmit} from "./TextSubmit";
 import {Socket} from "../Socket";
+import { TEST_CSV_URL } from "../Devpost";
 
 export const DevpostPage = (props: DevpostPageProps) => (
   <Container id="DevpostPage">
@@ -15,7 +16,13 @@ export const DevpostPage = (props: DevpostPageProps) => (
 
     <TextSubmit onChange={props.onImport} />
 
-    <p>{`Status: `}<em>{props.status}</em></p>
+    <div><p>{`Status: `}<em>{props.status}</em></p></div>
+
+    <div>
+      <span>{`Download a `}</span>
+      <a href={TEST_CSV_URL}>{`test CSV`}</a>
+      <span>{`.`}</span>
+    </div>
   </Container>
 );
 

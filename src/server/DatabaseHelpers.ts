@@ -1,5 +1,5 @@
 import {
-  Statement
+  Statement, Database
 } from "./Database";
 
 /**
@@ -20,4 +20,11 @@ export function runMany(stmt: Statement, rows: Array<any>): Array<number> {
     inserted.push(rowId);
   }
   return inserted;
+}
+
+export function getCurrentPhase(db: Database): number {
+  let stmt = db.prepare(
+    "SELECT phase FROM Status ORDER BY timestamp DESC;"
+  );
+  return stmt.get().phase;
 }

@@ -1,14 +1,16 @@
-import {log} from "./log";
-
 import {Database} from "./Database";
-import {runMany} from "./DatabaseHelpers";
+import {runMany, getCurrentPhase} from "./DatabaseHelpers";
 import {RequestHandler} from "./Request";
 import * as tc from "./TypeCheck";
 
 import {PopulateRequestData} from "../shared/PopulateRequestTypes";
+import { PHASE_SETUP } from "../shared/constants";
 
 const validator = tc.hasShape({
   requestName: tc.isConstant("REQUEST_POPULATE"),
+  tracks: tc.isArrayOf(tc.hasShape({
+    name: tc.isString
+  })),
   submissions: tc.isArrayOf(tc.hasShape({
     name: tc.isString,
     location: tc.isInteger
@@ -29,28 +31,7 @@ const validator = tc.hasShape({
 });
 
 export class PopulateRequest implements RequestHandler {
-  // Sql statements
-  selectPhase: any;
-  insertSubmission: any;
-  insertJudge: any;
-  insertCategory: any;
-  insertPrize: any;
-  insertSubmissionPrize: any;
-
   constructor(private db: Database) {
-    this.selectPhase = db.prepare(
-      "SELECT phase FROM Status ORDER BY timestamp DESC;");
-    this.insertSubmission = db.prepare(
-      "INSERT INTO Submission(name, location) VALUES($name, $location);");
-    this.insertJudge = db.prepare(
-      "INSERT INTO Judge(name) VALUES($name);");
-    this.insertCategory = db.prepare(
-      "INSERT INTO Category(name) VALUES($name);");
-    this.insertPrize = db.prepare(
-      "INSERT INTO Prize(name, isOverall) VALUES($name, 0);");
-    this.insertSubmissionPrize = db.prepare(
-      "INSERT INTO SubmissionPrize(submissionId, prizeId, eligibility) "
-        +"VALUES($submissionId, $prizeId, 1);");
   }
 
   canHandle(requestName: string): boolean {
@@ -61,44 +42,69 @@ export class PopulateRequest implements RequestHandler {
     return validator(data);
   }
 
-  handleSync(data: any): object {
-    const request: PopulateRequestData = data;
-
+  handleSync(data: PopulateRequestData): object {
     this.db.begin();
 
     // Populate is only valid in phase 1
-    let phase = this.selectPhase.get().phase;
-    if (phase !== 1) {
-      log("WARN: Populate sent in wrong phase");
+    if (getCurrentPhase(this.db) !== PHASE_SETUP) {
       this.db.commit();
 
       return {
-        error: "Populate can only be sent in phase 1"
+        error: "Populate: wrong phase"
       };
     }
 
-    // Insert submissions, judges, categories and prizes
-    const submissionIds = runMany(this.insertSubmission, request.submissions);
-    const judgeIds = runMany(this.insertJudge, request.judges);
-    const categoryIds = runMany(this.insertCategory, request.categories);
-    const prizeIds = runMany(this.insertPrize, request.prizes);
-
-    // The submissions prizes are encoded by their index into submissions
-    // and prizes
-    let submissionPrizeRows = request.submissionPrizes.map(sp => ({
-      submissionId: submissionIds[sp["submission"]],
-      prizeId: prizeIds[sp["prize"]]
-    }));
-    for (let sp of submissionPrizeRows) {
-      if (typeof sp["submissionId"] !== "number" || typeof sp["prizeId"] !== "number") {
-        this.db.rollback();
-
-        return {
-          error: "Bad data, probably out of bounds submission or prize index"
-        };
+    // Indexes can't be above max index for that object
+    for (let submission of data.submissions) {
+      if (
+        submission.track < 0 ||
+        submission.track >= data.tracks.length
+      ) {
+        this.db.commit();
+        return {error: "Out of bounds index in submissions"};
       }
     }
-    let submissionPrizeIds = runMany(this.insertSubmissionPrize, submissionPrizeRows);
+    for (let subPrz of data.submissionPrizes) {
+      if (
+        subPrz.prize < 0 ||
+        subPrz.prize >= data.prizes.length ||
+        subPrz.submission < 0 ||
+        subPrz.submission >= data.submissions.length
+       ) {
+         this.db.commit();
+         return {error: "Out of bounds index in submissionPrizes"};
+      }
+    }
+
+    let trackIds = this.db.runMany(
+      "INSERT INTO Track(name) VALUES($name);",
+      data.tracks
+    );
+    let submissionIds = this.db.runMany(
+      "INSERT INTO Submission(name, location) "+
+        +"VALUES($name, $location, $trackId);",
+      data.submissions.map(sub => ({
+        name: sub.name,
+        location: sub.location,
+        trackId: trackIds[sub.track]
+      }))
+    );
+    let prizeIds = this.db.runMany(
+      "INSERT INTO Prize(name) VALUES($name);",
+      data.prizes
+    );
+    this.db.runMany(
+      "INSERT INTO SubmissionPrize(submissionId, prizeId, eligibility) "
+        +"VALUES($submissionId, $prizeId, 1);",
+      data.submissionPrizes.map(subPrz => ({
+        submissionId: submissionIds[subPrz.submission],
+        prizeId: prizeIds[subPrz.prize]
+      }))
+    );
+    this.db.runMany(
+      "INSERT INTO Judge(name) VALUES($name);",
+      data.judges
+    );
 
     this.db.commit();
 

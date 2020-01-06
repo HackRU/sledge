@@ -73,13 +73,20 @@ function getDefaultSetupData(): SetupData {
     submissions: [],
     prizes: [],
     judges: [],
-    categories: []
+    categories: [],
+    tracks: []
   };
 };
 
 export interface SetupData {
-  submissions: Array<{name: string, location: number, prizes: Array<number>}>;
+  submissions: Array<{
+    name: string,
+    location: number,
+    track: number,
+    prizes: Array<number>
+  }>;
   prizes: Array<string>;
   judges: Array<string>;
   categories: Array<string>;
+  tracks: Array<string>;
 };

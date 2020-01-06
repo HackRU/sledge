@@ -14,10 +14,11 @@ import {InputItem} from "./InputItem";
 export interface PopulatePageProps {
   json: string;
   status: string;
-  submissions: Array<{location: number, name: string, prizes: Array<number>}>;
+  submissions: Array<{location: number, name: string, prizes: Array<number>, track: number}>;
   prizes: Array<{name: string}>;
   judges: Array<{name: string}>;
   categories: Array<{name: string}>;
+  tracks: Array<{name: string}>;
 
   onLoadFromJson: (json: string) => void;
   onReset: () => void;
@@ -31,6 +32,10 @@ export interface PopulatePageProps {
   onRemoveJudge: (judgeIndex: number) => void;
   onAddCategory: (newCategoryName: string) => void;
   onRemoveCategory: (categoryIndex: number) => void;
+  onAddTrack: (trackName: string) => void;
+  onRemoveTrack: (trackIndex: number) => void;
+  onRenameTrack: (trackIndex: number, newName: string) => void;
+  onConvertPrizeToTrack: (trackIndex: number) => void;
   onPopulateServer: () => void;
   onStartJudging: () => void;
 };
@@ -63,11 +68,12 @@ export const PopulatePage = (props: PopulatePageProps) => (
     <h2>{`Submissions`}</h2>
 
     <TabularActions
-      headings={["Location", "Name", "Prizes"]}
+      headings={["Location", "Name", "Track", "Prizes"]}
       data={props.submissions.map(
         submission => [
           submission.location.toString(),
           submission.name,
+          props.tracks[submission.track].name,
           submission.prizes.map(idx => props.prizes[idx].name).join(", ")
         ]
       )}
@@ -83,6 +89,38 @@ export const PopulatePage = (props: PopulatePageProps) => (
           let newTableNumber = parseInt(prompt("New Loaction")||"0");
           if (!Number.isNaN(newTableNumber)) {
             props.onChangeSubmissionLocation(idx, newTableNumber);
+          }
+        }
+      }]}
+    />
+
+    <h2>{`Tracks`}</h2>
+
+    <ButtonGroup>
+      <Button
+        onClick={() => {
+          const name = prompt("New Track", "name");
+          if (name) {
+            props.onAddTrack(name)
+          }
+        }}
+      >
+        {`Add Track`}
+      </Button>
+    </ButtonGroup>
+
+    <TabularActions
+      headings={["name"]}
+      data={props.tracks.map(track => [track.name])}
+      actions={[{
+        name: "Remove",
+        cb: idx => props.onRemoveTrack(idx)
+      }, {
+        name: "Rename",
+        cb: idx => {
+          const name = prompt("Rename Track");
+          if (name) {
+            props.onRenameTrack(idx, name)
           }
         }
       }]}
@@ -104,6 +142,9 @@ export const PopulatePage = (props: PopulatePageProps) => (
             props.onRenamePrize(idx, newName);
           }
         }
+      }, {
+        name: "Convert to Track",
+        cb: props.onConvertPrizeToTrack
       }]}
     />
 

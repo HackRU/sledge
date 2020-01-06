@@ -85,12 +85,20 @@ export function parseDevpostData(csvContent: string): DevpostData | DevpostParse
  * by name
  */
 export function mergeDevpostToSetupData(devpost: DevpostData, setup: SetupData): SetupData {
-  let data = {
+  let data: SetupData = {
     submissions: setup.submissions.map(xs => ({...xs})),
     prizes: setup.prizes.slice(),
     judges: setup.judges.slice(),
-    categories: setup.categories.slice()
+    categories: setup.categories.slice(),
+    tracks: setup.tracks.slice()
   };
+
+  // If there are any submissions, we need at least one track to assign them. Try the first track,
+  // and if one doesn't exist create it.
+  const defaultTrack = 0;
+  if (data.submissions.length > 0 && data.tracks.length <= defaultTrack) {
+    data.tracks.push("Default Track");
+  }
 
   let prizeIndexes: Array<number> = [];
   for (let i=0;i<devpost.prizes.length;i++) {
@@ -115,7 +123,8 @@ export function mergeDevpostToSetupData(devpost: DevpostData, setup: SetupData):
       data.submissions.push({
         name: submission.name,
         location: submission.table,
-        prizes: submission.prizes.map(p => prizeIndexes[p])
+        prizes: submission.prizes.map(p => prizeIndexes[p]),
+        track: defaultTrack
       });
     }
   }

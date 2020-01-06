@@ -117,14 +117,62 @@ export class PopulateApp extends React.Component<any, PopulateState> {
     }));
   }
 
+  addTrack (name: string) {
+    this.alterSetupData(old => ({
+      ...old,
+      tracks: old.tracks.concat([name])
+    }))
+  }
+
+  removeTrack(index: number) {
+    this.alterSetupData(old => {
+      for (let sub of old.submissions) {
+        if (sub.track === index) {
+          alert(`Can't remove track: submission ${sub.name} uses it`);
+          return old;
+        }
+      }
+
+      return {
+        ...old,
+        tracks: old.tracks.filter((_t,i) => i !== index),
+        submissions: old.submissions.map(sub => ({
+          ...sub,
+          track: sub.track > index ? sub.track - 1 : sub.track
+        }))
+      };
+    });
+  }
+
+  renameTrack(index: number, newName: string) {
+    this.alterSetupData(old => ({
+      ...old,
+      tracks: old.tracks.map((t, i) => i === index ? newName : t)
+    }));
+  }
+
+  convertPrizeToTrack(przIndex: number) {
+    this.alterSetupData(old => ({
+      ...old,
+      tracks: old.tracks.concat([old.prizes[przIndex]]),
+      submissions: old.submissions.map(sub => ({
+        ...sub,
+        track: sub.prizes.indexOf(przIndex) < 0 ?
+          sub.track : old.tracks.length
+      }))
+    }));
+  }
+
   populateServer() {
     let submissions = this.state.setupData.submissions.map(s => ({
       name: s.name,
-      location: s.location
+      location: s.location,
+      track: s.track
     }));
     let judges = this.state.setupData.judges.map(name => ({name}));
     let categories = this.state.setupData.categories.map(name => ({name}));
     let prizes = this.state.setupData.prizes.map(name => ({name}));
+    let tracks = this.state.setupData.tracks.map(name => ({name}));
     let submissionPrizes = this.state.setupData.submissions.reduce(
       (subPrs, sub, subIdx) => subPrs.concat(
         sub.prizes.map(prizeIdx => ({
@@ -140,7 +188,8 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       judges,
       categories,
       prizes,
-      submissionPrizes
+      submissionPrizes,
+      tracks
     }
 
     this.socket.sendRequest(requestData).then(res => {
@@ -168,6 +217,7 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       prizes: this.state.setupData.prizes.map(name => ({name})),
       judges: this.state.setupData.judges.map(name => ({name})),
       categories: this.state.setupData.categories.map(name => ({name})),
+      tracks: this.state.setupData.tracks.map(name => ({name})),
 
       onLoadFromJson: json => this.alterSetupData(old => JSON.parse(json)),
       onReset: () => this.reset(),
@@ -181,6 +231,10 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       onRemoveJudge: idx => this.removeJudge(idx),
       onAddCategory: name => this.addCategory(name),
       onRemoveCategory: idx => this.removeCategory(idx),
+      onAddTrack: this.addTrack.bind(this),
+      onRemoveTrack: this.removeTrack.bind(this),
+      onRenameTrack: this.renameTrack.bind(this),
+      onConvertPrizeToTrack: this.convertPrizeToTrack.bind(this),
       onPopulateServer: () => this.populateServer(),
       onStartJudging: () => this.startJudging()
     };
