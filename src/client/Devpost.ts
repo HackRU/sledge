@@ -1,6 +1,6 @@
 import {parse} from "papaparse";
 
-import {SetupData} from "./ClientStorage";
+import {SetupData, copySetupData} from "./SetupData";
 
 /**
  * Parses an exported CSV from the export functionality in devpost. This
@@ -85,26 +85,20 @@ export function parseDevpostData(csvContent: string): DevpostData | DevpostParse
  * by name
  */
 export function mergeDevpostToSetupData(devpost: DevpostData, setup: SetupData): SetupData {
-  let data: SetupData = {
-    submissions: setup.submissions.map(xs => ({...xs})),
-    prizes: setup.prizes.slice(),
-    judges: setup.judges.slice(),
-    categories: setup.categories.slice(),
-    tracks: setup.tracks.slice()
-  };
+  let data: SetupData = copySetupData(setup);
 
   // If there are any submissions, we need at least one track to assign them. Try the first track,
   // and if one doesn't exist create it.
   const defaultTrack = 0;
-  if (data.submissions.length > 0 && data.tracks.length <= defaultTrack) {
-    data.tracks.push("Default Track");
+  if (devpost.submissions.length > 0 && data.tracks.length <= defaultTrack) {
+    data.tracks.push({name: "Default Track"});
   }
 
   let prizeIndexes: Array<number> = [];
   for (let i=0;i<devpost.prizes.length;i++) {
-    let idx = data.prizes.indexOf(devpost.prizes[i]);
+    let idx = data.prizes.findIndex(p => devpost.prizes[i] === p.name);
     if (idx < 0) {
-      idx = data.prizes.push(devpost.prizes[i])-1;
+      idx = data.prizes.push({name: devpost.prizes[i]})-1;
     }
     prizeIndexes[i] = idx;
   }

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ import {SetupData} from "./SetupData";
+
 /**
  * Checks local storage for the id of the currently logged in Judge. If there's
  * a valid judge id, returns it. Otherwise returns 0.
@@ -76,17 +78,4 @@ function getDefaultSetupData(): SetupData {
     categories: [],
     tracks: []
   };
-};
-
-export interface SetupData {
-  submissions: Array<{
-    name: string,
-    location: number,
-    track: number,
-    prizes: Array<number>
-  }>;
-  prizes: Array<string>;
-  judges: Array<string>;
-  categories: Array<string>;
-  tracks: Array<string>;
 };

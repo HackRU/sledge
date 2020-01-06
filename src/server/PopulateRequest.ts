@@ -75,13 +75,22 @@ export class PopulateRequest implements RequestHandler {
          return {error: "Out of bounds index in submissionPrizes"};
       }
     }
+    for (let cat of data.categories) {
+      if (
+        cat.track < 0 ||
+        cat.track >= data.tracks.length
+      ) {
+        this.db.commit();
+        return {error: "Out of bounds index in categories"};
+      }
+    }
 
     let trackIds = this.db.runMany(
       "INSERT INTO Track(name) VALUES($name);",
       data.tracks
     );
     let submissionIds = this.db.runMany(
-      "INSERT INTO Submission(name, location) "+
+      "INSERT INTO Submission(name, location, trackId) "
         +"VALUES($name, $location, $trackId);",
       data.submissions.map(sub => ({
         name: sub.name,
@@ -99,6 +108,14 @@ export class PopulateRequest implements RequestHandler {
       data.submissionPrizes.map(subPrz => ({
         submissionId: submissionIds[subPrz.submission],
         prizeId: prizeIds[subPrz.prize]
+      }))
+    );
+    this.db.runMany(
+      "INSERT INTO Category(name, trackId) "
+        +"VALUES($name, $trackId);",
+      data.categories.map(cat => ({
+        name: cat.name,
+        trackId: trackIds[cat.track]
       }))
     );
     this.db.runMany(

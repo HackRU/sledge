@@ -3,7 +3,8 @@ import React from "react";
 import {PopulatePage, PopulatePageProps} from "../components/PopulatePage";
 import {range} from "../../shared/util";
 import {Socket} from "../Socket";
-import {getSetupData, setSetupData, resetSetupData, SetupData} from "../ClientStorage";
+import {getSetupData, setSetupData, resetSetupData} from "../ClientStorage";
+import {SetupData, renamePrize, addCategory, getSubmissionPrizes, expandCategory, assignPrizeToAll, addPrize} from "../SetupData";
 
 import {PopulateRequestData} from "../../shared/PopulateRequestTypes";
 
@@ -82,17 +83,10 @@ export class PopulateApp extends React.Component<any, PopulateState> {
     }));
   }
 
-  renamePrize(index: number, newName: string) {
-    this.alterSetupData(old => ({
-      ...old,
-      prizes: old.prizes.map((p,i) => i === index ? newName : p)
-    }));
-  }
-
   addJudge(name: string) {
     this.alterSetupData(old => ({
       ...old,
-      judges: old.judges.concat([name])
+      judges: old.judges.concat([{name}])
     }));
   }
 
@@ -100,13 +94,6 @@ export class PopulateApp extends React.Component<any, PopulateState> {
     this.alterSetupData(old => ({
       ...old,
       judges: old.judges.filter((j,i) => i !== index)
-    }));
-  }
-
-  addCategory(name: string) {
-    this.alterSetupData(old => ({
-      ...old,
-      categories: old.categories.concat([name])
     }));
   }
 
@@ -120,7 +107,7 @@ export class PopulateApp extends React.Component<any, PopulateState> {
   addTrack (name: string) {
     this.alterSetupData(old => ({
       ...old,
-      tracks: old.tracks.concat([name])
+      tracks: old.tracks.concat([{name}])
     }))
   }
 
@@ -144,10 +131,10 @@ export class PopulateApp extends React.Component<any, PopulateState> {
     });
   }
 
-  renameTrack(index: number, newName: string) {
+  renameTrack(index: number, name: string) {
     this.alterSetupData(old => ({
       ...old,
-      tracks: old.tracks.map((t, i) => i === index ? newName : t)
+      tracks: old.tracks.map((t, i) => i === index ? {name} : t)
     }));
   }
 
@@ -164,32 +151,10 @@ export class PopulateApp extends React.Component<any, PopulateState> {
   }
 
   populateServer() {
-    let submissions = this.state.setupData.submissions.map(s => ({
-      name: s.name,
-      location: s.location,
-      track: s.track
-    }));
-    let judges = this.state.setupData.judges.map(name => ({name}));
-    let categories = this.state.setupData.categories.map(name => ({name}));
-    let prizes = this.state.setupData.prizes.map(name => ({name}));
-    let tracks = this.state.setupData.tracks.map(name => ({name}));
-    let submissionPrizes = this.state.setupData.submissions.reduce(
-      (subPrs, sub, subIdx) => subPrs.concat(
-        sub.prizes.map(prizeIdx => ({
-          submission: subIdx,
-          prize: prizeIdx
-        })) as any
-      ), []
-    );
-
     let requestData: PopulateRequestData = {
       requestName: "REQUEST_POPULATE",
-      submissions,
-      judges,
-      categories,
-      prizes,
-      submissionPrizes,
-      tracks
+      ...this.state.setupData,
+      submissionPrizes: getSubmissionPrizes(this.state.setupData)
     }
 
     this.socket.sendRequest(requestData).then(res => {
@@ -214,10 +179,10 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       json: this.state.json,
       status: this.state.response,
       submissions: this.state.setupData.submissions,
-      prizes: this.state.setupData.prizes.map(name => ({name})),
-      judges: this.state.setupData.judges.map(name => ({name})),
-      categories: this.state.setupData.categories.map(name => ({name})),
-      tracks: this.state.setupData.tracks.map(name => ({name})),
+      prizes: this.state.setupData.prizes,
+      judges: this.state.setupData.judges,
+      categories: this.state.setupData.categories,
+      tracks: this.state.setupData.tracks,
 
       onLoadFromJson: json => this.alterSetupData(old => JSON.parse(json)),
       onReset: () => this.reset(),
@@ -225,12 +190,15 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       onRemoveSubmission: idx => this.removeHack(idx),
       onAssignSubmissionAllPrizes: idx => this.assignAllPrizesToHack(idx),
       onChangeSubmissionLocation: (idx, loc) => this.changeTableNumber(idx, loc),
+      onAddPrize: name => this.alterSetupData(addPrize.bind(null, name)),
       onRemovePrize: idx => this.removePrize(idx),
-      onRenamePrize: (idx, name) => this.renamePrize(idx, name),
+      onRenamePrize: (idx, name) => this.alterSetupData(renamePrize.bind(null, idx, name)),
+      onAssignPrizeToAll: idx => this.alterSetupData(assignPrizeToAll.bind(null, idx)),
       onAddJudge: name => this.addJudge(name),
       onRemoveJudge: idx => this.removeJudge(idx),
-      onAddCategory: name => this.addCategory(name),
+      onAddCategory: name => this.alterSetupData(addCategory.bind(null, name)),
       onRemoveCategory: idx => this.removeCategory(idx),
+      onExpandCategory: idx => this.alterSetupData(expandCategory.bind(null, idx)),
       onAddTrack: this.addTrack.bind(this),
       onRemoveTrack: this.removeTrack.bind(this),
       onRenameTrack: this.renameTrack.bind(this),

@@ -17,7 +17,7 @@ export interface PopulatePageProps {
   submissions: Array<{location: number, name: string, prizes: Array<number>, track: number}>;
   prizes: Array<{name: string}>;
   judges: Array<{name: string}>;
-  categories: Array<{name: string}>;
+  categories: Array<{name: string, track: number}>;
   tracks: Array<{name: string}>;
 
   onLoadFromJson: (json: string) => void;
@@ -26,12 +26,15 @@ export interface PopulatePageProps {
   onRemoveSubmission: (submissionIndex: number) => void;
   onAssignSubmissionAllPrizes: (submissionIndex: number) => void;
   onChangeSubmissionLocation: (submissionIndex: number, newLocation: number) => void;
+  onAddPrize: (prizeName: string) => void;
   onRemovePrize: (prizeIndex: number) => void;
   onRenamePrize: (prizeIndex: number, newName: string) => void;
+  onAssignPrizeToAll: (prizeIndex: number) => void;
   onAddJudge: (newJudgeName: string) => void;
   onRemoveJudge: (judgeIndex: number) => void;
   onAddCategory: (newCategoryName: string) => void;
   onRemoveCategory: (categoryIndex: number) => void;
+  onExpandCategory: (categoryIndex: number) => void;
   onAddTrack: (trackName: string) => void;
   onRemoveTrack: (trackIndex: number) => void;
   onRenameTrack: (trackIndex: number, newName: string) => void;
@@ -128,6 +131,19 @@ export const PopulatePage = (props: PopulatePageProps) => (
 
     <h2>{`Prizes`}</h2>
 
+    <ButtonGroup>
+      <Button
+        onClick={() => {
+          const name = prompt("New Prize", "name");
+          if (name) {
+            props.onAddPrize(name)
+          }
+        }}
+      >
+        {`Add Prize`}
+      </Button>
+    </ButtonGroup>
+
     <TabularActions
       headings={["Name"]}
       data={props.prizes.map(prize => [prize.name])}
@@ -145,6 +161,9 @@ export const PopulatePage = (props: PopulatePageProps) => (
       }, {
         name: "Convert to Track",
         cb: props.onConvertPrizeToTrack
+      }, {
+        name: "Assign to All",
+        cb: props.onAssignPrizeToAll
       }]}
     />
 
@@ -159,7 +178,7 @@ export const PopulatePage = (props: PopulatePageProps) => (
           }
         }}
       >
-        {`Add`}
+        {`Add Judge`}
       </Button>
     </ButtonGroup>
 
@@ -185,18 +204,24 @@ export const PopulatePage = (props: PopulatePageProps) => (
           }
         }}
       >
-        {`Add`}
+        {`Add Category`}
       </Button>
     </ButtonGroup>
 
     <TabularActions
-      headings={["Name"]}
+      headings={["Name", "Track"]}
       data={props.categories.map(
-        cat => [cat.name]
+        cat => [
+          cat.name,
+          props.tracks[cat.track].name
+        ]
       )}
       actions={[{
         name: "Remove",
         cb: idx => props.onRemoveCategory(idx)
+      }, {
+        name: "Expand",
+        cb: idx => props.onExpandCategory(idx)
       }]}
     />
 
