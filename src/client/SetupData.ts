@@ -122,6 +122,16 @@ export function expandCategory(idx: number, data: SetupData): SetupData {
   };
 }
 
+export function cycleTrackOnCategory(idx: number, data: SetupData): SetupData {
+  return {
+    ...data,
+    categories: data.categories.map((cat, i) => ({
+      ...cat,
+      track: idx === i ? (cat.track + 1) % data.tracks.length : cat.track
+    }))
+  };
+}
+
 export function getSubmissionPrizes(data: SetupData):
   Array<{submission: number, prize: number}>
 {

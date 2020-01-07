@@ -4,7 +4,7 @@ import {PopulatePage, PopulatePageProps} from "../components/PopulatePage";
 import {range} from "../../shared/util";
 import {Socket} from "../Socket";
 import {getSetupData, setSetupData, resetSetupData} from "../ClientStorage";
-import {SetupData, renamePrize, addCategory, getSubmissionPrizes, expandCategory, assignPrizeToAll, addPrize} from "../SetupData";
+import {SetupData, renamePrize, addCategory, getSubmissionPrizes, expandCategory, assignPrizeToAll, addPrize, cycleTrackOnCategory} from "../SetupData";
 
 import {PopulateRequestData} from "../../shared/PopulateRequestTypes";
 
@@ -199,6 +199,7 @@ export class PopulateApp extends React.Component<any, PopulateState> {
       onAddCategory: name => this.alterSetupData(addCategory.bind(null, name)),
       onRemoveCategory: idx => this.removeCategory(idx),
       onExpandCategory: idx => this.alterSetupData(expandCategory.bind(null, idx)),
+      onCycleTrackOnCategory: idx => this.alterSetupData(cycleTrackOnCategory.bind(null, idx)),
       onAddTrack: this.addTrack.bind(this),
       onRemoveTrack: this.removeTrack.bind(this),
       onRenameTrack: this.renameTrack.bind(this),

@@ -35,6 +35,7 @@ export interface PopulatePageProps {
   onAddCategory: (newCategoryName: string) => void;
   onRemoveCategory: (categoryIndex: number) => void;
   onExpandCategory: (categoryIndex: number) => void;
+  onCycleTrackOnCategory: (categoryIndex: number) => void;
   onAddTrack: (trackName: string) => void;
   onRemoveTrack: (trackIndex: number) => void;
   onRenameTrack: (trackIndex: number, newName: string) => void;
@@ -222,6 +223,9 @@ export const PopulatePage = (props: PopulatePageProps) => (
       }, {
         name: "Expand",
         cb: idx => props.onExpandCategory(idx)
+      }, {
+        name: "Cycle Track",
+        cb: props.onCycleTrackOnCategory
       }]}
     />
 
