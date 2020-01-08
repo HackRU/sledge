@@ -6,6 +6,7 @@ import {
   GetAssignmentResponseData
 } from "../shared/GetAssignmentRequestTypes";
 import * as tc from "./TypeCheck";
+import { OnTheFlyAssigner } from "./OnTheFlyAssigner";
 
 const validator = tc.hasShape({
   requestName: tc.isConstant("REQUEST_GET_ASSIGNMENT"),
@@ -13,7 +14,10 @@ const validator = tc.hasShape({
 });
 
 export class GetAssignmentRequest implements RequestHandler {
+  private onTheFlyAssigner: OnTheFlyAssigner;
+
   constructor(private db: Database) {
+    this.onTheFlyAssigner = new OnTheFlyAssigner(db);
   }
 
   canHandle(requestName: string) {
@@ -51,52 +55,6 @@ export class GetAssignmentRequest implements RequestHandler {
     } else {
       return 1;
     }
-  }
-
-  createRatingAssignment(judgeId: number, anchor: number): number | null {
-    let seenSubmissions: Set<number> = new Set();
-    const seenSubmissionsStmt = this.db.prepare(
-      "SELECT Submission.id AS id "+
-        "FROM RatingAssignment "+
-        "LEFT JOIN Assignment ON RatingAssignment.assignmentId = Assignment.id "+
-        "LEFT JOIN Submission ON RatingAssignment.submissionId = Submission.id "+
-        "WHERE Assignment.judgeId = ?;"
-    );
-    for (let submission of seenSubmissionsStmt.iterate([judgeId])) {
-      seenSubmissions.add(submission.id);
-    }
-
-    const submissionLocationsStmt = this.db.prepare(
-      "SELECT id, location, active FROM Submission;"
-    );
-
-    let closestSubmissionId = 0;
-    let closestSubmissionDistance = Infinity;
-    for (let submission of submissionLocationsStmt.iterate()) {
-      const distance = modulo(submission.location - anchor, 10000);
-      const seen = seenSubmissions.has(submission.id);
-
-      if (submission.active && !seen && distance < closestSubmissionDistance) {
-        closestSubmissionId = submission.id;
-        closestSubmissionDistance = distance;
-      }
-    }
-
-    if (!closestSubmissionId) {
-      return null;
-    }
-
-    const priority = this.getNextAssignmentPriority(judgeId);
-    const newAssignmentId = this.db.prepare(
-      "INSERT INTO Assignment(judgeId, priority, type, active) "+
-        "VALUES(?, ?, 1, 1);"
-    ).run(judgeId, priority).lastInsertRowid;
-    this.db.prepare(
-      "INSERT INTO RatingAssignment(assignmentId, submissionId) "+
-        "VALUES(?, ?);"
-    ).run(newAssignmentId, closestSubmissionId);
-
-    return newAssignmentId as number;
   }
 
   getAssignmentDetails(assignmentId: number): GetAssignmentResponseData | null {
@@ -204,7 +162,7 @@ export class GetAssignmentRequest implements RequestHandler {
       return assignmnet;
     }
 
-    const newAssignmentId = this.createRatingAssignment(judge.id, judge.anchor);
+    const newAssignmentId = this.onTheFlyAssigner.createAssignment(judge.id);
     this.db.commit();
 
     if (!newAssignmentId) {

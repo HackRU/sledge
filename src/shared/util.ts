@@ -40,3 +40,13 @@ export function modulo(num: number, modulus: number) {
     return ((num % modulus) + modulus) % modulus;
   }
 }
+
+export function createIdMap<A extends {id: number}>(objs: A[]): Map<number, A> {
+  return new Map<number, A>(
+    objs.map(obj => [obj.id, obj])
+  );
+}
+
+export type SuccErr =
+  { success: true, error?: string } |
+  { success: false, error: string };

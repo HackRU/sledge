@@ -90,8 +90,8 @@ export class PopulateRequest implements RequestHandler {
       data.tracks
     );
     let submissionIds = this.db.runMany(
-      "INSERT INTO Submission(name, location, trackId) "
-        +"VALUES($name, $location, $trackId);",
+      "INSERT INTO Submission(name, location, trackId, active) "
+        +"VALUES($name, $location, $trackId, 1);",
       data.submissions.map(sub => ({
         name: sub.name,
         location: sub.location,

@@ -14,6 +14,7 @@ import {
   RankingAssignmentForm,
   SubmitAssignmentRequestData
 } from "../shared/SubmitAssignmentRequestTypes";
+import { SuccErr } from "../shared/util";
 
 const validator = tc.hasShape({
   requestName: tc.isConstant("REQUEST_SUBMIT_ASSIGNMENT"),
@@ -41,39 +42,56 @@ export class SubmitAssignmentRequest implements RequestHandler {
     return validator(data);
   }
 
-  handleSync(data: any): ResponseObject {
+  handleSync(data: SubmitAssignmentRequestData): ResponseObject {
     const requestData = data as SubmitAssignmentRequestData;
 
     this.db.begin();
 
-    const assignment = this.db.prepare(
-      "SELECT id, type, active FROM Assignment WHERE id=?;"
-    ).get(requestData.assignmentId);
+    const assignment = this.db.get<{
+      id: number,
+      type: number,
+      active: number
+    }>(
+      "SELECT id, type, active FROM Assignment WHERE id=?;",
+      data.assignmentId
+    );
 
     if (!assignment.active) {
       this.db.rollback();
       return { error: "Submitted assignment is not active" };
     }
 
+    let result: SuccErr;
     if (assignment.type === ASSIGNMENT_TYPE_RATING) {
       if (!requestData.ratingAssignmentForm) {
         this.db.rollback();
         return { error: "Incorrect submission for rating assignment" };
       }
 
-      this.submitRatingAssignment(requestData.assignmentId, requestData.ratingAssignmentForm);
+      result = this.submitRatingAssignment(requestData.assignmentId, requestData.ratingAssignmentForm);
     } else if (assignment.type === ASSIGNMENT_TYPE_RANKING) {
       if (!requestData.rankingAssignmentForm) {
         this.db.rollback();
         return { error: "Incorrect submission for ranking assignment" };
       }
 
-      this.submitRankingAssignment(requestData.assignmentId, requestData.rankingAssignmentForm);
+      result = this.submitRankingAssignment(requestData.assignmentId, requestData.rankingAssignmentForm);
+    } else {
+      this.db.rollback();
+      return {
+        error: `Unknown assignment type ${assignment.type}`
+      };
     }
 
-    this.db.prepare(
-      "UPDATE Assignment SET active=0 WHERE id=?;"
-    ).run(assignment.id);
+    if (!result.success) {
+      this.db.rollback();
+      return result;
+    }
+
+    this.db.run(
+      "UPDATE Assignment SET active=0 WHERE id=?;",
+      assignment.id
+    );
 
     this.db.commit();
 
@@ -82,42 +100,89 @@ export class SubmitAssignmentRequest implements RequestHandler {
     };
   }
 
-  submitRatingAssignment(assignmentId: number, form: RatingAssignmentForm) {
-    const ratingAssignment = this.db.prepare(
-      "SELECT id FROM RatingAssignment WHERE assignmentId=?;"
-    ).get(assignmentId);
-    const categories = this.db.prepare(
+  submitRatingAssignment(assignmentId: number, form: RatingAssignmentForm): SuccErr {
+    const ratingAssignment = this.db.get<{
+      id: number
+    }>(
+      "SELECT id FROM RatingAssignment WHERE assignmentId=?;",
+      assignmentId
+    );
+
+    const categories = this.db.all<{
+      id: number
+    }>(
       "SELECT Category.id AS id FROM Category "+
         "LEFT JOIN Assignment ON Assignment.id=? "+
         "LEFT JOIN RatingAssignment ON assignmentId=Assignment.id "+
         "LEFT JOIN Submission ON submissionId=Submission.id "+
         "WHERE Category.trackId=Submission.trackId "+
-        "ORDER BY id;"
-    ).all(assignmentId);
+        "ORDER BY id;",
+        assignmentId
+    );
 
-    for (let i=0;i<categories.length;i++) {
-      this.db.prepare(
-        "INSERT INTO Rating(ratingAssignmentId, categoryId, score) "+
-          "VALUES(?, ?, ?);"
-      ).run(ratingAssignment.id, categories[i].id, form.categoryRatings[i]);
+    let score = 0;
+    if (!form.noShow) {
+      if (form.categoryRatings.length !== categories.length) {
+        return {
+          success: false,
+          error: `Expected ${categories.length} category scores,`+
+            `got ${form.categoryRatings.length}`
+        }
+      }
+
+      this.db.runMany(
+        "INSERT INTO Rating(ratingAssignmentId, categoryId, answer) "+
+          "VALUES(?, ?, ?);",
+        categories.map(
+          (c, i) => [ratingAssignment.id, c.id, form.categoryRatings[i]]
+        )
+      );
+
+      // Calculate the score as the average of all category rankings, normalized to 0-1 scale
+      for (let rating of form.categoryRatings) {
+        if (rating >= 5) {
+          score += 4;
+        } else if (rating >= 1) {
+          score += (rating - 1) / 4;
+        }
+      }
+      score /= form.categoryRatings.length * 4;
     }
 
-    this.db.prepare(
-      "UPDATE RatingAssignment SET noShow=?,rating=? WHERE id=?;"
-    ).run(form.noShow ? 1 : 0, form.rating, ratingAssignment.id);
+    this.db.run(
+      "UPDATE RatingAssignment SET noShow=?, score=? WHERE id=?;",
+      [form.noShow ? 1 : 0, score, ratingAssignment.id]
+    );
+
+    return {
+      success: true
+    };
   }
 
-  submitRankingAssignment(assignmentId: number, form: RankingAssignmentForm) {
-    const rankingAssignment = this.db.prepare(
-      "SELECT id AS rankingAssignmentId "+
-        "FROM RankingAssignment "+
-        "WHERE assignmentId=?;"
-    ).get(assignmentId);
-    const updateRankStmt = this.db.prepare(
-      "UPDATE Ranking SET rank=?, score=? WHERE rankingAssignmentId=? AND submissionId=?;"
+  submitRankingAssignment(assignmentId: number, form: RankingAssignmentForm): SuccErr {
+    if (form.topSubmissionIds.length < 1 || form.topSubmissionIds.length > 3) {
+      return {
+        success: false,
+        error: `Got topSubmissionIds of length ${form.topSubmissionIds.length}`
+      };
+    }
+
+    const rankingAssignment = this.db.get<{
+      id: number
+    }>(
+      "SELECT id FROM RankingAssignment WHERE assignmentId=?;",
+      assignmentId
     );
-    updateRankStmt.run(1, 4, rankingAssignment.rankingAssignmentId, form.topSubmissionIds[0]);
-    updateRankStmt.run(2, 2, rankingAssignment.rankingAssignmentId, form.topSubmissionIds[1]);
-    updateRankStmt.run(3, 1, rankingAssignment.rankingAssignmentId, form.topSubmissionIds[2]);
+
+    this.db.runMany(
+      "UPDATE Ranking SET rank=?, score=? WHERE rankingAssignmentId=? AND submissionId=?;",
+      form.topSubmissionIds.map(
+        (submissionId, i) => [i+1, (3-i)/6, rankingAssignment.id, submissionId]
+      )
+    );
+
+    return {
+      success: true
+    };
   }
 }

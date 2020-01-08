@@ -48,9 +48,9 @@ CREATE TABLE Submission (
   id INTEGER NOT NULL PRIMARY KEY,
 
   name TEXT NOT NULL,
-  trackId INTEGER DEFAULT 1,
+  trackId INTEGER NOT NULL,
   location INTEGER NOT NULL,
-  active INTEGER DEFAULT 1,
+  active INTEGER NOT NULL,
 
   FOREIGN KEY(trackId) REFERENCES Track(id),
   CHECK(location > 0)
@@ -67,14 +67,13 @@ CREATE TABLE Judge (
 CREATE TABLE Prize (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  name TEXT NOT NULL,
-  isOverall INTEGER
+  name TEXT NOT NULL
 );
 
 CREATE TABLE Category (
   id INTEGER NOT NULL PRIMARY KEY,
 
-  trackId INTEGER DEFAULT 1,
+  trackId INTEGER NOT NULL,
   name TEXT NOT NULL,
 
   FOREIGN KEY(trackId) REFERENCES Track(id)
@@ -92,6 +91,18 @@ CREATE TABLE SubmissionPrize (
   FOREIGN KEY(prizeId) REFERENCES Prize(id),
   UNIQUE(submissionId, prizeId),
   CHECK((eligibility = 0) OR (eligibility = 1))
+);
+
+CREATE TABLE JudgePrizeBias (
+  id INTEGER NOT NULL PRIMARY KEY,
+
+  judgeId INTEGER NOT NULL,
+  prizeId INTEGER NOT NULL,
+  bias REAL NOT NULL,
+
+  FOREIGN KEY(judgeId) REFERENCES Judge(id),
+  FOREIGN KEY(prizeId) REFERENCES Prize(id),
+  UNIQUE(judgeId, prizeId)
 );
 
 CREATE TABLE Assignment (
@@ -118,7 +129,7 @@ CREATE TABLE RatingAssignment (
   submissionId INTEGER NOT NULL,
 
   noShow INTEGER,
-  rating INTEGER,
+  score REAL,
 
   FOREIGN KEY(assignmentId) REFERENCES Assignment(id),
   FOREIGN KEY(submissionId) REFERENCES Submission(id),
@@ -131,7 +142,7 @@ CREATE TABLE Rating (
 
   ratingAssignmentId INTEGER NOT NULL,
   categoryId INTEGER NOT NULL,
-  score INTEGER NOT NULL,
+  answer INTEGER NOT NULL,
 
   FOREIGN KEY(ratingAssignmentId) REFERENCES RatingAssignment(id),
   FOREIGN KEY(categoryId) REFERENCES Category(id),
@@ -156,7 +167,7 @@ CREATE TABLE Ranking (
   submissionId INTEGER NOT NULL,
 
   rank INTEGER,
-  score INTEGER,
+  score REAL,
 
   FOREIGN KEY(rankingAssignmentId) REFERENCES RankingAssignment(id),
   FOREIGN KEY(submissionId) REFERENCES Submission(id)
@@ -168,7 +179,5 @@ CREATE TABLE Ranking (
 
 -- We expect sqlite to automatically convert strftime to an integer
 INSERT INTO Status(timestamp, phase) VALUES(strftime('%s', 'now'), 1);
-
-INSERT INTO Track(id, name) VALUES(1, 'Default Track');
 
 COMMIT;
