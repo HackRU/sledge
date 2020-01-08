@@ -1,3 +1,4 @@
+
 # User Guide
 
 ## Introduction
@@ -10,10 +11,10 @@ the data be analyzed with software outside of Sledge.
 
 ## How to run Sledge
 
-### Requirments
+### Requirements
 
 Sledge is designed to run on GNU/Linux. See the README for more specific
-requirments.
+requirements.
 
 ### Getting Sledge
 
@@ -49,35 +50,38 @@ actual hackathons.
 
 ## Concepts
 
-Sledge is designed to meet the judging requirments for HackRU but is general
+Sledge is designed to meet the judging requirements for HackRU but is general
 enough that it can be used in may different ways. To start it helps to
 understand some of the internal terminology used.
 
-**Judges** are the people chosen to have an opinion of the hacks. They are the
-*end users of Sledge who use the system to input numerical and comparative
-*scoring of the submissions.
+### Terminology
+
+**Judges** are the people chosen to have an opinion of the submissions.
+They are the end users of Sledge who use the system to input numerical
+and comparative scoring of the submissions.
 
 A **submission** is anything eligible for any type of judging. For a
-hackathon this will be an indivisual hack. Each submission has a
+hackathon this will be an individual hack. Each submission has a
 human-readable name and a **location**, which is a positive integer used to
-understand how the exposition floor. Sledge tries to give judges submissions
+understand how the exposition floor is laid out
+(for science fair style judging). Sledge tries to give judges submissions
 close together, and uses the location to do so. Sledge assumes a circular
 topology (for instance, if there are submissions of locations 1 through 10,
 it assumes 1 is next to 10). Judges are shown both the name and location of a
-submission when asked to judge it. For an expo room locations would most
-likely correspond to table numbers.
+submission when asked to judge it.
 
 Additionally each submission has a **track** defining the "type" of
-submission that it in. We use tracks to specifiy different areas of focus a
+submission that it is. We use tracks to specify different areas of focus a
 hack could be: gaming, medical, etc that participants know beforehand. For
-numerical rating this determines which **categories** judges see when scoring
-that submission. A category is some criteria which judges will give the
+numerical ratings this determines which **categories** judges see when scoring
+the submission. A category is some criteria which judges will give the
 submission a number between 1 and 5. For instance a gaming hack might be
 rated on the category "fun factor" while a medical hack might be rated on
 "usefulness".
 
-A **prize** is some general criteria for a submission can be best at. A
-submission can be eligible or ineligible for a given prize (for instance, not
+A **prize** is some general criteria that a submission can be best at. All
+submissions or a subset of submissions can be eligible for a prize
+(for instance, not
 every hack would be eligible for Best Solo Hack). In determining the best
 submission for a given prize we take into account both ratings and rankings
 specific to that prize. This doesn't have to map one-to-one with what prizes
@@ -87,32 +91,32 @@ which there's actually a first, second and third place.
 Sledge interacts with judges through a number of **assignments**, which is a
 task that they are sent out to do involving giving an opinion on one or more
 submissions. A **rating assignment** is an assignment which asks a judge to
-give a 1 to 5 on one or more categories for a specific submission as
-determiend by its track. A rating assignment will also give the option of not
+give a 1 to 5 score on some categories for a submission as
+determined by its track. A rating assignment will also give the option of not
 giving a rating if the submission didn't show up. Judges can also be given
 **ranking assignments** in which they compare multiple submissions on the
-basis of a certain prize. A judge will not recieve a ranking assignment
+basis of a certain prize. A judge will not receive a ranking assignment
 asking to compare submissions they have not seen. A judge is considered to
-have **seen a submission** if they rated it. Assignments are generally given
+have seen a submission if they rated it. Assignments are generally given
 on the fly after they complete the last one, although there are situations
 when a judge will have multiple assignments queued up.
 
 Sledge splits its execution into three **phases**: setup, collection and
-tally. The most important things to remember is that judges can only judge in
-the collection phase, and once the collection phase is reached Sledge assumes
-submissions and judges won't be deleted and the categories and tracks will
-not change. Names can generally always change without issue. During
-collection its still possible to do tasks like add a late submission, but try
-to keep any large changes in the setup phase. The purpose of the tally phase
-is to prevent judges from continueing to judge so you can analyze the data
-when its stable.
+tally. Judges only enter scores during the collection phase, and Sledge
+assumes certain information won't change after collection starts, for
+instance that submissions won't be deleted and categories won't be
+added or removed. The purpose of the setup phase is give a chance for
+this information to be setup before collection starts. The tally phase prevents
+scores from changing as the data is being analyzed.
+
+### Scope
 
 When using Sledge it's important to understand the scope of what it's trying
 to accomplish. First, as a security model, Sledge assumes all users are
 trusted. This means there are no permissions checks and there is no concept
 of an admin or superuser versus a regular judge. If sledge needs to know
 which judge you are it will simply ask, supplying a list of judges. We expect
-you don't expose a Sledge instance publically, putting it behind some other
+you don't expose a Sledge instance publicly, instead putting it behind some other
 security measure such as the basic HTTP authentication built into nginx (see
 Deployment Recommendations). Additionally, this means there are no general
 participant-facing features such as giving users a list of hack names mapped
@@ -120,9 +124,9 @@ locations.
 
 It is also outside the scope of Sledge to give an objective list of winners.
 Sledge collects scoring data and provides tools to analyze it, and give a top
-list on certain criteria, but it's up to the event organizers to make the
-final decision about winners. In past HackRUs we've determined for certain
-prizes Sledge's judging data was too close to call and used methods outside
+list based on certain criteria, but it's up to the event organizers to make the
+final decision about winners. In past HackRUs we've determined
+Sledge's judging data was too close to call and used methods outside
 Sledge to select the final winner.
 
 ## Getting Started
@@ -137,10 +141,10 @@ setup. Information on this page is stored locally on your machine, and is
 only imported when the "Populate Server" button is pressed. This also means
 this information could be deleted if you clear browser data.
 
-HackRU uses Devpost, and which can export submission data as a CSV file
-Sledge can parse. Before continueing, make sure there's no data on the
+HackRU uses Devpost, and which can export submission data as a CSV file.
+Before continuing, make sure there's no data on the
 populate page by clicking "Reset" near the top. Then, go to `/devpost` and
-paste our [exported submission data][sp2019data] into th form and click GO.
+paste our [exported submission data][sp2019data] into the form and click GO.
 Then, go back to to the populate page and click Reload from LocalStorage to
 see the data we've loaded.
 
@@ -168,17 +172,18 @@ click Populate Server and ensure the server comes back with a successful
 response.
 
 If you look back through the populate page you'll see some submissions still
-use the Default Track, which go imported to the server. Depending on the
+use the Default Track, which got imported to the server. Depending on the
 situation if you accidently import bad data you can usually delete the
 `sledge.db` file, restart the server and reimport. Your data should still be
 in localStorage. In this case, we'll use SQL to change all submissions on the
 Default Track to the Maverick track. Sledge's frontend functionality is
-limited so we assume anyone setting up Sledge hass SQL access to the
+limited so we assume anyone setting up Sledge has SQL access to the
 `sledge.db` file.
 
-Opening the file with the `sqlite3`, we can alter the submissions with an
-UPDATE command. Be sure to reference the `schema.sql` file to understand how
-data is stored in the database.
+Opening the file with the `sqlite3` command, we look up the ids of each
+track and update any Default Track submissions to Maverick. Be sure to
+reference the `schema.sql` file to understand how data is stored in the
+database.
 
 ```
 $ sqlite3 data/sledge.db
