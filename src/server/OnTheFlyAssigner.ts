@@ -15,6 +15,7 @@ export class OnTheFlyAssigner {
 
     let lastLocation = this.getLastLocation(judgeId);
     let submissions = this.getSubmissions();
+    let prizeBiases = this.getPrizeBiases(judgeId);
     let submissionsById = createIdMap(submissions);
 
     log(" == OnTheFlyAssigner createAssignment ==");
@@ -55,7 +56,15 @@ export class OnTheFlyAssigner {
       }
     }
 
-    // Sort the scores and return the top one, and use randomness to settle ties
+    // Account for prize biases
+    for (let ss of submissionScores) {
+      let prizes = submissionsById.get(ss.id)!.prizeIds;
+      for (let prizeId of prizes) {
+        ss.score += prizeBiases.get(prizeId)!;
+      }
+    }
+
+    // Sort the scores and use the top one
     let topSubScores = submissionScores.sort(
       (a, b) => Math.sign(b.score - a.score)
     );
@@ -157,10 +166,48 @@ export class OnTheFlyAssigner {
   }
 
   getSubmissions(): Submission[] {
-    let submissions = this.db.all<Submission>(
-      "SELECT id, name, trackId, location, active FROM Submission;",
+    let dbSubmissions = this.db.all<{
+      id: number,
+      name: string,
+      trackId: number,
+      location: number,
+      active: number
+    }>(
+      "SELECT id, name, trackId, location, active "+
+        "FROM Submission "+
+        "ORDER BY id;",
       []
     );
+
+    let dbSubPrizes = this.db.all<{
+      submissionId: number,
+      prizeId: number,
+      eligibility: number
+    }>(
+      "SELECT submissionId, prizeId, eligibility "+
+        "FROM SubmissionPrize "+
+        "ORDER BY submissionId;",
+      []
+    );
+
+    let submissions: Submission[] = dbSubmissions.map(sub => ({
+      ...sub,
+      prizeIds: []
+    }));
+
+    let subIdx = 0;
+    for (let subPrz of dbSubPrizes) {
+      while (
+        subIdx < submissions.length &&
+        submissions[subIdx].id < subPrz.submissionId
+      ) {
+        subIdx++;
+      }
+
+      if (subIdx < submissions.length && subPrz.eligibility) {
+        submissions[subIdx].prizeIds.push(subPrz.prizeId);
+      }
+    }
 
     return submissions;
   }
@@ -194,6 +241,35 @@ export class OnTheFlyAssigner {
     } else {
       return 1;
     }
+  }
+
+  getPrizeBiases(judgeId: number): Map<number, number> {
+    let dbPrizes = this.db.all<{
+      id: number
+    }>(
+      "SELECT id FROM Prize;",
+      []
+    );
+
+    let map = new Map(
+      dbPrizes.map(prz => [prz.id, 0])
+    );
+
+    let dbBiases  = this.db.all<{
+      prizeId: number,
+      bias: number
+    }>(
+      "SELECT prizeId, bias "+
+        "FROM JudgePrizeBias "+
+        "WHERE judgeId=?;",
+      judgeId
+    );
+
+    for (let bias of dbBiases) {
+      map.set(bias.prizeId, bias.bias);
+    }
+
+    return map;
   }
 }
 
@@ -251,4 +327,5 @@ interface Submission {
   trackId: number;
   location: number;
   active: number;
+  prizeIds: number[];
 }
