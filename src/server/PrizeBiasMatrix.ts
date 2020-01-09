@@ -1,6 +1,86 @@
 import { range } from "../shared/util";
+import { Database } from "./Database";
 
 const JUDGES_PER_PRIZE = 2;
+
+export class PrizeBiasMatrix {
+  constructor(private db: Database) {
+  }
+
+  setupBiasMatrix() {
+    const submissions = this.db.all<{
+      id: number
+    }>(
+      "SELECT id FROM Submission ORDER BY id;", []
+    );
+    const prizes = this.db.all<{
+      id: number
+    }>(
+      "SELECT id FROM Prize ORDER BY id;", []
+    );
+    const judges = this.db.all<{
+      id: number
+    }>(
+      "SELECT id FROM Judge ORDER BY id;", []
+    );
+    const dbSubPrizes = this.db.all<{
+      submissionId: number,
+      prizeId: number,
+      eligibility: number
+    }>(
+      "SELECT submissionId, prizeId, eligibility "+
+        "FROM SubmissionPrize;", []
+    );
+
+    let idToSubIdx = new Map<number, number>(
+      submissions.map((s,i) => [s.id, i])
+    );
+    let idToPrizeIdx = new Map<number, number>(
+      prizes.map((p,i) => [p.id, i])
+    );
+    let idToJdgIdx = new Map<number, number>(
+      judges.map((j,i) => [j.id, i])
+    );
+
+    let subPrzMatrix = range(submissions.length).map(
+      _s => range(prizes.length).map(_p => false)
+    );
+
+    for (let subPrz of dbSubPrizes) {
+      let subIdx = idToSubIdx.get(subPrz.submissionId)!;
+      let przIdx = idToPrizeIdx.get(subPrz.prizeId)!;
+      subPrzMatrix[subIdx][przIdx] = !!subPrz.eligibility;
+    }
+
+    let judgePrizeMatrix = calcJudgePrizeMatrix(
+      judges.length,
+      submissions.length,
+      prizes.length,
+      subPrzMatrix
+    );
+
+    let newRecords: {
+      judgeId: number,
+      prizeId: number,
+      bias: number
+    }[] = [];
+    for (let judgeIdx=0;judgeIdx<judges.length;judgeIdx++) {
+      for (let prizeIdx=0;prizeIdx<prizes.length;prizeIdx++) {
+        newRecords.push({
+          judgeId: judges[judgeIdx].id,
+          prizeId: prizes[prizeIdx].id,
+          bias: judgePrizeMatrix[judgeIdx][prizeIdx] ? 1 : 0
+        });
+      }
+    }
+
+    this.db.runMany(
+      "REPLACE INTO JudgePrizeBias(judgeId, prizeId, bias) "+
+        "VALUES($judgeId, $prizeId, $bias);",
+      newRecords
+    );
+  }
+}
 
 /**
  * Given a number of judges, a number of submissions, a number of

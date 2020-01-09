@@ -3,6 +3,7 @@ import {Database} from "./Database";
 import {runMany} from "./DatabaseHelpers";
 import {RequestHandler} from "./Request";
 import integer from "integer";
+import { PrizeBiasMatrix } from "./PrizeBiasMatrix";
 
 export class BeginJudgingRequest implements RequestHandler {
   selectPhase: any;
@@ -80,6 +81,9 @@ export class BeginJudgingRequest implements RequestHandler {
       judgeAnchors.push(submissions[anchorIndex].location);
     }
     runMany(this.db.prepare("UPDATE Judge SET anchor=? WHERE id=?;"), judgeAnchors.map((loc, j) => [loc, j+1]));
+
+    // Setup judge prize biases
+    (new PrizeBiasMatrix(this.db)).setupBiasMatrix();
 
     // Change phase to 2
     this.setPhase.run({
