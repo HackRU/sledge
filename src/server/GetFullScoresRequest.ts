@@ -76,7 +76,7 @@ export class GetFullScoresRequest implements RequestHandler {
       active: number,
       submissionId?: number,
       noShow?: number,
-      rating?: number,
+      score?: number,
       prizeId?: number
     }> = this.db.prepare(
       "SELECT "+
@@ -87,7 +87,7 @@ export class GetFullScoresRequest implements RequestHandler {
         "Assignment.active, "+
         "RatingAssignment.submissionId, "+
         "RatingAssignment.noShow, "+
-        "RatingAssignment.rating, "+
+        "RatingAssignment.score, "+
         "RankingAssignment.prizeId "+
       "FROM Assignment "+
       "LEFT JOIN RatingAssignment ON RatingAssignment.assignmentId = Assignment.id "+
@@ -97,12 +97,12 @@ export class GetFullScoresRequest implements RequestHandler {
     const dbRatings: Array<{
       assignmentId: number,
       categoryId: number,
-      score: number
+      answer: number
     }> = this.db.prepare(
       "SELECT "+
         "Assignment.id AS assignmentId, "+
         "Rating.categoryId, "+
-        "Rating.score "+
+        "Rating.answer "+
       "FROM Rating "+
       "LEFT JOIN RatingAssignment ON Rating.ratingAssignmentId = RatingAssignment.id "+
       "LEFT JOIN Assignment ON RatingAssignment.assignmentId = Assignment.id "+
@@ -175,7 +175,7 @@ export class GetFullScoresRequest implements RequestHandler {
         let rating = ratingQueue.next();
         while (rating && rating.assignmentId <= dbAss.id) {
           if (rating.assignmentId === dbAss.id) {
-            ratings[trackRatingMap.get(submission.trackId)!.get(rating.categoryId)!] = rating.score;
+            ratings[trackRatingMap.get(submission.trackId)!.get(rating.categoryId)!] = rating.answer;
           }
 
           rating = ratingQueue.next();
@@ -191,7 +191,7 @@ export class GetFullScoresRequest implements RequestHandler {
 
           submissionIndex: submissionIdxMap.get(dbAss.submissionId!),
           noShow: !!dbAss.noShow,
-          rating: dbAss.rating,
+          rating: dbAss.score,
           ratings: ratings.map(x => x!)
         });
       } else if (dbAss.type == ASSIGNMENT_TYPE_RANKING) {

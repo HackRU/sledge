@@ -17,6 +17,7 @@ import {SubmitAssignmentRequest} from "./SubmitAssignmentRequest";
 import {GetRatingScoresRequest} from "./GetRatingScoresRequest";
 import {GetFullScoresRequest} from "./GetFullScoresRequest";
 import {AssignPrizeToJudgeRequest} from "./AssignPrizeToJudgeRequest";
+import { GetObjectsRequest } from "./GetObjectsRequest";
 
 export class EventHandler {
   handlers: Array<StrictRequestHandler>;
@@ -33,7 +34,8 @@ export class EventHandler {
       new SubmitAssignmentRequest(db),
       new GetRatingScoresRequest(db),
       new GetFullScoresRequest(db),
-      new AssignPrizeToJudgeRequest(db)
+      new AssignPrizeToJudgeRequest(db),
+      new GetObjectsRequest(db)
     ];
     this.handlers = looseHandlers.map(toStrictHandler);
   }

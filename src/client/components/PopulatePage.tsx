@@ -46,7 +46,14 @@ export interface PopulatePageProps {
 
 export const PopulatePage = (props: PopulatePageProps) => (
   <Container id="PopulatePage">
-    <h1>{`Populate Data`}</h1>
+    <h1>{`Populate Data from Devpost`}</h1>
+
+    <h2>{`Import Devpost CSV`}</h2>
+
+    <p>
+      {`Devpost CSVs will be merged into existing data. Go to the `}
+      <a href="/devpost">{`Devpost import page`}</a>{` to start.`}
+    </p>
 
     <h2>{`Load Data`}</h2>
 
