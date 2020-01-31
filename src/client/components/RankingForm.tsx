@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 
 export const RankingForm = (props: RankingFormProps) => (
-  <form>
+  <form onSubmit={e => {e.preventDefault()}}>
     <Card>
       <CardBody>
         <CardTitle>
@@ -44,6 +44,7 @@ export const RankingForm = (props: RankingFormProps) => (
           size="lg"
           onClick={props.onSubmit}
           disabled={!props.canSubmit}
+          type="button"
         >
           {`SUBMIT \u25B6`}
         </Button>
