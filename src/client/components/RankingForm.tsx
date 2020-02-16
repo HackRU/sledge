@@ -61,6 +61,7 @@ const RankSubmissionItem = (props: {
 }) => (
   <ListGroupItem
     tag="button"
+    className={props.rank > 0 ? "ranked" : ""}
     onClick={props.onSelect}
     disabled={props.disabled}
   >
