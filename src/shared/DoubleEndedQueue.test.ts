@@ -1,7 +1,7 @@
 import * as deq from "./DoubleEndedQueue";
 
 describe("DoubleEndedQueue", () =>{
-test("Checks whether the queue is empty or not", () =>{
+test("Testing all the functions in DoubleEndedQueue", () =>{
     let q = new deq.DoubleEndedQueue();
     expect(q.hasNext()).toBe(false);
     q.append(5);
