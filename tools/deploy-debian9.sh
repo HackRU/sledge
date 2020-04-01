@@ -3,7 +3,6 @@
 # for more details.
 
 set -e -u
-set -o xtrace
 
 echo "========================================="
 echo "== Welcome to the Sledge setup script! =="
@@ -96,7 +95,7 @@ EOF
 tee /usr/local/bin/sledge-daemon <<EOF
 #!/bin/sh
 cd /home/sledge/sledge
-sudo -u sledge ./bin/sledge 4000
+sudo -u sledge ./bin/sledge --port 4000
 EOF
 chmod 755 /usr/local/bin/sledge-daemon
 
@@ -107,6 +106,7 @@ Description=A Judging System for Hackathons
 
 [Service]
 ExecStart=/usr/local/bin/sledge-daemon
+Environment='DEBUG=*'
 
 [Install]
 Alias=sledge.service
@@ -123,17 +123,17 @@ sqlite3 /home/sledge/sledge/data/sledge.db "INSERT INTO Token(secret, privilege)
 
 # Sledge ssl certificate
 mkdir -p /etc/nginx/ssl
-ln -s /etc/letsencrypt/live/sledge.site/privkey.pem /etc/nginx/ssl/sledge.key
-ln -s /etc/letsencrypt/live/sledge.site/fullchain.pem /etc/nginx/ssl/sledge.cert
+ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/privkey.pem" /etc/nginx/ssl/sledge.key
+ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/fullchain.pem" /etc/nginx/ssl/sledge.cert
 tee /etc/nginx/snippets/ssl-sledge <<EOF
-ssl_certificate /etc/letsencrypt/live/sledge.site/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/sledge.site/privkey.pem;
+ssl_certificate /etc/nginx/ssl/sledge.key;
+ssl_certificate_key /etc/nginx/ssl/sledge.cert;
 EOF
 
 # Self-signed certificate
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.cert \
-  -subj "/CN=netbuzz.xyz"
+  -subj "/CN=$SLEDGE_SETUP_DOMAIN"
 tee /etc/nginx/snippets/ssl-nginx <<EOF
 ssl_certificate /etc/nginx/ssl/nginx.cert;
 ssl_certificate_key /etc/nginx/ssl/nginx.key;
@@ -152,7 +152,7 @@ server {
   listen 443 ssl;
   listen [::]:443 ssl;
 
-  server_name www.sledge.site;
+  server_name $SLEDGE_SETUP_DOMAIN;
 
   include $SSL_SNIPPET;
 
@@ -182,7 +182,7 @@ server {
 
   include $SSL_SNIPPET;
 
-  return 301 https://www.sledge.site\$request_uri;
+  return 301 https://$SLEDGE_SETUP_DOMAIN\$request_uri;
 }
 EOF
 ln -s /etc/nginx/sites-available/sledge /etc/nginx/sites-enabled/sledge
