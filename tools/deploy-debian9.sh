@@ -3,6 +3,28 @@
 # for more details.
 
 set -e -u
+set -o xtrace
+
+echo "========================================="
+echo "== Welcome to the Sledge setup script! =="
+echo "========================================="
+echo
+echo "This script is mean to be run on Debian 9. This script does not check"
+echo "if it is actually running on Debian 9, and will fail in unexpected ways"
+echo "if it is not. This script is should not be run more than once."
+echo
+[[ ! -z "$SLEDGE_SETUP_NOPAUSE" ]] || {
+  echo "Press enter to continue."
+  read
+}
+[[ ! -z "$SLEDGE_SETUP_EMAIL" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_EMAIL."
+  read SLEDGE_SETUP_EMAIL
+}
+[[ ! -z "$SLEDGE_SETUP_DOMAIN" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_DOMAIN."
+  read SLEDGE_SETUP_DOMAIN
+}
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -12,9 +34,8 @@ apt-get -y dist-upgrade
 
 # Add external repos
 apt-get -y install apt-transport-https lsb-release
+curl -sL https://deb.nodesource.com/setup_13.x | bash -
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-echo "deb https://deb.nodesource.com/node_10.x $(lsb_release -c -s) main" >/etc/apt/sources.list.d/nodesources.list
 echo "deb https://dl.yarnpkg.com/debian/ stable main" >/etc/apt/sources.list.d/yarn.list
 
 # Update repos and install additional packages
@@ -25,7 +46,7 @@ apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd s
 service nginx stop
 
 # If possible, get SSL certificates
-certbot certonly -n --standalone --agree-tos --email eric@threedot14.com --domains sledge.site,www.sledge.site || {
+certbot certonly -n --standalone --agree-tos --email "$SLEDGE_SETUP_EMAIL" --domains "$SLEDGE_SETUP_DOMAIN" || {
   echo "================================================"
   echo "===== WARNING: Could not get certificates! ====="
   echo "================================================"
@@ -68,14 +89,14 @@ cd sledge
 git checkout fall2018
 
 yarn install
-./gulp build
+BUILD_MODE=prod make build
 EOF
 
 # Add sledge daemon command
 tee /usr/local/bin/sledge-daemon <<EOF
 #!/bin/sh
 cd /home/sledge/sledge
-sudo -u sledge ./sledge 4000
+sudo -u sledge ./bin/sledge 4000
 EOF
 chmod 755 /usr/local/bin/sledge-daemon
 

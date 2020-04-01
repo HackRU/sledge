@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  mode: "development",
+  mode: process.env.BUILD_MODE.toUpperCase().startsWith("PROD") ? "production" : "development",
   entry: "./src/client/index.ts",
   output: {
     path: path.resolve(__dirname, "public"),
