@@ -7,6 +7,7 @@ import {
  * in order and return an array of rowids corresponding to the original array.
  * Row ids come from info.lastInsertRowid (see better-sqlite3 api
  * documentation).
+ * @deprecated Use Database.runMany
  */
 export function runMany(stmt: Statement, rows: Array<any>): Array<number> {
   let inserted: Array<number> = [];

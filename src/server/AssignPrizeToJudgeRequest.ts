@@ -4,12 +4,18 @@ import {
   AssignPrizeToJudgeRequestData
 } from "../shared/AssignPrizeToJudgeRequestTypes";
 import * as tc from "./TypeCheck";
+import {ASSIGNMENT_STATUS_ACTIVE, ASSIGNMENT_TYPE_RANKING, ASSIGNMENT_TYPE_RATING} from "../shared/constants";
 
 const validator = tc.hasShape({
   judgeId: tc.isId,
   prizeId: tc.isId
 });
 
+/**
+ * Creates a rating assignment for every submission eligible for a given prize that a judge has not yet rated,
+ * and assigns it to that judge. Then, creates a ranking assignment asking the judge to choose their favorite
+ * three submissions for that prize.
+ */
 export class AssignPrizeToJudgeRequest implements RequestHandler {
   constructor (private db: Database) {
   }
@@ -27,7 +33,8 @@ export class AssignPrizeToJudgeRequest implements RequestHandler {
     const {prizeId, judgeId} = request;
 
     this.db.begin();
-    // First, create assignments for all relevant submissions which they haven't rated
+
+    // The set of submissions eligible for the prize that the judge hasn't yet rated.
     const requiredSubmissions = this.db.prepare(
       "SELECT submissionId FROM SubmissionPrize WHERE prizeId=? "+
         "EXCEPT "+
@@ -36,7 +43,8 @@ export class AssignPrizeToJudgeRequest implements RequestHandler {
           "WHERE judgeId=?;"
     ).all(prizeId, judgeId);
 
-    // Get next assignment priority
+    // All the new assignments should have priorities just above the previous, otherwise we default to the lowest
+    // priority (1)
     const highestPriorityAssignment = this.db.prepare(
       "SELECT priority FROM Assignment WHERE judgeId=? ORDER BY priority DESC;"
     ).get(judgeId);
@@ -47,30 +55,30 @@ export class AssignPrizeToJudgeRequest implements RequestHandler {
       priority = 1;
     }
 
-    // Create rating assignments
+    // For each requiredSubmission we found, create a ranking assignment and add it
     for (let rs of requiredSubmissions) {
       const submissionId = rs.submissionId;
-      const assignmentId = this.db.prepare(
-        "INSERT INTO Assignment(judgeId, priority, type, active) "+
-          "VALUES(?, ?, 1, 1);"
-      ).run(judgeId, priority).lastInsertRowid;
-      this.db.prepare(
-        "INSERT INTO RatingAssignment(assignmentId, submissionId) "+
-          "VALUES(?, ?);"
-      ).run(assignmentId, submissionId);
+      const assignmentId = this.db.run(
+        "INSERT INTO Assignment(judgeId, priority, type, status) VALUES (?, ?, ?, ?);",
+        [judgeId, priority, ASSIGNMENT_TYPE_RATING, ASSIGNMENT_STATUS_ACTIVE]
+      );
+      this.db.run(
+        "INSERT INTO RatingAssignment(assignmentId, submissionId) VALUES (?, ?);",
+        [assignmentId, submissionId]
+      );
 
       priority++;
     }
 
-    // Now create the ranking assignment
-    const newAssignmentId = this.db.prepare(
-      "INSERT INTO Assignment(judgeId, priority, type, active) "+
-        "VALUES(?, ?, 2, 1);"
-    ).run(judgeId, priority).lastInsertRowid;
-    const rankingAssignmentId = this.db.prepare(
-      "INSERT INTO RankingAssignment(assignmentId, prizeId) "+
-        "VALUES(?, ?);"
-    ).run(newAssignmentId, prizeId).lastInsertRowid;
+    // Create the ranking Assignment to compare all submissions in that prize.
+    const newAssignmentId = this.db.run(
+      "INSERT INTO Assignment(judgeId, priority, type, status) VALUES(?, ?, ?, ?);",
+      [judgeId, priority, ASSIGNMENT_TYPE_RANKING, ASSIGNMENT_STATUS_ACTIVE]
+    );
+    const rankingAssignmentId = this.db.run(
+      "INSERT INTO RankingAssignment(assignmentId, prizeId) VALUES (?, ?);",
+      [newAssignmentId, prizeId]
+    );
 
     // Add the empty rankings for each submission
     const submissionsForRanking = this.db.prepare(

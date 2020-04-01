@@ -6,7 +6,7 @@ import {
 } from "./Request";
 import {
   ASSIGNMENT_TYPE_RATING,
-  ASSIGNMENT_TYPE_RANKING
+  ASSIGNMENT_TYPE_RANKING, ASSIGNMENT_STATUS_ACTIVE, ASSIGNMENT_STATUS_COMPLETE
 } from "../shared/constants";
 import * as tc from "./TypeCheck";
 import {
@@ -30,6 +30,9 @@ const validator = tc.hasShape({
   }))
 });
 
+/**
+ * Submit an assignment
+ */
 export class SubmitAssignmentRequest implements RequestHandler {
   constructor(private db: Database) {
   }
@@ -50,13 +53,13 @@ export class SubmitAssignmentRequest implements RequestHandler {
     const assignment = this.db.get<{
       id: number,
       type: number,
-      active: number
+      status: number
     }>(
-      "SELECT id, type, active FROM Assignment WHERE id=?;",
+      "SELECT id, type, status FROM Assignment WHERE id=?;",
       data.assignmentId
     );
 
-    if (!assignment.active) {
+    if (assignment.status !== ASSIGNMENT_STATUS_ACTIVE) {
       this.db.rollback();
       return { error: "Submitted assignment is not active" };
     }
@@ -89,8 +92,8 @@ export class SubmitAssignmentRequest implements RequestHandler {
     }
 
     this.db.run(
-      "UPDATE Assignment SET active=0 WHERE id=?;",
-      assignment.id
+      "UPDATE Assignment SET status=? WHERE id=?;",
+      [ASSIGNMENT_STATUS_COMPLETE, assignment.id]
     );
 
     this.db.commit();

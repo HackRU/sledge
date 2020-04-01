@@ -5,6 +5,9 @@ import {RequestHandler} from "./Request";
 import integer from "integer";
 import { PrizeBiasMatrix } from "./PrizeBiasMatrix";
 
+/**
+ * Performs a series of checks then sets the phase to PHASE_COLLECTION
+ */
 export class BeginJudgingRequest implements RequestHandler {
   selectPhase: any;
   setPhase: any;

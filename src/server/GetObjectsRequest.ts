@@ -7,6 +7,10 @@ const validator = tc.hasShape({
   table: tc.isString
 });
 
+/**
+ * Get all rows of a specified table in the database. This will return everything as-is, so won't be updated to
+ * reflect changes to the database schema. In general, this should avoid being used.
+ */
 export class GetObjectsRequest implements RequestHandler {
   constructor(private db: Database) {
   }

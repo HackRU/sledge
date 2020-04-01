@@ -30,6 +30,11 @@ const validator = tc.hasShape({
   }))
 });
 
+/**
+ * Add the given tracks, submissions, judges, categories and prizes to the database. Additionally populate
+ * SubmissionPrize to associate submissions and prizes. This is meant to populate the database with all data
+ * necessary to start judging.
+ */
 export class PopulateRequest implements RequestHandler {
   constructor(private db: Database) {
   }

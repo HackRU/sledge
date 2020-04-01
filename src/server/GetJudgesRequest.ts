@@ -1,6 +1,9 @@
 import {Database} from "./Database";
 import {RequestHandler} from "./Request";
 
+/**
+ * Get the current list of judges and their associated ids
+ */
 export class GetJudgesRequest implements RequestHandler {
   // Sql statements
   selectJudges: any;

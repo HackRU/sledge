@@ -1,6 +1,7 @@
 import {Database} from "./Database";
 import {RequestHandler} from "./Request";
 import {
+  ASSIGNMENT_STATUS_ACTIVE,
   ASSIGNMENT_TYPE_RANKING,
   ASSIGNMENT_TYPE_RATING
 } from "../shared/constants";
@@ -11,6 +12,10 @@ import {
 
 import {DoubleEndedQueue} from "../shared/DoubleEndedQueue";
 
+/**
+ * Get an object representing the most detailed state available of all the assignments. The object this returns is
+ * basically a database dump of all assignments along with the submissions, judges, etc.
+ */
 export class GetFullScoresRequest implements RequestHandler {
   constructor(private db: Database) {
   }
@@ -73,7 +78,7 @@ export class GetFullScoresRequest implements RequestHandler {
       type: number,
       judgeId: number,
       priority: number,
-      active: number,
+      status: number,
       submissionId?: number,
       noShow?: number,
       score?: number,
@@ -84,7 +89,7 @@ export class GetFullScoresRequest implements RequestHandler {
         "Assignment.type, "+
         "Assignment.judgeId, "+
         "Assignment.priority, "+
-        "Assignment.active, "+
+        "Assignment.status, "+
         "RatingAssignment.submissionId, "+
         "RatingAssignment.noShow, "+
         "RatingAssignment.score, "+
@@ -187,7 +192,7 @@ export class GetFullScoresRequest implements RequestHandler {
           type: ASSIGNMENT_TYPE_RATING,
           judgeIndex: judgeIdxMap.get(dbAss.judgeId)!,
           priority: dbAss.priority,
-          active: !!dbAss.active,
+          active: dbAss.status === ASSIGNMENT_STATUS_ACTIVE,
 
           submissionIndex: submissionIdxMap.get(dbAss.submissionId!),
           noShow: !!dbAss.noShow,
@@ -214,7 +219,7 @@ export class GetFullScoresRequest implements RequestHandler {
           type: ASSIGNMENT_TYPE_RANKING,
           judgeIndex: judgeIdxMap.get(dbAss.judgeId)!,
           priority: dbAss.priority,
-          active: !!dbAss.active,
+          active: dbAss.status === ASSIGNMENT_STATUS_ACTIVE,
 
           prizeIndex: prizeIdxMap.get(dbAss.prizeId!),
           rankings
