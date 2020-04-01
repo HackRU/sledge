@@ -187,15 +187,13 @@ server {
   listen 80;
   listen [::]:80;
 
-  listen 443 ssl;
-  listen [::]:443 ssl;
-
-  include $SSL_SNIPPET;
+  server_name $SLEDGE_SETUP_DOMAIN;
 
   return 301 https://$SLEDGE_SETUP_DOMAIN\$request_uri;
 }
 EOF
 ln -s /etc/nginx/sites-available/sledge /etc/nginx/sites-enabled/sledge
+rm -f /etc/nginx/sites-enabled/default
 
 # Start nginx
 nginx -t
