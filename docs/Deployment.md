@@ -32,3 +32,7 @@ in.
     an SSL certificate and also used when generating the nginx configuration and
     is the domain given to the self-signed certificate. Although certbot accepts
     a comma-separated list of domain, this variable should have exactly one.
+ - `SLEDGE_SETUP_USERNAME` and `SLEDGE_SETUP_PASSWORD`. The script setups nginx
+    basic http authentication over the socket.io endpoint, only allowing this
+    username and password combination to access sledge. The user will be
+    prompted to enter this username and password when they first visit sledge.

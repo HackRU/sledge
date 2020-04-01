@@ -24,6 +24,14 @@ echo
   echo "Please enter the value you want for SLEDGE_SETUP_DOMAIN."
   read SLEDGE_SETUP_DOMAIN
 }
+[[ ! -z "${SLEDGE_SETUP_USERNAME:-}" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_USERNAME."
+  read SLEDGE_SETUP_USERNAME
+}
+[[ ! -z "${SLEDGE_SETUP_PASSWORD:-}" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_PASSWORD."
+  read SLEDGE_SETUP_PASSWORD
+}
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -39,7 +47,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" >/etc/apt/sources.list.d/y
 
 # Update repos and install additional packages
 apt-get -y update
-apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent
+apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent apache2-utils
 
 # nginx automatically starts when it's installed, we don't want that yet
 service nginx stop
@@ -50,6 +58,7 @@ certbot certonly -n --standalone --agree-tos --email "$SLEDGE_SETUP_EMAIL" --dom
   echo "===== WARNING: Could not get certificates! ====="
   echo "================================================"
   echo "The server will continue to be created with a self-signed certificate"
+  echo
 }
 
 # Setup iptables to block most incoming connections,
@@ -116,11 +125,6 @@ systemctl enable sledge.service
 systemctl start sledge.service
 sleep 3 # Wait for Sledge to fully start
 
-# Add an initial admin token
-ADMIN_TOKEN="$(head -c5 </dev/random | xxd -p)"
-echo $ADMIN_TOKEN >admin-token.txt
-sqlite3 /home/sledge/sledge/data/sledge.db "INSERT INTO Token(secret, privilege) VALUES(\"$ADMIN_TOKEN\", 0);"
-
 # Sledge ssl certificate
 mkdir -p /etc/nginx/ssl
 ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/privkey.pem" /etc/nginx/ssl/sledge.key
@@ -146,6 +150,9 @@ else
   SSL_SNIPPET="snippets/ssl-nginx"
 fi
 
+# Setup HTTP Auth file
+htpasswd -b -c /etc/nginx/sledge.htpasswd "$SLEDGE_SETUP_USERNAME" "$SLEDGE_SETUP_PASSWORD"
+
 # Add nginx config for website
 tee /etc/nginx/sites-available/sledge <<EOF
 server {
@@ -160,6 +167,9 @@ server {
   index index.html;
 
   location /socket.io {
+    auth_basic "Sledge Privileged Area";
+    auth_basic_user_file /etc/nginx/sledge.htpasswd;
+
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection "upgrade";
     proxy_http_version 1.1;
@@ -196,4 +206,3 @@ echo "============================"
 echo "== Sledge Setup Complete! =="
 echo "============================"
 echo "The setup script has finished installing Sledge. Please see documentation for what to do next."
-echo "Your admin token (also stored in admin-token.txt): $ADMIN_TOKEN"
