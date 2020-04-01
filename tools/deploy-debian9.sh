@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # This is meant to be run on a fresh debian 9 install. See Deployment page in docs
 # for more details.
 
@@ -13,15 +13,15 @@ echo "This script is mean to be run on Debian 9. This script does not check"
 echo "if it is actually running on Debian 9, and will fail in unexpected ways"
 echo "if it is not. This script is should not be run more than once."
 echo
-[[ ! -z "$SLEDGE_SETUP_NOPAUSE" ]] || {
+[[ ! -z "${SLEDGE_SETUP_NOPAUSE:-}" ]] || {
   echo "Press enter to continue."
   read
 }
-[[ ! -z "$SLEDGE_SETUP_EMAIL" ]] || {
+[[ ! -z "${SLEDGE_SETUP_EMAIL:-}" ]] || {
   echo "Please enter the value you want for SLEDGE_SETUP_EMAIL."
   read SLEDGE_SETUP_EMAIL
 }
-[[ ! -z "$SLEDGE_SETUP_DOMAIN" ]] || {
+[[ ! -z "${SLEDGE_SETUP_DOMAIN:-}" ]] || {
   echo "Please enter the value you want for SLEDGE_SETUP_DOMAIN."
   read SLEDGE_SETUP_DOMAIN
 }
