@@ -13,6 +13,10 @@ const validator = tc.hasShape({
   judgeId: tc.isId
 });
 
+/**
+ * Get the next assignment a given judge should complete. Judges are always given the lowest assignment priority that's
+ * still active.
+ */
 export class GetAssignmentRequest implements RequestHandler {
   private onTheFlyAssigner: OnTheFlyAssigner;
 
@@ -36,7 +40,7 @@ export class GetAssignmentRequest implements RequestHandler {
 
   getNextActiveAssignment(judgeId: number): number | null {
     const row = this.db.prepare(
-      "SELECT id FROM Assignment WHERE active=1 AND judgeId=? ORDER BY priority ASC;"
+      "SELECT id FROM Assignment WHERE status=1 AND judgeId=? ORDER BY priority ASC;"
     ).get([judgeId]);
     if (row) {
       return row.id;
@@ -75,7 +79,7 @@ export class GetAssignmentRequest implements RequestHandler {
 
   getRatingAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
     const assignment = this.db.prepare(
-      "SELECT id, judgeId, priority, type, active FROM Assignment WHERE id=?;"
+      "SELECT id, judgeId, priority, type, status FROM Assignment WHERE id=?;"
     ).get(assignmentId);
 
     const ratingAssignment = this.db.prepare(
@@ -107,11 +111,11 @@ export class GetAssignmentRequest implements RequestHandler {
 
   getRankingAssignmentDetails(assignmentId: number): GetAssignmentResponseData {
     const assignment: {
-      id: number, judgeId: number, priority: number, type: number, active: number,
+      id: number, judgeId: number, priority: number, type: number, status: number,
       rankingAssignmentId: number, prizeId: number, prizeName: string
     } = this.db.prepare(
       "SELECT "+
-          "assignmentId AS id, judgeId, priority, type, active, "+
+          "assignmentId AS id, judgeId, priority, type, status, "+
           "RankingAssignment.id AS rankingAssignmentId, prizeId, "+
           "Prize.name AS prizeName "+
         "FROM RankingAssignment "+

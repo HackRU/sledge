@@ -2,6 +2,9 @@ import {resolve} from "path";
 import {existsSync, mkdirSync, writeFileSync} from "fs";
 import {pages} from "../client/directory";
 
+/**
+ * The HTML template for all pages with placeholders for the name and path
+ */
 const HTMLTemplate = `
 <!DOCTYPE html>
   <head>
@@ -19,10 +22,16 @@ const HTMLTemplate = `
 </html>
 `;
 
+/**
+ * Returns the html for a page with the specified name and path
+ */
 export function generateHtml(name: string, path: string) {
   return HTMLTemplate.replace("%PATH%", path).replace("%NAME%", name);
 }
 
+/**
+ * Goes through all pages and outputs the html in the provided path
+ */
 export function generateStaticHtmlFiles(path: string) {
   for (let page of pages) {
     const html = generateHtml(page.name, page.path);

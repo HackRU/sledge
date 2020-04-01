@@ -1,6 +1,11 @@
 import {Database} from "./Database";
 import {RequestHandler} from "./Request";
+import {ASSIGNMENT_STATUS_ACTIVE} from "../shared/constants";
 
+/**
+ * Get rating assignment scores.
+ * @deprecated use GetFullScoresRequest instead
+ */
 export class GetRatingScoresRequest implements RequestHandler {
   constructor(private db: Database) {
   }
@@ -20,7 +25,7 @@ export class GetRatingScoresRequest implements RequestHandler {
     const assignments = this.db.prepare(
       "SELECT "+
           "Assignment.judgeId AS judgeId, "+
-          "Assignment.active AS active, "+
+          "Assignment.status AS status, "+
           "RatingAssignment.submissionId AS submissionId, "+
           "RatingAssignment.rating AS rating "+
         "FROM RatingAssignment "+
@@ -34,7 +39,7 @@ export class GetRatingScoresRequest implements RequestHandler {
     const scores = assignments.map(ass => ({
       submissionIndex: submissionsIdIndex.get(ass.submissionId),
       judgeIndex: judgesIdIndex.get(ass.judgeId),
-      active: ass.active,
+      active: ass.status === ASSIGNMENT_STATUS_ACTIVE,
       rating: ass.rating
     }));
 

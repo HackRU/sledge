@@ -111,15 +111,14 @@ CREATE TABLE Assignment (
   judgeId INTEGER NOT NULL,
   priority INTEGER NOT NULL,
 
-  -- Whereas 1 is numerical (RatingAssignment) and 2 is comparative (RankingAssignment)
   type INTEGER NOT NULL,
-  active INTEGER NOT NULL,
+  status INTEGER NOT NULL,
 
   FOREIGN KEY(judgeId) REFERENCES Judge(id),
   UNIQUE(judgeId, priority),
   CHECK(priority > 0),
   CHECK((type = 1) OR (type = 2)),
-  CHECK((active = 0) OR (active = 1))
+  CHECK((status = 0) OR (status = 1))
 );
 
 CREATE TABLE RatingAssignment (

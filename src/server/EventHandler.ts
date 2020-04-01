@@ -19,6 +19,9 @@ import {GetFullScoresRequest} from "./GetFullScoresRequest";
 import {AssignPrizeToJudgeRequest} from "./AssignPrizeToJudgeRequest";
 import { GetObjectsRequest } from "./GetObjectsRequest";
 
+/**
+ * Master event handler. When handling a request will go through all request handlers until it finds a match.
+ */
 export class EventHandler {
   handlers: Array<StrictRequestHandler>;
 

@@ -5,7 +5,9 @@ import Sqlite3 from "better-sqlite3";
 import integer from "integer";
 
 /**
- * Manages persistent data
+ * Manages persistent data.
+ *
+ * This class acts largely as a wrapper around better-sqlite3, allowing you to run queries.
  */
 export class Database {
   private sql: any;
@@ -29,8 +31,17 @@ export class Database {
 
   /**
    * Create a Statement
+   * @deprecated Use run, runMany, get and all instead.
    */
   prepare(source: string): Statement {
+    return this.internalPrepare(source);
+  }
+
+  /**
+   * Wrapper over better-sqlite3's prepare
+   * @param source sql code
+   */
+  private internalPrepare(source: string): Statement {
     try {
       return this.sql.prepare(source);
     } catch (e) {
@@ -75,7 +86,7 @@ export class Database {
    * Creates and immediately calls run on a prepared statement. Returns the last created row id.
    */
   run(stmt: string, bindParameters: any): number {
-    let prepared = this.prepare(stmt);
+    let prepared = this.internalPrepare(stmt);
     let result = prepared.run(bindParameters);
     if (typeof result.lastInsertRowid !== "number") {
       throw new Error("Bad lastInsertRowid");
@@ -84,7 +95,7 @@ export class Database {
   }
 
   runMany(stmt: string, bindParameters: any[]): any[] {
-    let prepared = this.prepare(stmt);
+    let prepared = this.internalPrepare(stmt);
     let inserted: Array<number> = [];
     for (let params of bindParameters) {
       const rowId = prepared.run(params).lastInsertRowid;
@@ -100,7 +111,7 @@ export class Database {
    * Creates and immediately calls get on a prepared statement. Returns the result.
    */
   get<A>(stmt: string, bindParameters: any): A {
-    let prepared = this.prepare(stmt);
+    let prepared = this.internalPrepare(stmt);
     return prepared.get(bindParameters);
   }
 
@@ -108,7 +119,7 @@ export class Database {
    * Creates an immediately calls all on a prepared statement.
    */
   all<A>(stmt: string, bindParameters: any): Array<A> {
-    let prepared = this.prepare(stmt);
+    let prepared = this.internalPrepare(stmt);
     return prepared.all(bindParameters);
   }
 

@@ -1,5 +1,5 @@
 import { Database } from "./Database";
-import { ASSIGNMENT_TYPE_RATING } from "../shared/constants";
+import {ASSIGNMENT_STATUS_ACTIVE, ASSIGNMENT_TYPE_RATING} from "../shared/constants";
 import { log } from "./log";
 import { createIdMap } from "../shared/util";
 
@@ -82,9 +82,9 @@ export class OnTheFlyAssigner {
     // Create the Assignment
     const priority = this.getNextAssignmentPriority(judgeId);
     const newAssignmentId = this.db.run(
-      "INSERT INTO Assignment(judgeId, priority, type, active) "+
-        "VALUES(?, ?, ?, 1);",
-      [judgeId, priority, ASSIGNMENT_TYPE_RATING]
+      "INSERT INTO Assignment(judgeId, priority, type, status) "+
+        "VALUES(?, ?, ?, ?);",
+      [judgeId, priority, ASSIGNMENT_TYPE_RATING, ASSIGNMENT_STATUS_ACTIVE]
     );
     this.db.run(
       "INSERT INTO RatingAssignment(assignmentId, submissionId) "+
@@ -110,7 +110,7 @@ export class OnTheFlyAssigner {
         "FROM RatingAssignment "+
         "LEFT JOIN Assignment ON RatingAssignment.assignmentId = Assignment.id "+
         "LEFT JOIN Submission ON RatingAssignment.submissionId = Submission.id "+
-        "WHERE Assignment.judgeId=? AND Assignment.active=0 "+
+        "WHERE Assignment.judgeId=? AND Assignment.status=0 "+
         "ORDER BY priority DESC;",
       judgeId
     );
@@ -219,7 +219,7 @@ export class OnTheFlyAssigner {
       "SELECT COUNT(RatingAssignment.id) AS count "+
         "FROM RatingAssignment "+
         "LEFT JOIN Assignment ON Assignment.id=assignmentId "+
-        "WHERE submissionId=? AND active=0;",
+        "WHERE submissionId=? AND status=0;",
       submissionId
     );
 

@@ -1,6 +1,9 @@
 import {Database} from "./Database";
 import {RequestHandler} from "./Request";
 
+/**
+ * Get the current phase
+ */
 export class GlobalStatusRequest implements RequestHandler {
   selectPhase: any;
 

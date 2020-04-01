@@ -5,4 +5,5 @@ export const PHASE_TALLY = 3;
 export const ASSIGNMENT_TYPE_RATING = 1;
 export const ASSIGNMENT_TYPE_RANKING = 2;
 
-export const MAX_LOCATION = 65535;
+export const ASSIGNMENT_STATUS_COMPLETE = 0;
+export const ASSIGNMENT_STATUS_ACTIVE = 1;
