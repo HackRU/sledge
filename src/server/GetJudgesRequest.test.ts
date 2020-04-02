@@ -19,18 +19,18 @@ describe("GetJudgesRequest", () => {
     expect(requestHandler.canHandle("REQUEST_GET_JUDGES")).toBe(true);
   });
   test("Returns list with proper judge names and ids", () => {
-    let response: Promise<any> = requestHandler.handle({
+    let response: any = requestHandler.handleSync({
       requestName: "REQUEST_GET_JUDGES"
     });
 
-    expect(response).resolves.toContain({id: 1, name: "Walter White"});
-    expect(response).resolves.toContain({id: 4, name: "Mike Ehrmantraut"});
-    expect(response).resolves.toContain({id: 8, name: "Saul Goodman"});
+    expect(response.judges).toContainEqual({id: 1, name: "Walter White"});
+    expect(response.judges).toContainEqual({id: 4, name: "Mike Ehrmantraut"});
+    expect(response.judges).toContainEqual({id: 8, name: "Saul Goodman"});
   });
   test("Returns the correct number of judges", () => {
-    let response: Promise<any> = requestHandler.handle({
+    let response: any = requestHandler.handleSync({
       requestName: "REQUEST_GET_JUDGES"
     });
-    expect(response).resolves.toHaveProperty("length", 12);
+    expect(response.judges.length).toBe(12);
   });
 });
