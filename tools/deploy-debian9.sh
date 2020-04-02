@@ -1,8 +1,37 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # This is meant to be run on a fresh debian 9 install. See Deployment page in docs
 # for more details.
 
 set -e -u
+
+echo "========================================="
+echo "== Welcome to the Sledge setup script! =="
+echo "========================================="
+echo
+echo "This script is mean to be run on Debian 9. This script does not check"
+echo "if it is actually running on Debian 9, and will fail in unexpected ways"
+echo "if it is not. This script is should not be run more than once."
+echo
+[[ ! -z "${SLEDGE_SETUP_NOPAUSE:-}" ]] || {
+  echo "Press enter to continue."
+  read
+}
+[[ ! -z "${SLEDGE_SETUP_EMAIL:-}" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_EMAIL."
+  read SLEDGE_SETUP_EMAIL
+}
+[[ ! -z "${SLEDGE_SETUP_DOMAIN:-}" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_DOMAIN."
+  read SLEDGE_SETUP_DOMAIN
+}
+[[ ! -z "${SLEDGE_SETUP_USERNAME:-}" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_USERNAME."
+  read SLEDGE_SETUP_USERNAME
+}
+[[ ! -z "${SLEDGE_SETUP_PASSWORD:-}" ]] || {
+  echo "Please enter the value you want for SLEDGE_SETUP_PASSWORD."
+  read SLEDGE_SETUP_PASSWORD
+}
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -12,24 +41,24 @@ apt-get -y dist-upgrade
 
 # Add external repos
 apt-get -y install apt-transport-https lsb-release
+curl -sL https://deb.nodesource.com/setup_13.x | bash -
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-echo "deb https://deb.nodesource.com/node_10.x $(lsb_release -c -s) main" >/etc/apt/sources.list.d/nodesources.list
 echo "deb https://dl.yarnpkg.com/debian/ stable main" >/etc/apt/sources.list.d/yarn.list
 
 # Update repos and install additional packages
 apt-get -y update
-apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent
+apt-get -y install curl nodejs yarn build-essential git sudo certbot nginx xxd sqlite3 iptables-persistent apache2-utils
 
 # nginx automatically starts when it's installed, we don't want that yet
 service nginx stop
 
 # If possible, get SSL certificates
-certbot certonly -n --standalone --agree-tos --email eric@threedot14.com --domains sledge.site,www.sledge.site || {
+certbot certonly -n --standalone --agree-tos --email "$SLEDGE_SETUP_EMAIL" --domains "$SLEDGE_SETUP_DOMAIN" || {
   echo "================================================"
   echo "===== WARNING: Could not get certificates! ====="
   echo "================================================"
   echo "The server will continue to be created with a self-signed certificate"
+  echo
 }
 
 # Setup iptables to block most incoming connections,
@@ -68,14 +97,14 @@ cd sledge
 git checkout fall2018
 
 yarn install
-./gulp build
+BUILD_MODE=prod make build
 EOF
 
 # Add sledge daemon command
 tee /usr/local/bin/sledge-daemon <<EOF
 #!/bin/sh
 cd /home/sledge/sledge
-sudo -u sledge ./sledge 4000
+sudo -u sledge ./bin/sledge --port 4000
 EOF
 chmod 755 /usr/local/bin/sledge-daemon
 
@@ -86,6 +115,7 @@ Description=A Judging System for Hackathons
 
 [Service]
 ExecStart=/usr/local/bin/sledge-daemon
+Environment='DEBUG=*'
 
 [Install]
 Alias=sledge.service
@@ -95,24 +125,19 @@ systemctl enable sledge.service
 systemctl start sledge.service
 sleep 3 # Wait for Sledge to fully start
 
-# Add an initial admin token
-ADMIN_TOKEN="$(head -c5 </dev/random | xxd -p)"
-echo $ADMIN_TOKEN >admin-token.txt
-sqlite3 /home/sledge/sledge/data/sledge.db "INSERT INTO Token(secret, privilege) VALUES(\"$ADMIN_TOKEN\", 0);"
-
 # Sledge ssl certificate
 mkdir -p /etc/nginx/ssl
-ln -s /etc/letsencrypt/live/sledge.site/privkey.pem /etc/nginx/ssl/sledge.key
-ln -s /etc/letsencrypt/live/sledge.site/fullchain.pem /etc/nginx/ssl/sledge.cert
+ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/privkey.pem" /etc/nginx/ssl/sledge.key
+ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/fullchain.pem" /etc/nginx/ssl/sledge.cert
 tee /etc/nginx/snippets/ssl-sledge <<EOF
-ssl_certificate /etc/letsencrypt/live/sledge.site/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/sledge.site/privkey.pem;
+ssl_certificate /etc/nginx/ssl/sledge.key;
+ssl_certificate_key /etc/nginx/ssl/sledge.cert;
 EOF
 
 # Self-signed certificate
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.cert \
-  -subj "/CN=netbuzz.xyz"
+  -subj "/CN=$SLEDGE_SETUP_DOMAIN"
 tee /etc/nginx/snippets/ssl-nginx <<EOF
 ssl_certificate /etc/nginx/ssl/nginx.cert;
 ssl_certificate_key /etc/nginx/ssl/nginx.key;
@@ -125,13 +150,16 @@ else
   SSL_SNIPPET="snippets/ssl-nginx"
 fi
 
+# Setup HTTP Auth file
+htpasswd -b -c /etc/nginx/sledge.htpasswd "$SLEDGE_SETUP_USERNAME" "$SLEDGE_SETUP_PASSWORD"
+
 # Add nginx config for website
 tee /etc/nginx/sites-available/sledge <<EOF
 server {
   listen 443 ssl;
   listen [::]:443 ssl;
 
-  server_name www.sledge.site;
+  server_name $SLEDGE_SETUP_DOMAIN;
 
   include $SSL_SNIPPET;
 
@@ -139,6 +167,9 @@ server {
   index index.html;
 
   location /socket.io {
+    auth_basic "Sledge Privileged Area";
+    auth_basic_user_file /etc/nginx/sledge.htpasswd;
+
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection "upgrade";
     proxy_http_version 1.1;
@@ -156,15 +187,13 @@ server {
   listen 80;
   listen [::]:80;
 
-  listen 443 ssl;
-  listen [::]:443 ssl;
+  server_name $SLEDGE_SETUP_DOMAIN;
 
-  include $SSL_SNIPPET;
-
-  return 301 https://www.sledge.site\$request_uri;
+  return 301 https://$SLEDGE_SETUP_DOMAIN\$request_uri;
 }
 EOF
 ln -s /etc/nginx/sites-available/sledge /etc/nginx/sites-enabled/sledge
+rm -f /etc/nginx/sites-enabled/default
 
 # Start nginx
 nginx -t
@@ -175,4 +204,3 @@ echo "============================"
 echo "== Sledge Setup Complete! =="
 echo "============================"
 echo "The setup script has finished installing Sledge. Please see documentation for what to do next."
-echo "Your admin token (also stored in admin-token.txt): $ADMIN_TOKEN"

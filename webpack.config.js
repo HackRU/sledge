@@ -1,7 +1,12 @@
 const path = require("path");
 
+let webpackMode = "development";
+if (process.env.BUILD_MODE && process.env.BUILD_MODE.toUpperCase().startsWith("PROD")) {
+  webpackMode = "production";
+}
+
 module.exports = {
-  mode: "development",
+  mode: webpackMode,
   entry: "./src/client/index.ts",
   output: {
     path: path.resolve(__dirname, "public"),
