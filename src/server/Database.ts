@@ -127,6 +127,11 @@ export class Database {
    * Open the Sqlite3 database file, or create if it doesn't exist
    */
   private openDatabase() {
+    if (this.datadir === ":memory:") {
+      this.sql = new Sqlite3(":memory:");
+      return false;
+    }
+
     let dbPath = resolve(this.datadir, "sledge.db");
     try {
       mkdirSync(this.datadir);
