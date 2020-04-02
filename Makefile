@@ -29,7 +29,7 @@ start: build
 
 .PHONY: test
 test: build
-	jest
+	jest --collectCoverage
 
 .PHONY: apidoc
 apidoc:
