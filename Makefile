@@ -30,3 +30,7 @@ start: build
 .PHONY: test
 test: build
 	jest
+
+.PHONY: apidoc
+apidoc:
+	typedoc --out api src
