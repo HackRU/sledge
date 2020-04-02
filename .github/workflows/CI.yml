@@ -19,4 +19,4 @@ jobs:
         env:
           DEBUG: "*"
       - name: Run jest tests
-        run: ./node_modules/.bin/jest
+        run: ./node_modules/.bin/jest --collectCoverage
