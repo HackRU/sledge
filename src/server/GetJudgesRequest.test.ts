@@ -1,7 +1,6 @@
 import {GetJudgesRequest} from "./GetJudgesRequest";
 import {Database} from "./Database";
 import {createPreCollectionMockDatabase} from "./MockDatabase";
-import exp from "constants";
 
 describe("GetJudgesRequest", () => {
   let database: Database;
