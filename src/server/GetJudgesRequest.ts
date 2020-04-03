@@ -5,12 +5,7 @@ import {RequestHandler} from "./Request";
  * Get the current list of judges and their associated ids
  */
 export class GetJudgesRequest implements RequestHandler {
-  // Sql statements
-  selectJudges: any;
-
-  constructor(db: Database) {
-    this.selectJudges = db.prepare(
-      "SELECT id, name FROM Judge ORDER BY name;");
+  constructor(private db: Database) {
   }
 
   canHandle(requestName: string) {
@@ -21,11 +16,14 @@ export class GetJudgesRequest implements RequestHandler {
     return true;
   }
 
-  handle(data: any): Promise<object> {
-    let judges = this.selectJudges.all();
+  handleSync(data: any): object {
+    let judges = this.db.all<{
+      id: number,
+      name: string
+    }>("SELECT id, name FROM Judge ORDER BY name;", []);
 
-    return Promise.resolve({
+    return {
       judges
-    });
+    };
   }
 }

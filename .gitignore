@@ -9,3 +9,5 @@ node_modules/
 .tsbuildinfo
 tmp/
 .idea/
+api/
+coverage/
