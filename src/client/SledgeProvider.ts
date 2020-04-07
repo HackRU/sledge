@@ -8,21 +8,12 @@ export class SledgeProvider implements DataProvider {
   getList(resource: string, params: GetListParams): Promise<GetListResult> {
     return this.socket.sendRequest({
       requestName: "REQUEST_GET_OBJECTS",
-      table: resource
-    }).then((res: GetObjectsResponseData) => {
-      let data = res.rows;
-      if (params.pagination) {
-        data = res.rows.slice(
-          (params.pagination.page - 1) * params.pagination.perPage,
-          params.pagination.page * params.pagination.perPage,
-        );
-      }
-
-      return Promise.resolve({
-        data,
-        total: res.rows.length
-      });
-    });
+      table: resource,
+      params: params
+    }).then((res: GetObjectsResponseData) => Promise.resolve({
+      data: res.rows,
+      total: res.total
+    }));
   }
 
   getOne(resource: string, params: GetOneParams): Promise<GetOneResult> {

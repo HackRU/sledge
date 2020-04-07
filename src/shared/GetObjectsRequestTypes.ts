@@ -1,5 +1,8 @@
+import {GetListParams} from "react-admin";
+
 export interface GetObjectsRequestData {
-  table: string
+  table: string,
+  params: GetListParams
 }
 
 export interface GetObjectsResponseData {
@@ -7,5 +10,6 @@ export interface GetObjectsResponseData {
   rows: {
     id: number,
     [field: string]: any
-  }[]
+  }[],
+  total: number
 }
