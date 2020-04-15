@@ -12,7 +12,7 @@ const validator = tc.hasShape({
     }),
     sort: tc.hasShape({
       field: tc.isString,
-      order: tc.isString
+      order: tc.oneOf([tc.isConstant("ASC"), tc.isConstant("DESC")])
     }),
     filter: tc.isObject
   })
@@ -34,7 +34,7 @@ export class GetObjectsRequest implements RequestHandler {
   }
 
   simpleValidate(data: any) {
-    return validator(data) && (data.params.sort.order === "ASC" || data.params.sort.order === "DESC");
+    return validator(data);
   }
 
   handleSync(data: GetObjectsRequestData): GetObjectsResponseData | {error: string} {
