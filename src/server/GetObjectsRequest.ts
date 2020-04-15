@@ -2,6 +2,7 @@ import {Database} from "./Database";
 import {RequestHandler} from "./Request";
 import { GetObjectsRequestData, GetObjectsResponseData } from "../shared/GetObjectsRequestTypes";
 import * as tc from "./TypeCheck";
+import * as schemaValidator from "./SchemaValidator";
 
 const validator = tc.hasShape({
   table: tc.isString,
@@ -38,19 +39,15 @@ export class GetObjectsRequest implements RequestHandler {
   }
 
   handleSync(data: GetObjectsRequestData): GetObjectsResponseData | {error: string} {
-    const tables = [
-      "Status",
-      "Track",
-      "Submission",
-      "Judge",
-      "Prize",
-      "Category",
-      "Assignment"
-    ];
-
-    if (!tables.includes(data.table)) {
+    if (!schemaValidator.isTable(this.db, data.table)) {
       return {
-        error: `Can't get objects from table ${data.table}`
+        error: `Can't get objects from nonexistent table ${data.table}`
+      };
+    }
+
+    if (!schemaValidator.hasColumn(this.db, data.table, "id")) {
+      return {
+        error: `Can't get objects from table ${data.table} with no "id" column`
       };
     }
 
