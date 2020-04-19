@@ -11,8 +11,9 @@ import {
 } from "../../shared/GetFullScoresRequestTypes";
 
 import {Socket} from "../Socket";
+import {Application} from "../Application";
 
-export class SubmissionManagementApp extends React.Component<any, SubmissionManagementAppState> {
+export class SubmissionManagementApp extends Application<SubmissionManagementAppState> {
   socket: Socket;
 
   constructor(props: any) {

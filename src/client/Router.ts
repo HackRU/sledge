@@ -16,14 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {createElement, Component} from "react";
+import {createElement, Component, ComponentClass} from "react";
 import {render} from "react-dom";
 
-import {pages} from "./directory";
+import {ApplicationConstructor, pages} from "./directory";
 import {getSocket} from "./Socket";
+import {Application} from "./Application";
 
 /**
- * Decide which page to load
+ * Decides which Application to load, and mounts that application
  */
 export class Router {
   start() {
@@ -38,14 +39,9 @@ export class Router {
   }
 
   /**
-   * Renders a react app to the "app" div on the page. The app argument is passed
-   * to React.createElement
-   *
-   * React Components postfixed by App indicate they are toplevel components, and
-   * can assume they will never be unmounted and the only other components will be
-   * created by them.
+   * Renders an Application to the page
    */
-  renderReactApp(app: any) {
+  renderReactApp(app: ApplicationConstructor) {
     const topElement = createElement(app);
     const container = getAppContainer();
     const mountedComponent = render(topElement, container);
@@ -54,9 +50,9 @@ export class Router {
     (window as any)["app"] = mountedComponent;
     (window as any)["socket"]= getSocket();
 
-    if ((mountedComponent as any).ready) {
-      (mountedComponent as any).ready();
-    }
+    setTimeout(() => {
+      mountedComponent.ready();
+    }, 0);
   }
 }
 

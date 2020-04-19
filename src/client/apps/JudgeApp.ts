@@ -20,8 +20,9 @@ import {
   ASSIGNMENT_TYPE_RATING,
   ASSIGNMENT_TYPE_RANKING
 } from "../../shared/constants";
+import {Application} from "../Application";
 
-export class JudgeApp extends React.Component<any, JudgeAppState> {
+export class JudgeApp extends Application<JudgeAppState> {
   socket: Socket;
 
   judgeId: number;

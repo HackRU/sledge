@@ -1,14 +1,15 @@
 import React from "react";
 import { pages } from "../directory";
 import { BadRoutePage } from "../components/BadRoutePage";
+import {Application, ApplicationProps} from "../Application";
 
 /**
  * This will render when we get a route that doesn't exist
  */
-export class BadRouteApp extends React.Component<any, any> {
+export class BadRouteApp extends Application<never> {
   pageHash: string;
 
-  constructor(props: any) {
+  constructor(props: ApplicationProps) {
     super(props);
     this.pageHash = document.location.hash;
   }
