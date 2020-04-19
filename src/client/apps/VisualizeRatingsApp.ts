@@ -5,8 +5,9 @@ import {VisualizeRatingsPage} from "../components/VisualizeRatingsPage";
 import {Socket} from "../Socket";
 import {GetRatingScoresRequestResponseData} from "../../shared/GetRatingScoresRequestTypes";
 import {VisualizeRatingsPageProps} from "../components/VisualizeRatingsPage";
+import {Application} from "../Application";
 
-export class VisualizeRatingsApp extends React.Component<any, VisualizeRatingsAppState> {
+export class VisualizeRatingsApp extends Application<VisualizeRatingsAppState> {
   socket: Socket;
 
   constructor(props: any) {

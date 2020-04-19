@@ -11,8 +11,9 @@ import {catchOnly} from "../../shared/util";
 
 import {Socket} from "../Socket";
 import { DebugPage, DebugPageProps } from "../components/DebugPage";
+import {Application} from "../Application";
 
-export class DebugApp extends React.Component<any,any> {
+export class DebugApp extends Application<any> {
   socket: Socket;
   templates: Map<string, string>;
 

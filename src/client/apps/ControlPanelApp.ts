@@ -11,8 +11,9 @@ import {
 } from "../../shared/GetFullScoresRequestTypes";
 
 import {Socket} from "../Socket";
+import {Application} from "../Application";
 
-export class ControlPanelApp extends React.Component<any, ControlPanelAppState> {
+export class ControlPanelApp extends Application<ControlPanelAppState> {
   socket: Socket;
 
   constructor(props: any) {

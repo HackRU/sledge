@@ -11,10 +11,10 @@ import {SubmissionManagementApp} from "./apps/SubmissionManagementApp";
 import {HomeApp} from "./apps/HomeApp";
 import { AdminApp } from "./apps/AdminApp";
 import {OverallRatingsApp} from "./apps/OverallRatingsApp";
-import {Application} from "./Application";
+import {Application, ApplicationProps} from "./Application";
 
 export interface ApplicationConstructor {
-  new(props: any): React.Component<any, any>;
+  new(props: ApplicationProps): Application<any>;
 }
 
 export interface PageListing {
