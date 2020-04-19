@@ -16,6 +16,11 @@ echo
   echo "Press enter to continue."
   read
 }
+
+([[ "$EUID" -ne 0 ]] && 'WARNING: This script should be run as root') || true
+(id -u sledge 2>/dev/null && echo 'WARNING: sledge user already exists') || true
+echo
+
 [[ ! -z "${SLEDGE_SETUP_EMAIL:-}" ]] || {
   echo "Please enter the value you want for SLEDGE_SETUP_EMAIL."
   read SLEDGE_SETUP_EMAIL
@@ -31,6 +36,40 @@ echo
 [[ ! -z "${SLEDGE_SETUP_PASSWORD:-}" ]] || {
   echo "Please enter the value you want for SLEDGE_SETUP_PASSWORD."
   read SLEDGE_SETUP_PASSWORD
+}
+
+echo
+echo "This script will perform the following actions:"
+echo '1.  Fully upgrade all packages (apt update && apt dist-upgrade)'
+echo '2.  Add the nodejs and yarn repositories to sources.list and install the'
+echo '    latest version of each'
+echo '3.  Install nginx and other packages necessary for later steps'
+echo '4.  Request an SSL certificate for the given domain via Lets Encrypt'
+echo '5.  Setup iptables rules to block inbound TCP requests except on ports'
+echo '    for HTTP,HTTPS and SSH'
+echo '6.  Save the creates iptables rules to be persistent on reboot'
+echo '7.  Create and enable a 1GB swapfile, and save to fstab to its persistent'
+echo '    on reboot'
+echo '8.  Create a system user sledge'
+echo '9.  Clone and build sledge as the new user from the home directory'
+echo '10. Create and enable a systemd service to run sledge on port 4000'
+echo '11. Create a self-signed SSL certificate for the given domain'
+echo '12. Create and an nginx site to server sledge, using the generated'
+echo '    certificate from either step 4 or step 11 depending on if step 4 was'
+echo '    successful'
+echo '13. Enable the created nginx site and disable the default site'
+echo '14. Print a message indicating success. If the script exits without such '
+echo '    message, it has not completed successfully and manual intervention'
+echo '    might be required to fix'
+echo
+echo "SLEDGE_SETUP_EMAIL = $SLEDGE_SETUP_EMAIL"
+echo "SLEDGE_SETUP_DOMAIN = $SLEDGE_SETUP_DOMAIN"
+echo "SLEDGE_SETUP_USERNAME = $SLEDGE_SETUP_USERNAME"
+echo "SLEDGE_SETUP_PASSWORD = $SLEDGE_SETUP_PASSWORD"
+echo
+[[ ! -z "${SLEDGE_SETUP_NOPAUSE:-}" ]] || {
+  echo "Press enter to continue."
+  read
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -100,22 +139,17 @@ yarn install
 BUILD_MODE=prod make build
 EOF
 
-# Add sledge daemon command
-tee /usr/local/bin/sledge-daemon <<EOF
-#!/bin/sh
-cd /home/sledge/sledge
-sudo -u sledge ./bin/sledge --port 4000
-EOF
-chmod 755 /usr/local/bin/sledge-daemon
-
 # Add and enable sledge service
 tee /lib/systemd/system/sledge.service <<EOF
 [Unit]
 Description=A Judging System for Hackathons
 
 [Service]
-ExecStart=/usr/local/bin/sledge-daemon
-Environment='DEBUG=*'
+ExecStart=/home/sledge/sledge/bin/sledge --port 4000
+Environment='DEBUG=sledge'
+User=sledge
+WorkingDirectory=/home/sledge/sledge
+Restart=on-failure
 
 [Install]
 Alias=sledge.service
@@ -130,8 +164,8 @@ mkdir -p /etc/nginx/ssl
 ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/privkey.pem" /etc/nginx/ssl/sledge.key
 ln -s "/etc/letsencrypt/live/$SLEDGE_SETUP_DOMAIN/fullchain.pem" /etc/nginx/ssl/sledge.cert
 tee /etc/nginx/snippets/ssl-sledge <<EOF
-ssl_certificate /etc/nginx/ssl/sledge.key;
-ssl_certificate_key /etc/nginx/ssl/sledge.cert;
+ssl_certificate /etc/nginx/ssl/sledge.cert;
+ssl_certificate_key /etc/nginx/ssl/sledge.key;
 EOF
 
 # Self-signed certificate
