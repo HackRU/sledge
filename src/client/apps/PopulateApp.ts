@@ -7,8 +7,9 @@ import {getSetupData, setSetupData, resetSetupData} from "../ClientStorage";
 import {SetupData, renamePrize, addCategory, getSubmissionPrizes, expandCategory, assignPrizeToAll, addPrize, cycleTrackOnCategory} from "../SetupData";
 
 import {PopulateRequestData} from "../../shared/PopulateRequestTypes";
+import {Application} from "../Application";
 
-export class PopulateApp extends React.Component<any, PopulateState> {
+export class PopulateApp extends Application<PopulateState> {
   socket: Socket;
 
   constructor(props: any) {

@@ -2,8 +2,9 @@ import React from "react";
 import { Socket } from "../Socket";
 import { SledgeProvider } from "../SledgeProvider";
 import { AdminPageProps, AdminPage } from "../components/AdminPage";
+import {Application} from "../Application";
 
-export class AdminApp extends React.Component<any, any> {
+export class AdminApp extends Application<never> {
   socket: Socket;
   provider: SledgeProvider;
 

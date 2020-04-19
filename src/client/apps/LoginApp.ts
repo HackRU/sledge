@@ -3,8 +3,9 @@ import {Socket} from "../Socket";
 
 import {LoginPage, LoginPageProps} from "../components/LoginPage";
 import {segue} from "../util";
+import {Application} from "../Application";
 
-export class LoginApp extends React.Component<any,any> {
+export class LoginApp extends Application<any> {
   socket: Socket;
 
   constructor(props: any) {

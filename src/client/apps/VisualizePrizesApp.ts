@@ -12,8 +12,9 @@ import {
 } from "../../shared/GetFullScoresRequestTypes";
 
 import {Socket} from "../Socket";
+import {Application} from "../Application";
 
-export class VisualizePrizesApp extends React.Component<any, VisualizePrizeAppsState> {
+export class VisualizePrizesApp extends Application<VisualizePrizeAppsState> {
   socket: Socket;
 
   constructor(props: any) {

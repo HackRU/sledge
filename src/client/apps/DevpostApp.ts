@@ -8,8 +8,9 @@ import {
   DevpostData,
   mergeDevpostToSetupData
 } from "../Devpost";
+import {Application} from "../Application";
 
-export class DevpostApp extends React.Component<any,any> {
+export class DevpostApp extends Application<any> {
   socket: Socket;
 
   constructor(props: any) {
