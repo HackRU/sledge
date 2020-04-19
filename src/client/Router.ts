@@ -20,6 +20,7 @@ import {createElement, Component} from "react";
 import {render} from "react-dom";
 
 import {pages} from "./directory";
+import {getSocket} from "./Socket";
 
 /**
  * Decide which page to load
@@ -51,6 +52,11 @@ export class Router {
 
     // For debugging
     (window as any)["app"] = mountedComponent;
+    (window as any)["socket"]= getSocket();
+
+    if ((mountedComponent as any).ready) {
+      (mountedComponent as any).ready();
+    }
   }
 }
 

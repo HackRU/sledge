@@ -10,9 +10,11 @@ import {VisualizePrizesApp} from "./apps/VisualizePrizesApp";
 import {SubmissionManagementApp} from "./apps/SubmissionManagementApp";
 import {HomeApp} from "./apps/HomeApp";
 import { AdminApp } from "./apps/AdminApp";
+import {OverallRatingsApp} from "./apps/OverallRatingsApp";
+import {Application} from "./Application";
 
 export interface ApplicationConstructor {
-  new(props: {}): React.Component<{}, any>;
+  new(props: any): React.Component<any, any>;
 }
 
 export interface PageListing {
@@ -61,4 +63,8 @@ export const pages: Array<PageListing> = [{
   name: "Admin",
   path: "admin",
   component: AdminApp
+}, {
+  name: "Overall Ratings",
+  path: "overallratings",
+  component: OverallRatingsApp
 }];

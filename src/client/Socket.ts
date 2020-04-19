@@ -3,6 +3,9 @@ import io from "socket.io-client";
 export type UpdateHandler = (data: object) => void;
 export type ConnectionHandler = (socketioEventName: string) => void;
 
+/**
+ * The socket singleton
+ */
 let singleton: Socket;
 
 /**
@@ -15,11 +18,6 @@ export class Socket {
   resolvers: Map<string, (data: object) => void>;
 
   constructor() {
-    if (singleton) {
-      throw new Error("Socket should only have one instance");
-    }
-    singleton = this;
-
     this.updateHandlers = [];
     this.connectionHandlers = [];
     this.resolvers = new Map();
@@ -114,6 +112,10 @@ export class Socket {
  * Gets the socket singleton instance
  */
 export function getSocket(): Socket {
+  if (!singleton) {
+    singleton = new Socket();
+  }
+
   return singleton;
 }
 
