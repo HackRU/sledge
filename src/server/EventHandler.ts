@@ -63,6 +63,13 @@ export class EventHandler {
       });
     }
 
+    let validation = handler.validate(request);
+    if (!validation.valid) {
+      return Promise.resolve({
+        error: validation.error
+      })
+    }
+
     const responsePromise = handler.handle(request);
 
     if (this.db.isInTransaction()) {
