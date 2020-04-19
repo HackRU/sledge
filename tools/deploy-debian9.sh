@@ -16,6 +16,15 @@ echo
   echo "Press enter to continue."
   read
 }
+
+if [[ "$EUID" -ne 0 ]]; then
+  echo 'WARNING: This script should be run as root'
+fi
+id -u sledge && {
+  echo 'WARNING: sledge user already exists'
+}
+echo
+
 [[ ! -z "${SLEDGE_SETUP_EMAIL:-}" ]] || {
   echo "Please enter the value you want for SLEDGE_SETUP_EMAIL."
   read SLEDGE_SETUP_EMAIL
