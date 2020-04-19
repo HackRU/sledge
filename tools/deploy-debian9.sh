@@ -17,12 +17,8 @@ echo
   read
 }
 
-if [[ "$EUID" -ne 0 ]]; then
-  echo 'WARNING: This script should be run as root'
-fi
-id -u sledge && {
-  echo 'WARNING: sledge user already exists'
-}
+([[ "$EUID" -ne 0 ]] && 'WARNING: This script should be run as root') || true
+(id -u sledge 2>/dev/null && echo 'WARNING: sledge user already exists') || true
 echo
 
 [[ ! -z "${SLEDGE_SETUP_EMAIL:-}" ]] || {
