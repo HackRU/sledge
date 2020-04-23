@@ -15,6 +15,7 @@ export interface StrictRequestHandler {
 }
 
 export interface RequestValidationError {
+  valid: boolean;
   error?: string;
 }
 
