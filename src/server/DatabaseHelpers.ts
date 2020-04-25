@@ -14,8 +14,11 @@ export function runMany(stmt: Statement, rows: Array<any>): Array<number> {
   for (let row of rows) {
     const rowId = stmt.run(row).lastInsertRowid;
     if (typeof rowId !== "number") {
-      // This should never happend since we shouldn't have 64-bit integer support enabled
-      throw new Error("Better-sqlite3 returned non-number row id");
+      // If a rowid is not type "number" it's probably type "bigint"
+      // which can happen if they get too large.
+      throw new Error(
+        `Got non-number rowid, of type ${typeof rowId} instead`
+      );
     }
 
     inserted.push(rowId);

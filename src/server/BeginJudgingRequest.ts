@@ -2,7 +2,6 @@ import {range} from "../shared/util";
 import {Database} from "./Database";
 import {runMany} from "./DatabaseHelpers";
 import {RequestHandler} from "./Request";
-import integer from "integer";
 import { PrizeBiasMatrix } from "./PrizeBiasMatrix";
 
 /**
@@ -91,7 +90,7 @@ export class BeginJudgingRequest implements RequestHandler {
     // Change phase to 2
     this.setPhase.run({
       phase: 2,
-      timestamp: integer(Date.now())
+      timestamp: Date.now()
     });
 
     this.db.commit();
