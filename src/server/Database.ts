@@ -2,7 +2,6 @@ import {mkdirSync, readFileSync, existsSync} from "fs";
 import {resolve} from "path";
 
 import Sqlite3 from "better-sqlite3";
-import integer from "integer";
 
 /**
  * Manages persistent data.
@@ -89,6 +88,8 @@ export class Database {
     let prepared = this.internalPrepare(stmt);
     let result = prepared.run(bindParameters);
     if (typeof result.lastInsertRowid !== "number") {
+      // Large rowids (which shouldn't happen) get returned
+      // as bigints
       throw new Error("Bad lastInsertRowid");
     }
     return result.lastInsertRowid;
