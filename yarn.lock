@@ -1752,10 +1752,10 @@ better-assert@~1.0.0:
   dependencies:
     callsite "1.0.0"
 
-better-sqlite3@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-7.0.0.tgz#13e0840e7ed9f66f3f2205b072d63dab932ece15"
-  integrity sha512-3i3r8djWlZyjF5IEhc0oJhJP726Vh1zK3w6BBvMgWNDolA6Qbq/gHx5/Eu3JlHbLYsa5UpIKBsT4PzxaZZpC9A==
+better-sqlite3@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-7.0.1.tgz#7d086130b42d7d5c9d2847899c57ee59eec9cbb3"
+  integrity sha512-fsVcoGXxnseNajbfFbth0BKnDWebPY6x77UWfrBHApCKq1yo41DlWnFsffOsLpjkQ4VKgDU5C3aUtiw3wGGU0Q==
   dependencies:
     bindings "^1.5.0"
     prebuild-install "^5.3.3"
