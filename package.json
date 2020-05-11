@@ -14,7 +14,7 @@
     "@types/node": "^13.13.5",
     "@types/papaparse": "^5.0.1",
     "@types/react": "^16.9.35",
-    "@types/react-dom": "^16.9.7",
+    "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-select": "^3.0.12",
     "@types/reactstrap": "^8.0.3",
