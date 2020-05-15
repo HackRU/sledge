@@ -19,7 +19,7 @@
     "@types/react-select": "^3.0.13",
     "@types/reactstrap": "^8.0.3",
     "@types/recharts": "^1.8.10",
-    "@types/socket.io": "^2.1.2",
+    "@types/socket.io": "^2.1.5",
     "@types/socket.io-client": "^1.4.33",
     "babel-loader": "^8.0.6",
     "better-sqlite3": "^7.0.1",
