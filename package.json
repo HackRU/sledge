@@ -42,7 +42,7 @@
     "socket.io-client": "^2.2.0",
     "style-loader": "^1.2.1",
     "typedoc": "^0.17.7",
-    "typescript": "^3.9.2",
+    "typescript": "^3.9.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.6"
   },
