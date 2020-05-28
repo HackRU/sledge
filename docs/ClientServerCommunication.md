@@ -57,7 +57,7 @@ authenticate that judge) needs to be sent with the request.
 
 [sl]: https://en.wikipedia.org/wiki/Stateless_protocol
 
-If a request encounters a problem the response will contain an `error
+If a request encounters a problem the response will contain an `error`
 property with a string describing what went wrong. This error property is
 checked in a few places and the object won't necessarily be passed through if
 this property exists. You shouldn't use the error property for problems the
@@ -66,7 +66,7 @@ client knows how to recover from.
 Specifically for a `request` there's a special type of "validation" error
 that's always checked for to ensure the object has the right "shape". For
 instance, that if a specific property is expected to be a list of positive
-integers, then it meets that requirement. This reason this is separated out
+integers, then it meets that requirement. The reason this is separated out
 (instead of say, just checking each number is a positive integer as we use the
 object) is it's easier to write the handle methods if we can safely cast it
 to that type in typescript. This is only done for `request` because we only care
@@ -101,5 +101,5 @@ The server is a bit more complicated. To create a request that can be
 responded to you need to create a class implementing `Request` (defined in
 `server/Request.ts`) and instantiate it in the constructor of `EventHandler`. If
 there are any types or data you want to share between the client and the
-server, a correspoding file should be created in the `shared` directory (where
+server, a corresponding file should be created in the `shared` directory (where
 both the client and server will have access to it).
