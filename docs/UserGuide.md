@@ -105,7 +105,7 @@ Sledge splits its execution into three **phases**: setup, collection and
 tally. Judges only enter scores during the collection phase, and Sledge
 assumes certain information won't change after collection starts, for
 instance that submissions won't be deleted and categories won't be
-added or removed. The purpose of the setup phase is give a chance for
+added or removed. The purpose of the setup phase is to give a chance for
 this information to be setup before collection starts. The tally phase prevents
 scores from changing as the data is being analyzed.
 
@@ -130,6 +130,8 @@ Sledge's judging data was too close to call and used methods outside
 Sledge to select the final winner.
 
 ## Getting Started
+
+*Some of the Getting Started section is incomplete or outdated*
 
 To help you get started this tutorial will walk you through setting up the
 Fall 2019 HackRU data. Before starting get a fresh Sledge instance setup
@@ -206,6 +208,10 @@ TODO: Management during submission, one-off events like adding late
 submissions and analyzing data to produce winners.
 
 ## Deployment Recommendations
+
+*Deployment Recommendations may be outdated, see [DeployScript.md][dpmd]*
+
+[dpmd]: DeployScript.md
 
 We recommend running Sledge on hardware with at least two logical processors and
 at least 1GB of RAM. In the past we have used the 60GB tier VC2 from Vultr,

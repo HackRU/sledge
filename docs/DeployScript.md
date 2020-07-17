@@ -5,10 +5,9 @@ system. The script can be found in `tools/deploy-debian9.sh`. The script is
 useful if you are setting up a virtual machine solely for running sledge that
 will be deprovisioned after your event.
 
-If you're running on AWS a good hosting option is Amazon Lightsail, which
-combines EC2 with networking and storage into a single instance, and provides
-easy shell access from the browser with a Connect to SSH button. Of course,
-dozens of other similar hosting services also exist.
+There's a lot of hosting providers that provide servers where Sledge can run on,
+but the simplest for AWS is Amazon Lightsail (see *Amazon Lightsail
+Deployment* below).
 
 ## Script Usage
 
@@ -31,8 +30,9 @@ described below.
  - `SLEDGE_SETUP_DOMAIN`. This value is also passed into certbot when requesting
     an SSL certificate and also used when generating the nginx configuration and
     is the domain given to the self-signed certificate. Although certbot accepts
-    a comma-separated list of domain, this variable should have exactly one.
- - `SLEDGE_SETUP_USERNAME` and `SLEDGE_SETUP_PASSWORD`. The script sets up  nginx
+    a comma-separated list of domains, this variable should have exactly one (it
+    cannot be blank).
+ - `SLEDGE_SETUP_USERNAME` and `SLEDGE_SETUP_PASSWORD`. The script sets up nginx
     basic http authentication over the socket.io endpoint, only allowing this
     username and password combination to access sledge. The user will be
     prompted to enter this username and password when they first visit a sledge
@@ -70,3 +70,58 @@ To prevent this you should ideally hold off on running the script until your DNS
 is setup, but note that **it could take up to 48 hours for DNS to propegate**
 meaning it might take 48 hours after setting DNS until Let's Encrypt is willing
 to give you a certificate.
+
+## Amazon Lightsail Deployment
+
+Amazon Lightsail combines compute, storage and networking into a single Virtual
+Private Server (VPS), so it's probably the easiest way to deploy on AWS.
+
+### Accessing Amazon Lightsail
+
+Go to your AWS Management Console and under Find Services search for Lightsail.
+
+### Creating a Static IP
+
+A static IP can be created directly from Lightsail, in the Networking tab.
+The IP won't immediately be attached to any instance, but this allows you to
+setup DNS more easily.
+
+### Creating an Instance
+ 
+In Amazon Lightsail, click Create Instance. Since we plan to use the deploy
+script the platform *must* be Linux/Unix and the blueprint *must* be Debian 9
+(in my case this is Debian 9.5, but Debian is stable enough where the minor
+version shouldn't matter).
+
+Lightsail provides the option to use a launch script. Since you can't see
+the output it's better run the launch script after the instance is provisioned.
+
+In the past Sledge has had issues that could've been solved with choosing a
+beefier instance (specifically with storage). Since instances are relatively
+cheap, choose something with 60GB+ just to be safe.
+
+### Setup Instance Networking
+
+After opening the instance in Lightsail, go to the Netorking tab (this is
+the instance-specific networking tab, and is different from the networking
+tab where you created the static IP). Use the Attach Static IP button to
+attach the static IP from before.
+
+By default, Lightsail enables a strict firewall that will prevent Sledge from
+running correctly. This can be disabled by adding a rule with Application set
+to All Protocols. The iptables firewall within the instance is setup by the
+script and will still be running.
+
+### Running the Launch Script
+
+The Connect tab should have a button providing an in-browser shell with admin
+access into the VPS. From here you can run the script following the
+instructions above.
+
+### Re-launching the Instance
+
+Since you're using a Static IP, you will not lose the IP address if you delete
+the instance. If for some reason you need to re-create the instance or rerun
+the deploy script, you can simply detach the Static IP in the networking tab
+and attach it to a newly created instance. This way, re-deploying shouldn't
+require any DNS changes.
