@@ -22,7 +22,7 @@ export const JudgePage = (props: JudgePageProps) => (
     <HeaderWithConnectionStatus
       connectionStatus={props.connectionStatus}
     />
-
+    <h1>Timer stand-in</h1>
     <JudgeSubPage
       {...props}
     />
