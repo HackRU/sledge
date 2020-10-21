@@ -4,7 +4,7 @@ import {
 } from "./constants";
 
 export interface GetFullScoresResponseData {
-  submissions: Array<{id: number, name: string, trackIndex: number, location: number}>;
+  submissions: Array<{id: number, name: string, url: string, trackIndex: number, location: number}>;
   judges: Array<{id: number, name: string, anchor: number}>;
   categories: Array<{id: number, name: string, trackIndex: number}>;
   prizes: Array<{id: number, name: string, eligibleSubmissions: Array<number>}>;

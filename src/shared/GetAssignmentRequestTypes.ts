@@ -15,6 +15,7 @@ export interface GetAssignmentResponseData {
 export interface RatingAssignment {
   submissionId: number;
   submissionName: string;
+  submissionURL: string;
   submissionLocation: number;
   categories: Array<{id: number, name: string}>;
 }
