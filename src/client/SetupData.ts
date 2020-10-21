@@ -3,6 +3,7 @@ import { setSetupData } from "./ClientStorage";
 export interface SetupData {
   submissions: Array<{
     name: string,
+    url: string,
     location: number,
     track: number,
     prizes: Array<number>
