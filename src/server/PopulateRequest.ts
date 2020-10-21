@@ -43,7 +43,7 @@ export class PopulateRequest implements RequestHandler {
     return requestName === "REQUEST_POPULATE";
   }
 
-  simpleValidator(data: any): boolean {
+  simpleValidate(data: any): boolean {
     return validator(data);
   }
 
