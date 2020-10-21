@@ -15,7 +15,7 @@ export const RatingForm = (props: RatingFormProps) => (
       <CardBody>
         <CardTitle>
           <h2>{`Overall Rating: ${props.submissionName} (table ${props.submissionLocation})`}</h2>
-          <h3>{`Link to Submission: ${props.submissionURL}`}</h3>
+          <h3>{`Link to Submission: `} <a href={props.submissionURL} target="_blank">{props.submissionURL}</a></h3>
         </CardTitle>
       </CardBody>
     </CardSection>
