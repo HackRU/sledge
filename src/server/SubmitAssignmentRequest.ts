@@ -50,6 +50,8 @@ export class SubmitAssignmentRequest implements RequestHandler {
 
     this.db.begin();
 
+    //console.log(this.db.get("SELECT * FROM Assignment WHERE id=?",data.assignmentId));
+
     const assignment = this.db.get<{
       id: number,
       type: number,
@@ -151,10 +153,16 @@ export class SubmitAssignmentRequest implements RequestHandler {
       }
       score /= form.categoryRatings.length * 4;
     }
-
     this.db.run(
       "UPDATE RatingAssignment SET noShow=?, score=? WHERE id=?;",
       [form.noShow ? 1 : 0, score, ratingAssignment.id]
+    );
+
+    //update the main Assignment table
+    //form.whatever
+    this.db.run(
+      "UPDATE Assignment SET elapsedtime=? WHERE id=?",
+      [form.judgetimer, ratingAssignment]
     );
 
     return {
@@ -182,6 +190,13 @@ export class SubmitAssignmentRequest implements RequestHandler {
       form.topSubmissionIds.map(
         (submissionId, i) => [i+1, (3-i)/6, rankingAssignment.id, submissionId]
       )
+    );
+
+    //update the main Assignment table
+    //form.whatever
+    this.db.run(
+      "UPDATE Assignment SET elapsedtime=? WHERE id=?",
+      [form.judgetimer, rankingAssignment]
     );
 
     return {

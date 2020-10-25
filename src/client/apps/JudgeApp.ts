@@ -85,6 +85,8 @@ export class JudgeApp extends Application<JudgeAppState> {
   }
 
   loadAssignment() {
+    const start = new Date().getTime();
+    console.log("Start time is: " + start);
     this.socket.sendRequest({
       requestName: "REQUEST_GET_ASSIGNMENT",
       judgeId: this.judgeId
@@ -95,13 +97,15 @@ export class JudgeApp extends Application<JudgeAppState> {
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RATING",
           currentAssignmentId: res.id,
-          ratingAssignment: res.ratingAssignment
+          ratingAssignment: res.ratingAssignment,
+          startTime: start
         });
       } else if (res.assignmentType === ASSIGNMENT_TYPE_RANKING) {
         this.setState({
           subPage: "JUDGE_SUBPAGE_ASSIGNMENT_RANKING",
           currentAssignmentId: res.id,
-          rankingAssignment: res.rankingAssignment
+          rankingAssignment: res.rankingAssignment,
+          startTime: start
         });
       } else if (res.assignmentType === 0) {
         this.setState({
@@ -116,20 +120,45 @@ export class JudgeApp extends Application<JudgeAppState> {
   }
 
   submitRatingAssignment(form: RatingAssignmentForm) {
+
+    //Get current time
+    const end = new Date().getTime();
+    var elapsed = 0;
+    //Subtract the start time
+    //Get start time using this.state.startTime
+    if (this.state.startTime != null){
+      elapsed = end - this.state.startTime;
+      elapsed = elapsed/60000; //convert milliseconds to minutes
+    }
+    console.log("elapsed time in minutes: " + elapsed);
     this.socket.sendRequest({
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
       assignmentId: this.currentAssignment!.id,
-      ratingAssignmentForm: form
+      ratingAssignmentForm: form,
+      //submit the calculated time
+      judgeTimer: elapsed
     }).then(res => {
       this.loadAssignment();
     });
   }
 
   submitRankingAssignment(form: RankingAssignmentForm) {
+
+    //Get current time
+    const end = new Date().getTime();
+    var elapsed = 0;
+    //Subtract the start time
+    //Get start time using this.state.startTime
+    if (this.state.startTime != null){
+      elapsed = end - this.state.startTime;
+      elapsed = elapsed/60000; //convert milliseconds to minutes
+    }
+    console.log("elapsed time in minutes: " + elapsed);
     this.socket.sendRequest({
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
       assignmentId: this.currentAssignment!.id,
-      rankingAssignmentForm: form
+      rankingAssignmentForm: form,
+      judgeTimer: elapsed
     }).then(res => {
       this.loadAssignment();
     });
@@ -177,6 +206,7 @@ interface JudgeAppState {
   connectionStatus: ConnectionStatus;
   judgeName?: string;
   subPage: string;
+  startTime?: number;
 
   currentAssignmentId?: number;
   ratingAssignment?: RatingAssignment;
