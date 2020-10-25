@@ -6,7 +6,6 @@ export interface SubmitAssignmentRequestData {
 
   ratingAssignmentForm?: RatingAssignmentForm;
   rankingAssignmentForm?: RankingAssignmentForm;
-  //Add judging timer to be optional
 
 }
 

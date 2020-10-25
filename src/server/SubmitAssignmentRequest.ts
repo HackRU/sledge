@@ -50,8 +50,6 @@ export class SubmitAssignmentRequest implements RequestHandler {
 
     this.db.begin();
 
-    //console.log(this.db.get("SELECT * FROM Assignment WHERE id=?",data.assignmentId));
-
     const assignment = this.db.get<{
       id: number,
       type: number,
@@ -159,7 +157,6 @@ export class SubmitAssignmentRequest implements RequestHandler {
     );
 
     //update the main Assignment table
-    //form.whatever
     this.db.run(
       "UPDATE Assignment SET elapsedtime=? WHERE id=?",
       [form.judgetimer, ratingAssignment]
@@ -193,7 +190,6 @@ export class SubmitAssignmentRequest implements RequestHandler {
     );
 
     //update the main Assignment table
-    //form.whatever
     this.db.run(
       "UPDATE Assignment SET elapsedtime=? WHERE id=?",
       [form.judgetimer, rankingAssignment]

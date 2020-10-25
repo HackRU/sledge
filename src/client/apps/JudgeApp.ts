@@ -86,7 +86,7 @@ export class JudgeApp extends Application<JudgeAppState> {
 
   loadAssignment() {
     const start = new Date().getTime();
-    console.log("Start time is: " + start);
+
     this.socket.sendRequest({
       requestName: "REQUEST_GET_ASSIGNMENT",
       judgeId: this.judgeId
@@ -130,7 +130,6 @@ export class JudgeApp extends Application<JudgeAppState> {
       elapsed = end - this.state.startTime;
       elapsed = elapsed/60000; //convert milliseconds to minutes
     }
-    console.log("elapsed time in minutes: " + elapsed);
     this.socket.sendRequest({
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
       assignmentId: this.currentAssignment!.id,
@@ -153,7 +152,6 @@ export class JudgeApp extends Application<JudgeAppState> {
       elapsed = end - this.state.startTime;
       elapsed = elapsed/60000; //convert milliseconds to minutes
     }
-    console.log("elapsed time in minutes: " + elapsed);
     this.socket.sendRequest({
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
       assignmentId: this.currentAssignment!.id,
