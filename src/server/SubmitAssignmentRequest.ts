@@ -71,14 +71,14 @@ export class SubmitAssignmentRequest implements RequestHandler {
         return { error: "Incorrect submission for rating assignment" };
       }
 
-      result = this.submitRatingAssignment(requestData.assignmentId, requestData.ratingAssignmentForm);
+      result = this.submitRatingAssignment(requestData.assignmentId, requestData.ratingAssignmentForm, requestData.judgetimer);
     } else if (assignment.type === ASSIGNMENT_TYPE_RANKING) {
       if (!requestData.rankingAssignmentForm) {
         this.db.rollback();
         return { error: "Incorrect submission for ranking assignment" };
       }
 
-      result = this.submitRankingAssignment(requestData.assignmentId, requestData.rankingAssignmentForm);
+      result = this.submitRankingAssignment(requestData.assignmentId, requestData.rankingAssignmentForm, requestData.judgetimer);
     } else {
       this.db.rollback();
       return {
@@ -103,7 +103,7 @@ export class SubmitAssignmentRequest implements RequestHandler {
     };
   }
 
-  submitRatingAssignment(assignmentId: number, form: RatingAssignmentForm): SuccErr {
+  submitRatingAssignment(assignmentId: number, form: RatingAssignmentForm, timer?: number): SuccErr {
     const ratingAssignment = this.db.get<{
       id: number
     }>(
@@ -158,8 +158,8 @@ export class SubmitAssignmentRequest implements RequestHandler {
 
     //update the main Assignment table
     this.db.run(
-      "UPDATE Assignment SET elapsedtime=? WHERE id=?",
-      [form.judgetimer, ratingAssignment]
+      "UPDATE Assignment SET elapsedtime=? WHERE id=?;",
+      [timer, ratingAssignment.id]
     );
 
     return {
@@ -167,7 +167,7 @@ export class SubmitAssignmentRequest implements RequestHandler {
     };
   }
 
-  submitRankingAssignment(assignmentId: number, form: RankingAssignmentForm): SuccErr {
+  submitRankingAssignment(assignmentId: number, form: RankingAssignmentForm, timer?: number): SuccErr {
     if (form.topSubmissionIds.length < 1 || form.topSubmissionIds.length > 3) {
       return {
         success: false,
@@ -191,8 +191,8 @@ export class SubmitAssignmentRequest implements RequestHandler {
 
     //update the main Assignment table
     this.db.run(
-      "UPDATE Assignment SET elapsedtime=? WHERE id=?",
-      [form.judgetimer, rankingAssignment]
+      "UPDATE Assignment SET elapsedtime=? WHERE id=?;",
+      [timer, rankingAssignment.id]
     );
 
     return {

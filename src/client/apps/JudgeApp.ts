@@ -120,7 +120,6 @@ export class JudgeApp extends Application<JudgeAppState> {
   }
 
   submitRatingAssignment(form: RatingAssignmentForm) {
-
     //Get current time
     const end = new Date().getTime();
     var elapsed = 0;
@@ -135,14 +134,13 @@ export class JudgeApp extends Application<JudgeAppState> {
       assignmentId: this.currentAssignment!.id,
       ratingAssignmentForm: form,
       //submit the calculated time
-      judgeTimer: elapsed
+      judgetimer: elapsed
     }).then(res => {
       this.loadAssignment();
     });
   }
 
   submitRankingAssignment(form: RankingAssignmentForm) {
-
     //Get current time
     const end = new Date().getTime();
     var elapsed = 0;
@@ -156,7 +154,7 @@ export class JudgeApp extends Application<JudgeAppState> {
       requestName: "REQUEST_SUBMIT_ASSIGNMENT",
       assignmentId: this.currentAssignment!.id,
       rankingAssignmentForm: form,
-      judgeTimer: elapsed
+      judgetimer: elapsed
     }).then(res => {
       this.loadAssignment();
     });

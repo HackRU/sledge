@@ -6,17 +6,15 @@ export interface SubmitAssignmentRequestData {
 
   ratingAssignmentForm?: RatingAssignmentForm;
   rankingAssignmentForm?: RankingAssignmentForm;
-
+  judgetimer?: number;
 }
 
 export interface RatingAssignmentForm {
   noShow: boolean;
   rating: number;
   categoryRatings: Array<number>;
-  judgetimer?: number;
 }
 
 export interface RankingAssignmentForm {
   topSubmissionIds: Array<number>;
-  judgetimer?: number;
 }
