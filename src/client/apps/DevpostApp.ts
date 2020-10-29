@@ -46,6 +46,7 @@ function convertDevpostToSetupData(devpostData: DevpostData) {
     prizes: devpostData.prizes,
     submissions: devpostData.submissions.map(d => ({
       name: d.name,
+      url: d.url,
       location: d.table,
       prizes: d.prizes
     }))

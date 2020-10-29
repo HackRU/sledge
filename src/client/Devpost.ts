@@ -25,6 +25,8 @@ export function parseDevpostData(csvContent: string): DevpostData | DevpostParse
   }
   let nameCol = columnIds.get("Submission Title");
   if (nameCol == null) return {error: "Missing name column", csv};
+  let urlCol = columnIds.get("Submission Url")
+  if (urlCol == null) return {error: "Missing URL column", csv};
   let prizesCol = columnIds.get("Desired Prizes");
   if (prizesCol == null) return {error: "Missing prizes column", csv};
   let tableCol = columnIds.get("Table Number");
@@ -46,6 +48,7 @@ export function parseDevpostData(csvContent: string): DevpostData | DevpostParse
     }
 
     let name = row[nameCol];
+    let url = row[urlCol];
     let table = parseInt(row[tableCol]);
     if (Number.isNaN(table)) {
       return {error: "Can't parse table number", csv, row};
@@ -68,7 +71,7 @@ export function parseDevpostData(csvContent: string): DevpostData | DevpostParse
     }
 
     submissions.push({
-      name, table, prizes: prizeIdxs
+      name, url, table, prizes: prizeIdxs
     });
   }
 
@@ -106,6 +109,7 @@ export function mergeDevpostToSetupData(devpost: DevpostData, setup: SetupData):
   for (let submission of devpost.submissions) {
     let obj = data.submissions.find(sub => sub.name === submission.name);
     if (obj) {
+      obj.url = submission.url;
       obj.location = submission.table;
       for (let prizeOldIndex of submission.prizes) {
         let prizeIdx = prizeIndexes[prizeOldIndex];
@@ -116,6 +120,7 @@ export function mergeDevpostToSetupData(devpost: DevpostData, setup: SetupData):
     } else {
       data.submissions.push({
         name: submission.name,
+        url: submission.url,
         location: submission.table,
         prizes: submission.prizes.map(p => prizeIndexes[p]),
         track: defaultTrack
@@ -131,6 +136,7 @@ export interface DevpostData {
   prizes: Array<string>;
   submissions: Array<{
     name: string,
+    url: string,
     table: number,
     prizes: Array<number>
   }>;

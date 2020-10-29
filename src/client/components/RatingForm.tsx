@@ -15,6 +15,7 @@ export const RatingForm = (props: RatingFormProps) => (
       <CardBody>
         <CardTitle>
           <h2>{`Overall Rating: ${props.submissionName} (table ${props.submissionLocation})`}</h2>
+          <h3>{`Link to Submission: `} <a href={props.submissionURL} target="_blank">{props.submissionURL}</a></h3>
         </CardTitle>
       </CardBody>
     </CardSection>
@@ -76,6 +77,7 @@ export const RatingForm = (props: RatingFormProps) => (
 
 export interface RatingFormProps {
   submissionName: string;
+  submissionURL: string,
   submissionLocation: number
   categories: Array<string>;
 

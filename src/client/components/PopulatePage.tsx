@@ -14,7 +14,7 @@ import {InputItem} from "./InputItem";
 export interface PopulatePageProps {
   json: string;
   status: string;
-  submissions: Array<{location: number, name: string, prizes: Array<number>, track: number}>;
+  submissions: Array<{location: number, name: string, url: string, prizes: Array<number>, track: number}>;
   prizes: Array<{name: string}>;
   judges: Array<{name: string}>;
   categories: Array<{name: string, track: number}>;
@@ -79,11 +79,12 @@ export const PopulatePage = (props: PopulatePageProps) => (
     <h2>{`Submissions`}</h2>
 
     <TabularActions
-      headings={["Location", "Name", "Track", "Prizes"]}
+      headings={["Location", "Name", "URL", "Track", "Prizes"]}
       data={props.submissions.map(
         submission => [
           submission.location.toString(),
           submission.name,
+          submission.url,
           props.tracks[submission.track].name,
           submission.prizes.map(idx => props.prizes[idx].name).join(", ")
         ]

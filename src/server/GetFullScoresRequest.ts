@@ -11,6 +11,7 @@ import {
 } from "../shared/GetFullScoresRequestTypes";
 
 import {DoubleEndedQueue} from "../shared/DoubleEndedQueue";
+import { stringify } from "querystring";
 
 /**
  * Get an object representing the most detailed state available of all the assignments. The object this returns is
@@ -36,6 +37,7 @@ export class GetFullScoresRequest implements RequestHandler {
     const dbSubmissions: Array<{
       id: number,
       name: string,
+      url: string,
       trackId: number,
       location: number
     }> = this.db.prepare(
@@ -232,11 +234,13 @@ export class GetFullScoresRequest implements RequestHandler {
     const submissions: Array<{
       id: number,
       name: string,
+      url: string,
       trackIndex: number,
       location: number
     }> = dbSubmissions.map(sub => ({
       id: sub.id,
       name: sub.name,
+      url: sub.url,
       trackIndex: trackIdxMap.get(sub.trackId)!,
       location: sub.location
     }));
