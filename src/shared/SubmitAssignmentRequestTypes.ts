@@ -6,6 +6,7 @@ export interface SubmitAssignmentRequestData {
 
   ratingAssignmentForm?: RatingAssignmentForm;
   rankingAssignmentForm?: RankingAssignmentForm;
+  judgetimer?: number;
 }
 
 export interface RatingAssignmentForm {

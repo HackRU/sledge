@@ -109,6 +109,8 @@ CREATE TABLE JudgePrizeBias (
 CREATE TABLE Assignment (
   id INTEGER NOT NULL PRIMARY KEY,
 
+  elapsedtime INTEGER,
+
   judgeId INTEGER NOT NULL,
   priority INTEGER NOT NULL,
 

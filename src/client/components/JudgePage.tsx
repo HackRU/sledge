@@ -17,12 +17,13 @@ import {RankingFormController} from "./RankingFormController";
 import {ConnectionStatus} from "../JudgeTypes";
 import {RatingAssignment, RankingAssignment} from "../../shared/GetAssignmentRequestTypes";
 
+import Timer from "./Timer/Timer";
+
 export const JudgePage = (props: JudgePageProps) => (
   <Container id="JudgePage">
     <HeaderWithConnectionStatus
       connectionStatus={props.connectionStatus}
     />
-
     <JudgeSubPage
       {...props}
     />
@@ -41,21 +42,27 @@ const JudgeSubPage = (props: JudgePageProps) => {
       return (<JudgePageEnded />);
     case "JUDGE_SUBPAGE_ASSIGNMENT_RATING":
       return (
-        <JudgePageAssignmentRating
-          assignmentId={props.assignmentId!}
-          judgeName={props.judgeName!}
-          ratingAssignment={props.ratingAssignment!}
-          onSubmitRatingAssignment={props.onSubmitRatingAssignment!}
-        />
+        <div>
+          <Timer start={Date.now()} />
+          <JudgePageAssignmentRating
+            assignmentId={props.assignmentId!}
+            judgeName={props.judgeName!}
+            ratingAssignment={props.ratingAssignment!}
+            onSubmitRatingAssignment={props.onSubmitRatingAssignment!}
+          />
+        </div>
       );
     case "JUDGE_SUBPAGE_ASSIGNMENT_RANKING":
       return (
-        <JudgePageAssignmentRanking
-          assignmentId={props.assignmentId!}
-          judgeName={props.judgeName!}
-          rankingAssignment={props.rankingAssignment!}
-          onSubmitRankingAssignment={props.onSubmitRankingAssignment!}
-        />
+        <div>
+          <Timer start={Date.now()} />
+          <JudgePageAssignmentRanking
+            assignmentId={props.assignmentId!}
+            judgeName={props.judgeName!}
+            rankingAssignment={props.rankingAssignment!}
+            onSubmitRankingAssignment={props.onSubmitRankingAssignment!}
+          />
+        </div>
       );
     case "JUDGE_SUBPAGE_ASSIGNMENT_NONE":
       return (
