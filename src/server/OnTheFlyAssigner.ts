@@ -169,6 +169,7 @@ export class OnTheFlyAssigner {
     let dbSubmissions = this.db.all<{
       id: number,
       name: string,
+      url: string,
       trackId: number,
       location: number,
       active: number
@@ -324,6 +325,7 @@ function calculateForwardDistancesFrom(
 interface Submission {
   id: number;
   name: string;
+  url: string,
   trackId: number;
   location: number;
   active: number;

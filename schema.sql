@@ -48,6 +48,7 @@ CREATE TABLE Submission (
   id INTEGER NOT NULL PRIMARY KEY,
 
   name TEXT NOT NULL,
+  url TEXT NOT NULL,
   trackId INTEGER NOT NULL,
   location INTEGER NOT NULL,
   active INTEGER NOT NULL,

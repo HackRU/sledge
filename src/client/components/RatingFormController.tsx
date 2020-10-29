@@ -58,6 +58,7 @@ export class RatingFormController extends React.Component<RatingFormControllerPr
     return (
       <RatingForm
         submissionName={this.props.ratingAssignment.submissionName}
+        submissionURL={this.props.ratingAssignment.submissionURL}
         submissionLocation={this.props.ratingAssignment.submissionLocation}
         categories={this.props.ratingAssignment.categories.map(c => c.name)}
 

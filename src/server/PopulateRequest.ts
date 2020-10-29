@@ -13,6 +13,7 @@ const validator = tc.hasShape({
   })),
   submissions: tc.isArrayOf(tc.hasShape({
     name: tc.isString,
+    url: tc.isString,
     location: tc.isInteger
   })),
   judges: tc.isArrayOf(tc.hasShape({
@@ -43,7 +44,7 @@ export class PopulateRequest implements RequestHandler {
     return requestName === "REQUEST_POPULATE";
   }
 
-  simpleValidator(data: any): boolean {
+  simpleValidate(data: any): boolean {
     return validator(data);
   }
 
@@ -95,10 +96,11 @@ export class PopulateRequest implements RequestHandler {
       data.tracks
     );
     let submissionIds = this.db.runMany(
-      "INSERT INTO Submission(name, location, trackId, active) "
-        +"VALUES($name, $location, $trackId, 1);",
+      "INSERT INTO Submission(name, url, location, trackId, active) "
+        +"VALUES($name, $url, $location, $trackId, 1);",
       data.submissions.map(sub => ({
         name: sub.name,
+        url: sub.url,
         location: sub.location,
         trackId: trackIds[sub.track]
       }))

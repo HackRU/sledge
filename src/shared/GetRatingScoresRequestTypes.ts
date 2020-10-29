@@ -2,6 +2,7 @@ export interface GetRatingScoresRequestResponseData {
   submissions: Array<{
     id: number,
     name: string,
+    url: string,
     location: number
   }>;
   judges: Array<{

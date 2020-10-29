@@ -87,7 +87,7 @@ export class GetAssignmentRequest implements RequestHandler {
     ).get(assignmentId);
 
     const submission = this.db.prepare(
-      "SELECT id, name, location, trackId FROM Submission WHERE id=?;"
+      "SELECT id, name, url, location, trackId FROM Submission WHERE id=?;"
     ).get(ratingAssignment.submissionId);
 
     const categories = this.db.prepare(
@@ -102,6 +102,7 @@ export class GetAssignmentRequest implements RequestHandler {
       ratingAssignment: {
         submissionId: submission.id,
         submissionName: submission.name,
+        submissionURL: submission.url,
         submissionLocation: submission.location,
 
         categories
