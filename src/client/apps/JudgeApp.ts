@@ -122,7 +122,7 @@ export class JudgeApp extends Application<JudgeAppState> {
   submitRatingAssignment(form: RatingAssignmentForm) {
     //Get current time
     const end = new Date().getTime();
-    var elapsed = 0;
+    var elapsed = null;
     //Subtract the start time
     //Get start time using this.state.startTime
     if (this.state.startTime != null){
@@ -143,7 +143,7 @@ export class JudgeApp extends Application<JudgeAppState> {
   submitRankingAssignment(form: RankingAssignmentForm) {
     //Get current time
     const end = new Date().getTime();
-    var elapsed = 0;
+    var elapsed = null;
     //Subtract the start time
     //Get start time using this.state.startTime
     if (this.state.startTime != null){
