@@ -106,7 +106,6 @@ CREATE TABLE JudgePrizeBias (
   UNIQUE(judgeId, prizeId)
 );
 
---Add a nullable column elapsedtime
 CREATE TABLE Assignment (
   id INTEGER NOT NULL PRIMARY KEY,
 
