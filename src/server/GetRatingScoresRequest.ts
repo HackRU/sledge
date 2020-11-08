@@ -14,6 +14,10 @@ export class GetRatingScoresRequest implements RequestHandler {
     return requestName === "REQUEST_GET_RATINGS_SCORES";
   }
 
+  simpleValidate(data: any) {
+    return true;
+  }
+
   handleSync(data: any): object {
     this.db.begin();
     const submissions = this.db.prepare(
@@ -21,16 +25,9 @@ export class GetRatingScoresRequest implements RequestHandler {
     ).all();
     const judges = this.db.prepare(
       "SELECT id, name, anchor FROM Judge ORDER BY id;"
-    ).all();
-    const assignments = this.db.prepare(
-      "SELECT "+
-          "Assignment.judgeId AS judgeId, "+
-          "Assignment.status AS status, "+
-          "RatingAssignment.submissionId AS submissionId, "+
-          "RatingAssignment.rating AS rating "+
-        "FROM RatingAssignment "+
-        "LEFT JOIN Assignment ON RatingAssignment.assignmentId=Assignment.id;"
-    ).all();
+      ).all();
+      //const assignments = this.db.prepare("select Assignment.judgeId AS judgeId, Assignment.status AS status, RatingAssignment.submissionId as submissionId, sum(Rating.answer) as rating from RatingAssignment, Rating left join Assignment ON RatingAssignment.assignmentId=Assignment.id where RatingAssignment.assignmentId=Rating.answer group by RatingAssignment.assignmentId").all();
+      const assignments = this.db.prepare("select sum(Rating.answer) as rating, Assignment.judgeId as judgeId, RatingAssignment.submissionId as submissionId, Assignment.status as Status from RatingAssignment, Rating, Assignment where Rating.ratingAssignmentId = RatingAssignment.assignmentId and Rating.ratingAssignmentId = Assignment.id group by Assignment.judgeId, RatingAssignment.submissionId").all();
     this.db.commit();
 
     const submissionsIdIndex = createIdIndexMap(submissions);

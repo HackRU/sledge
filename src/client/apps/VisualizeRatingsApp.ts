@@ -29,7 +29,7 @@ export class VisualizeRatingsApp extends Application<VisualizeRatingsAppState> {
 
   loadVisualization() {
     this.socket.sendRequest({
-      requestName: "REQUEST_GET_RATING_SCORES"
+      requestName: "REQUEST_GET_RATINGS_SCORES"
     }).then((response: GetRatingScoresRequestResponseData) => {
       this.setState({
         lastUpdateTimestamp: Date.now(),
