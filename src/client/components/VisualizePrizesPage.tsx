@@ -28,7 +28,7 @@ export const VisualizePrizesPage = (props: VisualizePrizesPageProps) => (
                     key={li}
                     style={{background: colorFromStatus(pt.statuses[ji][li])}}
                   >
-                    {' '}
+                    {(() => { console.log(pt.statuses[ji][li]); return pt.statuses[ji][li].score; })()}
                   </td>
                 ))}
               </tr>
@@ -69,4 +69,5 @@ export interface PrizeTable {
 
 export interface JudgeSubmissionStatus {
   status: string;
+  score: string;
 };
