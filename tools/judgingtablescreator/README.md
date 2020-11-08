@@ -25,7 +25,7 @@ npm install
 tsc create-tables.ts
 ```
 
-3. Create a config.json file based on the provided example-config.json file. Add your slack bot OAuth token to your config file!
+3. Create a config.json file based on the provided `config.json.example` file. Add your slack bot OAuth token to your config file!
 
 You can find your token here:
 ![](readme/bot-oath-token.png?raw=true)
