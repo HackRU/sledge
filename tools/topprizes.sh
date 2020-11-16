@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 sqlite3 "$1" "$(cat << EOF
-SELECT Prize.name, score, SubmissionPrize.id, Submission.name
-FROM Rating
-LEFT JOIN RatingAssignment ON RatingAssignment.id=ratingAssignmentId
-LEFT JOIN Submission ON Submission.id=RatingAssignment.submissionId
-LEFT JOIN SubmissionPrize ON Submission.id=SubmissionPrize.submissionId
-LEFT JOIN Prize ON Prize.id=prizeId GROUP BY RatingAssignment.submissionId, prizeId
-HAVING score>0
-ORDER BY prizeId, score
+SELECT Prize.name, SUM(score), Submission.name
+FROM Ranking
+LEFT JOIN RankingAssignment ON RankingAssignment.id=rankingAssignmentId
+LEFT JOIN Submission ON Submission.id=submissionId
+LEFT JOIN Prize ON Prize.id=prizeId GROUP BY submissionId, prizeId
+HAVING SUM(score)>0
+ORDER BY prizeId, SUM(score)
 EOF
 )"
