@@ -3783,9 +3783,9 @@ hash.js@^1.0.0, hash.js@^1.0.3:
     minimalistic-assert "^1.0.1"
 
 highlight.js@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.0.0.tgz#839b831198f0fa6b8dd534ff2cc701466e404c8b"
-  integrity sha512-KW/l+u4WQ45gvlma6RgDl6xZ0/iitBob23kwGCdQ5QTyQdWXjbWlmZJFUHEZXOtUhYOU3JygYcT5jL9RT8Htvw==
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.4.0.tgz#ef3ce475e5dfa7a48484260b49ea242ddab823a0"
+  integrity sha512-EfrUGcQ63oLJbj0J0RI9ebX6TAITbsDBLbsjr881L/X5fMO9+oadKzEF21C7R3ULKG6Gv3uoab2HiqVJa/4+oA==
 
 history@^4.9.0:
   version "4.10.1"
