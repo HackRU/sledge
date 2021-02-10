@@ -39,7 +39,7 @@
     "reactstrap": "^8.0.1",
     "recharts": "^1.8.5",
     "sass-loader": "^8.0.0",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.0",
     "socket.io-client": "^2.2.0",
     "style-loader": "^1.2.1",
     "typedoc": "^0.17.7",
