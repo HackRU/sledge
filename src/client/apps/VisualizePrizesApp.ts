@@ -69,6 +69,7 @@ function prizeTablesFromResponse(res: GetFullScoresResponseData): Array<PrizeTab
   const prizeTables: Array<PrizeTable> = [];
   for (let i=0;i<res.prizes.length;i++) {
     const prize = res.prizes[i];
+
     const statuses: Array<Array<{status: string, score: string}>> = res.judges.map(j => []);
 	console.log(statuses);
     for (let eligibleSubmissionIndex of prize.eligibleSubmissions) {
@@ -101,8 +102,10 @@ function prizeTablesFromResponse(res: GetFullScoresResponseData): Array<PrizeTab
       for (let status of statuses) {
         status.statusObj.status = ass.active ? "JSSTATUS_ACTIVE" : (
           ass.noShow ? "JSSTATUS_NOSHOW" : "JSSTATUS_COMPLETE"
+
 	  );
 	  status.statusObj.score = ass.rating ? (ass.rating * 100) + "" : "0";
+
       }
     }
   }

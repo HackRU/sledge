@@ -18,9 +18,11 @@
   "homepage": "https://github.com/samuel-ping/slack-judge-table-creator#readme",
   "dependencies": {
     "@types/node": "^14.11.5",
+
     "axios": "^0.20.0"
   },
   "devDependencies": {
     "tsc": "^1.20150623.0"
+
   }
 }
