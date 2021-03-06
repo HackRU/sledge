@@ -4,7 +4,6 @@ data/
 *.swp
 *.log
 lib/
-public/
 node_modules/
 .tsbuildinfo
 tmp/
