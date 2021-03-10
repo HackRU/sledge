@@ -2,16 +2,7 @@
 
 #### Frameworks: Node.js, Express.js
 
-#### Database: MongoDB
-
-Possible Schema Validation options:
-
-- MongoDB Node.js driver
-  - No extra packages
-- Mongoose
-  - apparently has smaller learning curve than stock Node driver
-- Joi
-  - more lightweight than Mongoose
+#### Database: MongoDB + Mongoose
 
 ## Tables
 
