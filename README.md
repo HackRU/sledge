@@ -4,12 +4,17 @@
 
 ### Setup
 
-Set up the frontend by running:
+Set up the frontend by going inside `client/` and running:
 
 ```
-$ cd client
 $ npm i         # installs dependencies
 $ npm start     # starts the website
+```
+
+Then set up the backend by going inside `server/` and running:
+
+```
+$ npm i
 ```
 
 ### Notes
