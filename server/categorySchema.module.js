@@ -5,7 +5,7 @@ const categorySchema = new Schema({
     categoryID: String,
     name: String, // category name
     companyName: String, // null if prize is not company-sponsored
-    category: String // track/superlative
+    trackOrSuperlative: String // track/superlative
 })
 
 const category = mongoose.model("category", categorySchema);
