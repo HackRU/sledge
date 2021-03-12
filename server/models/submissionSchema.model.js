@@ -13,5 +13,5 @@ const submissionSchema = new Schema({
     categories: [{categoryID: String, categoryName: String}]
 })
 
-const submissionEntry = mongoose.model("submission", submissionSchema);
-module.exports = submissionEntry;
+const submissionModel = mongoose.model("submission", submissionSchema);
+module.exports = submissionModel;

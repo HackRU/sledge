@@ -8,5 +8,5 @@ const categorySchema = new Schema({
     trackOrSuperlative: String // track/superlative
 })
 
-const category = mongoose.model("category", categorySchema);
-module.exports = category;
+const categoryModel = mongoose.model("category", categorySchema);
+module.exports = categoryModel;
