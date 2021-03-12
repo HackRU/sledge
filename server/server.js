@@ -1,13 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const config = require("./config.json")
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 var submission = require("./models/submissionSchema.model");
 
-// Connection URL
-const url = "mongodb://localhost:27017";
+const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json
+
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 const connection = mongoose.connection;
 

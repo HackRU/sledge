@@ -4,9 +4,9 @@
 
 #### Database: MongoDB + Mongoose
 
-## Tables
+## Collections
 
-This is how the submissions collection looks:
+### Submissions:
 
 ```
 {
@@ -33,12 +33,51 @@ This is how the submissions collection looks:
              etc: ...
         }
         categories: {
-             [I forget how json arrays work]
+             [
+                 {
+                    categoryID: ...,
+                    categoryName: "Best Solo Hack",
+                 },
+                 {
+                     categoryID: ...,
+                     categoryName: "Best Use of X API"
+                 }
+             ]
         }
     },
+    ...
+}
+```
+
+### Categories:
+
+```
+{
     {
-        project_id: ...;
-        ...
-    }
+        categoryID: ...,
+        categoryName: "Best Beginner Hack",
+        companyName: null,
+        trackOrSuperlative: "track"
+    },
+    ...
+}
+```
+
+### Judges:
+
+```
+{
+    {
+        judgeID: ...,
+        judgeName: "Minnie Summer",
+        companyName: "Cockroach Labs",
+        categoriesToJudge: [
+            {
+                categoryID: ...,
+                categoryName: "Best Use of Cockroach DB"
+            }
+        ]
+    },
+    ...
 }
 ```
