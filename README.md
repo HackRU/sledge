@@ -4,6 +4,11 @@
 
 ### Setup
 
+Requirements:
+
+- Node.js/NPM
+- MongoDB
+
 Set up the frontend by going inside `client/` and running:
 
 ```
@@ -15,6 +20,7 @@ Then set up the backend by going inside `server/` and running:
 
 ```
 $ npm i
+$ npm start     # runs the backend script
 ```
 
 ### Notes

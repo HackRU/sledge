@@ -1,17 +1,18 @@
-const MongoClient = require("mongodb").MongoClient;
-const assert = require("assert");
+const express = require("express");
+const mongoose = require("mongoose");
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+var submission = require("./models/submissionSchema.model");
 
 // Connection URL
 const url = "mongodb://localhost:27017";
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+const connection = mongoose.connection;
 
-const dbName = "sledge";
-const client = new MongoClient(url);
+app.get("/api/submissions/:teamID", (req, res) => {
+  // return submission data
+})
 
-client.connect((e) => {
-  assert.strictEqual(null, e);
-  console.log("Successfully connected to server.");
-
-  const db = client.db(dbName);
-
-  client.close();
-});
+app.listen(port, () => console.log(`Server running on port ${port}`));
