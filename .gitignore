@@ -1,12 +1,12 @@
-data/
-.vagrant/
-*.db
+# Environmental variables
+.env
+
+# Node
+node_modules/
+
+# Testing
+coverage/
+
+# Other
 *.swp
 *.log
-lib/
-node_modules/
-.tsbuildinfo
-tmp/
-.idea/
-api/
-coverage/

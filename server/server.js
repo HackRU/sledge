@@ -1,17 +1,39 @@
-const MongoClient = require("mongodb").MongoClient;
-const assert = require("assert");
+const express = require("express");
+const mongoose = require("mongoose");
+const config = require("./config.json");
 
-// Connection URL
-const url = "mongodb://localhost:27017";
+const app = express();
+app.use(express.json());
+const port = 5000;
 
-const dbName = "sledge";
-const client = new MongoClient(url);
+var submission = require("./models/submissionSchema.model");
 
-client.connect((e) => {
-  assert.strictEqual(null, e);
-  console.log("Successfully connected to server.");
+const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json
 
-  const db = client.db(dbName);
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+const connection = mongoose.connection;
 
-  client.close();
+// returns all submissions
+app.get("/api/submissions", (req, res) => {
+  res.status(200).send(submission.find({}));
 });
+
+// return submission data
+app.get("/api/submissions/:teamID", (req, res) => {
+  res.status(200).send(submission.findById(req.params.teamID));
+});
+
+// add/update submission
+app.post("/api/submissions/:teamID", (req, res) => {
+  submission.findByIdAndUpdate(req.params.teamID, req.body);
+  res.status(200);
+});
+
+app.post("/login", (req, res) => {
+  // 1. get hacker's teamID from LCS
+  // 2. log them in
+  // 3. ???
+  // 4. profit
+});
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
