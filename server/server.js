@@ -9,9 +9,13 @@ const port = 5000;
 var submission = require("./models/submissionSchema.model");
 
 const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json
-
+// connect to mongodb
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
-const connection = mongoose.connection;
+mongoose.connection
+  .once("open", () => console.log("Connected!"))
+  .on("error", (error) => {
+    console.warn("Error : ", error);
+  });
 
 // returns all submissions
 app.get("/api/submissions", (req, res) => {
