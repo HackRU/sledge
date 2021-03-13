@@ -20,7 +20,7 @@ Then set up the backend by going inside `server/` and running:
 
 ```
 $ npm i
-$ npm start     # runs the backend script
+$ npm start     # runs the server
 ```
 
 ### Notes
