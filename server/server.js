@@ -12,13 +12,14 @@ const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // C
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 const connection = mongoose.connection;
 
+// returns all submissions
+app.get("/api/submissions", (req, res) => {
+  res.send(submission.find({}));
+});
+
 // return submission data
 app.get("/api/submissions/:teamID", (req, res) => {
-  res.send(
-    submission.findById(req.params.teamID, (err) => {
-      throw new Error("Error: ", err);
-    })
-  );
+  res.send(submission.findById(req.params.teamID));
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
