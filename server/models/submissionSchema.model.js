@@ -7,7 +7,7 @@ const submissionSchema = new Schema({
   attributes: {
     title: String,
     description: String,
-    technologies: [{ String }],
+    technologies: [String],
   },
   urls: [{ label: String, url: String }],
   categories: [{ categoryID: String, categoryName: String }],

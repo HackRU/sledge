@@ -6,9 +6,8 @@ const config = require("./config.json");
 const request = supertest(app);
 
 // eventually put this into a fixture?
-const testTeamID = "abc123";
+const testTeamID = new mongoose.Types.ObjectId();
 const testSubmission = {
-  projectID: "abc123",
   isSubmitted: false,
   attributes: {
     title: "A Test Hack",
@@ -27,19 +26,22 @@ beforeAll(async () => {
   await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 });
 
-describe("performs database functions", () => {
+describe("testing basic endpoints", () => {
+  var projectID = null;
   it("adds a new submission", async (done) => {
-    const res = await request.post(`/api/submissions/${testTeamID}`).send(testSubmission);
+    const res = await request.post(`/api/submissions/${testTeamID}/create`).send(testSubmission);
     expect(res.statusCode).toEqual(200);
+    expect(res.body.attributes.title).toEqual("A Test Hack");
+    projectID = res.body._id;
     done();
   });
 
-  it("gets the submission details", async (done) => {
-    const res = await request.get(`/api/submissions/${testTeamID}`);
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.attributes.title).toEqual("A Test Hack");
-    done();
-  });
+  //   it("gets the submission details", async (done) => {
+  //     const res = await request.get(`/api/submissions/${testTeamID}`);
+  //     expect(res.statusCode).toEqual(200);
+  //     expect(res.body.attributes.title).toEqual("A Test Hack");
+  //     done();
+  //   });
 });
 
 // removeAllCollections = async () => {

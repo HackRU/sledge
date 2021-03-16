@@ -72,11 +72,11 @@
     {
         judgeID: ...,
         judgeName: "Minnie Summer",
-        companyName: "Cockroach Labs",
+        companyName: "Mango DB",
         categoriesToJudge: [
             {
                 categoryID: ...,
-                categoryName: "Best Use of Cockroach DB"
+                categoryName: "Best Use of Mango DB"
             }
         ]
     },
