@@ -8,6 +8,7 @@ Requirements:
 
 - Node.js/NPM
 - MongoDB
+    - Installing on Windows: https://treehouse.github.io/installation-guides/windows/mongo-windows.html
 
 Set up the frontend by going inside `client/` and running:
 

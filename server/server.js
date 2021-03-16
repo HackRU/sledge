@@ -1,14 +1,10 @@
-const express = require("express");
 const mongoose = require("mongoose");
 const config = require("./config.json");
-
-const app = express();
-app.use(express.json());
+const app = require("./app");
 const port = 5000;
 
-var submission = require("./models/submissionSchema.model");
-
 const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json
+
 // connect to mongodb
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection
