@@ -4,6 +4,8 @@
 
 #### Database: MongoDB + Mongoose
 
+#### Testing: Jest + SuperTest
+
 ## Collections
 
 ### Submissions:
