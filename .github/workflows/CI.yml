@@ -3,7 +3,7 @@ name: Run Jest tests on server endpoints
 on: [push]
 
 jobs:
-  setup and test:
+  install_deps_and_test:
     runs-on: ubuntu-latest
     
     services:
