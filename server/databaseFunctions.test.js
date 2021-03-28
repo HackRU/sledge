@@ -5,8 +5,9 @@ const config = require("./config.json");
 
 const request = supertest(app);
 
-// eventually put this into a fixture?
-const testTeamID = new mongoose.Types.ObjectId();
+// Create test data. Eventually put this into a fixture?
+const testTeamID = mongoose.Types.ObjectId();
+var testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
 const testSubmission = {
   isSubmitted: false,
   attributes: {
@@ -18,7 +19,7 @@ const testSubmission = {
     { label: "GitHub Repository", url: "https://github.com/hackru/sledge" },
     { label: "YouTube Video Demo", url: "https://youtube.com/idk" },
   ],
-  categories: [{ categoryID: "321cba", categoryName: "Best Beginner Hack" }],
+  categories: [{ categoryID: mongoose.Types.ObjectId("123456abcdef"), categoryName: "Best Beginner Hack" }],
 };
 
 beforeAll(async () => {
@@ -27,33 +28,39 @@ beforeAll(async () => {
 });
 
 describe("testing basic endpoints", () => {
-  var projectID = null;
   it("adds a new submission", async (done) => {
     const res = await request.post(`/api/submissions/${testTeamID}/create`).send(testSubmission);
     expect(res.statusCode).toEqual(200);
     expect(res.body.attributes.title).toEqual("A Test Hack");
-    projectID = res.body._id;
+    testSubmissionId = res.body._id;
     done();
   });
 
-  //   it("gets the submission details", async (done) => {
-  //     const res = await request.get(`/api/submissions/${testTeamID}`);
-  //     expect(res.statusCode).toEqual(200);
-  //     expect(res.body.attributes.title).toEqual("A Test Hack");
-  //     done();
-  //   });
+  it("gets the submission details", async (done) => {
+    // console.log(submissionId);
+    const res = await request.get(`/api/submissions/${testTeamID}/${testSubmissionId}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.attributes.title).toEqual("A Test Hack");
+    done();
+  });
+
+  it("retrieves all submissions", async (done) => {
+    const res = await request.get(`/api/submissions`).send(testSubmission);
+    expect(res.statusCode).toEqual(200);
+    done();
+  });
 });
 
-// removeAllCollections = async () => {
-//   const collections = Object.keys(mongoose.connection.collections);
-//   for (const collectionName of collections) {
-//     const collection = mongoose.connection.collections[collectionName];
-//     await collection.deleteMany();
-//   }
-// };
+removeAllCollections = async () => {
+  const collections = Object.keys(mongoose.connection.collections);
+  for (const collectionName of collections) {
+    const collection = mongoose.connection.collections[collectionName];
+    await collection.deleteMany();
+  }
+};
 
-afterAll((done) => {
-  //   await removeAllCollections();
+afterAll(async (done) => {
+  await removeAllCollections(); // deletes everything in the database after testing
   mongoose.connection.close();
   done();
 });

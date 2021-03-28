@@ -6,13 +6,16 @@ app.use(express.json());
 const Submission = require("./models/submissionSchema.model");
 
 // returns all submissions
-app.get("/api/submissions", (req, res) => {
-  res.status(200).send(Submission.find({}));
+app.get("/api/submissions", async (req, res) => {
+  res.status(200).send(await Submission.find({}));
 });
 
 // return submission data
-app.get("/api/submissions/:teamID", (req, res) => {
-  res.status(200).send(Submission.findById(req.params.teamID));
+app.get("/api/submissions/:teamID/:submissionID", async (req, res) => {
+  await Submission.findById(req.params.submissionID, (err, submission) => {
+    if (err) res.status(500).send(err);
+    res.status(200).send(submission);
+  });
 });
 
 // create new submission
