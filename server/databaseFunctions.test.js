@@ -9,6 +9,7 @@ const request = supertest(app);
 const testTeamID = mongoose.Types.ObjectId();
 var testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
 const testSubmission = {
+  projectID: testTeamID,
   isSubmitted: false,
   attributes: {
     title: "A Test Hack",
@@ -49,9 +50,27 @@ describe("testing basic endpoints", () => {
     expect(res.statusCode).toEqual(200);
     done();
   });
+  
+
+  it("sets isSubmitted of given submission to true", async (done) => {
+    const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/setTrue`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.isSubmitted).toEqual(true);
+    done();
+  });
+
+  
+  it("sets isSubmitted of given submission to false", async (done) => {
+    const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/setFalse`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.isSubmitted).toEqual(false);
+    done();
+  });
+  
+  
 });
 
-removeAllCollections = async () => {
+let removeAllCollections = async () => {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
     const collection = mongoose.connection.collections[collectionName];

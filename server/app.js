@@ -1,4 +1,5 @@
 const express = require("express");
+const { update } = require("./models/submissionSchema.model");
 
 const app = express();
 app.use(express.json());
@@ -33,5 +34,18 @@ app.post("/login", (req, res) => {
   // 3. ???
   // 4. profit
 });
+
+// Update isSubmitted to true
+app.patch("/api/submissions/:teamID/:submissionID/setTrue", async (req, res) => {
+  await Submission.findByIdAndUpdate(req.params.submissionID, {isSubmitted: true});
+  res.status(200).send(await Submission.findById(req.params.submissionID));
+});
+
+// Update isSubmitted to false
+app.patch("/api/submissions/:teamID/:submissionID/setFalse", async (req, res) => {
+  await Submission.findByIdAndUpdate(req.params.submissionID, {isSubmitted: false});
+  res.status(200).send(await Submission.findById(req.params.submissionID));
+});
+
 
 module.exports = app;
