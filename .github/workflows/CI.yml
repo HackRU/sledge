@@ -1,22 +1,30 @@
-name: CI
+name: Run Jest tests on server endpoints
+
 on: [push]
 
 jobs:
-  build:
+  install_deps_and_test:
     runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+
+    defaults:
+      run:
+        working-directory: ./server
+
     steps:
-      - uses: actions/checkout@v1
-      - name: Install system dependencies
-        run: sudo apt-get install nodejs yarn
-        env:
-          DEBIAN_FRONTEND: noninteractive
-      - name: Install node_modules dependencies
-        run: yarn install
-      - name: Build using Makefile
-        run: make build
-      - name: Run with --initonly flag
-        run: ./bin/sledge --initonly
-        env:
-          DEBUG: "*"
-      - name: Run jest tests
-        run: ./node_modules/.bin/jest --collectCoverage
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install server dependencies
+        run: npm ci
+
+      - name: Run Jest tests
+        run: npm test
