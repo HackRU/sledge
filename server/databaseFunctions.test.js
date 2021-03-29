@@ -9,7 +9,6 @@ const request = supertest(app);
 const testTeamID = mongoose.Types.ObjectId();
 var testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
 const testSubmission = {
-  projectID: testTeamID,
   isSubmitted: false,
   attributes: {
     title: "A Test Hack",
@@ -70,7 +69,7 @@ describe("testing basic endpoints", () => {
   
 });
 
-let removeAllCollections = async () => {
+removeAllCollections = async () => {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
     const collection = mongoose.connection.collections[collectionName];
