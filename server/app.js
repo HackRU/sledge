@@ -36,13 +36,13 @@ app.post("/login", (req, res) => {
 });
 
 // Update isSubmitted to true
-app.patch("/api/submissions/:teamID/:submissionID/setTrue", async (req, res) => {
+app.patch("/api/submissions/:teamID/:submissionID/submit", async (req, res) => {
   await Submission.findByIdAndUpdate(req.params.submissionID, {isSubmitted: true});
   res.status(200).send(await Submission.findById(req.params.submissionID));
 });
 
 // Update isSubmitted to false
-app.patch("/api/submissions/:teamID/:submissionID/setFalse", async (req, res) => {
+app.patch("/api/submissions/:teamID/:submissionID/unsubmit", async (req, res) => {
   await Submission.findByIdAndUpdate(req.params.submissionID, {isSubmitted: false});
   res.status(200).send(await Submission.findById(req.params.submissionID));
 });

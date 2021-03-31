@@ -52,7 +52,7 @@ describe("testing basic endpoints", () => {
   
 
   it("sets isSubmitted of given submission to true", async (done) => {
-    const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/setTrue`);
+    const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/submit`);
     expect(res.statusCode).toEqual(200);
     expect(res.body.isSubmitted).toEqual(true);
     done();
@@ -60,7 +60,7 @@ describe("testing basic endpoints", () => {
 
   
   it("sets isSubmitted of given submission to false", async (done) => {
-    const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/setFalse`);
+    const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/unsubmit`);
     expect(res.statusCode).toEqual(200);
     expect(res.body.isSubmitted).toEqual(false);
     done();
