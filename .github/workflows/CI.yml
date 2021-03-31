@@ -3,8 +3,14 @@ name: Run Jest tests on server endpoints
 on: [push]
 
 jobs:
-  build:
+  install_deps_and_test:
     runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
 
     defaults:
       run:
