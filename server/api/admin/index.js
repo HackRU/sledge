@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const categoryRouter = require("./admin/category");
-const judgesRouter = require("./admin/judges");
+const categoryRouter = require("./categories");
+const judgesRouter = require("./judges");
 
 router.use("/category", categoryRouter);
 router.use("/judges", judgesRouter);
