@@ -1,6 +1,6 @@
 const supertest = require("supertest");
 const mongoose = require("mongoose");
-const app = require("./app");
+const app = require("./index");
 const config = require("./config.json");
 
 const request = supertest(app);
@@ -24,7 +24,7 @@ const testSubmission = {
 
 beforeAll(async () => {
   const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
-  await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 });
 
 describe("testing basic endpoints", () => {
@@ -49,7 +49,6 @@ describe("testing basic endpoints", () => {
     expect(res.statusCode).toEqual(200);
     done();
   });
-  
 
   it("sets isSubmitted of given submission to true", async (done) => {
     const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/submit`);
@@ -58,15 +57,12 @@ describe("testing basic endpoints", () => {
     done();
   });
 
-  
   it("sets isSubmitted of given submission to false", async (done) => {
     const res = await request.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/unsubmit`);
     expect(res.statusCode).toEqual(200);
     expect(res.body.isSubmitted).toEqual(false);
     done();
   });
-  
-  
 });
 
 removeAllCollections = async () => {
