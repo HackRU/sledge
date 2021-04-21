@@ -7,6 +7,10 @@ const apiRouter = require("./api");
 
 app.use("/api", apiRouter);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Sledge!");
+});
+
 app.post("/login", (req, res) => {
   // 1. get hacker's teamID from LCS
   // 2. log them in
