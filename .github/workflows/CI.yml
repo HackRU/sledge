@@ -3,9 +3,9 @@
 name: Test and Deploy Server
 
 on:
-    push:
-        branches:
-            - master
+  push:
+    branches:
+      - master
 
 jobs:
   test-endpoints:
@@ -58,4 +58,5 @@ jobs:
            --application-name ${{ matrix.application-name }} \
            --deployment-config-name CodeDeployDefault.OneAtATime \
            --deployment-group-name ${{ matrix.deploy-group }} \
+           --file-exists-behavior OVERWRITE \
            --github-location repository=$GITHUB_REPOSITORY,commitId=$GITHUB_SHA

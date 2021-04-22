@@ -4,10 +4,6 @@ files:
   - source: /
     destination: /var/www/sledge
 hooks:
-  BeforeInstall:
-    - location: scripts/reset_directory.sh
-      timeout: 600
-      runas: root
   AfterInstall:
     - location: scripts/run_build.sh
       timeout: 300
