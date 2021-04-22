@@ -47,4 +47,4 @@ jobs:
            --application-name ${{ matrix.application-name }} \
            --deployment-config-name CodeDeployDefault.OneAtATime \
            --deployment-group-name ${{ matrix.deploy-group }} \
-           --github-location repository=${{ matrix.GITHUB_REPOSITORY }},commitId=${{ GITHUB_SHA }}
+           --github-location repository=$GITHUB_REPOSITORY,commitId=$GITHUB_SHA
