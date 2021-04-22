@@ -4,7 +4,7 @@
 
 #### Database: MongoDB + Mongoose
 
-#### Testing: Jest + SuperTest
+#### Testing: Jest + SuperTest (for endpoints)
 
 ## Collections
 
