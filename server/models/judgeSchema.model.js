@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const judgeSchema = new Schema({
@@ -8,4 +8,4 @@ const judgeSchema = new Schema({
   categoriesToJudge: [{ categoryID: String, categoryName: String }],
 });
 
-module.exports = mongoose.model("judge", judgeSchema);
+module.exports = mongoose.model('judge', judgeSchema);

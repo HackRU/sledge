@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const submissionSchema = new Schema({
@@ -15,4 +15,4 @@ const submissionSchema = new Schema({
   removedFromJudging: Boolean,
 });
 
-module.exports = mongoose.model("submission", submissionSchema);
+module.exports = mongoose.model('submission', submissionSchema);
