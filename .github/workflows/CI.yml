@@ -5,7 +5,7 @@ on: [push]
 jobs:
   install_deps_and_test:
     runs-on: ubuntu-latest
-    
+
     services:
       mongodb:
         image: mongo:3.4.23
@@ -28,3 +28,23 @@ jobs:
 
       - name: Run Jest tests
         run: npm test
+
+  deploy:
+    name: CD Pipeline
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        application-name: ["sledge"]
+        deploy-group: ["sledge-dev-dpgrp"] # eventually use env vars to set this
+
+    needs: install_deps_and_test
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: AWS Create Deployment
+        run: |
+          aws deploy create-deployment \
+           --application-name ${{ matrix.application-name }} \
+           --deployment-config-name CodeDeployDefault.OneAtATime \
+           --deployment-group-name ${{ matrix.deploy-group }} \
+           --github-location repository=${{ matrix.GITHUB_REPOSITORY }},commitId=${{ GITHUB_SHA }}
