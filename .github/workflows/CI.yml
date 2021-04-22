@@ -37,7 +37,7 @@ jobs:
       matrix:
         application-name: ['Sledge']
         deploy-group: ['sledge-dev-dpgrp']
-    needs: Test Endpoints
+    needs: test-endpoints
 
     steps:
       - uses: actions/checkout@v2
