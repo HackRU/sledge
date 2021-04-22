@@ -34,13 +34,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        application-name: ["sledge"]
+        application-name: ["Sledge"]
         deploy-group: ["sledge-dev-dpgrp"] # eventually use env vars to set this
 
     needs: install_deps_and_test
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:

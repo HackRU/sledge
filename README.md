@@ -2,13 +2,15 @@
 
 ## HackRU's Submission and Judging Platform
 
+[![Test and Deploy Server](https://github.com/HackRU/sledge/actions/workflows/CI.yml/badge.svg)](https://github.com/HackRU/sledge/actions/workflows/CI.yml)
+
 ### Setup
 
 Requirements:
 
 - Node.js/NPM
 - MongoDB
-    - Installing on Windows: https://treehouse.github.io/installation-guides/windows/mongo-windows.html
+  - Installing on Windows: https://treehouse.github.io/installation-guides/windows/mongo-windows.html
 
 Set up the frontend by going inside `client/` and running:
 
