@@ -5,7 +5,7 @@ name: Test and Deploy Server
 on: [push]
 
 jobs:
-  Test Endpoints:
+  test-endpoints:
     runs-on: ubuntu-latest
 
     services:
@@ -31,7 +31,7 @@ jobs:
       - name: Run Jest tests
         run: npm test
 
-  Deploy to EC2:
+  deploy-to-ec2:
     runs-on: ubuntu-latest
     strategy:
       matrix:
