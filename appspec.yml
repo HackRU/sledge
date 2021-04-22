@@ -13,10 +13,6 @@ hooks:
       timeout: 300
       runas: root
   ApplicationStart:
-    - location: scripts/start_server.sh
-      timeout: 60
-      runas: root
-  ApplicationStop:
-    - location: scripts/stop_server.sh
+    - location: scripts/reload_server.sh
       timeout: 60
       runas: root
