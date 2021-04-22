@@ -1,2 +1,2 @@
 #!/bin/bash
-pm2 reload ecosystem.config.js
+pm2 startOrReload ecosystem.config.js
