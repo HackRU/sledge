@@ -2,7 +2,10 @@
 
 name: Test and Deploy Server
 
-on: [push]
+on:
+    push:
+        branches:
+            - master
 
 jobs:
   test-endpoints:
