@@ -1,9 +1,11 @@
+# This workflow will automatically test and deploy to sledge.hackru.org/dev
+
 name: Test and Deploy Server
 
 on: [push]
 
 jobs:
-  install_deps_and_test:
+  Test Endpoints:
     runs-on: ubuntu-latest
 
     services:
@@ -29,15 +31,14 @@ jobs:
       - name: Run Jest tests
         run: npm test
 
-  deploy:
-    name: CD Pipeline
+  Deploy to EC2:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         application-name: ['Sledge']
-        deploy-group: ['sledge-dev-dpgrp'] # eventually use env vars to set this
+        deploy-group: ['sledge-dev-dpgrp']
+    needs: Test Endpoints
 
-    needs: install_deps_and_test
     steps:
       - uses: actions/checkout@v2
 
