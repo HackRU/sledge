@@ -7,12 +7,12 @@ hooks:
   AfterInstall:
     - location: scripts/run_build.sh
       timeout: 300
-      runas: root
+      runas: ubuntu
   ApplicationStart:
     - location: scripts/start_server.sh
       timeout: 60
-      runas: root
+      runas: ubuntu
   ApplicationStop:
     - location: scripts/stop_server.sh
       timeout: 60
-      runas: root
+      runas: ubuntu
