@@ -1,2 +1,3 @@
 #!/bin/bash
-pm2 start /var/www/sledge/server/server.js
+cd /var/www/sledge/server
+pm2 start ./server.js --watch -i max

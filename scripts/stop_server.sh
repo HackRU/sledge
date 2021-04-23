@@ -1,2 +1,3 @@
 #!/bin/bash
-pm2 stop /var/www/sledge/server/server.js
+cd /var/www/sledge/server
+pm2 stop ./server.js
