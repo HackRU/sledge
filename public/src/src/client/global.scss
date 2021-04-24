@@ -1,0 +1,53 @@
+#VisualizeRatingsPage {
+  table {
+    td {
+      border: 1px solid black;
+    }
+
+    td.rating-cell {
+      width: 20px;
+      height: 20px;
+    }
+
+    td.bg-red {
+      background: red;
+    }
+
+    td.bg-green {
+      background: green;
+    }
+
+    td.bg-yellow {
+      background: yellow;
+    }
+
+    td.bg-grey {
+      background: grey;
+    }
+  }
+}
+
+#VisualizePrizesPage {
+  td {
+    border: 1px solid black;
+  }
+}
+
+#ControlPanelPage {
+  form {
+    padding: 15px 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+#JudgePage {
+  .ranked {
+    background-color: #6c757d;
+    color: white;
+  }
+}
