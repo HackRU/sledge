@@ -39,4 +39,15 @@ router.patch('/:teamID/:submissionID/unsubmit', async (req, res) => {
   res.status(200).send(await Submission.findById(req.params.submissionID));
 });
 
+//save a submission with new info
+router.patch('/:teamID/:submissionID/save', async (req, res) => {
+  await Submission.findById(req.params.submissionID, {
+    let doc = await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
+      new: true,
+      upsert: true
+    })
+  });
+  res.status(200).send(await Submission.findById(req.params.submissionID));
+});
+
 module.exports = router;
