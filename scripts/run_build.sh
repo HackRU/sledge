@@ -5,4 +5,4 @@
 # install backend dependencies
 
 cd /var/www/sledge/server
-sudo npm install -y
+npm install -y
