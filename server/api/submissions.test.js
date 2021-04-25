@@ -64,11 +64,11 @@ describe('testing submission endpoints', () => {
 	});
 
 	it('updates a certain submission with new info', async (done) => {
-		const res = await request.patch(
-			`/api/submissions/${testTeamID}/${testSubmissionId}/save`
-		);
+		const res = await request
+			.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/save`)
+			.send(testSubmission);
 		expect(res.statusCode).toEqual(200);
-		expect(res.body).toEqual(request.body);
+		expect(res.body.attributes.title).toEqual('A Test Hack Indeed');
 		done();
 	});
 });
