@@ -13,7 +13,7 @@ router.get('/', async ({ res }) => {
 
 /**
  * @swagger
- * /api/{teamID}/{submissionID}:
+ * /api/submissions/{teamID}/{submissionID}:
  *   get:
  *     summary: Retrieves the specified submission from the specified team
  *     produces:
