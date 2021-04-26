@@ -2,17 +2,17 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const submissionSchema = new Schema({
-  status: String, // submitted/not submitted
+  isSubmitted: Boolean,
   attributes: {
     title: String,
     description: String,
     technologies: [String],
   },
   urls: [{ _id: false, label: String, url: String }],
-  categories: [{ _id: false }],
+  categories: [{ _id: false, categoryID: String, categoryName: String }],
   flags: [String],
   numFlags: Number,
-  visible: Boolean,
+  removedFromJudging: Boolean,
 });
 
 module.exports = mongoose.model('submission', submissionSchema);
