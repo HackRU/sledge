@@ -1,0 +1,20 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Sledge",
+      "version": "0.1.0",
+      "description": "HackRU's Sledge API",
+      "contact": {
+        "name": "HackRU",
+        "url": "https://hackru.org"
+      }
+    },
+    "servers": [
+        {
+            "url": "localhost:5000"
+        },
+        {
+            "url": "https://sledge.hackru.org/dev/"
+        }
+    ]
+}

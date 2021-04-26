@@ -14,7 +14,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^5.11.19"
+    "mongoose": "^5.11.19",
+    "swagger-jsdoc": "^6.0.0",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "jest": "^26.6.3",

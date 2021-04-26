@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Submission:
+ *        type: object
+ */
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
