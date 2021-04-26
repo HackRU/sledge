@@ -62,4 +62,5 @@ jobs:
            --deployment-config-name CodeDeployDefault.OneAtATime \
            --deployment-group-name ${{ matrix.deploy-group }} \
            --file-exists-behavior OVERWRITE \
+           --ignore-application-stop-failures \
            --github-location repository=$GITHUB_REPOSITORY,commitId=$GITHUB_SHA
