@@ -1,3 +1,48 @@
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Submission:
+ *        type: object
+ *        properties:
+ *          attributes:
+ *            type: object
+ *            properties:
+ *              title:
+ *                type: string
+ *                description: The name of the submission.
+ *              description:
+ *                type: string
+ *                description: A description of the submission.
+ *              technologies:
+ *                type: string
+ *                description: The technologies the hackers used in their submission.
+ *          urls:
+ *            type: array
+ *            description: A list of the URLs for the submission.
+ *            items:
+ *              type: object
+ *              properties:
+ *                label:
+ *                  type: string
+ *                  description: What the URL leads to.
+ *                url:
+ *                  type: string
+ *          categories:
+ *            type: array
+ *            description: A list of categories the submission is submitted to.
+ *            items:
+ *              type: string
+ *          flags:
+ *            type: array
+ *            items:
+ *              type: string
+ *          numFlags:
+ *            type: integer
+ *          removedFromJudging:
+ *            type: boolean
+ *            description: Whether or not the submission is visible in the judging queue.
+ */
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
