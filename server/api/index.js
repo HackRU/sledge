@@ -3,28 +3,10 @@ const router = require('express').Router();
 // documentation setup and routing
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerDefinition = require('../swagger.json');
 
 const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Sledge',
-      version: '0.1.0',
-      description: "HackRU's Sledge API",
-      contact: {
-        name: 'HackRU',
-        url: 'https://hackru.org',
-      },
-    },
-    servers: [
-      {
-        url: 'localhost:5000',
-      },
-      {
-        url: 'http://sledge.hackru.org/dev/',
-      },
-    ],
-  },
+  definition: swaggerDefinition,
   apis: ['./api/*.js', './models/*.js'],
 };
 

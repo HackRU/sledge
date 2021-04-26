@@ -3,7 +3,7 @@
     "info": {
       "title": "Sledge",
       "version": "0.1.0",
-      "description": "HackRU's Sledge API",
+      "description": "HackRU's Submission and Judging API",
       "contact": {
         "name": "HackRU",
         "url": "https://hackru.org"
@@ -14,7 +14,7 @@
             "url": "localhost:5000"
         },
         {
-            "url": "https://sledge.hackru.org/dev/"
+            "url": "http://sledge.hackru.org/dev/"
         }
     ]
 }
