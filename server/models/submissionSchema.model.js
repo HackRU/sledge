@@ -92,6 +92,5 @@ const submissionSchema = new Schema(
     removedFromJudging: { type: Boolean, default: false },
   }
 );
->>>>>>> 31bfa3e892fb2b0f087457e7e39da7bd466e6d14
 
 module.exports = mongoose.model('submission', submissionSchema);
