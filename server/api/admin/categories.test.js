@@ -4,6 +4,9 @@ const app = require("../../index");
 const config = require("../../config.json");
 const request = supertest(app);
 
+const testCategory = require("../../testCategory.json");
+var testCategoryID;
+
 beforeAll(async () => {
   const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
   await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
@@ -13,6 +16,7 @@ describe("testing category endpoints", () => {
   it("is a sample test", () => {
     expect(1).toEqual(1);
   });
+  
 });
 
 removeAllCollections = async () => {
