@@ -16,12 +16,13 @@ const options = {
 };
 const specs = swaggerJsDoc(options);
 
-app.use('/', swaggerUI.serve, swaggerUI.setup(specs, { explorer: true }));
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs, { explorer: true }));
 
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
 
 app.post('/login', (req, res) => {
+  res.send('No logging in system in place here yet :\\');
   // 1. get hacker's teamID from LCS
   // 2. log them in
   // 3. ???
