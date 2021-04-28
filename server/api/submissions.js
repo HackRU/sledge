@@ -39,11 +39,22 @@ router.get('/:teamID/:submissionID', async (req, res) => {
 
 // create new submission
 router.post('/:teamID/create', (req, res) => {
-  const currentSubmission = new Submission(req.body);
-  currentSubmission.save((err, submission) => {
+  // const newSubmission = new Submission();
+  Submission.create({}, (err, submission) => {
     if (err) res.status(500).send(err);
-    res.status(200).send(submission);
+    res.status(200).json({
+      message: 'success',
+      _id: submission.id,
+    });
   });
+
+  // newSubmission.save((err, submission) => {
+  //   if (err) res.status(500).send(err);
+  //   res.status(200).json({
+  //     message: 'success',
+  //     _id: submission.id,
+  //   });
+  // });
 });
 
 // Update isSubmitted to true

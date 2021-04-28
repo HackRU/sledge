@@ -23,6 +23,7 @@ const apiRouter = require('./api');
 app.use('/api', apiRouter);
 
 app.post('/login', (req, res) => {
+  res.send('No logging in system in place here yet :\\');
   // 1. get hacker's teamID from LCS
   // 2. log them in
   // 3. ???
