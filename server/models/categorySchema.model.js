@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const categorySchema = new Schema({
@@ -8,4 +8,4 @@ const categorySchema = new Schema({
   trackOrSuperlative: String, // track/superlative
 });
 
-module.exports = mongoose.model("category", categorySchema);
+module.exports = mongoose.model('category', categorySchema);

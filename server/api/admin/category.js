@@ -1,4 +1,4 @@
 const router = require('express').Router();
-const Judge = require('../../models/judgeSchema.model');
+const Category = require('../../models/categorySchema.model');
 
 module.exports = router;
