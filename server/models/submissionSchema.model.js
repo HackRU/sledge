@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const submissionSchema = new Schema({
-  isSubmitted: Boolean,
+  state: String,
   attributes: {
     title: String,
     description: String,
