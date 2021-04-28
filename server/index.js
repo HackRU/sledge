@@ -16,7 +16,8 @@ const options = {
 };
 const specs = swaggerJsDoc(options);
 
-app.use('/', swaggerUI.serve, swaggerUI.setup(specs, { explorer: true }));
+app.use('/', swaggerUI.serve);
+app.get('/', swaggerUI.setup(specs, { explorer: true }));
 
 const apiRouter = require('./api');
 app.use('/api', apiRouter);
