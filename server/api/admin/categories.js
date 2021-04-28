@@ -1,5 +1,5 @@
-const router = require('express').Router();
-const Category = require('../../models/categorySchema.model');
+const router = require("express").Router();
+const Category = require("../../models/categorySchema.model");
 
 // Create a new category
 router.post("/create", async (req, res) => {
