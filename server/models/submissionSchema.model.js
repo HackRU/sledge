@@ -75,7 +75,7 @@ const submissionSchema = new Schema(
     flags: { type: [String], default: [] },
     numFlags: { type: Number, default: 0 },
     removedFromJudging: { type: Boolean, default: false },
-  }
+  },
 );
 
 module.exports = mongoose.model('submission', submissionSchema);
