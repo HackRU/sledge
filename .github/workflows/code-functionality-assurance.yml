@@ -1,6 +1,6 @@
-# This workflow will automatically test feature branches.
+# This workflow will automatically test feature branches. Functionality first, quality can come later :P
 
-name: Test
+name: Code Functionality Assurance
 
 on:
   push:
