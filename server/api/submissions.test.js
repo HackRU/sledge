@@ -8,10 +8,13 @@ const testSubmission = require('../testSubmission.json');
 const request = supertest(app);
 
 const testTeamID = mongoose.Types.ObjectId();
-let testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
+
+// this id will be automatically generated for the below submission once it is added to the database
+let testSubmissionId;
 
 beforeAll(async () => {
-  const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
+  // Connection URL, set it in config.json
+  const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`;
   await mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -26,7 +29,7 @@ describe('testing submission endpoints', () => {
       .send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
-    testSubmissionId = res.body._id; // res returns the _id of the inserted submission
+    testSubmissionId = res.body.id; // res returns the id of the inserted submission
 
     await Submission.findById(testSubmissionId, (err, submission) => {
       expect(submission).not.toBeNull();
@@ -68,7 +71,7 @@ describe('testing submission endpoints', () => {
   // });
 });
 
-removeAllCollections = async () => {
+const removeAllCollections = async () => {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
     const collection = mongoose.connection.collections[collectionName];
