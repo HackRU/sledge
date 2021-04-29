@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('./config.json');
 const app = require('./index');
+
 const port = 5000;
 
 const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json

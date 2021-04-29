@@ -44,6 +44,7 @@
  *            description: Whether or not the submission is visible in the judging queue.
  */
 const mongoose = require('mongoose');
+
 const { Schema } = mongoose;
 
 const submissionSchema = new Schema(

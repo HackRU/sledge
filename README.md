@@ -25,6 +25,10 @@ $ npm i
 $ node server.js     # runs the server
 ```
 
+### Testing
+
+`npx eslint <file/directory>` to lint a file or directory.
+
 ### Other
 
 - You can view the code for the final release of Sledge v1 [here](https://github.com/HackRU/sledge/tree/7b25cb098978287fc1078e5dedd9fc5e72cd40a0).

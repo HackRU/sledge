@@ -2,14 +2,13 @@ const supertest = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../index');
 const config = require('../config.json');
+const Submission = require('../models/submissionSchema.model');
+const testSubmission = require('../testSubmission.json');
+
 const request = supertest(app);
 
-var testSubmission = require('../testSubmission.json');
-
-const Submission = require('../models/submissionSchema.model');
-
 const testTeamID = mongoose.Types.ObjectId();
-var testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
+let testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
 
 beforeAll(async () => {
   const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
