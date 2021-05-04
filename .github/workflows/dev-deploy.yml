@@ -1,6 +1,6 @@
 # This workflow will automatically test and deploy to sledge.hackru.org/dev
 
-name: Test and Deploy Dev Server
+name: Test, Lint, and Deploy Dev Server
 
 on:
   push:

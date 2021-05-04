@@ -1,6 +1,6 @@
 # This workflow will automatically test and lint feature branches.
 
-name: Code Functionality Assurance
+name: Test and Lint
 
 on:
   push:
