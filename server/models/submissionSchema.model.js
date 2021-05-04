@@ -44,6 +44,7 @@
  *            description: Whether or not the submission is visible in the judging queue.
  */
 const mongoose = require('mongoose');
+
 const { Schema } = mongoose;
 
 const submissionSchema = new Schema(
@@ -75,7 +76,7 @@ const submissionSchema = new Schema(
     flags: { type: [String], default: [] },
     numFlags: { type: Number, default: 0 },
     removedFromJudging: { type: Boolean, default: false },
-  }
+  },
 );
 
 module.exports = mongoose.model('submission', submissionSchema);

@@ -1,5 +1,5 @@
 const express = require('express');
-var cors = require('cors');
+const cors = require('cors');
 
 const app = express();
 app.use(cors());
@@ -20,6 +20,7 @@ app.use('/', swaggerUI.serve);
 app.get('/', swaggerUI.setup(specs, { explorer: true }));
 
 const apiRouter = require('./api');
+
 app.use('/api', apiRouter);
 
 app.post('/login', (req, res) => {
