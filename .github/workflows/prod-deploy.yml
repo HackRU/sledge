@@ -37,6 +37,9 @@ jobs:
       - name: Run Jest tests
         run: npm test
 
+      - name: Run linting
+        run: npm run lint
+
   deploy-to-ec2:
     runs-on: ubuntu-latest
     strategy:

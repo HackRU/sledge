@@ -1,4 +1,4 @@
-# This workflow will automatically test feature branches. Functionality first, quality can come later :P
+# This workflow will automatically test and lint feature branches.
 
 name: Code Functionality Assurance
 
@@ -36,3 +36,6 @@ jobs:
 
       - name: Run Jest tests
         run: npm test
+
+      - name: Run linting
+        run: npm run lint
