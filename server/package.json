@@ -4,7 +4,7 @@
   "description": "Sledge Server",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
   },

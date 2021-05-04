@@ -1,9 +1,9 @@
-const supertest = require('supertest');
+// const supertest = require('supertest');
 const mongoose = require('mongoose');
-const app = require('../../index');
+// const app = require('../../index');
 const config = require('../../config.json');
 
-const request = supertest(app);
+// const request = supertest(app);
 
 beforeAll(async () => {
   const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
@@ -20,16 +20,8 @@ describe('testing judge endpoints', () => {
   });
 });
 
-const removeAllCollections = async () => {
-  const collections = Object.keys(mongoose.connection.collections);
-  for (const collectionName of collections) {
-    const collection = mongoose.connection.collections[collectionName];
-    await collection.deleteMany();
-  }
-};
-
 afterAll(async (done) => {
-  await removeAllCollections(); // deletes everything in the database after testing
+  await mongoose.connection.dropDatabase(); // deletes database after testing
   mongoose.connection.close();
   done();
 });

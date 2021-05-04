@@ -12,6 +12,7 @@ mongoose.connect(url, {
   useUnifiedTopology: true,
   useFindAndModify: false,
 });
+
 mongoose.connection
   .once('open', () => console.log('Connected!'))
   .on('error', (error) => {
