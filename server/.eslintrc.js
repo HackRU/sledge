@@ -9,6 +9,7 @@ module.exports = {
     'jest/globals': true,
   },
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'linebreak-style': 0,
   },
 };
