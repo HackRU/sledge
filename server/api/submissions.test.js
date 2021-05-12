@@ -2,17 +2,19 @@ const supertest = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../index');
 const config = require('../config.json');
+const Submission = require('../models/submissionSchema.model');
+const testSubmission = require('../testSubmission.json');
+
 const request = supertest(app);
 
-var testSubmission = require('../testSubmission.json');
-
-const Submission = require('../models/submissionSchema.model');
-
 const testTeamID = mongoose.Types.ObjectId();
-var testSubmissionId; // this id will be automatically generated for the below submission after that submission is added to the database
+
+// this id will be automatically generated for the below submission once it is added to the database
+let testSubmissionId;
 
 beforeAll(async () => {
-  const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
+  // Connection URL, set it in config.json
+  const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`;
   await mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -27,10 +29,10 @@ describe('testing submission endpoints', () => {
       .send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
-    testSubmissionId = res.body._id; // res returns the _id of the inserted submission
+    testSubmissionId = res.body.id; // res returns the id of the inserted submission
 
     await Submission.findById(testSubmissionId, (err, submission) => {
-      expect(submission.attributes.title).toEqual('');
+      expect(submission).not.toBeNull();
     });
     done();
   });
@@ -69,16 +71,8 @@ describe('testing submission endpoints', () => {
   // });
 });
 
-removeAllCollections = async () => {
-  const collections = Object.keys(mongoose.connection.collections);
-  for (const collectionName of collections) {
-    const collection = mongoose.connection.collections[collectionName];
-    await collection.deleteMany();
-  }
-};
-
 afterAll(async (done) => {
-  await removeAllCollections(); // deletes everything in the database after testing
+  await mongoose.connection.dropDatabase(); // deletes database after testing
   mongoose.connection.close();
   done();
 });

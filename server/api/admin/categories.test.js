@@ -1,8 +1,9 @@
-const supertest = require('supertest');
+// const supertest = require('supertest');
 const mongoose = require('mongoose');
-const app = require('../../index');
+// const app = require('../../index');
 const config = require('../../config.json');
-const request = supertest(app);
+
+// const request = supertest(app);
 
 const testCategory = require("../../testCategory.json");
 var testCategoryID;
@@ -23,16 +24,8 @@ describe('testing category endpoints', () => {
   
 });
 
-removeAllCollections = async () => {
-  const collections = Object.keys(mongoose.connection.collections);
-  for (const collectionName of collections) {
-    const collection = mongoose.connection.collections[collectionName];
-    await collection.deleteMany();
-  }
-};
-
 afterAll(async (done) => {
-  await removeAllCollections(); // deletes everything in the database after testing
+  await mongoose.connection.dropDatabase(); // deletes database after testing
   mongoose.connection.close();
   done();
 });

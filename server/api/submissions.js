@@ -44,7 +44,7 @@ router.post('/:teamID/create', (req, res) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
       message: 'success',
-      _id: submission.id,
+      id: submission.id,
     });
   });
 

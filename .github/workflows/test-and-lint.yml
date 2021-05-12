@@ -1,11 +1,11 @@
-# This workflow will automatically test feature branches.
+# This workflow will automatically test and lint feature branches.
 
-name: Test
+name: Test and Lint
 
 on:
   push:
     branches-ignore:
-      - master
+      - env/*
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,3 +36,6 @@ jobs:
 
       - name: Run Jest tests
         run: npm test
+
+      - name: Run linting
+        run: npm run lint
