@@ -4,7 +4,6 @@ const Category = require("../../models/categorySchema.model");
 =======
 const router = require('express').Router();
 // const Category = require('../../models/categorySchema.model');
->>>>>>> e113c139cce6aed08e41f3cffd21c5b8140099d9
 
 // Create a new category
 router.post("/create", async (req, res) => {
