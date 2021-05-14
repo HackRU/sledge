@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "lint": "eslint . --ignore-path ../.gitignore",
+    "lint-fix": "eslint . --fix --ignore-path ../.gitignore",
+    "format": "prettier --write './**/*.{js,jsx,css,md,json}' --config ./.prettierrc.js --ignore-path ../.gitignore"
   },
   "jest": {
     "testEnvironment": "node"
