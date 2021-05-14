@@ -1,5 +1,5 @@
 {
     "name": "Sample Category",
     "companyName": null,
-    "trackOrSuperlative": "Sample Track"
+    "type": "track"
 }
