@@ -7,32 +7,63 @@ router.post('/create', (req, res) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
       message: 'success',
-      id: category.categoryID,
+      id: category.id,
     });
   });
 });
 
 // Delete all the categories
-router.delete('/delete', async (res) => {
+router.delete('/delete', async (req, res) => {
   await Category.remove({});
   res.status(200).send();
 });
 
 // Update category with a specific category ID
 router.patch('/:categoryID', async (req, res) => {
-    
+  if ('name' in req.body) {
+    await Category.findByIdAndUpdate(req.params.categoryID, {
+      name: req.body.name
+    }, (err, category) => {
+      if (err) res.status(500).send(err);
+    });
+  }
+
+  if ('companyName' in req.body) {
+    await Category.findByIdAndUpdate(req.params.categoryID, {
+      companyName: req.body.companyName
+    }, (err, category) => {
+      if (err) res.status(500).send(err);
+    });
+  }
+
+  if ('type' in req.body) {
+    await Category.findByIdAndUpdate(req.params.categoryID, {
+      type: req.body.type
+    }, (err, category) => {
+      if (err) res.status(500).send(err);
+      
+    });
+  }
+
+  res.status(200).json({
+    message: 'success',
+    id: req.params.categoryID,
+  });
 });
 
 // Return all categories
-router.get('/', async (res) => {
+router.get('/', async (req, res) => {
   res.status(200).send(await Category.find({}));
 });
 
 // Return category with a specific category ID
 router.get('/:categoryID', async (req, res) => {
-  await Category.findById(req.body.categoryID, (err, category) => {
+  await Category.findById(req.params.categoryID, (err, category) => {
     if (err) res.status(500).send(err);
-    res.status(200).send(category);
+    res.status(200).json({
+        message: 'success',
+        id: category.id,
+      });
   });
 });
 
