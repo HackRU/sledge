@@ -12,6 +12,17 @@ router.post('/create', (req, res) => {
   });
 });
 
+// Deletes a category with the specific ID
+router.delete('/delete/:categoryID', async (req, res) => {
+  await Category.findByIdAndDelete(req.params.categoryID, (err) => {
+    if (err) res.status(500).send(err);
+    res.status(200).json({
+      message: 'success',
+      id: req.params.categoryID,
+    });
+  });
+});
+
 // Delete all the categories
 router.delete('/delete', async (req, res) => {
   await Category.remove({});

@@ -72,6 +72,21 @@ describe('testing category endpoints', () => {
     done();
   });
 
+  it('deletes a single category with a specific ID', async (done) => {
+    const res = await request.delete(
+      `/api/admin/categories/delete/${testCategoryId}`,
+    );
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('success');
+
+    await Category.findById(testCategoryId, (err, category) => {
+      expect(category).toBeNull();
+    });
+
+    await request.post('/api/admin/categories/create').send(testCategory);
+    done();
+  });
+
   it('deletes all categories', async (done) => {
     const res = await request.delete('/api/admin/categories/delete').send();
     expect(res.statusCode).toEqual(200);
