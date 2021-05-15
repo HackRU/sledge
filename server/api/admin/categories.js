@@ -31,41 +31,21 @@ router.delete('/delete', async (req, res) => {
 
 // Update category with a specific category ID
 router.patch('/:categoryID', async (req, res) => {
+  const categoryToUpdate = await Category.findById(req.params.categoryID);
+
   if ('name' in req.body) {
-    await Category.findByIdAndUpdate(
-      req.params.categoryID,
-      {
-        name: req.body.name,
-      },
-      (err) => {
-        if (err) res.status(500).send(err);
-      },
-    );
+    categoryToUpdate.name = req.body.name;
   }
 
   if ('companyName' in req.body) {
-    await Category.findByIdAndUpdate(
-      req.params.categoryID,
-      {
-        companyName: req.body.companyName,
-      },
-      (err) => {
-        if (err) res.status(500).send(err);
-      },
-    );
+    categoryToUpdate.companyName = req.body.companyName;
   }
 
   if ('type' in req.body) {
-    await Category.findByIdAndUpdate(
-      req.params.categoryID,
-      {
-        type: req.body.type,
-      },
-      (err) => {
-        if (err) res.status(500).send(err);
-      },
-    );
+    categoryToUpdate.type = req.body.type;
   }
+
+  categoryToUpdate.save();
 
   res.status(200).json({
     message: 'success',
