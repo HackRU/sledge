@@ -3,7 +3,7 @@ const Category = require('../../models/categorySchema.model');
 
 // Create a new category
 router.post('/create', (req, res) => {
-   Category.create(req.body, (err, category) => {
+  Category.create(req.body, (err, category) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
       message: 'success',
@@ -21,28 +21,39 @@ router.delete('/delete', async (req, res) => {
 // Update category with a specific category ID
 router.patch('/:categoryID', async (req, res) => {
   if ('name' in req.body) {
-    await Category.findByIdAndUpdate(req.params.categoryID, {
-      name: req.body.name
-    }, (err, category) => {
-      if (err) res.status(500).send(err);
-    });
+    await Category.findByIdAndUpdate(
+      req.params.categoryID,
+      {
+        name: req.body.name,
+      },
+      (err) => {
+        if (err) res.status(500).send(err);
+      },
+    );
   }
 
   if ('companyName' in req.body) {
-    await Category.findByIdAndUpdate(req.params.categoryID, {
-      companyName: req.body.companyName
-    }, (err, category) => {
-      if (err) res.status(500).send(err);
-    });
+    await Category.findByIdAndUpdate(
+      req.params.categoryID,
+      {
+        companyName: req.body.companyName,
+      },
+      (err) => {
+        if (err) res.status(500).send(err);
+      },
+    );
   }
 
   if ('type' in req.body) {
-    await Category.findByIdAndUpdate(req.params.categoryID, {
-      type: req.body.type
-    }, (err, category) => {
-      if (err) res.status(500).send(err);
-      
-    });
+    await Category.findByIdAndUpdate(
+      req.params.categoryID,
+      {
+        type: req.body.type,
+      },
+      (err) => {
+        if (err) res.status(500).send(err);
+      },
+    );
   }
 
   res.status(200).json({
@@ -61,9 +72,9 @@ router.get('/:categoryID', async (req, res) => {
   await Category.findById(req.params.categoryID, (err, category) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
-        message: 'success',
-        id: category.id,
-      });
+      message: 'success',
+      id: category.id,
+    });
   });
 });
 
