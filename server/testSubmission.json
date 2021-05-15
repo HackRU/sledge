@@ -1,13 +1,15 @@
 {
-    "isSubmitted": false,
-    "attributes": {
-      "title": "A Test Hack",
-      "description": "Our hack is very cool! I like this hack, and my teammates like it too.",
-      "technologies": ["MongoDB", "JSON"]
-    },
-    "urls": [
-      { "label": "GitHub Repository", "url": "https://github.com/hackru/sledge" },
-      { "label": "YouTube Video Demo", "url": "https://youtube.com/idk" }
-    ],
-    "categories": [{ "categoryID": "123456abcdef", "categoryName": "Best Beginner Hack" }]
-  }
+  "isSubmitted": false,
+  "attributes": {
+    "title": "A Test Hack",
+    "description": "Our hack is very cool! I like this hack, and my teammates like it too.",
+    "technologies": ["MongoDB", "JSON"]
+  },
+  "urls": [
+    { "label": "GitHub Repository", "url": "https://github.com/hackru/sledge" },
+    { "label": "YouTube Video Demo", "url": "https://youtube.com/idk" }
+  ],
+  "categories": [
+    { "categoryID": "123456abcdef", "categoryName": "Best Beginner Hack" }
+  ]
+}
