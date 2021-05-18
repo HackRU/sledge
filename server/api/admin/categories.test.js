@@ -44,9 +44,9 @@ describe('testing category endpoints', () => {
   it('returns a category with specific ID', async (done) => {
     const res = await request
       .get(`/api/admin/categories/${testCategoryId}`)
-      .send(testCategory);
+      .send();
     expect(res.statusCode).toEqual(200);
-    expect(res.body.id).toEqual(testCategoryId);
+    expect(res.body._id).toEqual(testCategoryId);
     done();
   });
 
