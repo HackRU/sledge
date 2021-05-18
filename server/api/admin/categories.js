@@ -6,6 +6,12 @@ const Category = require('../../models/categorySchema.model');
  * /api/admin/categories/create:
  *  post:
  *    summary: Creates a new category
+ *    parameters:
+ *      - in: request
+ *        name: newCategory
+ *        required: true
+ *        type: Category
+ *        description: New category
  */
 router.post('/create', (req, res) => {
   Category.create(req.body, (err, category) => {
@@ -21,7 +27,8 @@ router.post('/create', (req, res) => {
  * @swagger
  * /api/admin/categories/delete/{categoryID}:
  *  delete:
- *    summary: Deletes a cate *    parameters:
+ *    summary: Deletes a category with a specific ID
+ *    parameters:
  *      - in: path
  *        name: categoryID
  *        required: true
@@ -97,10 +104,6 @@ router.get('/', async (req, res) => {
 /**
  * @swagger
  * /api/admin/categories/{categoryID}:
- *  get:
- *    summary: Returns a category with a specific category ID
- *    parameters:
-goryID}:
  *  get:
  *    summary: Returns a category with a specific category ID
  *    parameters:
