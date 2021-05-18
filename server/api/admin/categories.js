@@ -21,8 +21,7 @@ router.post('/create', (req, res) => {
  * @swagger
  * /api/admin/categories/delete/{categoryID}:
  *  delete:
- *    summary: Deletes a category with the given ID
- *    parameters: 
+ *    summary: Deletes a cate *    parameters:
  *      - in: path
  *        name: categoryID
  *        required: true
@@ -55,7 +54,7 @@ router.delete('/delete', async (req, res) => {
  * /api/admin/{categoryID}:
  *  patch:
  *    summary: Updates category with a specific category ID
- *    parameters: 
+ *    parameters:
  *      - in: path
  *        name: categoryID
  *        required: true
@@ -100,7 +99,11 @@ router.get('/', async (req, res) => {
  * /api/admin/categories/{categoryID}:
  *  get:
  *    summary: Returns a category with a specific category ID
- *    parameters: 
+ *    parameters:
+goryID}:
+ *  get:
+ *    summary: Returns a category with a specific category ID
+ *    parameters:
  *      - in: path
  *        name: categoryID
  *        required: true
@@ -110,7 +113,10 @@ router.get('/', async (req, res) => {
 router.get('/:categoryID', async (req, res) => {
   await Category.findById(req.params.categoryID, (err, category) => {
     if (err) res.status(500).send(err);
-    res.status(200).send(category);
+    res.status(200).json({
+      message: 'success',
+      id: category.id,
+    });
   });
 });
 

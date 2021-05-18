@@ -46,7 +46,7 @@ describe('testing category endpoints', () => {
       .get(`/api/admin/categories/${testCategoryId}`)
       .send();
     expect(res.statusCode).toEqual(200);
-    expect(res.body._id).toEqual(testCategoryId);
+    expect(res.body.id).toEqual(testCategoryId);
     done();
   });
 
