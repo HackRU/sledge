@@ -3,17 +3,28 @@ const Category = require('../../models/categorySchema.model');
 
 /**
  * @swagger
- * /api/admin/categories/create:
+ * /api/admin/categories:
  *  post:
  *    summary: Creates a new category
  *    parameters:
- *      - in: request
- *        name: newCategory
+ *      - in: body
+ *        name: New Category
  *        required: true
- *        type: Category
- *        description: New category
+ *        description: New category to add to the database
+ *        schema:
+ *          type: object
+ *          required:
+ *            - name
+ *            - type
+ *          properties:
+ *            name:
+ *              type: string
+ *            companyName:
+ *              type: string
+ *            type:
+ *              type: string
  */
-router.post('/create', (req, res) => {
+router.post('/', (req, res) => {
   Category.create(req.body, (err, category) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
@@ -25,7 +36,7 @@ router.post('/create', (req, res) => {
 
 /**
  * @swagger
- * /api/admin/categories/delete/{categoryID}:
+ * /api/admin/categories/{categoryID}:
  *  delete:
  *    summary: Deletes a category with a specific ID
  *    parameters:
@@ -35,7 +46,7 @@ router.post('/create', (req, res) => {
  *        type: String
  *        description: the category ID
  */
-router.delete('/delete/:categoryID', async (req, res) => {
+router.delete('/:categoryID', async (req, res) => {
   await Category.findByIdAndDelete(req.params.categoryID, (err) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
@@ -47,18 +58,18 @@ router.delete('/delete/:categoryID', async (req, res) => {
 
 /**
  * @swagger
- * /api/admin/categories/delete:
+ * /api/admin/categories:
  *  delete:
  *    summary: Deletes all the categories
  */
-router.delete('/delete', async (req, res) => {
+router.delete('/', async (req, res) => {
   await Category.remove({});
   res.status(200).send();
 });
 
 /**
  * @swagger
- * /api/admin/{categoryID}:
+ * /api/admin/categories/{categoryID}:
  *  patch:
  *    summary: Updates category with a specific category ID
  *    parameters:
@@ -67,6 +78,21 @@ router.delete('/delete', async (req, res) => {
  *        required: true
  *        type: String
  *        description: the category ID
+ *      - in: body
+ *        name: New Fields
+ *        required: true
+ *        description: contains all the new fields that the updated category will have, so if
+ *                     the object has any field the category has, said field will be
+ *                     replaced by the object's value.
+ *        schema:
+ *          type: object
+ *          properties:
+ *            name:
+ *              type: string
+ *            companyName:
+ *              type: string
+ *            type:
+ *              type: string
  */
 router.patch('/:categoryID', async (req, res) => {
   const categoryToUpdate = await Category.findById(req.params.categoryID);
