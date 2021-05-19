@@ -21,9 +21,7 @@ beforeAll(async () => {
 
 describe('testing category endpoints', () => {
   it('creates a new category', async (done) => {
-    const res = await request
-      .post('/api/admin/categories/create')
-      .send(testCategory);
+    const res = await request.post('/api/admin/categories').send(testCategory);
     expect(res.statusCode).toEqual(200);
 
     testCategoryId = res.body.id; // res returns the id of the inserted submission
@@ -44,7 +42,7 @@ describe('testing category endpoints', () => {
   it('returns a category with specific ID', async (done) => {
     const res = await request
       .get(`/api/admin/categories/${testCategoryId}`)
-      .send(testCategory);
+      .send();
     expect(res.statusCode).toEqual(200);
     expect(res.body.id).toEqual(testCategoryId);
     done();
@@ -73,9 +71,7 @@ describe('testing category endpoints', () => {
   });
 
   it('deletes a single category with a specific ID', async (done) => {
-    const res = await request.delete(
-      `/api/admin/categories/delete/${testCategoryId}`,
-    );
+    const res = await request.delete(`/api/admin/categories/${testCategoryId}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body.message).toEqual('success');
 
@@ -83,12 +79,12 @@ describe('testing category endpoints', () => {
       expect(category).toBeNull();
     });
 
-    await request.post('/api/admin/categories/create').send(testCategory);
+    await request.post('/api/admin/categories').send(testCategory);
     done();
   });
 
   it('deletes all categories', async (done) => {
-    const res = await request.delete('/api/admin/categories/delete').send();
+    const res = await request.delete('/api/admin/categories').send();
     expect(res.statusCode).toEqual(200);
 
     await Category.count({}, (err, count) => {
