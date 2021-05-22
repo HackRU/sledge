@@ -1,7 +1,7 @@
 module.exports = {
-  plugins: ['prettier', 'jest'],
+  plugins: ['prettier', 'jest', 'jsdoc'],
   parser: 'babel-eslint',
-  extends: ['airbnb-base'],
+  extends: ['airbnb-base', 'plugin:jsdoc/recommended'],
   env: {
     browser: true,
     node: true,
@@ -9,7 +9,13 @@ module.exports = {
     'jest/globals': true,
   },
   rules: {
-    'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'jsdoc/check-tag-names': [
+      'error',
+      {
+        definedTags: ['swagger'],
+      },
+    ],
     'linebreak-style': 0,
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
   },
 };
