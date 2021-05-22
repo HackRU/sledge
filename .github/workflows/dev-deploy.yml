@@ -1,0 +1,69 @@
+# This workflow will automatically test and deploy to sledge.hackru.org/dev
+
+name: Test, Lint, and Deploy Dev Server
+
+on:
+  push:
+    branches:
+      - env/dev
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  test-endpoints:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+
+    defaults:
+      run:
+        working-directory: ./server
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install server dependencies
+        run: npm ci
+
+      - name: Run Jest tests
+        run: npm test
+
+      - name: Run linting
+        run: npm run lint
+
+  deploy-to-ec2:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        application-name: ['Sledge']
+        deploy-group: ['sledge-dev-dpgrp']
+    needs: test-endpoints
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_SLEDGE_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SLEDGE_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to EC2
+        run: |
+          aws deploy create-deployment \
+           --application-name ${{ matrix.application-name }} \
+           --deployment-config-name CodeDeployDefault.OneAtATime \
+           --deployment-group-name ${{ matrix.deploy-group }} \
+           --file-exists-behavior OVERWRITE \
+           --ignore-application-stop-failures \
+           --github-location repository=$GITHUB_REPOSITORY,commitId=$GITHUB_SHA

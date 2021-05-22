@@ -1,6 +1,9 @@
+/* eslint-disable no-console */
+
 const mongoose = require('mongoose');
 const config = require('./config.json');
 const app = require('./index');
+
 const port = 5000;
 
 const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json
@@ -11,6 +14,7 @@ mongoose.connect(url, {
   useUnifiedTopology: true,
   useFindAndModify: false,
 });
+
 mongoose.connection
   .once('open', () => console.log('Connected!'))
   .on('error', (error) => {

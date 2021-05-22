@@ -1,6 +1,6 @@
 {
-    "dbHost": "localhost",
-    "dbPort": 27017,
-    "dbName": "sledge",
-    "testDbName": "sledge-test"
+  "dbHost": "localhost",
+  "dbPort": 27017,
+  "dbName": "sledge",
+  "testDbName": "sledge-test"
 }

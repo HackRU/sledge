@@ -1,5 +1,6 @@
 const router = require('express').Router();
 
+// endpoint routing
 const adminRouter = require('./admin');
 const submissionsRouter = require('./submissions');
 
