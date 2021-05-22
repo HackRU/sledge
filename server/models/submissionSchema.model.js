@@ -70,7 +70,7 @@ const submissionSchema = new Schema(
     },
     urls: { type: [{ _id: false, label: String, url: String }], default: [] },
     categories: {
-      _id: String
+      _id: String,
     },
     flags: { type: [String], default: [] },
     numFlags: { type: Number, default: 0 },

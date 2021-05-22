@@ -37,14 +37,14 @@ describe('testing submission endpoints', () => {
     done();
   });
 
-  // it('gets the submission details', async (done) => {
-  //   const res = await request.get(
-  //     `/api/submissions/${testTeamID}/${testSubmissionId}`
-  //   );
-  //   expect(res.statusCode).toEqual(200);
-  //   expect(res.body.attributes.title).toEqual('A Test Hack');
-  //   done();
-  // });
+  it('gets the submission details', async (done) => {
+    const res = await request.get(
+      `/api/submissions/${testTeamID}/${testSubmissionId}`,
+    );
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.attributes.title).toEqual('A Test Hack');
+    done();
+  });
 
   // it('retrieves all submissions', async (done) => {
   //   const res = await request.get(`/api/submissions`).send(testSubmission);
