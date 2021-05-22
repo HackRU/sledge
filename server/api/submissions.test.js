@@ -27,6 +27,7 @@ describe('testing submission endpoints', () => {
 		expect(res.statusCode).toEqual(200);
 		expect(res.body.attributes.title).toEqual('A Test Hack');
 		testSubmissionId = res.body._id;
+		testSubmission_id = testSubmissionId;
 		done();
 	});
 
@@ -68,7 +69,7 @@ describe('testing submission endpoints', () => {
 			.patch(`/api/submissions/${testTeamID}/${testSubmissionId}/save`)
 			.send(testSubmission);
 		expect(res.statusCode).toEqual(200);
-		expect(res.body.attributes.title).toEqual('A Test Hack Indeed');
+		expect(res.body.attributes.title).toEqual('A Test Hack 1');
 		done();
 	});
 });
