@@ -58,7 +58,7 @@ router.post('/:teamID/create', (req, res) => {
 });
 
 // update a submission with new info
-router.patch('/:teamID/:submissionID/save', async (req, res) => {
+router.patch('/:teamID/:submissionID', async (req, res) => {
   await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
     new: true,
     upsert: true,

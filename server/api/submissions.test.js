@@ -5,6 +5,9 @@ const config = require('../config.json');
 const Submission = require('../models/submissionSchema.model');
 const testSubmission = require('../testSubmission.json');
 
+const newTestSubmission = testSubmission;
+newTestSubmission.attributes.title = 'A Test Hack 2';
+
 const request = supertest(app);
 
 const testTeamID = mongoose.Types.ObjectId();
@@ -37,20 +40,20 @@ describe('testing submission endpoints', () => {
     done();
   });
 
-  it('gets the submission details', async (done) => {
-    const res = await request.get(
-      `/api/submissions/${testTeamID}/${testSubmissionId}`,
-    );
+  it('updates the submission details', async (done) => {
+    const res = await request
+      .patch(`/api/submissions/${testTeamID}/${testSubmissionId}`)
+      .send(newTestSubmission);
     expect(res.statusCode).toEqual(200);
-    expect(res.body.attributes.title).toEqual('A Test Hack');
+    expect(res.body.attributes.title).toEqual('A Test Hack 2');
     done();
   });
 
-  // it('retrieves all submissions', async (done) => {
-  //   const res = await request.get(`/api/submissions`).send(testSubmission);
-  //   expect(res.statusCode).toEqual(200);
-  //   done();
-  // });
+  it('retrieves all submissions', async (done) => {
+    const res = await request.get('/api/submissions').send(testSubmission);
+    expect(res.statusCode).toEqual(200);
+    done();
+  });
 
   // it('sets isSubmitted of given submission to true', async (done) => {
   //   const res = await request.patch(
