@@ -4,10 +4,7 @@ const app = require('../index');
 const config = require('../config.json');
 const Submission = require('../models/submissionSchema.model');
 const testSubmission = require('../testSubmission.json');
-
-const newTestSubmission = testSubmission;
-newTestSubmission.state = 'unsubmitted';
-newTestSubmission.attributes.title = 'A Test Hack 2';
+const modifiedTestSubmission = require('../modifiedTestSubmission.json');
 
 const request = supertest(app);
 
@@ -44,14 +41,13 @@ describe('testing submission endpoints', () => {
   it('updates the submission details', async (done) => {
     const res = await request
       .patch(`/api/submissions/${testTeamID}/${testSubmissionId}`)
-      .send(newTestSubmission);
+      .send(modifiedTestSubmission);
     expect(res.statusCode).toEqual(200);
-    expect(res.body.attributes.title).toEqual('A Test Hack 2');
 
     await Submission.findById(testSubmissionId, (err, submission) => {
-      expect(submission.state).toEqual(newTestSubmission.state);
+      expect(submission.state).toEqual(modifiedTestSubmission.state);
       expect(submission.attributes.title).toEqual(
-        newTestSubmission.attributes.title,
+        modifiedTestSubmission.attributes.title,
       );
     });
 
