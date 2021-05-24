@@ -62,7 +62,7 @@ const submissionSchema = new Schema(
   //   removedFromJudging: Boolean,
   // },
   {
-    isSubmitted: { state: String },
+    state: String,
     attributes: {
       title: { type: String, default: '' },
       description: { type: String, default: '' },
@@ -74,7 +74,7 @@ const submissionSchema = new Schema(
     },
     flags: { type: [String], default: [] },
     numFlags: { type: Number, default: 0 },
-    removedFromJudging: { visible: Boolean },
+    visible: Boolean,
   },
 );
 

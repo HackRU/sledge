@@ -61,7 +61,6 @@ router.post('/:teamID/create', (req, res) => {
 router.patch('/:teamID/:submissionID', async (req, res) => {
   await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
     new: true,
-    upsert: true,
   });
 
   res.status(200).send(await Submission.findById(req.params.submissionID));

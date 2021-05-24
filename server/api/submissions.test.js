@@ -6,6 +6,7 @@ const Submission = require('../models/submissionSchema.model');
 const testSubmission = require('../testSubmission.json');
 
 const newTestSubmission = testSubmission;
+newTestSubmission.state = 'unsubmitted';
 newTestSubmission.attributes.title = 'A Test Hack 2';
 
 const request = supertest(app);
@@ -46,6 +47,14 @@ describe('testing submission endpoints', () => {
       .send(newTestSubmission);
     expect(res.statusCode).toEqual(200);
     expect(res.body.attributes.title).toEqual('A Test Hack 2');
+
+    await Submission.findById(testSubmissionId, (err, submission) => {
+      expect(submission.state).toEqual(newTestSubmission.state);
+      expect(submission.attributes.title).toEqual(
+        newTestSubmission.attributes.title,
+      );
+    });
+
     done();
   });
 
