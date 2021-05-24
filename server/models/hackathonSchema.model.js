@@ -1,14 +1,66 @@
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Hackathon:
+ *        type: object
+ *        properties:
+ *          season:
+ *            type: string
+ *            description: The season of the hackathon. (ex. Spring 2020, Fall 2019)
+ *          categories:
+ *            type: array
+ *            description: A list of categories in the hackathon
+ *            items:
+ *              type: ObjectId
+ *              ref: category
+ *          submissionPhase:
+ *            type: object
+ *            description: Object that indicates whether the hackathon is in the
+ *                         submission phase, stores the deadline and stores the
+ *                         submissions that have been submitted.
+ *            properties:
+ *              inProgress:
+ *                type: boolean
+ *                default: false
+ *                description: Indicates if the submissions phase is in progress.
+ *              deadline:
+ *                type: Date
+ *                description: Deadline to submit submissions. If the deadline is
+ *                             reached, set inProgress to false.
+ *              flags:
+ *                type: array
+ *                description: Array of submissions that have been submitted.
+ *                items:
+ *                  type: ObjectId
+ *                  ref: submission
+ *          judgingPhase:
+ *            type: object
+ *            description: Object that indicates whether the judging phase is
+ *                         in progress, and also stores relevant data.
+ *            properties:
+ *              inProgress:
+ *                type: boolean
+ *                default: false
+ *                description: Indicates whether is judging phase is in progress.
+ *                             if submissionPhase is in progress, then this MUST
+ *                             be true.
+ *          isComplete:
+ *            type: boolean
+ *            default: false
+ *            description: Indicates whether the hackathon is over.
+ *
+ */
 const hackathonSchema = new Schema({
   season: String, // ex. Spring 2021
-  categories: [mongoose.Types.ObjectId], // _id refers to a Category.
+  categories: { type: [mongoose.Schema.Types.ObjectId], ref: 'category' }, // _id refers to a Category.
   submissionPhase: {
-    inProgress: Boolean, // is submissions phase in progress.
+    inProgress: { type: Boolean, default: false }, // is submissions phase in progress.
     deadline: Date, // automatically set inProgress to false when deadline is reached. Optional.
-    flags: [mongoose.Types.ObjectId], // array of submissions. _id refers to a Submission.
+    flags: { type: [mongoose.Schema.Types.ObjectId], ref: 'submission' }, // array of submissions. _id refers to a Submission.
   },
   judgingPhase: {
     // is judging phase in progress. Defaults to false. If submissionPhase inProgress is true,
