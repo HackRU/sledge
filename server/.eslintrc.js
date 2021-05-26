@@ -12,7 +12,7 @@ module.exports = {
     'jsdoc/check-tag-names': [
       'error',
       {
-        definedTags: ['swagger'],
+        definedTags: ['swagger'], // Allows us to use the custom @swagger tag at the beginning of our Swagger-JSDoc comments
       },
     ],
     'linebreak-style': 0,
