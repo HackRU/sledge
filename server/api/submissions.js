@@ -57,19 +57,12 @@ router.post('/:teamID/create', (req, res) => {
   // });
 });
 
-// Update isSubmitted to true
-router.patch('/:teamID/:submissionID/submit', async (req, res) => {
-  await Submission.findByIdAndUpdate(req.params.submissionID, {
-    isSubmitted: true,
+// update a submission with new info
+router.patch('/:teamID/:submissionID', async (req, res) => {
+  await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
+    new: true,
   });
-  res.status(200).send(await Submission.findById(req.params.submissionID));
-});
 
-// Update isSubmitted to false
-router.patch('/:teamID/:submissionID/unsubmit', async (req, res) => {
-  await Submission.findByIdAndUpdate(req.params.submissionID, {
-    isSubmitted: false,
-  });
   res.status(200).send(await Submission.findById(req.params.submissionID));
 });
 

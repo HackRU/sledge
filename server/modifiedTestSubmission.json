@@ -1,8 +1,8 @@
 {
-  "state": "submitted",
+  "state": "unsubmitted",
   "attributes": {
-    "title": "A Test Hack",
-    "description": "Our hack is very cool! I like this hack, and my teammates like it too.",
+    "title": "A New Test Hack",
+    "description": "Our hack is very very cool! I like this hack, and my teammates like it too.",
     "technologies": ["MongoDB", "JSON"]
   },
   "urls": [
@@ -10,6 +10,6 @@
     { "label": "YouTube Video Demo", "url": "https://youtube.com/idk" }
   ],
   "categories": [
-    { "categoryID": "123456abcdef", "categoryName": "Best Beginner Hack" }
+    { "categoryID": "1236abcdef", "categoryName": "Best Beginner Hack" }
   ]
 }
