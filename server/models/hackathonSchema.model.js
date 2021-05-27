@@ -15,8 +15,17 @@ const { Schema } = mongoose;
  *            type: array
  *            description: A list of categories in the hackathon
  *            items:
- *              type: ObjectId
- *              ref: category
+ *              type: object
+ *              properties:
+ *                name:
+ *                  type: String
+ *                  description: Name of the category.
+ *                companyName:
+ *                  type: String
+ *                  description: Name, if any, of the company that is sponsoring this category.
+ *                type:
+ *                  type: String
+ *                  description: Type of the category, can either be a track or a superlative.
  *          submissionPhase:
  *            type: object
  *            description: Object that indicates whether the hackathon is in the
@@ -56,7 +65,16 @@ const { Schema } = mongoose;
  */
 const hackathonSchema = new Schema({
   season: String, // ex. Spring 2021
-  categories: { type: [mongoose.Schema.Types.ObjectId], ref: 'category' }, // _id refers to a Category.
+  categories: {
+    type: [
+      {
+        name: String,
+        companyName: String,
+        type: String,
+      },
+    ],
+    ref: 'category',
+  }, // _id refers to a Category.
   submissionPhase: {
     inProgress: { type: Boolean, default: false }, // is submissions phase in progress.
     deadline: Date, // automatically set inProgress to false when deadline is reached. Optional.
