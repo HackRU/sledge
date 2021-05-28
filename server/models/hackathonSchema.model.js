@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import categorySchemaModel from './categorySchema.model';
 
-import categorySchemaModel from './categorySchema.model.js';
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 /**
@@ -54,7 +54,6 @@ const { Schema } = mongoose;
  *            type: boolean
  *            default: false
  *            description: Indicates whether the hackathon is over.
- *
  */
 const hackathonSchema = new Schema({
   season: String, // ex. Spring 2021
