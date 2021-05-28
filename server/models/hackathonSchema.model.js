@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+import categorySchemaModel from './categorySchema.model.js';
+
 const { Schema } = mongoose;
 /**
  * @swagger
@@ -15,17 +17,8 @@ const { Schema } = mongoose;
  *            type: array
  *            description: A list of categories in the hackathon
  *            items:
- *              type: object
- *              properties:
- *                name:
- *                  type: String
- *                  description: Name of the category.
- *                companyName:
- *                  type: String
- *                  description: Name, if any, of the company that is sponsoring this category.
- *                type:
- *                  type: String
- *                  description: Type of the category, can either be a track or a superlative.
+ *              type: categorySchema
+ *              description: A category. See the documentation for the category schema.
  *          submissionPhase:
  *            type: object
  *            description: Object that indicates whether the hackathon is in the
@@ -66,14 +59,7 @@ const { Schema } = mongoose;
 const hackathonSchema = new Schema({
   season: String, // ex. Spring 2021
   categories: {
-    type: [
-      {
-        name: String,
-        companyName: String,
-        type: String,
-      },
-    ],
-    ref: 'category',
+    type: [categorySchemaModel],
   }, // _id refers to a Category.
   submissionPhase: {
     inProgress: { type: Boolean, default: false }, // is submissions phase in progress.
