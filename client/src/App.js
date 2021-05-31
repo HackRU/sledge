@@ -2,7 +2,7 @@
 // import LINKER from './Linker';
 // import CONFIG from './Config';
 
-import Button from './components/Button';
+import Button from './components/SampleButton';
 
 import './App.css';
 
