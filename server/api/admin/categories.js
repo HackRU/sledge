@@ -63,7 +63,7 @@ router.delete('/:categoryID', async (req, res) => {
  *    summary: Deletes all the categories
  */
 router.delete('/', async (req, res) => {
-  await Category.remove({});
+  await Category.deleteMany({});
   res.status(200).send();
 });
 
