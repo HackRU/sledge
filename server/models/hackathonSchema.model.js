@@ -1,5 +1,3 @@
-import categorySchemaModel from './categorySchema.model';
-
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
@@ -58,7 +56,13 @@ const { Schema } = mongoose;
 const hackathonSchema = new Schema({
   season: String, // ex. Spring 2021
   categories: {
-    type: [categorySchemaModel],
+    type: [
+      {
+        name: String, // category name
+        companyName: String, // null if prize is not company-sponsored
+        type: String, // track/superlative
+      },
+    ],
   }, // _id refers to a Category.
   submissionPhase: {
     inProgress: { type: Boolean, default: false }, // is submissions phase in progress.
