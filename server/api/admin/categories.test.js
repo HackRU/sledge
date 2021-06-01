@@ -87,7 +87,7 @@ describe('testing category endpoints', () => {
     const res = await request.delete('/api/admin/categories').send();
     expect(res.statusCode).toEqual(200);
 
-    await Category.count({}, (err, count) => {
+    await Category.countDocuments({}, (err, count) => {
       expect(count).toEqual(0);
     });
 
