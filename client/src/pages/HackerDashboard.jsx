@@ -9,6 +9,6 @@ function HackerDashboard() {
       <PastSubmissions />
     </div>
   );
-};
+}
 
 export default HackerDashboard;

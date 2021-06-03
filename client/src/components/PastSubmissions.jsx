@@ -42,7 +42,6 @@ export default function PastSubmissions() {
                 {row.name}
               </TableCell>
               <TableCell align="right">{row.season}</TableCell>
-              
             </TableRow>
           ))}
         </TableBody>
