@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Category = require('../../models/categorySchema.model');
+const Category = require('../../models/category.model');
 
 /**
  * @swagger

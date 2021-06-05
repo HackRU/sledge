@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Submission = require('../models/submissionSchema.model');
+const Submission = require('../models/submission.model');
 
 /**
  * @swagger

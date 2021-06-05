@@ -1,4 +1,4 @@
-import categorySchemaModel from './categorySchema.model';
+import categorySchemaModel from './category.model';
 
 const mongoose = require('mongoose');
 
