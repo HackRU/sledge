@@ -1,0 +1,24 @@
+{
+  "season": "Spring 2021",
+  "categories": [
+    {
+      "name": "Sample Category",
+      "companyName": null,
+      "type": "track"
+    },
+    {
+      "name": "Sample Updated Name",
+      "companyName": "Sample Company Name",
+      "type": "superlative"
+    }
+  ],
+  "submissionPhase": {
+    "inProgress": true,
+    "date": null,
+    "flags": null
+  },
+  "judgingPhase": {
+    "inProgress": false
+  },
+  "isComplete": false
+}
