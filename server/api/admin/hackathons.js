@@ -3,21 +3,19 @@ const Hackathon = require('../../models/hackathonSchema.model');
 
 /**
  * @swagger
- *
  */
 router.post('/', async (req, res) => {
   Hackathon.create({}, (err, hackathon) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
       message: 'success',
-      id: category.id,
+      id: hackathon.id,
     });
   });
 });
 
 /**
  * @swagger
- *
  */
 router.patch('/:hackathonId', async (req, res) => {
   const hackathonToUpdate = await Hackathon.findById(req.params.hackathonId);
@@ -31,19 +29,22 @@ router.patch('/:hackathonId', async (req, res) => {
 
   if ('submissionPhase' in req.body) {
     if ('inProgress' in req.body.submissionPhase) {
-        hackathonToUpdate.submissionPhase.inProgress = req.body.submissionPhase.inProgress;
+      hackathonToUpdate.submissionPhase.inProgress =
+        req.body.submissionPhase.inProgress;
     }
     if ('deadline' in req.body.submissionPhase) {
-        hackathonToUpdate.submissionPhase.deadline = req.body.submissionPhase.deadline;
+      hackathonToUpdate.submissionPhase.deadline =
+        req.body.submissionPhase.deadline;
     }
     if ('flags' in req.body.submissionPhase) {
-        hackathonToUpdate.submissionPhase.flags = req.body.submissionPhase.flags;
+      hackathonToUpdate.submissionPhase.flags = req.body.submissionPhase.flags;
     }
   }
 
   if ('judgingPhase' in req.body) {
     if ('inProgress' in req.body.judgingPhase) {
-        hackathonToUpdate.judgingPhase.inProgress = req.body.judgingPhase.inProgress;
+      hackathonToUpdate.judgingPhase.inProgress =
+        req.body.judgingPhase.inProgress;
     }
   }
 
@@ -53,14 +54,13 @@ router.patch('/:hackathonId', async (req, res) => {
 
   hackathonToUpdate.save();
   res.status(200).json({
-      message: 'success',
-      id: req.params.hackathonId,
+    message: 'success',
+    id: req.params.hackathonId,
   });
 });
 
 /**
  * @swagger
- *
  */
 router.get('/', async (req, res) => {
   res.status(200).send(await Hackathon.find({}));
@@ -68,7 +68,6 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- *
  */
 router.get('/current', async (req, res) => {
   res.status(200).send(await Hackathon.findOne({ isComplete: false }));
@@ -76,7 +75,6 @@ router.get('/current', async (req, res) => {
 
 /**
  * @swagger
- *
  */
 router.get('/:hackathonId', async (req, res) => {
   res.status(200).send(await Hackathon.findById(req.params.hackathonId));
@@ -84,7 +82,6 @@ router.get('/:hackathonId', async (req, res) => {
 
 /**
  * @swagger
- *
  */
 router.get('/:hackathonId/phase', async (req, res) => {
   const selectedHackathon = await Hackathon.findById(req.params.hackathonId);
