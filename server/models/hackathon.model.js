@@ -1,3 +1,8 @@
+<<<<<<< HEAD:server/models/hackathonSchema.model.js
+=======
+import categorySchemaModel from './category.model';
+
+>>>>>>> env/dev:server/models/hackathon.model.js
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
