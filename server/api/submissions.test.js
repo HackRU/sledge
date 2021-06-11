@@ -2,9 +2,8 @@ const supertest = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../index');
 const config = require('../config.json');
-const Submission = require('../models/submissionSchema.model');
-const testSubmission = require('../testSubmission.json');
-const modifiedTestSubmission = require('../modifiedTestSubmission.json');
+const Submission = require('../models/submission.model');
+const testSubmission = require('../testData/testSubmission.json');
 
 const request = supertest(app);
 
@@ -39,16 +38,18 @@ describe('testing submission endpoints', () => {
   });
 
   it('updates the submission details', async (done) => {
+    // Modify the submission
+    testSubmission.state = 'unsubmitted';
+    testSubmission.attributes.title = 'A Renamed Test Hack';
+
     const res = await request
       .patch(`/api/submissions/${testTeamID}/${testSubmissionId}`)
-      .send(modifiedTestSubmission);
+      .send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
     await Submission.findById(testSubmissionId, (err, submission) => {
-      expect(submission.state).toEqual(modifiedTestSubmission.state);
-      expect(submission.attributes.title).toEqual(
-        modifiedTestSubmission.attributes.title,
-      );
+      expect(submission.state).toEqual('unsubmitted');
+      expect(submission.attributes.title).toEqual('A Renamed Test Hack');
     });
 
     done();
@@ -57,26 +58,9 @@ describe('testing submission endpoints', () => {
   it('retrieves all submissions', async (done) => {
     const res = await request.get('/api/submissions').send(testSubmission);
     expect(res.statusCode).toEqual(200);
+    expect(res.body).not.toBeNull();
     done();
   });
-
-  // it('sets isSubmitted of given submission to true', async (done) => {
-  //   const res = await request.patch(
-  //     `/api/submissions/${testTeamID}/${testSubmissionId}/submit`
-  //   );
-  //   expect(res.statusCode).toEqual(200);
-  //   expect(res.body.isSubmitted).toEqual(true);
-  //   done();
-  // });
-
-  // it('sets isSubmitted of given submission to false', async (done) => {
-  //   const res = await request.patch(
-  //     `/api/submissions/${testTeamID}/${testSubmissionId}/unsubmit`
-  //   );
-  //   expect(res.statusCode).toEqual(200);
-  //   expect(res.body.isSubmitted).toEqual(false);
-  //   done();
-  // });
 });
 
 afterAll(async (done) => {

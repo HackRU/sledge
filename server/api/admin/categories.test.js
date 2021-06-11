@@ -2,11 +2,11 @@ const supertest = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../index');
 const config = require('../../config.json');
-const Category = require('../../models/categorySchema.model');
+const Category = require('../../models/category.model');
 
 const request = supertest(app);
 
-const testCategory = require('../../testCategory.json');
+const testCategory = require('../../testData/testCategory.json');
 
 let testCategoryId;
 
