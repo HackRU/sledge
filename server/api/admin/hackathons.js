@@ -75,13 +75,13 @@ router.get('/:hackathonId', async (req, res) => {
 router.get('/:hackathonId/phase', async (req, res) => {
   const selectedHackathon = await Hackathon.findById(req.params.hackathonId);
   if (selectedHackathon.submissionPhase.inProgress) {
-    res.status(200).json({ message: 'submission' });
+    res.status(200).json({ message: 'submissions' });
   } else if (selectedHackathon.judgingPhase.inProgress) {
     res.status(200).json({ message: 'judging' });
   } else if (selectedHackathon.isComplete) {
-    res.status(200).json({ message: 'complete' });
+    res.status(200).json({ message: 'post-hackathon' });
   } else {
-    res.status(200).json({ message: 'not started' });
+    res.status(200).json({ message: 'pre-hackathon' });
   }
 });
 
