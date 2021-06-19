@@ -1,7 +1,7 @@
 module.exports = {
   plugins: ['prettier', 'jest', 'jsdoc'],
   parser: 'babel-eslint',
-  extends: ['airbnb-base', 'plugin:jsdoc/recommended'],
+  extends: ['airbnb-base', 'plugin:jsdoc/recommended', 'prettier'],
   env: {
     browser: true,
     node: true,
