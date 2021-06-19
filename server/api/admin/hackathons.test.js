@@ -98,7 +98,7 @@ describe('testing hackathon endpoints', () => {
     );
     expect(res.statusCode).toEqual(200);
     expect(res.body).not.toBeNull();
-    expect(res.body.message).toEqual('submission');
+    expect(res.body.message).toEqual('submissions');
     done();
   });
 });
