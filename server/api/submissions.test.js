@@ -3,14 +3,17 @@ const mongoose = require('mongoose');
 const app = require('../index');
 const config = require('../config.json');
 const Submission = require('../models/submission.model');
-const testSubmission = require('../testData/testSubmission.json');
+const testObjectGenerator = require('../testing/testObjectGenerator');
+// const testSubmission = require('../testData/testSubmission.json');
 
 const request = supertest(app);
 
 const testTeamID = mongoose.Types.ObjectId();
 
-// this id will be automatically generated for the below submission once it is added to the database
-let testSubmissionId;
+// This id will be automatically generated for the below submission once it is added to the database
+// let testSubmissionId;
+
+const testSubmission = testObjectGenerator.generateSubmission();
 
 beforeAll(async () => {
   // Connection URL, set it in config.json
@@ -29,11 +32,13 @@ describe('testing submission endpoints', () => {
       .send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
-    testSubmissionId = res.body.id; // res returns the id of the inserted submission
+    // res returns the id of the inserted submission
+    testSubmissionId = res.body.id;
 
     await Submission.findById(testSubmissionId, (err, submission) => {
       expect(submission).not.toBeNull();
     });
+
     done();
   });
 
@@ -59,12 +64,14 @@ describe('testing submission endpoints', () => {
     const res = await request.get('/api/submissions').send(testSubmission);
     expect(res.statusCode).toEqual(200);
     expect(res.body).not.toBeNull();
+
     done();
   });
 });
 
 afterAll(async (done) => {
-  await mongoose.connection.dropDatabase(); // deletes database after testing
+  // Delete database after testing
+  await mongoose.connection.dropDatabase();
   mongoose.connection.close();
   done();
 });
