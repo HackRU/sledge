@@ -1,3 +1,26 @@
 .hackerDashboardContainer {
-  margin: 0 25px;
+  margin: 0 50px;
+  font-size: 25px;
+
+  p {
+    text-align: left;
+  }
+
+  .newSubmission {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    border: 2px dashed;
+
+    .btn {
+      text-decoration: none;
+      color: #000;
+      padding: 0.5vw;
+    }
+
+    .btn:hover {
+      background-color: rgb(218, 215, 215);
+    }
+  }
 }
