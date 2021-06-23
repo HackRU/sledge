@@ -2,20 +2,21 @@
 // import LINKER from './Linker';
 // import CONFIG from './Config';
 
-import Button from './components/SampleButton';
-import HackerDashboard from './pages/HackerDashboard';
-
 import './App.css';
+import Button from './components/SampleButton';
+import PastSubmissions from './components/PastSubmissions';
+import AppBar from './components/AppSideBar/AppSideBar';
 
 function App() {
   return (
     <div className="App">
+      <AppBar />
       <h1>Welcome to Sledge!</h1>
       <Button
         name="Jason"
         message="Sledge is the coolest web application ever!"
       />
-      <HackerDashboard />
+      <PastSubmissions />
     </div>
   );
 }
