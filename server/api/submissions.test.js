@@ -11,7 +11,7 @@ const request = supertest(app);
 const testTeamID = mongoose.Types.ObjectId();
 
 // This id will be automatically generated for the below submission once it is added to the database
-// let testSubmissionId;
+let testSubmissionId;
 
 const testSubmission = testObjectGenerator.generateSubmission();
 

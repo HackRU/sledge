@@ -1,9 +1,9 @@
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 module.exports = {
   // TODO: Randomly generate values for each field
-  generateSubmission: function () {
-    let testCategoryId = mongoose.Types.ObjectId();
+  generateSubmission() {
+    const testCategoryId = mongoose.Types.ObjectId();
     return {
       state: 'submitted',
       attributes: {
@@ -19,10 +19,10 @@ module.exports = {
       categories: [{ _id: testCategoryId, categoryName: 'Best Beginner Hack' }],
     };
   },
-  generateCategory: function () {
+  generateCategory() {
     return {
       name: 'Sample Category',
-      companyName: null,
+      companyName: 'Fake Company',
       type: 'track',
     };
   },
