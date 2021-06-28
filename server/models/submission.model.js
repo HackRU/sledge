@@ -47,35 +47,19 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const submissionSchema = new Schema(
-  // {
-  //   isSubmitted: Boolean,
-  //   attributes: {
-  //     title: { type: String, default: '' },
-  //     description: String,
-  //     technologies: [String],
-  //   },
-  //   urls: [{ _id: false, label: String, url: String }],
-  //   categories: [{ _id: false, categoryID: String, categoryName: String }],
-  //   flags: [String],
-  //   numFlags: Number,
-  //   removedFromJudging: Boolean,
-  // },
-  {
-    state: String,
-    attributes: {
-      title: { type: String, default: '' },
-      description: { type: String, default: '' },
-      technologies: { type: [String], default: [] },
-    },
-    urls: { type: [{ _id: false, label: String, url: String }], default: [] },
-    categories: {
-      _id: String,
-    },
-    flags: { type: [String], default: [] },
-    numFlags: { type: Number, default: 0 },
-    visible: Boolean,
+const submissionSchema = new Schema({
+  state: String,
+  teamId: mongoose.Types.ObjectId, // the _id of the team which the submission belongs to
+  attributes: {
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    technologies: { type: [String], default: [] },
   },
-);
+  urls: { type: [{ _id: false, label: String, url: String }], default: [] },
+  categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'category' }],
+  flags: { type: [String], default: [] },
+  numFlags: { type: Number, default: 0 },
+  visible: Boolean,
+});
 
 module.exports = mongoose.model('submission', submissionSchema);

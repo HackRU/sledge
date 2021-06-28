@@ -6,7 +6,7 @@ const Category = require('../../models/category.model');
 
 const request = supertest(app);
 
-const testCategory = require('../../testData/testCategory.json');
+const testCategory = require('../../testing/data/testCategory.json');
 
 let testCategoryId;
 

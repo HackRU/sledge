@@ -19,45 +19,9 @@ router.post('/', async (req, res) => {
 });
 
 router.patch('/:hackathonId', async (req, res) => {
-  const hackathonToUpdate = await Hackathon.findById(req.params.hackathonId);
-  if ('season' in req.body) {
-    hackathonToUpdate.season = req.body.season;
-  }
-
-  if ('categories' in req.body) {
-    hackathonToUpdate.categories = req.body.categories;
-  }
-
-  if ('submissionPhase' in req.body) {
-    if ('inProgress' in req.body.submissionPhase) {
-      hackathonToUpdate.submissionPhase.inProgress =
-        req.body.submissionPhase.inProgress;
-    }
-    if ('deadline' in req.body.submissionPhase) {
-      hackathonToUpdate.submissionPhase.deadline =
-        req.body.submissionPhase.deadline;
-    }
-    if ('flags' in req.body.submissionPhase) {
-      hackathonToUpdate.submissionPhase.flags = req.body.submissionPhase.flags;
-    }
-  }
-
-  if ('judgingPhase' in req.body) {
-    if ('inProgress' in req.body.judgingPhase) {
-      hackathonToUpdate.judgingPhase.inProgress =
-        req.body.judgingPhase.inProgress;
-    }
-  }
-
-  if ('isComplete' in req.body) {
-    hackathonToUpdate.isComplete = req.body.isComplete;
-  }
-
-  hackathonToUpdate.save();
-  res.status(200).json({
-    message: 'success',
-    id: req.params.hackathonId,
-  });
+  res
+    .status(200)
+    .send(await Hackathon.findByIdAndUpdate(req.params.hackathonId, req.body));
 });
 
 router.get('/', async (req, res) => {

@@ -1,3 +1,6 @@
+/**
+ * The Judges collection will be used to keep track of which categories and projects the judge is evaluating.
+ */
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;

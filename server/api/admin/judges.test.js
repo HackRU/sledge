@@ -6,7 +6,8 @@ const config = require('../../config.json');
 // const request = supertest(app);
 
 beforeAll(async () => {
-  const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
+  // Connection URL, set it in config.json
+  const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`;
   await mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

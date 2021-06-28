@@ -55,11 +55,11 @@ const { Schema } = mongoose;
  */
 const hackathonSchema = new Schema({
   season: String,
-  categories: { type: [mongoose.Schema.Types.ObjectId], ref: 'category' },
+  categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'category' }],
   submissionPhase: {
     inProgress: { type: Boolean, default: false },
     deadline: Date,
-    flags: { type: [mongoose.Schema.Types.ObjectId], ref: 'submission' },
+    flags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'submission' }],
   },
   judgingPhase: {
     inProgress: { type: Boolean, default: false },

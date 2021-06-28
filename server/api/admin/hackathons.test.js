@@ -6,8 +6,8 @@ const Hackathon = require('../../models/hackathon.model');
 
 const request = supertest(app);
 
-const testCategory = require('../../testData/testCategory.json');
-const testHackathon = require('../../testData/testHackathon.json');
+const testCategory = require('../../testing/data/testCategory.json');
+const testHackathon = require('../../testing/data/testHackathon.json');
 
 let testHackathonId;
 
@@ -21,11 +21,6 @@ beforeAll(async () => {
 });
 
 describe('testing hackathon endpoints', () => {
-  it('Sample test', async (done) => {
-    expect(1).toEqual(1);
-    done();
-  });
-
   it('Adds an empty hackathon', async (done) => {
     const res = await request.post('/api/admin/hackathons');
     expect(res.statusCode).toEqual(200);
@@ -36,6 +31,7 @@ describe('testing hackathon endpoints', () => {
     await Hackathon.findById(testHackathonId, (err, hackathon) => {
       expect(hackathon).not.toBeNull();
     });
+
     done();
   });
 
@@ -80,7 +76,6 @@ describe('testing hackathon endpoints', () => {
     const res = await request.get('/api/admin/hackathons/current');
     expect(res.statusCode).toEqual(200);
     expect(res.body).not.toBeNull();
-    // expect(res.body._id).toEqual(testHackathonId);
     done();
   });
 
@@ -88,7 +83,6 @@ describe('testing hackathon endpoints', () => {
     const res = await request.get(`/api/admin/hackathons/${testHackathonId}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).not.toBeNull();
-    // expect(res.body._id).toEqual(testHackathonId);
     done();
   });
 
