@@ -1,14 +1,10 @@
 /**
  * Our frontend-core linker file
  */
+import Sledge from './Sledge';
 
 const LINKER = {
-  // "MODULE-F": Test,
-  // "MODULE-G": Login,
-  // "MODULE-H": TestLogin,
-  // "MODULE-I": TestLogout,
-  // "MODULE-J": TestGetUser,
-  // "MODULE-K": TestUserStore,
+  SLEDGE: Sledge,
 };
 
 export default LINKER;

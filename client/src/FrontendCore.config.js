@@ -2,14 +2,11 @@
  * Our frontend-core module config file
  */
 const CONFIG = [
-  //   {
-  //     module: 'MODULE-F',
-  //     params: {
-  //       text: 'wrapped module',
-  //       garbage: 'YAS',
-  //     },
-  //     children: [],
-  //   },
+  {
+    module: 'SLEDGE',
+    params: {},
+    children: [],
+  },
 ];
 
 export default CONFIG;
