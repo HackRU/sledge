@@ -1,45 +1,51 @@
 import { CoreModule } from '@hackru/frontend-core';
-import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
 
 import HackerDashboard from './pages/HackerDashboard';
 
 import './App.css';
 
-const Sledge = CoreModule(({logout}) => {
-  // Use profile store to see if user is logged in. If not, redirect them to hackru login.
-  // if (true) {
-  //   window.location.href = 'https://hackru.org';
-  // }
+const Sledge = CoreModule(
+  ({ profile }) => {
+    // Use profile store to see if user is logged in. If not, redirect them to hackru login. Hopefully we can use react-router because of frontend-core?
+    // if (true) {
+    //   window.location.href = 'https://hackru.org/login';
+    // }
 
-  // Use <Redirect /> from react-router in a if statement to see if user is admin, hacker, or judge.
-  return (
+    return (
       <BrowserRouter>
         <div className="App">
           <Switch>
-            {/* For now, base route shows list of links to go to. */}
             <Route exact path="/">
-              <ul>
-                <li>
-                  <Link to="/hacker">Go to hacker dashboard</Link>
-                </li>
-              </ul>
+              {/* Conditionally redirect user based on their role. */}
+              {profile.role.hacker ? (
+                <Redirect to="/hacker" />
+              ) : profile.role.judge ? (
+                <Redirect to="/judge" />
+              ) : profile.role.director ? (
+                <Redirect to="admin" />
+              ) : (
+                <></>
+              )}
             </Route>
             <Route exact path="admin">
-              {/* Admin Dashboard Component */}
+              {/* TODO: Admin Dashboard Component */}
             </Route>
             <Route exact path="/hacker">
               <HackerDashboard />
             </Route>
             <Route exact path="judge">
-              {/* Judge Dashboard Component */}
+              {/* TODO: Judge Dashboard Component */}
             </Route>
             <Route exact path="/hacker/submission">
-              {/* Submission Form Component */}
+              {/* TODO: Submission Form Component */}
             </Route>
           </Switch>
         </div>
       </BrowserRouter>
-  );
-},["logout"])
+    );
+  },
+  ['profile'],
+);
 
 export default Sledge;
