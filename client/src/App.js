@@ -3,6 +3,7 @@
 // import CONFIG from './Config';
 
 import Button from './components/SampleButton';
+import HackerDashboard from './pages/HackerDashboard';
 
 import './App.css';
 
@@ -14,6 +15,7 @@ function App() {
         name="Jason"
         message="Sledge is the coolest web application ever!"
       />
+      <HackerDashboard />
     </div>
   );
 }
