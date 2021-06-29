@@ -2,7 +2,6 @@ import { CoreProvider } from '@hackru/frontend-core';
 import LINKER from './Linker';
 import CONFIG from './FrontendCore.config';
 
-<<<<<<< Updated upstream
 const testUser = {
   //event is the JSON passed in with all the parameters.
   // email: u_email, // this field must be here.
@@ -49,27 +48,6 @@ function App() {
     >
       {CONFIG}
     </CoreProvider>
-=======
-import Button from './components/SampleButton';
-import SubmissionPage from './pages/SubmissionPage';
-
-import './App.css';
-
-function App() {
-  return (
-    
-    <div className="App">
-      <h1>Welcome to Sledge!</h1>
-      <Button
-        name="Jason"
-        message="Sledge is the coolest web application ever!"
-      />
-
-      <SubmissionPage/>
-    </div>
-    
-    
->>>>>>> Stashed changes
   );
 }
 
