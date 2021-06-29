@@ -1,12 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import HackerSidebar from './HackerSidebar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,14 +18,27 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Layout contains the Navbar and Sidebar that is present on all pages.
  */
-export default function Layout({ children }) {
+export default function Layout({ children, version }) {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <Navbar />
-      <Sidebar />
-      <div className={classes.content}><Toolbar />{children}</div>
+      {version === 'hacker' ? (
+        <HackerSidebar />
+      ) : version === 'admin' ? (
+        // Admin sidebar
+        <></>
+      ) : version === 'judge' ? (
+        // Judge sidebar
+        <></>
+      ) : (
+        <></>
+      )}
+      <div className={classes.content}>
+        <Toolbar />
+        {children}
+      </div>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default function Navbar() {
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
-        <Typography variant="h5">Sledge</Typography>
+        <Typography variant="h3">Sledge</Typography>
       </Toolbar>
     </AppBar>
   );

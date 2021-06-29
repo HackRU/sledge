@@ -7,7 +7,7 @@ import styles from './HackerDashboard.module.scss';
 
 function HackerDashboard() {
   return (
-    <Layout>
+    <Layout version="hacker">
       <div className={styles.hackerDashboardContainer}>
         <p>Make a new submission:</p>
         <div className={styles.newSubmission}>
