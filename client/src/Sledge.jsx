@@ -1,5 +1,5 @@
 import { CoreModule } from '@hackru/frontend-core';
-import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import HackerDashboard from './pages/HackerDashboard';
 

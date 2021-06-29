@@ -18,7 +18,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint . --ignore-path ../.gitignore",
@@ -43,8 +43,7 @@
           ]
         }
       ],
-      "react/react-in-jsx-scope": 0,
-      "react/prop-types": 0
+      "react/react-in-jsx-scope": 0
     }
   },
   "browserslist": {
