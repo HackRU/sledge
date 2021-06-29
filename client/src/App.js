@@ -3,7 +3,7 @@ import LINKER from './Linker';
 import CONFIG from './FrontendCore.config';
 
 const testUser = {
-  //event is the JSON passed in with all the parameters.
+  // event is the JSON passed in with all the parameters.
   // email: u_email, // this field must be here.
   // "role" and the user's ID are the only fields we care about.
   role: {
