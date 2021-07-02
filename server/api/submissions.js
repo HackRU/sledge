@@ -6,6 +6,10 @@ const Submission = require('../models/submission.model');
  * /api/submissions:
  *  get:
  *    summary: Retrieve a list of all of the submissions
+ *    produces:
+ *       - application/json
+ *    tags:
+ *      - submissions
  */
 router.get('/', async ({ res }) => {
   res.status(200).send(await Submission.find({}));
@@ -29,6 +33,8 @@ router.get('/', async ({ res }) => {
  *         required: true
  *         type: string
  *         description: The submission ID
+ *     tags:
+ *       - submissions
  */
 router.get('/:teamID/:submissionID', async (req, res) => {
   await Submission.findById(req.params.submissionID, (err, submission) => {
@@ -37,9 +43,30 @@ router.get('/:teamID/:submissionID', async (req, res) => {
   });
 });
 
-// create new submission
+/**
+ * @swagger
+ * /api/submissions/{teamID}/create:
+ *   post:
+ *     summary: Creates a new submission
+ *     responses:
+ *       200:
+ *       produces:
+ *         - application/json
+ *     parameters:
+ *       - in: path
+ *         name: teamID
+ *         required: true
+ *         type: string
+ *         description: The team ID
+ *       - in: path
+ *         name: submissionID
+ *         required: true
+ *         type: string
+ *         description: The submission ID
+ *     tags:
+ *       - submissions
+ */
 router.post('/:teamID/create', (req, res) => {
-  // const newSubmission = new Submission();
   Submission.create({}, (err, submission) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
@@ -47,14 +74,6 @@ router.post('/:teamID/create', (req, res) => {
       id: submission.id,
     });
   });
-
-  // newSubmission.save((err, submission) => {
-  //   if (err) res.status(500).send(err);
-  //   res.status(200).json({
-  //     message: 'success',
-  //     _id: submission.id,
-  //   });
-  // });
 });
 
 // update a submission with new info
