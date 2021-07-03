@@ -24,7 +24,7 @@ const Sledge = CoreModule(
               ) : profile.role.judge ? (
                 <Redirect to="/judge" />
               ) : profile.role.director ? (
-                <Redirect to="admin" />
+                <Redirect to="/admin" />
               ) : (
                 <></>
               )}
