@@ -1,12 +1,16 @@
 import React from 'react';
 import SubmissionForm from '../components/SubmissionForm';
+import Layout from '../components/Layout';
+
 
 function SubmissionPage() {
     return (
-        <div>
-            <h1>Submission Page</h1>
-            <SubmissionForm/>
-        </div>
+        <Layout version="hacker">
+            <div>
+                <h1>Submission Page</h1>
+                <SubmissionForm/>
+            </div>
+        </Layout>
     );
 }
 
