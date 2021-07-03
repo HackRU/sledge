@@ -2,6 +2,7 @@ import { CoreModule } from '@hackru/frontend-core';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import HackerDashboard from './pages/HackerDashboard';
+import SubmissionPage from './pages/SubmissionPage';
 
 import './App.css';
 
@@ -38,7 +39,7 @@ const Sledge = CoreModule(
               {/* TODO: Judge Dashboard Component */}
             </Route>
             <Route exact path="/hacker/submission">
-              {/* TODO: Submission Form Component */}
+              <SubmissionPage/>
             </Route>
           </Switch>
         </div>
