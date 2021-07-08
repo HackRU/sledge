@@ -49,12 +49,34 @@ export default function Sidebar() {
               <ListItemText primary="Home" />
             </ListItem>
           </Link>
-          <ListItem button>
-            <ListItemText primary="TeamRU" />
+
+          <ListItem>
+            <ListItemText primary="Phases:" />
           </ListItem>
-          <ListItem button>
-            <ListItemText primary="MentorQ" />
-          </ListItem>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="Pre-hackathon" />
+            </ListItem>
+          </Link>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="Submissions" />
+            </ListItem>
+          </Link>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="Judging" />
+            </ListItem>
+          </Link>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="Post-hackathon" />
+            </ListItem>
+          </Link>
           <Divider />
           {/* Log out */}
           <ListItem button>

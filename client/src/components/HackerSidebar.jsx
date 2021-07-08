@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -45,15 +46,24 @@ export default function Sidebar() {
           <Typography variant="h5">Welcome, Hacker</Typography>
 
           {/* HackRU Main Website */}
-          <ListItem button>
-            <ListItemText primary="HackRU Main Page" />
-          </ListItem>
-          <ListItem button>
-            <ListItemText primary="TeamRU" />
-          </ListItem>
-          <ListItem button>
-            <ListItemText primary="MentorQ" />
-          </ListItem>
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="HackRU Main Page" />
+            </ListItem>
+          </Link>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="TeamRU" />
+            </ListItem>
+          </Link>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="MentorQ" />
+            </ListItem>
+          </Link>
+
           <Divider />
           {/* Log out */}
           <ListItem button>
