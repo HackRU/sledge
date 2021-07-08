@@ -1,12 +1,16 @@
 # Environmental variables
 .env
 
-# Node
+# Node dependencies
 node_modules/
 
 # Testing
 coverage/
 
-# Other
+# misc
 *.swp
 *.log
+.DS_Store
+.env
+
+npm-debug.log*
