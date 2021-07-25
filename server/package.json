@@ -4,6 +4,8 @@
   "description": "Sledge Server",
   "main": "index.js",
   "scripts": {
+    "server": "node server.js",
+    "test-server": "node server.js",
     "test": "jest --detectOpenHandles",
     "lint": "eslint . --ignore-path ../.gitignore",
     "lint-fix": "eslint . --fix --ignore-path ../.gitignore",
