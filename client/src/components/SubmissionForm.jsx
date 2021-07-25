@@ -21,20 +21,17 @@ export default function SubmissionForm() {
     initialValues: {},
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      alert(JSON.stringify(values));
     },
   });
 
-  const print = (message) => {
-    console.log(message);
-  };
-
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
-      <TextField id="title" label="Title" helperText="What is your project called?" fullWidth required />
-      <TextField id="technologies" label="Technologies" helperText="What technologies does your project use? Enter them here, separated by commas." required />
+      <TextField id="title" value={formik.values.title} onChange={formik.handleChange} label="Title" helperText="What is your project called?" fullWidth required />
+      <TextField id="technologies" value={formik.values.technologies} onChange={formik.handleChange} label="Technologies" helperText="What technologies does your project use? Enter them here, separated by commas." required />
       <TextField
         id="description"
+        value={formik.values.description} onChange={formik.handleChange}
         label="Description"
         helperText="Tell us about your project! Tell us about what it does, how it works, challenges you faced, etc."
         fullWidth
@@ -42,9 +39,9 @@ export default function SubmissionForm() {
         required
         rows="5"
       />
-      <TextField id="urls" label="URLs" multiline="true" rows="5" />
-      <TextField id="images" label="Image" />
-      <TextField id="categories" label="Categories" required />
+      <TextField id="urls" value={formik.values.urls} onChange={formik.handleChange} label="URLs" multiline="true" rows="5" />
+      <TextField id="images" value={formik.values.images} onChange={formik.handleChange} label="Image" />
+      <TextField id="categories" value={formik.values.categories} onChange={formik.handleChange} label="Categories" required />
       <Button
         id="submit-button"
         type="submit"
