@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
+import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
 import { Form, Formik, FieldArray } from 'formik';
 import * as yup from 'yup';
 
@@ -91,7 +92,13 @@ export default function SubmissionForm() {
                 <FormLabel className={classes.urlFieldLabel}>
                   External Links
                 </FormLabel>
-
+                {values.links.length == 0 ? (
+                  <FormLabel className={classes.urlFieldLabel}>
+                    (No links <SentimentVeryDissatisfiedIcon />)
+                  </FormLabel>
+                ) : (
+                  <></>
+                )}
                 {values.links.map((link, index) => {
                   return (
                     <div key={index}>
