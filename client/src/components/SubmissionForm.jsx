@@ -1,7 +1,13 @@
-import { Button, IconButton, TextField } from '@material-ui/core';
+import {
+  Button,
+  FormLabel,
+  Grid,
+  IconButton,
+  TextField,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Form, Formik, FieldArray, getIn, useFormik } from 'formik';
+import { Form, Formik, FieldArray } from 'formik';
 import * as yup from 'yup';
 
 const useStyles = makeStyles((theme) => ({
@@ -12,6 +18,17 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
     },
+  },
+  // Properly left aligns the "External Links" label for field where you can add multiple URLs.
+  urlFieldLabel: {
+    textAlign: 'start',
+    margin: theme.spacing(1),
+  },
+  labelField: {
+    width: '35ch',
+  },
+  urlField: {
+    width: '50ch',
   },
 }));
 
@@ -71,40 +88,53 @@ export default function SubmissionForm() {
           <FieldArray name="links">
             {({ push, remove }) => (
               <>
+                <FormLabel className={classes.urlFieldLabel}>
+                  External Links
+                </FormLabel>
+
                 {values.links.map((link, index) => {
                   return (
-                    <div
-                      key={index}
-                      style={{ justifyContent: 'space-between' }}
-                    >
-                      <TextField
-                        name={`links[${index}].label`}
-                        value={link.label}
-                        onChange={handleChange}
-                        label="Label"
-                        helperText={
-                          index == 0
-                            ? 'What is this link? (ex. repository, live website, etc.)'
-                            : ''
-                        }
-                        required
-                      />
-
-                      <TextField
-                        name={`links[${index}].url`}
-                        value={link.url}
-                        onChange={handleChange}
-                        label="URL"
-                        required
-                      />
-
-                      <IconButton
-                        aria-label="delete"
-                        color="secondary"
-                        onClick={() => remove(index)}
+                    <div key={index}>
+                      {/* Using a [Grid] was the only way I could center the delete [IconButton]. */}
+                      <Grid
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="baseline"
                       >
-                        <DeleteIcon />
-                      </IconButton>
+                        <TextField
+                          className={classes.labelField}
+                          name={`links[${index}].label`}
+                          value={link.label}
+                          onChange={handleChange}
+                          label="Label"
+                          helperText={
+                            index == 0
+                              ? 'What is this link? (ex. repository, live website, etc.)'
+                              : ''
+                          }
+                          required
+                        />
+
+                        <TextField
+                          className={classes.urlField}
+                          name={`links[${index}].url`}
+                          value={link.url}
+                          onChange={handleChange}
+                          label="URL"
+                          required
+                        />
+
+                        <IconButton
+                          className={classes.deleteButton}
+                          aria-label="delete"
+                          color="secondary"
+                          onClick={() => remove(index)}
+                          edge="start"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Grid>
                     </div>
                   );
                 })}
