@@ -8,7 +8,7 @@ const testObjectGenerator = require('../testing/testObjectGenerator');
 
 const request = supertest(app);
 
-const testTeamID = mongoose.Types.ObjectId();
+// const testTeamID = mongoose.Types.ObjectId();
 
 // This id will be automatically generated for the below submission once it is added to the database
 let testSubmissionId;
@@ -28,7 +28,7 @@ beforeAll(async () => {
 describe('testing submission endpoints', () => {
   it('adds a new submission', async (done) => {
     const res = await request
-      .post(`/api/submissions/${testTeamID}/create`)
+      .post(`/api/submissions/create`)
       .send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
@@ -48,7 +48,7 @@ describe('testing submission endpoints', () => {
     testSubmission.attributes.title = 'A Renamed Test Hack';
 
     const res = await request
-      .patch(`/api/submissions/${testTeamID}/${testSubmissionId}`)
+      .patch(`/api/submissions/${testSubmissionId}`)
       .send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
