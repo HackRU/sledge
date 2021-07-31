@@ -7,6 +7,8 @@ import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 
 import { useDropzone } from 'react-dropzone';
 
+import ImagePreviews from './ImagePreviewsContainer';
+
 const useStyles = makeStyles((theme) => ({
   dropzone: {
     textAlign: 'center',
@@ -33,37 +35,6 @@ const rejectStyle = {
   borderColor: '#ff1744',
 };
 
-/* Thumbnail Styles */
-const thumbsContainer = {
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-};
-
-const thumb = {
-  display: 'inline-flex',
-  borderRadius: 2,
-  border: '1px solid #eaeaea',
-  marginBottom: 8,
-  marginRight: 8,
-  width: 100,
-  height: 100,
-  padding: 4,
-  boxSizing: 'border-box',
-};
-
-const thumbInner = {
-  display: 'flex',
-  minWidth: 0,
-  overflow: 'hidden',
-};
-
-const img = {
-  display: 'block',
-  width: 'auto',
-  height: '100%',
-};
-
 export default function ImageUpload(props) {
   const classes = useStyles();
 
@@ -79,8 +50,9 @@ export default function ImageUpload(props) {
     isDragReject,
   } = useDropzone({
     accept: 'image/*',
+    maxFiles: 5,
     onDrop: (acceptedFiles) => {
-      setFieldValue('files', acceptedFiles);
+      setFieldValue('images', acceptedFiles);
       setFiles(
         acceptedFiles.map((file) =>
           Object.assign(file, {
@@ -91,7 +63,7 @@ export default function ImageUpload(props) {
     },
   });
 
-  //   I think its ugly to use both useMemo and useStyles, but I don't know how to make useStyles work with useDropzone
+  // I think its ugly to use both useMemo and useStyles, but I don't know how to make useStyles work with useDropzone.
   const style = useMemo(
     () => ({
       ...baseStyle,
@@ -102,17 +74,9 @@ export default function ImageUpload(props) {
     [isDragActive, isDragReject, isDragAccept],
   );
 
-  const thumbs = files.map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img src={file.preview} style={img} />
-      </div>
-    </div>
-  ));
-
   useEffect(
     () => () => {
-      // Revoke the data URIs to avoid memory leaks
+      // Revoke the data URIs to avoid memory leaks.
       files.forEach((file) => URL.revokeObjectURL(file.preview));
     },
     [files],
@@ -125,7 +89,7 @@ export default function ImageUpload(props) {
         {isDragActive ? <PhotoLibraryIcon /> : <ImageIcon />}
         <p>Drag and drop your images here, or click to select images.</p>
       </div>
-      <aside style={thumbsContainer}>{thumbs}</aside>
+      <ImagePreviews files={files} />
     </div>
   );
 }
