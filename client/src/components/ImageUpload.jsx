@@ -12,6 +12,10 @@ import { useDropzone } from 'react-dropzone';
 import ImagePreviews from './ImagePreviewsContainer';
 
 const useStyles = makeStyles((theme) => ({
+    imageUploadFieldContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
   dropzone: {
     textAlign: 'center',
     padding: '20px',
@@ -22,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     transition: 'border .24s ease-in-out',
   },
+  clearImageButton: {
+      display: 'flex',
+      marginTop: theme.spacing(1),
+  }
 }));
 
 /* Dropzone Styles */
@@ -89,7 +97,7 @@ export default function ImageUpload(props) {
   );
 
   return (
-    <div>
+    <div className={classes.imageUploadFieldContainer}>
         {/* eslint-disable react/jsx-props-no-spreading */}
       <div {...getRootProps({ style })} className={classes.dropzone}>
         <input {...getInputProps()} />
@@ -108,6 +116,7 @@ export default function ImageUpload(props) {
       </div>
       <div>
         {images.length > 0 ? (
+            <div className={classes.clearImageButton}>
           <Button
             variant="contained"
             color="secondary"
@@ -119,7 +128,7 @@ export default function ImageUpload(props) {
             }}
           >
             Clear Images
-          </Button>
+          </Button></div>
         ) : (
           <></>
         )}
