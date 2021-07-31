@@ -61,7 +61,7 @@ router.get('/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
-router.post('/create', (req, res) => {
+router.post('/', (req, res) => {
   Submission.create({}, (err, submission) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
