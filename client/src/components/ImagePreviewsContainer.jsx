@@ -1,11 +1,21 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-import ImagePreview from "./ImagePreview"
+import ImagePreview from './ImagePreview';
 
 const useStyles = makeStyles((theme) => ({
+  previewWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  clearButton: {
+    margin: theme.spacing(1),
+  },
   thumbnailContainer: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: theme.spacing(1),
   },
   thumbnail: {
     display: 'flex',
@@ -20,14 +30,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ImageUpload(props) {
+export default function ImageUpload({ images }) {
   const classes = useStyles();
 
   return (
-    <div className={classes.thumbnailContainer}>
-      {props.files.map((file) => (
-        <ImagePreview key={file.name} file={file} />
-      ))}
+    <div className={classes.previewWrapper}>
+      <div className={classes.thumbnailContainer}>
+        {images.map((image) => (
+          <ImagePreview key={image.name} image={image} />
+        ))}
+      </div>
     </div>
   );
 }

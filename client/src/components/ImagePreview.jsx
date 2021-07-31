@@ -8,19 +8,23 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #eaeaea',
     width: 300,
     height: 300,
+    padding: theme.spacing(1),
+    marginRight: theme.spacing(2),
   },
   image: {
     height: '100%',
+    width: '100%',
+    objectFit: 'cover',
   },
 }));
 
-export default function ImageUpload({file}) {
+export default function ImageUpload({ image }) {
   const classes = useStyles();
 
   return (
-    <div className={classes.thumbnail} key={file.name}>
+    <div className={classes.thumbnail} key={image.name}>
       <div>
-        <img src={file.preview} className={classes.image} />
+        <img src={image.preview} alt={`preview for ${image.name}`} className={classes.image} />
       </div>
     </div>
   );

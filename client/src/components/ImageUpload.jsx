@@ -1,9 +1,11 @@
 // Adapted from https://react-dropzone.js.org/#section-previews
 import { useEffect, useMemo, useState } from 'react';
 
+import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import ImageIcon from '@material-ui/icons/Image';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+import ClearIcon from '@material-ui/icons/Clear';
 
 import { useDropzone } from 'react-dropzone';
 
@@ -14,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     padding: '20px',
     border: `3px dashed ${theme.palette.grey[500]}`,
+    borderRadius: '7px',
     backgroundColor: '#fafafa',
     color: theme.palette.grey[600],
     cursor: 'pointer',
@@ -38,7 +41,7 @@ const rejectStyle = {
 export default function ImageUpload(props) {
   const classes = useStyles();
 
-  const [files, setFiles] = useState([]);
+  const [images, setImages] = useState([]);
   const { setFieldValue } = props;
 
   const {
@@ -52,11 +55,14 @@ export default function ImageUpload(props) {
     accept: 'image/*',
     maxFiles: 5,
     onDrop: (acceptedFiles) => {
+      // Add images to Formik.
       setFieldValue('images', acceptedFiles);
-      setFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
+
+      // Add images to state to show in the preview.
+      setImages(
+        acceptedFiles.map((image) =>
+          Object.assign(image, {
+            preview: URL.createObjectURL(image),
           }),
         ),
       );
@@ -71,25 +77,53 @@ export default function ImageUpload(props) {
       ...(isDragAccept ? acceptStyle : {}),
       ...(isDragReject ? rejectStyle : {}),
     }),
-    [isDragActive, isDragReject, isDragAccept],
+    [baseStyle, isDragActive, isDragReject, isDragAccept],
   );
 
   useEffect(
     () => () => {
       // Revoke the data URIs to avoid memory leaks.
-      files.forEach((file) => URL.revokeObjectURL(file.preview));
+      images.forEach((image) => URL.revokeObjectURL(image.preview));
     },
-    [files],
+    [images],
   );
 
   return (
     <div>
+        {/* eslint-disable react/jsx-props-no-spreading */}
       <div {...getRootProps({ style })} className={classes.dropzone}>
         <input {...getInputProps()} />
-        {isDragActive ? <PhotoLibraryIcon /> : <ImageIcon />}
-        <p>Drag and drop your images here, or click to select images.</p>
+        {images.length === 0 ? (
+          <div>
+            {isDragActive ? <PhotoLibraryIcon /> : <ImageIcon />}
+            <p>
+              Drag and drop your images here, or click to select images. Upload
+              all your images at once, as each new upload overwrites the
+              previous one.
+            </p>
+          </div>
+        ) : (
+          <ImagePreviews images={images} />
+        )}
       </div>
-      <ImagePreviews files={files} />
+      <div>
+        {images.length > 0 ? (
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<ClearIcon />}
+            onClick={() => {
+              setFieldValue('images', []);
+              setImages([]);
+            }}
+          >
+            Clear Images
+          </Button>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }
