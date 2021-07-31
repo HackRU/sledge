@@ -27,9 +27,7 @@ beforeAll(async () => {
 
 describe('testing submission endpoints', () => {
   it('adds a new submission', async (done) => {
-    const res = await request
-      .post(`/api/submissions`)
-      .send(testSubmission);
+    const res = await request.post(`/api/submissions`).send(testSubmission);
     expect(res.statusCode).toEqual(200);
 
     // res returns the id of the inserted submission
