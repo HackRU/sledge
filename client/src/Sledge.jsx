@@ -38,8 +38,8 @@ const Sledge = CoreModule(
             <Route exact path="judge">
               {/* TODO: Judge Dashboard Component */}
             </Route>
-            <Route exact path="/hacker/submission">
-              <SubmissionPage/>
+            <Route exact path="/hacker/submissions/create">
+              <SubmissionPage />
             </Route>
           </Switch>
         </div>
