@@ -24,7 +24,11 @@ export default function ImageUpload({ image }) {
   return (
     <div className={classes.thumbnail} key={image.name}>
       <div>
-        <img src={image.preview} alt={`preview for ${image.name}`} className={classes.image} />
+        <img
+          src={image.preview}
+          alt={`preview for ${image.name}`}
+          className={classes.image}
+        />
       </div>
     </div>
   );

@@ -12,10 +12,10 @@ import { useDropzone } from 'react-dropzone';
 import ImagePreviews from './ImagePreviewsContainer';
 
 const useStyles = makeStyles((theme) => ({
-    imageUploadFieldContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
+  imageUploadFieldContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
   dropzone: {
     textAlign: 'center',
     padding: '20px',
@@ -27,9 +27,9 @@ const useStyles = makeStyles((theme) => ({
     transition: 'border .24s ease-in-out',
   },
   clearImageButton: {
-      display: 'flex',
-      marginTop: theme.spacing(1),
-  }
+    display: 'flex',
+    marginTop: theme.spacing(1),
+  },
 }));
 
 /* Dropzone Styles */
@@ -98,7 +98,7 @@ export default function ImageUpload(props) {
 
   return (
     <div className={classes.imageUploadFieldContainer}>
-        {/* eslint-disable react/jsx-props-no-spreading */}
+      {/* eslint-disable react/jsx-props-no-spreading */}
       <div {...getRootProps({ style })} className={classes.dropzone}>
         <input {...getInputProps()} />
         {images.length === 0 ? (
@@ -115,11 +115,11 @@ export default function ImageUpload(props) {
         )}
       </div>
       <div>
-        {images.length > 0 ? (
-            <div className={classes.clearImageButton}>
+        <div className={classes.clearImageButton}>
           <Button
             variant="contained"
             color="secondary"
+            disabled={images.length === 0}
             className={classes.button}
             startIcon={<ClearIcon />}
             onClick={() => {
@@ -128,10 +128,8 @@ export default function ImageUpload(props) {
             }}
           >
             Clear Images
-          </Button></div>
-        ) : (
-          <></>
-        )}
+          </Button>
+        </div>
       </div>
     </div>
   );
