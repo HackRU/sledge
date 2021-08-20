@@ -1,8 +1,14 @@
+/* eslint-disable */
+
 import { CoreModule } from '@hackru/frontend-core';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import HackerDashboard from './pages/HackerDashboard';
+<<<<<<< HEAD
 import SubmissionPage from './pages/SubmissionPage';
+=======
+import AdminDashboard from './pages/AdminDashboard';
+>>>>>>> admin-sidebar
 
 import './App.css';
 
@@ -29,8 +35,8 @@ const Sledge = CoreModule(
                 <></>
               )}
             </Route>
-            <Route exact path="admin">
-              {/* TODO: Admin Dashboard Component */}
+            <Route exact path="/admin">
+              <AdminDashboard />
             </Route>
             <Route exact path="/hacker">
               <HackerDashboard />

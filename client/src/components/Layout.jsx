@@ -1,9 +1,12 @@
+/* eslint-disable */
+
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 
 import Navbar from './Navbar';
 import HackerSidebar from './HackerSidebar';
+import AdminSidebar from './AdminSidebar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,8 +30,7 @@ export default function Layout({ children, version }) {
       {version === 'hacker' ? (
         <HackerSidebar />
       ) : version === 'admin' ? (
-        // Admin sidebar
-        <></>
+        <AdminSidebar />
       ) : version === 'judge' ? (
         // Judge sidebar
         <></>
