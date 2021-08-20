@@ -4,11 +4,8 @@ import { CoreModule } from '@hackru/frontend-core';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import HackerDashboard from './pages/HackerDashboard';
-<<<<<<< HEAD
 import SubmissionPage from './pages/SubmissionPage';
-=======
 import AdminDashboard from './pages/AdminDashboard';
->>>>>>> admin-sidebar
 
 import './App.css';
 
