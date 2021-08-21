@@ -23,6 +23,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
     useFindAndModify: false,
   });
+  await mongoose.connection.dropDatabase();
 });
 
 describe('testing submission endpoints', () => {
@@ -59,17 +60,16 @@ describe('testing submission endpoints', () => {
   });
 
   it('retrieves all submissions', async (done) => {
-    const res = await request.get('/api/submissions').send(testSubmission);
+    const res = await request.get('/api/submissions');
     expect(res.statusCode).toEqual(200);
     expect(res.body).not.toBeNull();
-
+    console.log(res.body);
     done();
   });
 });
 
 afterAll(async (done) => {
   // Delete database after testing
-  await mongoose.connection.dropDatabase();
   mongoose.connection.close();
   done();
 });
