@@ -11,6 +11,8 @@ import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissa
 import { Form, Formik, FieldArray } from 'formik';
 import * as yup from 'yup';
 
+import ImageUpload from './ImageUpload';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -31,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   urlField: {
     width: '50ch',
   },
+  input: {
+    display: 'none',
+  },
 }));
 
 const validationSchema = yup.object({});
@@ -45,15 +50,15 @@ export default function SubmissionForm() {
         technologies: '',
         description: '',
         links: [{ label: '', url: '' }],
-        images: '',
+        images: [],
         categories: '',
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
-        alert(JSON.stringify(values));
+        alert(JSON.stringify(values, null, 2));
       }}
     >
-      {({ values, handleChange }) => (
+      {({ values, handleChange, setFieldValue }) => (
         <Form className={classes.root} autoComplete="off">
           <TextField
             name="title"
@@ -92,16 +97,17 @@ export default function SubmissionForm() {
                 <FormLabel className={classes.urlFieldLabel}>
                   External Links
                 </FormLabel>
-                {values.links.length == 0 ? (
+                {values.links.length === 0 ? (
                   <FormLabel className={classes.urlFieldLabel}>
                     (No links <SentimentVeryDissatisfiedIcon />)
                   </FormLabel>
                 ) : (
                   <></>
                 )}
+                {/* eslint-disable-next-line */}
                 {values.links.map((link, index) => {
                   return (
-                    <div key={index}>
+                    <div key={link.label}>
                       {/* Using a [Grid] was the only way I could center the delete [IconButton]. */}
                       <Grid
                         container
@@ -116,7 +122,7 @@ export default function SubmissionForm() {
                           onChange={handleChange}
                           label="Label"
                           helperText={
-                            index == 0
+                            index === 0
                               ? 'What is this link? (ex. repository, live website, etc.)'
                               : ''
                           }
@@ -157,12 +163,10 @@ export default function SubmissionForm() {
             )}
           </FieldArray>
 
-          <TextField
-            name="images"
-            value={values.images}
-            onChange={handleChange}
-            label="Image"
-          />
+          <FormLabel className={classes.urlFieldLabel}>
+            Image Uploads (Max 5)
+          </FormLabel>
+          <ImageUpload setFieldValue={setFieldValue} />
 
           <TextField
             name="categories"
