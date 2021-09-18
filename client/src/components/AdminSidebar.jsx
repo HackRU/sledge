@@ -43,27 +43,40 @@ export default function Sidebar() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          <Typography variant="h5">Welcome, Hacker</Typography>
-
-          {/* HackRU Main Website */}
+          <Typography variant="h5">Welcome, Admin</Typography>
           <Link to="/">
             <ListItem button>
-              <ListItemText primary="HackRU Main Page" />
+              <ListItemText primary="Home" />
+            </ListItem>
+          </Link>
+
+          <ListItem>
+            <ListItemText primary="Phases:" />
+          </ListItem>
+
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="Pre-hackathon" />
             </ListItem>
           </Link>
 
           <Link to="/">
             <ListItem button>
-              <ListItemText primary="TeamRU" />
+              <ListItemText primary="Submissions" />
             </ListItem>
           </Link>
 
           <Link to="/">
             <ListItem button>
-              <ListItemText primary="MentorQ" />
+              <ListItemText primary="Judging" />
             </ListItem>
           </Link>
 
+          <Link to="/">
+            <ListItem button>
+              <ListItemText primary="Post-hackathon" />
+            </ListItem>
+          </Link>
           <Divider />
           {/* Log out */}
           <ListItem button>
