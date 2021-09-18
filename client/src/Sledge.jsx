@@ -5,6 +5,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import HackerDashboard from './pages/HackerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import SubmissionPage from './pages/SubmissionPage';
 
 import './App.css';
 
@@ -40,8 +41,8 @@ const Sledge = CoreModule(
             <Route exact path="judge">
               {/* TODO: Judge Dashboard Component */}
             </Route>
-            <Route exact path="/hacker/submission">
-              {/* TODO: Submission Form Component */}
+            <Route exact path="/hacker/submissions/create">
+              <SubmissionPage />
             </Route>
           </Switch>
         </div>
