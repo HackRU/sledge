@@ -44,7 +44,7 @@ export default function Sidebar() {
       <div className={classes.drawerContainer}>
         <List>
           <Typography variant="h5">Welcome, Admin</Typography>
-          <Link to="/">
+          <Link to="/admin">
             <ListItem button>
               <ListItemText primary="Home" />
             </ListItem>
@@ -54,25 +54,25 @@ export default function Sidebar() {
             <ListItemText primary="Phases:" />
           </ListItem>
 
-          <Link to="/">
+          <Link to="/admin">
             <ListItem button>
               <ListItemText primary="Pre-hackathon" />
             </ListItem>
           </Link>
 
-          <Link to="/">
+          <Link to="/admin/submissions">
             <ListItem button>
               <ListItemText primary="Submissions" />
             </ListItem>
           </Link>
 
-          <Link to="/">
+          <Link to="/admin">
             <ListItem button>
               <ListItemText primary="Judging" />
             </ListItem>
           </Link>
 
-          <Link to="/">
+          <Link to="/admin">
             <ListItem button>
               <ListItemText primary="Post-hackathon" />
             </ListItem>
