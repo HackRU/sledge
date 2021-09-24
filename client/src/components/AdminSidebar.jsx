@@ -54,7 +54,7 @@ export default function Sidebar() {
             <ListItemText primary="Phases:" />
           </ListItem>
 
-          <Link to="/admin">
+          <Link to="/admin/prehack">
             <ListItem button>
               <ListItemText primary="Pre-hackathon" />
             </ListItem>
