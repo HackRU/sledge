@@ -9,6 +9,7 @@ import SubmissionPage from './pages/SubmissionPage';
 
 import './App.css';
 import SubmissionDashboard from './pages/SubmissionDashboard';
+import PreHackathonDashboard from './pages/PreHackathonDashboard';
 
 const Sledge = CoreModule(
   ({ profile }) => {
@@ -47,6 +48,9 @@ const Sledge = CoreModule(
             </Route>
             <Route exact path="/admin/submissions">
               <SubmissionDashboard/>
+            </Route>
+            <Route exact path="/admin/prehack">
+              <PreHackathonDashboard/>
             </Route>
           </Switch>
         </div>
