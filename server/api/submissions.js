@@ -66,7 +66,38 @@ router.get('/:teamID/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
+<<<<<<< Updated upstream
 router.post('/:teamID/create', (req, res) => {
+=======
+ router.create('/:teamID', aysnc (req, res)) {
+  if (!req.body.title) {
+    res.status(200).send(err);
+    return;
+  }
+  const submission = new Submission({
+    title: req.params.teamID,
+    description: req.body.description,
+    published: req.body.published ? req.body.published : true
+  });
+  const submission = new Submission({
+    title: req.body.submissionID,
+    description: req.body.description,
+    published: req.body.published ? req.body.published : true
+  });
+  submission
+    .save(submission)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err
+      });
+    });
+};
+
+router.post('/', (req, res) => {
+>>>>>>> Stashed changes
   Submission.create({}, (err, submission) => {
     if (err) res.status(500).send(err);
     res.status(200).json({
