@@ -47,10 +47,10 @@ const Sledge = CoreModule(
               <SubmissionPage />
             </Route>
             <Route exact path="/admin/submissions">
-              <SubmissionDashboard/>
+              <SubmissionDashboard />
             </Route>
             <Route exact path="/admin/prehack">
-              <PreHackathonDashboard/>
+              <PreHackathonDashboard />
             </Route>
           </Switch>
         </div>

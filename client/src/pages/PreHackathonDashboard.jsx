@@ -16,15 +16,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PreHackathonDashboard() {
-    const classes = useStyles();
-    return (
-        <Layout version="admin">
-          <div className={classes.root}>
-            <h1>Create Hackathon: </h1>
-            <HackathonForm/>
-          </div>
-        </Layout>
-      );
-};
+  const classes = useStyles();
+  return (
+    <Layout version="admin">
+      <div className={classes.root}>
+        <h1>Create Hackathon: </h1>
+        <HackathonForm />
+      </div>
+    </Layout>
+  );
+}
 
 export default PreHackathonDashboard;

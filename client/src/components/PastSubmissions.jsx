@@ -66,8 +66,8 @@ export default function SimpleAccordion() {
 
   return (
     <div className={classes.root}>
-      <Submission/>
-      <Submission/>
+      <Submission />
+      <Submission />
     </div>
   );
 }
