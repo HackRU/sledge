@@ -61,7 +61,8 @@ router.get('/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
-Submission.create = (req, res => {
+
+ exports.create = (req, res) => {
   if (!req.body.title) {
     res.status(200).send(err);
     return;
@@ -73,15 +74,17 @@ Submission.create = (req, res => {
   });
   submission
     .save(submission)
-    .then((data) => {
+    .then(data => {
       res.send(data);
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(200).send({
         message: err.message
       });
-    });
-});
+  });
+};
+
+
 
 router.post('/', (req, res) => {
   Submission.create({}, (err, submission) => {
