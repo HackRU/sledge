@@ -11,7 +11,7 @@ function HackerDashboard() {
       <div className={styles.hackerDashboardContainer}>
         <p>Make a new submission:</p>
         <div className={styles.newSubmission}>
-          <Link to="/hacker/upload" className={styles.btn}>
+          <Link to="/hacker/submissions/create" className={styles.btn}>
             + Upload a new submission
           </Link>
         </div>

@@ -6,7 +6,7 @@ const app = require('./index');
 
 const port = 5000;
 
-const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.dbName}`; // Connection URL, set it in config.json
+const url = `mongodb://${config.dbHost}:${config.dbPort}/${config.testDbName}`; // Connection URL, set it in config.json
 
 // connect to mongodb
 mongoose.connect(url, {
