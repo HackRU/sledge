@@ -66,30 +66,26 @@ router.get('/:teamID/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
-router.post('/:teamID/:submissionID', (req,res) => {
-  router.create = (req, res) => {
-    if (!req.params.title) {
-      res.status(500).send(err);
-      return;
-    }
-    const submission = new Submission({
-      title: req.body.title,
-      description: req.body.description,
-      published: req.body.published ? req.body.published : false
-    });
-
-    submission
-      .save(submission)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(200).send({
-          message: 
-            err.message
-        });
+Submission.create = (req, res => {
+  if (!req.body.title) {
+    res.status(200).send(err);
+    return;
+  }
+  const submission = new Submission({
+    title: req.body.title,
+    description: req.body.description,
+    published: req.body.published ? req.body.published : false
+  });
+  submission
+    .save(submission)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(200).send({
+        message: err.message
       });
-  };
+    });
 });
 
 router.post('/', (req, res) => {
