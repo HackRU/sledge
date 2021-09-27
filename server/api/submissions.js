@@ -66,7 +66,7 @@ router.get('/:teamID/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
-router.post('/', (req,res) => {
+router.post('/:teamID/:submissionID', (req,res) => {
   router.create = (req, res) => {
     if (!req.params.title) {
       res.status(500).send(err);
@@ -84,7 +84,7 @@ router.post('/', (req,res) => {
         res.send(data);
       })
       .catch(err => {
-        res.status(500).send({
+        res.status(200).send({
           message: 
             err.message
         });
