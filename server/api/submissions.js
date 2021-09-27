@@ -24,11 +24,6 @@ router.get('/', async ({ res }) => {
  *       - application/json
  *     parameters:
  *       - in: path
- *         name: teamID
- *         required: true
- *         type: string
- *         description: The team ID
- *       - in: path
  *         name: submissionID
  *         required: true
  *         type: string
@@ -36,7 +31,7 @@ router.get('/', async ({ res }) => {
  *     tags:
  *       - submissions
  */
-router.get('/:teamID/:submissionID', async (req, res) => {
+router.get('/:submissionID', async (req, res) => {
   await Submission.findById(req.params.submissionID, (err, submission) => {
     if (err) res.status(500).send(err);
     res.status(200).send(submission);
@@ -103,7 +98,7 @@ router.post('/', (req, res) => {
 });
 
 // update a submission with new info
-router.patch('/:teamID/:submissionID', async (req, res) => {
+router.patch('/:submissionID', async (req, res) => {
   await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
     new: true,
   });
