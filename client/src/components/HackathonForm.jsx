@@ -110,7 +110,7 @@ export default function HackathonForm() {
                           value={category.companyName}
                           onChange={handleChange}
                           label="Company Name"
-                          helperText="Name of the company sponsoring the category (if Applicable)"
+                          helperText="Name of the company sponsoring the category"
                         />
 
                         <TextField
