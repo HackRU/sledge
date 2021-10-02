@@ -65,7 +65,7 @@ router.get('/:submissionID', async (req, res) => {
 router.post('/', (req, res) => {
   Submission.create({}, () => {
     if (!req.body.title) {
-      res.status(400).send({message: "Content can not be empty!"});
+      res.status(400).send({ message: 'Content can not be empty!' });
       return;
     }
     const submission = new Submission({
