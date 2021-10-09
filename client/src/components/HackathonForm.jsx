@@ -25,13 +25,14 @@ const useStyles = makeStyles((theme) => ({
   // Properly left aligns the "External Links" label for field where you can add multiple URLs.
   categoryField: {
     textAlign: 'start',
+    width: '20ch',
     margin: theme.spacing(1),
   },
   companyField: {
-    width: '35ch',
+    width: '20ch',
   },
   typeField: {
-    width: '50ch',
+    width: '20ch',
   },
   input: {
     display: 'none',
