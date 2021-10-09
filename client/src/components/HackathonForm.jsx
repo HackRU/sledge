@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
 import { mergeClasses } from '@material-ui/styles';
-import { Form, Formik, FieldArray } from 'formik';
+import { Form, Formik, FieldArray, Field} from 'formik';
 import * as yup from 'yup';
 
 const useStyles = makeStyles((theme) => ({
@@ -71,7 +71,7 @@ export default function HackathonForm() {
             required
           />
 
-          <FieldArray name="categories">
+          <FieldArray name="categories" >
             {({ push, remove }) => (
               <>
                 <FormLabel className={classes.categoryField}>
@@ -79,7 +79,7 @@ export default function HackathonForm() {
                 </FormLabel>
                 {values.categories.length === 0 ? (
                   <FormLabel className={classes.categoryField}>
-                    Need At Least 1 Category!!!!!!
+                    Need At Least 1 Category!!!!!! <SentimentVeryDissatisfiedIcon />
                   </FormLabel>
                 ) : (
                   <></>
@@ -113,15 +113,20 @@ export default function HackathonForm() {
                           helperText="Name of the company sponsoring the category"
                         />
 
-                        <TextField
+                        <Field
                           className={classes.typeField}
                           name={`categories[${index}].type`}
+                          as="select"
                           value={category.type}
                           onChange={handleChange}
                           label="Type"
                           helperText="Type of the category, either &quot;Track&quot; or &quot;Superlative&quot;"
                           required
-                        />
+                        >
+                          <option value="">(None)</option>
+                          <option value="Track">Track</option>
+                          <option value="Superlative">Superlative</option>
+                        </Field>
 
                         <IconButton
                           className={classes.deleteButton}
