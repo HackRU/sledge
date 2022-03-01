@@ -67,8 +67,11 @@ router.post('/', (req, res) => {
     if (
       !req.body.title ||
       !req.body.description ||
+      !req.body.technologies ||
       !req.body.category ||
-      !req.body.technologies
+      !req.body.submission ||
+      !req.body.urls ||
+      !req.body.flags
     ) {
       res.status(400).send({ message: 'Content can not be empty!' });
       return;
@@ -76,6 +79,7 @@ router.post('/', (req, res) => {
     const submission = new Submission({
       title: req.body.title,
       description: req.body.description,
+      technologies: req.body.technologies,
       published: req.body.published ? req.body.published : false,
     });
     submission
