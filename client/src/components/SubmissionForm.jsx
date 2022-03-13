@@ -107,7 +107,7 @@ export default function SubmissionForm() {
                 {/* eslint-disable-next-line */}
                 {values.links.map((link, index) => {
                   return (
-                    <div key={link.label}>
+                    <div key={index}>
                       {/* Using a [Grid] was the only way I could center the delete [IconButton]. */}
                       <Grid
                         container
