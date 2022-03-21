@@ -54,8 +54,32 @@ export default function SubmissionForm() {
         categories: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
-        alert(JSON.stringify(values, null, 2));
+      onSubmit={async (values) => {
+        const submissionModel = {
+          attributes: {
+            title: values.title,
+            description: values.description,
+            technologies: values.technologies.split(','),
+          },
+          urls: {
+            type: values.links.map((link) => ({
+              _id: false,
+              label: link.label,
+              url: link.url,
+            })),
+            default: [],
+          },
+        };
+
+        const postRequest = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionModel),
+        };
+
+        const response = await fetch('/api/submissions/', postRequest);
+        const data = await response.json();
+        alert(data.json());
       }}
     >
       {({ values, handleChange, setFieldValue }) => (
