@@ -36,6 +36,12 @@ router.post('/', async (req, res) => {
  *    summary: Update an existing hackathon by hackathonId
  *    produces:
  *       - application/json
+ *    parameters:
+ *       - in: path
+ *         name: hackathonId
+ *         required: true
+ *         type: string
+ *         description: The hackathon Id
  *    tags:
  *      - hackathons
  */
