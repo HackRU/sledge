@@ -71,7 +71,8 @@ router.post('/', (req, res) => {
         technologies: req.body.technologies,
         title: req.body.title,
       },
-      // categories: req.body.categories
+
+      // categories: req.body.categories,
       // there is no teamId, state, categories, flags,
       // provided in the form. also, no way to handle
       // images atm.
@@ -82,7 +83,7 @@ router.post('/', (req, res) => {
       } else {
         res.status(200).json({
           message: 'success',
-          s: submission,
+          id: submission.id,
         });
       }
     },
