@@ -59,7 +59,7 @@ const submissionSchema = new Schema({
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'category' }],
   flags: { type: [String], default: [] },
   numFlags: { type: Number, default: 0 },
-  visible: Boolean,
+  visible: { type: Boolean, default: true },
 });
 
 module.exports = mongoose.model('submission', submissionSchema);
