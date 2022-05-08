@@ -62,25 +62,29 @@ router.get('/:submissionID', async (req, res) => {
  *       - submissions
  */
 router.post('/', (req, res) => {
+  // console.log(req.body);
   Submission.create(
     {
-      urls: req.urls,
+      urls: req.body.urls,
       attributes: {
-        description: req.description,
-        technologies: req.technologies,
-        title: req.title,
+        description: req.body.description,
+        technologies: req.body.technologies,
+        title: req.body.title,
       },
-
+      // categories: req.body.categories
       // there is no teamId, state, categories, flags,
       // provided in the form. also, no way to handle
       // images atm.
     },
     (err, submission) => {
-      if (err) res.status(500).send(err);
-      res.status(200).json({
-        message: 'success',
-        id: submission.id,
-      });
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).json({
+          message: 'success',
+          s: submission,
+        });
+      }
     },
   );
 });

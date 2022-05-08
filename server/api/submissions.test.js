@@ -63,7 +63,6 @@ describe('testing submission endpoints', () => {
     const res = await request.get('/api/submissions');
     expect(res.statusCode).toEqual(200);
     expect(res.body).not.toBeNull();
-    console.log(res.body);
     done();
   });
 });
