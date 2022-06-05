@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Submission from './Submission';
+import data from '../data/submission.json'
+
 // import Table from '@material-ui/core/Table';
 // import TableBody from '@material-ui/core/TableBody';
 // import TableCell from '@material-ui/core/TableCell';
@@ -66,8 +68,8 @@ export default function SimpleAccordion() {
 
   return (
     <div className={classes.root}>
-      <Submission />
-      <Submission />
+      <Submission value={data} />
+      <Submission value={data}/>
     </div>
   );
 }
