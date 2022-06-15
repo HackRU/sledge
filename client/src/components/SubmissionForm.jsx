@@ -42,6 +42,34 @@ const validationSchema = yup.object({});
 
 export default function SubmissionForm() {
   const classes = useStyles();
+  const submit = async (values) => {
+    
+        // Missing the TeamID. Ideally the TeamID should be in the session storage, so in order to test that out we need a sample mongoose TeamID
+        // Which requires integration with TeamRU.
+        const submissionModel = {
+          title: values.title,
+          description: values.description,
+          technologies: values.technologies.split(','),
+          urls: values.links.map((link) => ({
+              label: link.label,
+              url: link.url,
+            })),
+          categories: values.categories.split(',')
+        }
+
+        const postRequest = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionModel),
+        };
+
+        const response = await fetch('http://localhost:5000/api/submissions', postRequest);
+        const data = await response.json();
+        console.log(data);
+        if (data["errors"]) {
+          console.log("There is an error!");
+        }
+  }
 
   return (
     <Formik
@@ -54,25 +82,7 @@ export default function SubmissionForm() {
         categories: '',
       }}
       validationSchema={validationSchema}
-      onSubmit={async (values) => {
-        const submissionModel = {
-          title: values.title,
-          description: values.description,
-          technologies: values.technologies.split(','),
-          urls: values.links.map((link) => ({
-              label: link.label,
-              url: link.url,
-            }))
-        }
-
-        const postRequest = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submissionModel),
-        };
-
-        const response = await fetch('http://localhost:6000/api/submissions', postRequest);
-      }}
+      onSubmit={submit}
     >
       {({ values, handleChange, setFieldValue }) => (
         <Form className={classes.root} autoComplete="off">
