@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -5,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Navbar from './Navbar';
 import HackerSidebar from './HackerSidebar';
 import AdminSidebar from './AdminSidebar';
+import JudgeSidebar from './JudgeSidebar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,8 +32,7 @@ export default function Layout({ children, version }) {
       ) : version === 'admin' ? (
         <AdminSidebar />
       ) : version === 'judge' ? (
-        // Judge sidebar
-        <></>
+        <JudgeSidebar />
       ) : (
         <></>
       )}
