@@ -16,9 +16,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleAccordion() {
+export default function SimpleAccordion({value}) {
   const classes = useStyles();
-
+  console.log(value);
   return (
     <div className={classes.root}>
       <Accordion>
@@ -30,9 +30,31 @@ export default function SimpleAccordion() {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
+              <b>STATUS:</b> {value.state}
+              <br/>
+              <b>TITLE:</b> {value.attributes.title}
+              <br/>
+              <b>DESCRIPTION:</b> {value.attributes.description}
+              <br/>
+              <b>TECHNOLOGIES:</b> {value.attributes.technologies.map(tech =>
+                <p>{tech}</p>
+              )}
+              <br/>
+              <b>LINKS</b>
+              {value.urls.map(data =>
+                  <p key={data.label}>
+                    {data.label} <hr/>
+                    {data.url}
+                  </p> 
+                )}
+              <b>CATEGORIES</b>
+              {value.categories.map((data,idx) =>
+                  <p key={data.categoryID}>
+                    <b>#{idx+1}</b> {data.categoryName}
+                  </p> 
+                )}
+            </Typography>
+          
         </AccordionDetails>
       </Accordion>
     </div>
