@@ -61,6 +61,41 @@ router.get('/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
+
+router.post('/', (req, res) => {
+  Submission.create({}, () => {
+    if (
+      !req.body.title ||
+      !req.body.description ||
+      !req.body.technologies ||
+      !req.body.category ||
+      !req.body.urls ||
+      !req.body.flags
+    ) {
+      res.status(500).send({ message: 'Content can not be empty!' });
+      return;
+    }
+    const submission = new Submission({
+      title: req.body.title,
+      description: req.body.description,
+      technologies: req.body.technologies,
+      urls: req.body.urls,
+      categories: req.body.categories,
+      published: req.body.published ? req.body.published : false,
+    });
+    submission
+      .save(submission)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(200).send({
+          message: err.message,
+        });
+      });
+  });
+});
+
 router.post('/', (req, res) => {
   // console.log(req.body);
   Submission.create(
