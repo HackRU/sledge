@@ -1,5 +1,8 @@
 const router = require('express').Router();
 const Submission = require('../models/submission.model');
+const CSVstuff = require("../DAO/BO");
+
+//Import SubmissionObject and map 
 
 /**
  * @swagger
@@ -12,7 +15,13 @@ const Submission = require('../models/submission.model');
  *      - submissions
  */
 router.get('/', async ({ res }) => {
-  res.status(200).send(await Submission.find({}));
+  const mySubmissions = await Submission.find({});
+
+  res.status(200).send({
+    mySubmissions, 
+    CSVstuff
+  });
+  //res.status(200).json("WHATS UP");
 });
 
 /**

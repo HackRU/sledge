@@ -68,6 +68,28 @@ export default function SimpleAccordion() {
 
   return (
     <div className={classes.root}>
+      {/* 
+        - Use a fetch API to get stuff from BO object (since BO object is exporting the CSV file)
+        - But Idk which route to get it from ... 
+        - Or maybe in the getSubmissions method in router we can add in that CSV file
+        OR
+
+
+        Use a fetch API from submissions (prolly wont work)
+         useEffect(() => {
+          const fetchHacks = async () => {
+              const response = await fetch('/api/workouts')
+              const json = await response.json()
+
+              if (response.ok) {
+                setWorkouts(json)
+              }
+            }
+
+            fetchWorkouts()
+          }, [])
+
+      */}
       <Submission value={data} />
       <Submission value={data}/>
     </div>

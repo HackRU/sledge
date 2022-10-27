@@ -1,0 +1,628 @@
+Project Title,Submission Url,Project Status,Judging Status,Highest Step Completed,Project Created At,About The Project,"""Try it out"" Links",Video Demo Link,Opt-In Prizes,Built With,Notes,Team Colleges/Universities,Additional Team Member Count,What Is The Project That You Decided To Build?,Why Did You Decide To Build This Hack?,What Technologies Did You Use?,Provide A Link To The Repository Containing Your Code.,What Are Some Issues That You Ran Into?,(Optional) Provide A Youtube Url To Your Vlog If You Made One.,Domain.Com Domain Names,Is The Majority Of Your Team Located In The Us?
+Untitled,"",Draft,Pending,Manage team,10/16/2021 13:04:40,"","",,"","",,"Rutgers, The State University of New Jersey",0,"","","","","","","",""
+Untitled,"",Draft,Pending,Manage team,10/16/2021 13:41:00,"","",,"","",,"",0,"","","","","","","",""
+R U Happy?,https://hackru-fall-2021.devpost.com/submissions/273987-r-u-happy,Submitted (Gallery/Visible),Pending,Submit,10/16/2021 14:20:48,"Inspiration
+
+Emotional health is very important and is something that should be addressed more. So, we wanted to help people be less stressed and more uplifted. Many people have frowns on their faces and it is much healthier to smile.
+
+What it does
+
+It is a site that has a chatbot, which can talk have a conversation and provide links to some happy music and ways to be happier in day-to-day life.
+
+How we built it
+
+We built an HTML Site from the Flask Python Framework. The chatbot was created using Python and the Smiling Detector was made with the OpenCV Library.
+
+Challenges we ran into
+
+We had a problem with integrating our Chatbot and Smile Detector into the website. It was the first time using HTML and we had a lot of errors throughout the process. 
+
+Accomplishments that we're proud of
+
+Building an HTML website and understanding OpenCV and Facial Detection was one of our biggest achievements.
+
+What we learned
+
+We learned how introduction to how OpenCV and Flask works. We gained more HTML and Python Experience as we are beginners at the languages.  
+
+What's next for R U Happy?
+
+R U Happy will add more options to the ChatBot: More Links to helpful Articles and Video, ChatBot can make be funny and make some jokes. More Design to the website would help the site graphically.
+",https://github.com/Satya191/ruhappy,https://youtu.be/LqQMz3iJgh4,"Best Newbie Hack, Social Good Track","python, opencv, flask",,"Rutgers, The State University of New Jersey",2,RU Happy,"We decided to buildit to uplift people and reduce stress on people, so they can see a smile on their face.","We used Python, OpenCV, Flask, HTML, CSS, Javascript, and Bootstrap",https://github.com/Satya191/ruhappy,Implementation of Smile Detector on the HTML Website,https://youtu.be/LqQMz3iJgh4,"",Yes
+Health,"",Draft,Pending,Project overview,10/16/2021 14:36:37,"","",,"","",,Cornell University,0,"","","","","","","",""
+Code_Decoder,https://hackru-fall-2021.devpost.com/submissions/274006-code_decoder,Submitted (Gallery/Visible),Pending,Submit,10/16/2021 14:45:40,"Problem
+
+We write some code or we copy the code from some resources but we are unable to interpret the logic/working behind the code.
+While writing the code, when we get stuck into the problem, we directly redirect to Internet but sometimes we are unable to get in-depth knowledge about the working of code.
+
+Solution
+
+
+We built a website that can decode any complex code easily.
+We are targeting to deliver a comprehensive analysis of the code with the help of machine learning.
+Using machine learning, we are planning to add automatic generation of pseudocode based on the user's input.
+
+
+Tech Stack
+
+Python, ReactJS, TailwindCSS, Pylint, FastAPI, FlowChartJS, Sqlite3.
+
+Challenges we ran into
+
+
+Able to Integrate Flow charts for any code.
+Able to Generate PseudoCode.
+Able to Provide Code Suggesstions.
+
+
+Accomplishments that we're proud of
+
+We were able to completely Integrate all the Idea's, we thought to integrate in our Web Application.
+
+What's next for Code_Decoder
+
+We will be adding more functionalities to it.
+
+Github Repo
+
+https://github.com/rajsaurabh1000/Code_Decoder
+
+Video Presentation
+
+https://vimeo.com/633884790/d80964f2a0
+","https://github.com/rajsaurabh1000/Code_Decoder, https://vimeo.com/633884790/d80964f2a0",https://vimeo.com/633884790/d80964f2a0,Education Track,"python, react, tailwindcss, pylint, fastapi, flowchartjs, sqlite",,"",1,Code_Decoder,"It will be very much helpful for beginner programmer's, who can understand the logic/working of code easily.","Python, ReactJS, TailwindCSS, Pylint, FastAPI, FlowChartJS, Sqlite3.",https://github.com/rajsaurabh1000/Code_Decoder,Able to Integrate Flow charts for any code; Able to Generate PseudoCode; Able to Provide Code Suggesstions.,https://vimeo.com/633884790/d80964f2a0,"",No
+Food And More Food,https://hackru-fall-2021.devpost.com/submissions/274093-food-and-more-food,Submitted (Gallery/Visible),Pending,Submit,10/16/2021 17:13:10,"Inspiration
+
+
+Inspired by the need for more food options, see how food can look outside a university cafeteria.
+
+
+What it does
+
+
+The website generates pictures of food with the opportunity for new dishes to show up every now and then.
+
+
+How we built it
+
+
+Trained using the Food-101 dataset, using pytorch and HTML/CSS/JS for the website.
+
+
+Challenges we ran into
+
+Accomplishments that we're proud of
+
+What we learned: training AI has a lot of other barriers that need to be accounted for.
+
+What's next for Food And More Food
+
+
+Rutgers is currently doing research on converting images of food into AI. This could result in the creation of new recipies.
+
+",https://github.com/Ashrit-Yarava/hackRU-2021,https://youtu.be/aq47L_PVaqs,"Maverick Track, Best Failure to Launch","python, javascript, html5, css, r",,University of Maryland - College Park,2,Food creator,We were tired of universtiy cafeteria food,"R for data processing, HTML for the website, python for AI",https://github.com/Ashrit-Yarava/hackRU-2021,Waiting for the data to convert and to train. Google rate limited us at the last minute so the example result is what we ended up with. We also struggled to get the website up and running.,N/A,"",Yes
+Untitled,"",Draft,Pending,Manage team,10/16/2021 19:31:52,"","",,"","",,"",0,"","","","","","","",""
+Player2 - Discord Minigame Bot,https://hackru-fall-2021.devpost.com/submissions/274123-player2-discord-minigame-bot,Submitted (Gallery/Visible),Pending,Submit,10/16/2021 19:34:25,"Click to demo our discord bot
+
+Or watch our demo video https://youtu.be/bt_VKXl6EnQ
+
+
+
+Inspiration
+
+Video games are the focus of our careers — we spend countless hours of free time running the Creation of Games Society club to create games with, and teach game development to, the Rutgers community. And in light of the pandemic, we recognized the importance of virtually spending time with our friends when we can't do so in person. So we decided to take the 24 hours of time to create a Discord bot that is all about making online multiplayer fun accessible to any Discord server.
+
+
+
+Our features
+
+Through discord, our bot Player2 will allow members of the same server to use the bot to play games with each other, aim for their high scores, and use general utility to facilitate playing games.
+
+Sokoban Game
+
+We recreated a game called Sokoban, this game is one of our fan-favorite games. A simple, game about pushing blocks to their goal with the lowest amount of moves. It brings simplistic mechanics and controls together to make a pretty fun experience.
+
+Lobby up with friends!
+
+We added a lobby system for people to group up with each other to do or play anything they would want! You can create a lobby, and have people join it. Simple and effective to find squadmates for your favorite game.
+
+Rock paper scissors
+
+A quick fun game of rock paper scissors. One of the easiest ways to decide on something.
+
+
+
+How we built it
+
+Discord bot created through the usage of nodejs and discordjs. Discord JS API allows ease of communication with discord's web requests system for interactions. All functionality takes advantage of new discord features, such as buttons and slash commands.
+
+Additionally, we are temporarily hosting the bot on a Linode server.
+
+
+
+Challenges we ran into
+
+Our plan from the beginning was to create this discord bot, but we ran into problems with creating one. We already have previous experience creating bots for discord, with one being for our organization server, but there recently was a new update for discord. This update broke and deprecated a lot of major structures. So with these changes, we had to adapt and rethink how we create bots for discord.
+
+
+
+Accomplishments that we're proud of
+
+Aside from overcoming the update from discord v12 to v13, our major accomplishment was being able to create a game in discord, and having it function as well as it would outside of a chat-based application. 
+
+
+
+What we learned
+
+After examining how exactly the changes to discord, would affect how we would code. We have learned a lot from it. One main thing we learned from this exercise was the new features that discord has implemented with the update, and how we could use them to make our bot the best it can be.
+","https://discord.gg/kRgF7N4w9R, https://github.com/Siris2314/PlayerBot",,"Best UI/UX Design, Social Good Track","discord.js, node.js, linode",,"Rutgers, The State University of New Jersey",1,A discord bot that primarily focuses on allow people to play games in a text chat and use utilities to assist them with playing games.,"We are focused on game development as a career path, and we run a organization for it. Our primary tool is discord to communicate with our members, so we decided to take the idea of creating games and use discord as our medium for that.",We used Discord as the primary interface. Discord js and Node js were used to program our bot. And we are temporarily hosting it on a linode server.,https://github.com/Siris2314/PlayerBot,"One issue was making the games feel nice and interface well with discord. But with the new addition of features from discord, such as buttons and slash commands, we were able to make almost as well as it could be.",https://youtu.be/bt_VKXl6EnQ,"",Yes
+We are here to help,https://hackru-fall-2021.devpost.com/submissions/274203-we-are-here-to-help,Submitted (Gallery/Visible),Pending,Submit,10/16/2021 22:58:38,"We are here for you
+
+Inspiration
+
+We felt that mental health is something that needs to be take more serious and saw the opportunity to better help individuals in risk of suicide or with mental problems. We did some research on wait times and abandon rate on suicidepreventionlifeline.org and found that people didn't receive help because of the long wait times.
+
+What it does
+
+Seconds count
+
+This application provides a better out reach than what a typical call to the national suicide lifeline would. People have experienced long wait times with the number of individuals being so high at a national level, we realized that the volume of calls is lower at a local(county or state) level but finding these phone numbers can take some time, and that's something that cant be wasted in these situations. Our application uses the geographical location of the user and using a database calls the closest suicide lifeline number 
+
+How we built it
+
+We used Figma to prototype the app, and used HTML and CSS as a front end development.
+
+Challenges we ran into
+
+
+Finding and compiling the list  of all the numbers from local districts and adding them to a database, linking that to a individuals location.
+Not enough time to research potential users and futures that could be added to the application
+
+
+Accomplishments that we're proud of
+
+
+All members coming from different universities and being able to work together 
+Being able to successfully coordinate and delegate different parts of the project with trust on one another. 
+
+
+What we learned
+
+
+Teamwork
+The process to build an application
+Use of Figma
+Source control with a team
+
+
+What's next for We are here to help
+
+
+Making a database with all the local support number that you can connect with and connect that to Twilio.
+Having workers and volunteers on the app that can be accessed through text and video chat 24/7 in addition to having the hotline services.
+Having scheduled professional counseling services directly on the app, after initial contact if the individual requests further help.
+Developing a different variation of the application specifically designed to connect veterans together.#22ADAY 
+
+",https://github.com/gkwityn/HackRU-2021,https://youtu.be/HRx80AeTn60,"Best UI/UX Design, Best Newbie Hack, Social Good Track","css, html",,"Saint Peter's University, Rutgers, The State University of New Jersey",3,Our application uses the geographical location of the user and using a database calls the closest suicide lifeline number,We felt that mental health is something that needs to be take more serious and saw the opportunity to better help individuals in risk of suicide or with mental problems.,Css html,https://github.com/gkwityn/HackRU-2021,"Finding and compiling the list of all the numbers from local districts and adding them to a database, linking that to a individuals location.Not enough time to research potential users and futures that could be added to the application.",https://youtu.be/HRx80AeTn60,"",Yes
+Konnex Space Force,"",Draft,Pending,Project overview,10/16/2021 22:59:01,"","",,"","",,Harvard University,0,"","","","","","","",""
+RutgersBot,https://hackru-fall-2021.devpost.com/submissions/274207-rutgersbot,Submitted (Gallery/Visible),Pending,Submit,10/16/2021 23:01:28,"Inspiration
+
+We wanted to create an application that helps Rutgers students find relevant information, including classes. 
+
+What it does
+
+It uses the class data from web-reg and can find classes based on major, course level, and course number as well as providing helpful links for students based on their needs.
+
+How we built it
+
+We build it using python and the discord API
+
+Challenges we ran into
+
+We initially wanted to organize the data using Elasticsearch on AWS but there were many issues uploading the JSON file to Elasticsearch so we could not do that. Parsing the JSON also posed difficulties.
+
+Accomplishments that we're proud of
+
+We learned a lot about how to ways we can use AWS in our projects.
+
+What we learned
+
+We learned much about how to create with AWS, even though it did not work out in the end, it is the beginning of a new way of creating for us.
+
+What's next for RutgersBot
+
+We plan to use AWS Elasticsearch to better organize the data and use AI in order to make the bot more conversational.
+","",https://youtu.be/ahrykQg7_sY,"Maverick Track, RUSA Presents: Best Rutgers Hack, Social Good Track","python, json, discord",,"Rutgers, The State University of New Jersey",1,RutgersBot,We wanted to help rutgers students navigate their college experience,"Python, Discord API",https://github.com/AayushPrasadWorks/RutgersBot,Getting the json into elasticsearch and getting project on to AWS,N/A,"",Yes
+rgsdgfsd,"",Draft,Pending,Project overview,10/16/2021 23:01:35,"","",,"","",,Saint Peter's University,0,"","","","","","","",""
+Discord Web Reg,"",Draft,Pending,Project details,10/16/2021 23:33:34,"Inspiration
+
+oo
+
+What it does
+
+oo
+
+How we built it
+
+oo
+
+Challenges we ran into
+
+00
+
+Accomplishments that we're proud of
+
+00
+
+What we learned
+
+oo
+
+What's next for Discord Web Reg
+
+00
+",https://github.com/AnshulCode/jsondataclass,,"",postmark,,"Rutgers, The State University of New Jersey",0,"","","","","","","",""
+Smart-Class,https://hackru-fall-2021.devpost.com/submissions/274477-smart-class,Submitted (Hidden),Pending,Submit,10/17/2021 05:49:27,"Inspiration
+
+Due to the worldwide pandemic education sector is most one of the most affected sector in this situation online learning is the only hope. In these days online learning has emerged as one of the leading ways to transmit education and the government is looking for ways to shift education to online platforms due to the pandemic situation.It becomes difficult for the administration like schools, colleges,etc to have an unbiased feedback of the students for the faculty.  
+
+What it does
+
+Our solution ie SMART CLASS Application helps professors better interact with those in their class and track their students' comprehension of the material with numerous ways to collect more data about classroom engagement. i.e. Total number of hands raised on a particular question, class attendance scheduling at specific time, attention analyzer of the students, and feedback of the students by face recognition.
+
+Our Solution SMART CLASS  bot will join the online meeting on ZOOM and collect the information from the browser client in the background of the host's computer. And will analyze the behaviour of the students/members and with the power of Smart Class App, teachers can also write/ draw in air and will be shown on the screen and will be live on the other student’s screen.
+
+How we built it
+
+
+The data gathered using our python + selenium component is fed into our python + tkinter interface that is displayed on the host's computer, alongside their Zoom client.
+We built a bot using python and selenium to join the call (headless-ly) and collect all the information from the browser client in the background of the host's computer.
+Note taking feature using web-speech-api.
+Used CanvasJS for graph attentive analysis.
+
+
+Challenges we ran into
+
+
+Zoom has no API for accessing a lot of the features we wanted to use, like the number of people raising their hands, the ability to send messages, the ability to get current users, etc.
+
+
+2.While we had success with actually doing recognition of facial expressions, but making machine learning model that is accurate was tough task.
+
+Accomplishments that we're proud of
+
+Built a self-contained, fairly full-featured client to interface with the Zoom client headless-ly and providing some features which are not provided by Zoom.
+
+What we learned
+
+Throughout the hackathon we learn to deal with API and use them in proper way and using Machine learning being unfamiliar with it.
+
+What's next for SMART CLASS
+
+
+Feedback Expression Analyzer which uses face recognition and gives the automated feedback of the students.
+Creating more accessible online classroom with its closed captioning service. This allows users with limited hearing to follow along more closely which improves usability
+
+",https://github.com/Yashashvi65/smart_class,https://youtu.be/syE_3uxkiLk,Education Track,"html5, css3, canvas, machine-learning, teachable-machines, google-cloud, python, tkinter, selenium",,"kiet group of institutions, Jaypee institute of information technology",3,Smart Class,We decided to build a product that makes online learning easier in these difficult times of covid -19,"canvas ,css3, google-cloud, html5, machine-learning, python, selenium, teachable-machines, tkinter",https://github.com/Yashashvi65/smart_class,"1. Zoom has no API for accessing a lot of the features we wanted to use 2.While we had success with actually doing recognition of facial expressions, but making machine learning model that is accurate was tough task.",https://www.youtube.com/watch?v=syE_3uxkiLk,"",No
+EnviroLife,https://hackru-fall-2021.devpost.com/submissions/274606-envirolife,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 08:37:30,"Inspiration
+
+The effects of climate change are an inevitable truth. Climate change has already and will continue to noticeably affect many critical aspects of day to day life of many people around the world. At this point, it is necessary to consider the future impacts of climate change in order to have certainty in the security and safety of your geographical location.
+Our team decided to build a web application that interprets Google Cloud Platform’s Earth Engine datasets captured by satellites to teach people about the impacts climate change may have on their everyday life, if things go unchanged. Such a tool can also improve the health of those considering environmental factors when making a decision of where to live in the future. Additionally, this app can help individuals make plans for future decades, if it is necessary for them to relocate for their safety. Moreover, applications like these highlight the tremendous impact and value space technologies like satellites have on everyday life.
+
+What it does
+
+The web application takes two entries, a location and a year date. Using these two points, it obtains historical data regarding this region from multiple datasets provided by Google’s Earth Engine (Google Cloud Platform), including precipitation, temperature, changes in local water level, natural disaster threat levels, and other factors like atmospheric analysis of certain compounds. After obtaining data for as far back as the information goes, the application attempts to make a future analysis for up until the user’s specified year date. The application then returns various data charts and an index of how livable the specified area will be in said year.
+
+How we built it
+
+We ran the React application on Flask to get user queries from another IP address and respond with information. We used React.js to access the information from the website as well as display the requested information. We then searched Earth Engine’s repositories for datasets we could use to build our project. We used various Python libraries to analyze the data extracted from Earth Engine, including statsmodels to train the machine learning models, and matlib to generate and send images to the frontend.
+
+Challenges we ran into
+
+The foremost issue was determining how to interpret the data from Google’s Earth Engine. There is a vast repository of data regarding hundreds of different aspects of Earth, and this data is stored as a wide variety of differing variables and types. The documentation for each dataset is not as comprehensive as we hoped. We had to learn how to interpret scientific data and then use technology to analyze and accurately extrapolate said data. We also had to learn how to efficiently parse through images to cut down the large amount of time it takes to train the model. In addition, the team had to learn new tools such as Flask and server hosting, both of which are essential to the project. While we would have loved to demonstrate analysis of various tools like pixel analysis of vegetation and atmospheric analysis of various compounds, we realized that the processing time was too great for this demonstration and that a creation of a truly accurate model would take some more time than we have for this event.
+
+Accomplishments that we're proud of
+
+We are proud of our ability to have created a web tool that not only will help people make a decision about where to live, but also educate people about the real effects of climate change and about the usefulness of space technologies like satellite sensors and imagery. We are also proud to have accomplished so much in the time period allotted, especially for a team that consisted of members who did not have experience in the technologies used.
+
+What we learned
+
+Our team learned how to efficiently analyze large datasets for useful information and trends, in addition to training a model to make accurate analysis of said data. We learned how to deploy a functional web app over a server. In addition, some members of the team were introduced to libraries like React.js for the first time.
+
+What's next for EnviroLife
+
+We hope to continue to add more significant features and analysis to our tool. We realized that there are truly vast amounts of information about the climate and Earth about a wide variety of useful categories.  Potential features include better analysis of vegetation, droughts, and natural disasters. We would also look into stronger prediction models more accurate to the specific dataset.
+",https://github.com/auddin431/hackruf21,https://youtu.be/8yw5XfnSgFg,"Health Track, Best Space App powered by Space Force, Best UI/UX Design, Best Use Of Google Cloud , Education Track, Social Good Track","earth-engine, google-cloud, flask, react, python, javascript, matplotlib, statsmodel",,"Rutgers, The State University of New Jersey",3,"Our team decided to build a web application that determines the climate livability index, a numerical analysis of how safe a place is to live in, of a specified location in a specified time period in the future.",Climate change is noticeably affecting the livelihood of many people. The data we found is too massive to be comprehended easily without significant analysis. Building an app that uses and interprets these large datasets would make the data more useful.,"Google’s Earth Engine Data Catalog (Google Cloud Platform), Flask, React.js, Python, Javascript, Matlib, Statsmodel, Google Cloud Platform",https://github.com/auddin431/hackruf21,"The foremost issue was determining how to interpret the data from Earth Engine. There is a vast repository of data regarding hundreds of different aspects of Earth, and this data is stored as a wide variety of differing variables and types.",SEE DESCRIPTION,"",Yes
+Seji,https://hackru-fall-2021.devpost.com/submissions/274703-seji,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 09:54:33,"Inspiration
+
+Since the pandemic situation, researches show that people have been more concerned about health crisis and start to cook at home. Finding a surprise, joyful and easy to make recipe is a huge motivation for beginner cooks to keep practicing cooking at home - that's why Seji come in place to deliver random cooking recipes.
+
+What it does
+
+Seji aim to deliver random recipes for user to explore. On the homepage, it shows random 3 recipes. If more recipes are needed to explore, user can continuely press the ""start"" button.
+
+How we built it
+
+The application is written using Html, CSS and JavaScript. It uses the recipe data from Tasty API (RapidAPI.com)
+
+Challenges we ran into
+
+In the process, we find it difficult to create such attractive User Experience with the app. Also, the API didn't provide a synchronized dataset - which is hard to arrange data to display on the website.
+
+Accomplishments that we're proud of
+
+We had chance to practice a hands-on experience building a website. We, also, proud of being able to create this impactful website together.
+
+What we learned
+
+We learned further skills to build a website and practice with using API.
+
+What's next for Seji
+
+Currently, we are mainly targeting to personal hobbyists. As a result, we would like to further develop greater UI/UX and more user-friendly. Further, we can save the recipes that user like for later use and can develop suggestion system for more relevant recommendations.
+",https://github.com/longtran1904/HackRU2021,https://youtu.be/rWkGRDX8CHw,"Maverick Track, Best Newbie Hack, Best Failure to Launch","html, css, javascript, rapidapi, tastyapi",,"Rutgers, The State University of New Jersey",2,We decided to build a website the deliver random cooking recipes,We find that it is more interesting for people to explore new food recipe every day to have more fun at cooking at home,"We used Html, CSS and JavaScript",https://github.com/longtran1904/HackRU2021,"We found that the API we used didn't provide a systematic data, it is hard to organize and display data we have.",N/A,"",Yes
+FREE RESOURCES  WEBSITE,https://hackru-fall-2021.devpost.com/submissions/274709-free-resources-website,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:00:25,"## Inspiration -> TO HELP THE COMMUNITY AND THE  STUDENTS FOR FREE
+
+What it does -> THIS WEBSITE BASICALLY HELPS STUDENTS TO GET FREE RESOURCES IN TERMS OF VIDEOS FOR CONCEPTS AND CLARIFICATION , IN TERMS OF WEBSITES FOR PRATICING AFTER WATCHING THE VIDEOS AND NOT WASTING THERE TIME FOR SEARCHING AND GETTING THE TOP AND CORRECT RESOURCES FOR THE STUDENT .
+
+How we built it -> I BUILT IT USING HTML5 ,CSS3 AND FLEXBOXES IN CSS
+
+Challenges we ran into -> IT TAKES A LOT OF TIME SEARCHING FOR A RIGHT CHANNEL OR WEBSITE FOR A PARTICULAR CATOGORY AND PROVIDING IT TO STUDENTS.
+
+Accomplishments that we're proud of -> I FEEL PROUD OF PROVIDING THE RESOURCES FOR FREE AND HELPING THEM TO GET INTO THE RIGHT DIRECTION AND PATH BY NOT WASTING THEIR TIME AND GETTING THE BEST RESOURCE.
+
+What we learned -> I LEARNT A LOT ABOUT HTML ,CSS AND FLEXBOXES IN DEPTH AND LEARNT TO IMPROVE MY DESIGNING SKILLS AND ALSO LEARNT TO HELP IN PUBLIC AND COMMUNITY
+
+What's next for FREE RESOURCES  WEBSITE  -> I WANT TO MAKE IT AS LARGER AS I CAN AND HELP MANY PEOPLE WHO WANT TO GET THE BEST FREE RESOURCE AND A RIGHT PATH FOR THEIR CARRER .
+","https://github.com/manikantanynala97/HACK-RU-PROJECT, https://github.com/manikantanynala97/HACK-RU-PROJECT",https://www.youtube.com/watch?v=1wllxlILCvo  and   https://www.youtube.com/watch?v=9cclPNLtCzU,"RUSA Presents: Best Rutgers Hack, Best UI/UX Design, Best Newbie Hack, Education Track, Best Solo Hack","html5, css3, flexbox",,vjit,0,Its a Free Resource website,To help the community,"html,css,flexbox",https://github.com/manikantanynala97/HACK-RU-PROJECT,Not able to upload the whole video and file problems and some more issues,https://www.youtube.com/watch?v=1wllxlILCvo,Slack ID U02J0SR1X51,No
+Fat Sandwich Finder,https://hackru-fall-2021.devpost.com/submissions/274725-fat-sandwich-finder,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:11:53,"Inspiration
+
+After many nights of looking confusedly at the RU Hungry sandwich menu, searching through the many possible food combinations, I had the urge to create a solution: an app where you can pick the ingredients you want and can see every Fat Sandwich that matches. This is the first, basic version of that app!
+
+What it does
+
+You select the ingredients you want on your sandwich, and the app tells you which Fat Sandwiches match your criteria.
+
+How I built it
+
+The app was made using AppGameKit, with some image editing help from paint.net.
+
+Challenges I ran into
+
+Text file parsing and visual designing were a bit tedious, as was typing in every Fat Sandwiches ingredients. In the end, only 15 sandwiches were included, but the rest will be added as the app is developed more.
+
+Accomplishments that I'm proud of
+
+Having a working app by the end of it! Debugging was a bit tricky, but the app is working and is now capable of handing many more Fat Sandwiches and ingredients.
+
+What's next for Fat Sandwich Finder
+
+Adding in support for all available fat sandwiches across all restaurants at Rutgers that serve them, and improving the search result panel to show all ingredients that are in your found fat sandwiches, in addition to scrolling.
+",https://drive.google.com/file/d/1qT6LDJ0iKX8sy1ghJ9aF5hrv9NVzPCjO/view?usp=sharing,https://www.youtube.com/watch?v=Qq7MHpp3m0M,"Maverick Track, RUSA Presents: Best Rutgers Hack, Best UI/UX Design, Best Solo Hack","appgamekit, paint.net",,"Rutgers, The State University of New Jersey",0,Fat Sandwich Filter,"After many nights of looking confusedly at the RU Hungry sandwich menu, I had the urge to create a solution: an app where you can pick the ingredients you want and can see every Fat Sandwich that matches.","AppGameKit, paint.net",https://drive.google.com/file/d/1qT6LDJ0iKX8sy1ghJ9aF5hrv9NVzPCjO/view?usp=sharing,"Text file parsing and visual designing were a bit tedious, as was typing in every Fat Sandwiches ingredients. In the end, only 15 sandwiches were included, but the rest will be added as the app is developed more.",https://www.youtube.com/watch?v=Qq7MHpp3m0M,"",Yes
+Untitled,"",Draft,Pending,Manage team,10/17/2021 10:23:28,"","",,"","",,"",0,"","","","","","","",""
+Tech Wiz - Sensory Band for Bionic Arm,https://hackru-fall-2021.devpost.com/submissions/274742-tech-wiz-sensory-band-for-bionic-arm,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:24:18,"Inspiration
+
+We are able to do most of the regular tasks without thinking twice. Having a cup of coffee, Having a spoon of cereal, Opening your laptop, Reading this paragraph. But that is not the case in everyone's life. Hemiparesis is a weakness or the inability to move a part of the body, making it hard to perform everyday activities like eating or dressing. Robotics has the potential to change the world, why not use it to improve the regular life of a person. A hemiparesis patient loses their motor coordination and has to depend on other people for the most basic things in life. 8/10 stroke survivors experience Hemiparesis including a majority of children. Why not help them improve their life. 
+
+What it does
+
+The Project is a sensory device that will read a human's arm motion and map it to a robotic manipulator's coordinates. The device will be a simple to wear armband which will read the arm's motion and the extent to which the arm is being used. Through that information, we can understand and map the robot exactly the way we want to control it.
+
+How we built it
+
+I used an Arduino Uno, Compass Module, Gyroscope module and a potentiometer to measure the various motions and mapped them to a Homogenous matrix leading to the control of a robotic manipulator
+
+Challenges we ran into
+
+I did not have enough time to make an actual robot and make it wireless.  The robotic manipulator that I made is a simple one made of a cardboard box. I was able to make it to such an extent that it shows the working of the sensory band sufficiently
+
+Accomplishments that we're proud of
+
+I was able to put together the band soon enough. I was very doubtful of making it work properly, but finally, here I am with something that works and I am really proud.
+
+What we learned
+
+I learnt a lot about the way Serial Communication works and wireless connection works(though was not able to integrate with the band yet). I also understood a lot about Time Management. 
+
+What's next for Tech Wiz - Sensory Band
+
+I would love to reduce the number of wires and design a PCB and set up a proper power supply system for the band. and also develop a proper manipulator that can be used by a hemiparesis patient.
+","",https://youtu.be/xzjalMuzWns,"Social Good Track, Best Solo Hack","arduino, robotics",,"",0,A Bionic Arm Controller in the form of Sensory Band for the Hemiparesis patients.,To use robotics to improve the life of the disabled community. This may help them in being independent and in employability too.,"Arduino, Robotics and Electrionics",https://drive.google.com/drive/folders/1Gh9X_ihtsHGSDr3ElHwyWJ7Gj2dS-C9R?usp=sharing,Was not able to complete my robotic manipulator. The compass and Gyroscope took a while to get it calibrated.,.,"",No
+SVF Bus Route Calculator,https://hackru-fall-2021.devpost.com/submissions/274759-svf-bus-route-calculator,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:41:42,"Inspiration
+
+
+We were hanging out at the Socam Apartments and wanted to get to our club: Rutgers Formula Racing, but we didn't know the bus route and path to take in order to get there. Our only option was to meticulously look at each bus stop and route on transloc to figure out the path and transfers we needed to take. I thought, ""it would be so nice to have an app/website that you can put in two locations around Rutgers and have it calculate which bus stop to take, which stops to transfer, and which stop to get off at"".
+
+What it does
+
+The project is the barebone program necessary to calculate the bus stops, buses, and transfers. It also calculates the estimated time of trip and mileage of the trip.
+
+How we built it
+
+We used javascript to build a graph with bus stop vertices and bus route edges and implemented Google Maps API and Google Distance Matrix API to compute locations of bus stops, mileage, and time it will take to reach the destination.
+
+Challenges we ran into
+
+
+Making the edges be the bus routes connecting the bus stops (vertices).
+
+
+ - Implementing the location of the user and the location of the final destination.
+
+Accomplishments that we're proud of
+
+
+Tying the bus routes with the associated edges of the graph.
+Implementing the Google Maps API to know the location of each source/destination.
+
+
+ - Implementing the Google Distance Matrix API to track the time of trip and distance of the trip.
+
+What we learned
+
+
+Usage of Google APIs
+Usage of Google Cloud
+
+
+ - Graphs on Javascript
+
+What's next for SVF Bus Stop Calculator
+
+
+Tracking user location.
+Locating the nearest bus stop to the user.
+Locating the nearest bus stop to the destination.
+Implementing a GUI.
+Streamlining the transfer system.
+
+
+",https://github.com/anishbajpai91/soveryf.git,https://youtu.be/FHO9Qejehvo,"Best Newbie Hack, Best Use Of Google Cloud , Social Good Track","javascript, google-maps, google-distance-matrix, google-cloud",,"Rutgers, The State University of New Jersey",2,Bus Route Calculator,Streamlining point A to point B bus route path calculations on transloc,"Javascript. Google Cloud, Google Maps API, Google Distance Matrix API",https://github.com/anishbajpai91/soveryf.git,Working with the Google API authentications,Did not make a vlog,"",Yes
+Say Cheese,https://hackru-fall-2021.devpost.com/submissions/274775-say-cheese,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:54:11,"Inspiration
+
+Everyone has had the experience of a group photo being ruined by one blink. Our goal was to streamline the group photo process for both the average consumer and the professional photographer.
+
+What it does
+
+Instead of taking a single image at the end of a timer, our program takes a burst of 25 photos. Those photos are then fed through our computer vision software to pick the best photo of the 25, the best photo being the one with the most amount of people smiling with open eyes.
+
+How we built it
+
+We used python code our app and build the user interface, and to analyze the images for eyes and smiles we used the open source computer vision software OpenCV.
+
+Challenges we ran into
+
+OpenCV was invaluable in building our project, however OpenCV by default only shows you where the eyes and smile are, so one of our main challenges was creating a program that detects the number of open eyes and smiles in a picture. Another big challenge was building the Graphic User Interface with tkinter, our vision for Say Cheese is an easy to use application, we were very particular about what we wanted so we decided to code the entire GUI by hand instead of using Python GUI building software. This may have cost us time, but in the end it was the only way to ensure we got the end product we wanted.
+
+Accomplishments that we're proud of
+
+We successfully used OpenCV to detect open eyes and a smile from a webcam feed, which was simultaneously one of the most challenging and most important parts of the project. Additionally, we build a user interface from scratch with minimal experience beforehand.
+
+What we learned
+
+We learned an incredible amount over the course of our build. We learned how to implement OpenCV into a python script, how to build a GUI using Tkinter, and we learned how to utilize a built in webcam to take pictures and post a live video feed.
+
+What's next for Say Cheese
+
+We believe that our software has many uses in both the casual and professional side of photography. For the average consumer, our software can be built in to almost all modern smartphones, as most brands already use onboard facial recognition capabilities(Apple,Samsung,Google,Oneplus,LG,etc.). For the professional photographer, we could see this being built into camera software, which would be invaluable in situations such as weddings and other large social gatherings.
+","",https://www.youtube.com/watch?v=I1gjZyx_fYk&ab_channel=MattKrinzman,"","python, opencv, tkinter",,"Rutgers, The State University of New Jersey, New Jersey Institute of Technology",3,We built a group photo algorithm using Computer vision,We have all had problems with group photos,"Open CV, Python, Tkinter, Lightworks",https://github.com/NevzatKumas/PerfectPic,The gui was extremely challenging,https://youtu.be/I1gjZyx_fYk,"",Yes
+Mastermind,https://hackru-fall-2021.devpost.com/submissions/274780-mastermind,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:58:15,"Inspiration
+
+I love connecting concepts from different STEM fields (ex: Bio and Chem) and analyzing how they relate to each other! I created Mastermind to share this passion and encourage users to explore the intricate world around them.
+
+What it does
+
+Mastermind poses questions to users that connect different areas of math and science. Each ""node"" is a certain field, and the dotted lines are the ""connections"" between fields. Each connection contains a question, and users unlock increasingly complex nodes by answering these questions!
+
+How we built it
+
+I used Javascript, HTML, and CSS to build the webpage.
+
+Challenges we ran into
+
+Keeping track of user input was one of the main challenges I ran into, as well as generating a clean and organized UI. In addition, I basically made this project solo so writing all of the code in 24 hours was a  very rigorous task. 
+
+Accomplishments that we're proud of
+
+I am proud of the fact that I was able to add complicated functions and event listeners successfully for the first time when developing this project.
+
+What we learned
+
+I learned about how to handle, organize, and store user input more efficiently from this project.
+
+What's next for Mastermind
+
+I will try to make profile pages for users and use SQL to store the accounts. I will also create more questions, more nodes, more connections and add hints to encourage users to explore new concepts!
+","",https://youtu.be/7Rexe83fZH0,Education Track,"javascript, html5, css3",,"Rutgers, The State University of New Jersey",1,Mastermind,"I like to connect ideas from different fields of math and science, and wanted to spread my passion to others!","Javascript, HTML, CSS",https://github.com/YashasRavi/Mastermind,"Maintaining user input, organizing the UI, writing all the code in 24 hours!",https://youtu.be/7Rexe83fZH0,"",Yes
+Secured Transaction Tracker,https://hackru-fall-2021.devpost.com/submissions/274781-secured-transaction-tracker,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 10:58:24,"Inspiration
+
+Keeping track of transaction is really important nowadays and we get really bored to check the bank page everytime. There should be a solution where you can keep track of your earnings and spendings all at one place within a secured environment. Here comes my application.
+
+What it does
+
+My application helps in keeping track of all of your money transactions be it an amount you earn or get, or an amount you are spending all at one place. And you will also get the secured environment of Auth0.
+
+How we built it
+
+I have used the React template, along with HTML and CSS for the frontend part. For the authentication, I have used Auth0.
+
+Challenges we ran into
+
+Integrating the application and the authentication was a real challenge
+
+Accomplishments that we're proud of
+
+Getting the application ready is an accomplishment, that I am proud of
+
+What we learned
+
+I have learned time management.
+
+What's next for Secured Transaction Tracker
+
+The project is open-source. So, anybody can contribute freely. For now, the application is manual but I tend to make it automatic in the near future.
+","https://github.com/Sayanta66/Transaction-Tracker, https://www.transacthenticator.tech",https://youtu.be/zh-JJBVrF1I,"Social Good Track, Best Solo Hack, Best Use of Auth0, Best Domain Name from Domain.com","html, css, react, auth0, javascript",,Maulana Abul Kalam Azad University Of Technology,0,Secured Transaction Tracker,"In today's world, it is needed for us to have an application where we can track our income and spending like writing a diary.","HTML, CSS, React, Javascript, Auth0",https://github.com/Sayanta66/Transaction-Tracker,Doing the authentication part and integrating it with the application was a challenge for me.,https://youtu.be/zh-JJBVrF1I,http://www.transacthenticator.tech,No
+Book my Barber,https://hackru-fall-2021.devpost.com/submissions/274782-book-my-barber,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 11:00:24,"Inspiration
+
+Barbers facing the COVID-19 difficulties.
+
+What it does
+
+Connects barbers and customers looking for a haircut at home.
+
+How we built it
+
+We created this website by using HTML and PHP for both the front-end and back-end.
+
+Challenges we ran into
+
+The HTML5 experience was lacking. The trouble with software compatibilities such as xampp not working on one of our teammates.
+
+Accomplishments that we're proud of
+
+Getting to work so fast.
+
+What we learned
+
+Download all the programs beforehand to test them out. Communication is key. HTML isn't as easy as we thought.
+
+What's next for Book my Barber
+
+Expanding to bigger areas and more grooming services.
+",https://github.com/mprothero20/bookmybarber,https://youtu.be/dv40dlQ14wA,"","xampp, html5, visual-studio, php",,Saint Peter's University,4,bookmybarber,To help barbers with other revenue streams in the trying time of COVID,"xampp, visual studio, html, javascript, php",https://github.com/mprothero20/bookmybarber,HTML not wanting to work with us,https://prezi.com/v/w1sqrqjqiruf/,"",Yes
+Lightning-MC Website,https://hackru-fall-2021.devpost.com/submissions/274837-lightning-mc-website,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 11:52:31,"What it does
+
+Provides a Website for a minecraft server network we are apart of and help develop
+
+How we built it
+
+Using a template to start and then changing the html properties and adding assets to the project
+
+Challenges we ran into
+
+Learning the little things in html and how to use them to our advantages
+
+What we learned
+
+How to make a website and basic html
+
+What's next for Lightning-MC Website
+
+Fully build out individual pages for every server on our network
+",https://storage.googleapis.com/www.lightning-mc.tech/dist/index.html,https://youtu.be/TsnTWPfxuhg,"Best Failure to Launch, Best Domain Name from Domain.com","html5, pug, css, html, github",,"Rutgers, The State University of New Jersey",1,a website for our MC server,to promote the server,"domain.com, github, html, css,pug",https://github.com/JT122406/Lightning-MC-Website,linking to domain.com,https://youtu.be/TsnTWPfxuhg,Lightning-MC.tech,Yes
+Haxle,https://hackru-fall-2021.devpost.com/submissions/274838-haxle,Submitted (Gallery/Visible),Pending,Submit,10/17/2021 11:53:55,"Inspiration
+
+We were inspired by games such as Hill Climb Racing
+
+What it does
+
+How we built it
+
+Challenges we ran into
+
+Accomplishments that we're proud of
+
+What we learned
+
+What's next for Haxle
+",https://github.com/Michael73MGD/Haxle,https://youtu.be/AD2ps6Nwdww,"",python,,Stevens Institute of Technology,2,Haxle,To practice with Pygame and use Tensorflow,"Python, Pygame",https://github.com/Michael73MGD/Haxle,The game was far more difficult to code than we expected,https://www.youtube.com/watch?v=AD2ps6Nwdww,"",Yes

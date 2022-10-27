@@ -4,6 +4,9 @@ import JudgeList from '../components/JudgeList';
 import styles from './AdminDashboard.module.scss';
 
 function JudgeDashboard() {
+
+  
+
   return (
     <Layout version="judge">
       <div className={styles.adminDashboardContainer}>

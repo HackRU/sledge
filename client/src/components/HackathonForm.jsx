@@ -1,6 +1,6 @@
 import {
   Button,
-  Divider,
+  // Divider,
   FormLabel,
   Grid,
   IconButton,
@@ -9,7 +9,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
-import { mergeClasses } from '@material-ui/styles';
+// import { mergeClasses } from '@material-ui/styles';
 import { Form, Formik, FieldArray, Field} from 'formik';
 import * as yup from 'yup';
 
@@ -60,7 +60,7 @@ export default function HackathonForm() {
         alert(JSON.stringify(values, null, 2));
       }}
     >
-      {({ values, handleChange, setFieldValue }) => (
+      {({ values, handleChange, /* setFieldValue */ }) => (
         <Form className={classes.root} autoComplete="off">
           <TextField
             name="season"
