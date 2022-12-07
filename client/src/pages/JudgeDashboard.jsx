@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '../components/Layout';
 import JudgeList from '../components/JudgeList';
 import styles from './AdminDashboard.module.scss';
+import JudgeRating from '../components/JudgeRating';
 
 function JudgeDashboard() {
   return (
