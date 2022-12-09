@@ -11,6 +11,7 @@ import SubmissionPage from './pages/SubmissionPage';
 import './App.css';
 import SubmissionDashboard from './pages/SubmissionDashboard';
 import PreHackathonDashboard from './pages/PreHackathonDashboard';
+import JudgeRating from './components/JudgeRating';
 
 const Sledge = CoreModule(
   ({ profile }) => {
@@ -52,6 +53,9 @@ const Sledge = CoreModule(
             </Route>
             <Route exact path="/admin/prehack">
               <PreHackathonDashboard />
+            </Route>
+            <Route exact path="/judge/rating">
+              <JudgeRating/>
             </Route>
           </Switch>
         </div>
