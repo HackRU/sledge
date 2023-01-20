@@ -10,6 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import ImportCSVPage from '../pages/ImportCSVPage';
 
 const drawerWidth = 240;
 
@@ -63,6 +64,12 @@ export default function Sidebar() {
           <Link to="/admin/submissions">
             <ListItem button>
               <ListItemText primary="Submissions" />
+            </ListItem>
+          </Link>
+
+          <Link to="/admin/ImportCSVPage">
+            <ListItem button>
+              <ListItemText primary="Upload Hack" />
             </ListItem>
           </Link>
 

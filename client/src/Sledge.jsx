@@ -12,6 +12,7 @@ import './App.css';
 import SubmissionDashboard from './pages/SubmissionDashboard';
 import PreHackathonDashboard from './pages/PreHackathonDashboard';
 import JudgeRating from './components/JudgeRating';
+import ImportCSVPage from './pages/ImportCSVPage';
 
 const Sledge = CoreModule(
   ({ profile }) => {
@@ -56,6 +57,9 @@ const Sledge = CoreModule(
             </Route>
             <Route exact path="/judge/rating">
               <JudgeRating/>
+            </Route>
+            <Route exact path = "/admin/ImportCSVPage">
+                <ImportCSVPage/>
             </Route>
           </Switch>
         </div>
