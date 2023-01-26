@@ -1,9 +1,63 @@
-var express = require('express');
-const router = express.Router();
-
+const express = require('express');
+const { route } = require('..');
 const Submission = require('../models/submission.model');
 
+const router = express.Router();
 
+router
+    .route('/')
+    .get(async({res}) =>{
+        res.status(200).send(await Submission.find({}));
+    })
+    .post((req,req) => {
+        // console.log(req.body);
+        Submission.create(
+            {
+            urls: req.body.urls,
+            attributes: {
+                description: req.body.description,
+                technologies: req.body.technologies,
+                title: req.body.title,
+            },
+        
+            // categories: req.body.categories,
+            // there is no teamId, state, categories, flags,
+            // provided in the form. also, no way to handle
+            // images atm.
+            },
+            (err, submission) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).json({
+                message: 'success',
+                id: submission.id,
+                });
+            }
+            },
+        );
+    })
+router
+    .route('/:submissionID')
+    .get(async(req,res)=>{
+        await Submission.findById(req.params.submissionID, (err, submission) => {
+            if (err) res.status(500).send(err);
+            res.status(200).send(submission);
+          });
+    })
+    //update submission with new info
+    .patch(async(req,res)=>{
+        await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
+            new: true,
+          });
+        
+          res.status(200).send(await Submission.findById(req.params.submissionID));
+    });
+
+
+
+
+modules.exports = router; 
 /**
  * @swagger
  * /api/submissions:
@@ -14,9 +68,7 @@ const Submission = require('../models/submission.model');
  *    tags:
  *      - submissions
  */
- router.get('/', async ({ res }) => {
-    res.status(200).send(await Submission.find({}));
-  });
+
 
 /**
  * @swagger
@@ -34,12 +86,7 @@ const Submission = require('../models/submission.model');
  *     tags:
  *       - submissions
  */
-router.get('/:submissionID', async (req, res) => {
-    await Submission.findById(req.params.submissionID, (err, submission) => {
-      if (err) res.status(500).send(err);
-      res.status(200).send(submission);
-    });
-  });
+
 
 /**
  * @swagger
@@ -64,42 +111,3 @@ router.get('/:submissionID', async (req, res) => {
  *     tags:
  *       - submissions
  */
- router.post('/', (req, res) => {
-    // console.log(req.body);
-    Submission.create(
-      {
-        urls: req.body.urls,
-        attributes: {
-          description: req.body.description,
-          technologies: req.body.technologies,
-          title: req.body.title,
-        },
-  
-        // categories: req.body.categories,
-        // there is no teamId, state, categories, flags,
-        // provided in the form. also, no way to handle
-        // images atm.
-      },
-      (err, submission) => {
-        if (err) {
-          res.status(500).send(err);
-        } else {
-          res.status(200).json({
-            message: 'success',
-            id: submission.id,
-          });
-        }
-      },
-    );
-  });
-  
-  // update a submission with new info
-  router.patch('/:submissionID', async (req, res) => {
-    await Submission.findOneAndUpdate(req.params.submissionID, req.body, {
-      new: true,
-    });
-  
-    res.status(200).send(await Submission.findById(req.params.submissionID));
-  });
-  
-  module.exports = router;
