@@ -50,7 +50,7 @@ describe('testing category endpoints', () => {
 
   it('updates a category with a specific ID', async (done) => {
     const updatedFields = {
-      name: 'Sample Updated Name',
+      name: 'Sample Category',
       companyName: 'Sample Company Name',
       type: 'superlative',
     };
