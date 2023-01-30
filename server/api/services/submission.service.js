@@ -1,4 +1,4 @@
-const Submission = require('../models/submission.model');
+const Submission = require('../../models/submission.model');
 
 /*
  * Retrieves all submissions from the database.

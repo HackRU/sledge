@@ -4,6 +4,7 @@ const {
   getSubmissionByID,
   createSubmission,
   updateSubmission,
+  convertCSVtoJSON
 } = require('../controllers/submission.controller.js');
 
 /**
@@ -63,5 +64,7 @@ router.post('/', createSubmission);
 
 // update a submission with new info
 router.patch('/:submissionID', updateSubmission);
+
+router.post('/CSVpost', convertCSVtoJSON);
 
 module.exports = router;

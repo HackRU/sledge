@@ -3,7 +3,8 @@ const {
   findSubmissionById,
   postSubmission,
   patchSubmission,
-} = require('../service/submission.service.js');
+} = require('../services/submission.service.js');
+const {convertCSV} = require('../helpers/convertCSV');
 
 const getSubmissions = async (req, res) => {
   const foundUsers = await findSubmissions();
@@ -38,15 +39,30 @@ const createSubmission = async (req, res) => {
 const updateSubmission = async (req, res) => {
   const updatedSub = await patchSubmission(req);
   if (updatedSub) {
-    res.status(200).send(getSubmissionByID);
+    res.status(200).send(updatedSub.id);
   } else {
     res.status(500).send('Submisison updating not done correctly');
   }
 };
+
+const convertCSVtoJSON = async (req, res) => {
+  const JSONSubmissions = await convertCSV();
+  console.log(JSONSubmissions);
+  if (JSONSubmissions){
+    res.status(200).json({
+      message: 'Successfully converted submissions',
+      submissions: JSONSubmissions
+    })
+  }
+  else {
+    res.status(500).send('Submissions converting not done correctly');
+  }
+}
 
 module.exports = {
   getSubmissions,
   getSubmissionByID,
   createSubmission,
   updateSubmission,
+  convertCSVtoJSON
 };
