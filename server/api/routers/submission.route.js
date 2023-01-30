@@ -4,7 +4,7 @@ const {
   getSubmissionByID,
   createSubmission,
   updateSubmission,
-  convertCSVtoJSON
+  convertCSVtoJSON,
 } = require('../controllers/submission.controller.js');
 
 /**

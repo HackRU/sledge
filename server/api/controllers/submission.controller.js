@@ -4,7 +4,7 @@ const {
   postSubmission,
   patchSubmission,
 } = require('../services/submission.service.js');
-const {convertCSV} = require('../helpers/convertCSV');
+const { convertCSV } = require('../helpers/convertCSV');
 
 const getSubmissions = async (req, res) => {
   const foundUsers = await findSubmissions();
@@ -47,22 +47,20 @@ const updateSubmission = async (req, res) => {
 
 const convertCSVtoJSON = async (req, res) => {
   const JSONSubmissions = await convertCSV();
-  console.log(JSONSubmissions);
-  if (JSONSubmissions){
+  if (JSONSubmissions) {
     res.status(200).json({
       message: 'Successfully converted submissions',
-      submissions: JSONSubmissions
-    })
-  }
-  else {
+      submissions: JSONSubmissions,
+    });
+  } else {
     res.status(500).send('Submissions converting not done correctly');
   }
-}
+};
 
 module.exports = {
   getSubmissions,
   getSubmissionByID,
   createSubmission,
   updateSubmission,
-  convertCSVtoJSON
+  convertCSVtoJSON,
 };
