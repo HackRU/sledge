@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {
   getSubmissions,
+  getSampleSubmission,
   getSubmissionByID,
   createSubmission,
   updateSubmission,
@@ -17,7 +18,7 @@ const {
  *    tags:
  *      - submissions
  */
-router.get('/', getSubmissions);
+router.get('/', getSampleSubmission);
 
 /**
  * @swagger
