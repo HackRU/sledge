@@ -5,6 +5,7 @@ const {
   patchSubmission,
 } = require('../services/submission.service.js');
 const { convertCSV } = require('../helpers/convertCSV');
+const { generateSubmission } = require('../../testing/testObjectGenerator.js');
 
 const getSubmissions = async (req, res) => {
   const foundUsers = await findSubmissions();
@@ -23,6 +24,15 @@ const getSubmissionByID = async (req, res) => {
     res.status(500).send('Submissoin not found.');
   }
 };
+
+const getSampleSubmission = async(req,res) => {
+  const foundUsers = await generateSubmission();
+  if (foundUsers) {
+    res.status(200).send(foundUsers);
+  } else {
+    res.status(500).send('Submission list not generated.');
+  }
+}
 
 const createSubmission = async (req, res) => {
   const newSub = await postSubmission(req);
@@ -60,6 +70,7 @@ const convertCSVtoJSON = async (req, res) => {
 module.exports = {
   getSubmissions,
   getSubmissionByID,
+  getSampleSubmission,
   createSubmission,
   updateSubmission,
   convertCSVtoJSON,
