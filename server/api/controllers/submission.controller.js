@@ -21,18 +21,18 @@ const getSubmissionByID = async (req, res) => {
   if (foundUser) {
     res.status(200).send(foundUser);
   } else {
-    res.status(500).send('Submissoin not found.');
+    res.status(500).send('Submission not found.');
   }
 };
 
-const getSampleSubmission = async(req,res) => {
+const getSampleSubmission = async (req, res) => {
   const foundUsers = await generateSubmission();
   if (foundUsers) {
     res.status(200).send(foundUsers);
   } else {
     res.status(500).send('Submission list not generated.');
   }
-}
+};
 
 const createSubmission = async (req, res) => {
   const newSub = await postSubmission(req);
