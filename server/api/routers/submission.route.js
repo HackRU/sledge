@@ -52,7 +52,7 @@ router.get('/:submissionID', getSubmissionByID);
 
 /**
  * @swagger
- * /api/submissions/create:
+ * /api/submissions/:
  *   post:
  *     summary: Creates a new submission
  *     requestBody:
