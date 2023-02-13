@@ -70,8 +70,40 @@ router.get('/:submissionID', getSubmissionByID);
  */
 router.post('/', createSubmission);
 
-// update a submission with new info
+/**
+ * @swagger
+ * /api/submissions/{submissionID}:
+ *   patch:
+ *     summary: Update the specified submission with new information
+ *     parameters:
+ *       - in: path
+ *         name: submissionID
+ *         required: true
+ *         type: string
+ *         description: The submission ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             #ref: '#/api/models/submission
+ *     tags:
+ *       - submissions
+ */
 router.patch('/:submissionID', updateSubmission);
+
+/**
+ * @swagger
+ * /api/submissions/CSVpost:
+ *   post:
+ *     summary: Post CSV file to database
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/csv:
+ *     tags:
+ *       - submissions
+ */
 
 router.post('/CSVpost', convertCSVtoJSON);
 
