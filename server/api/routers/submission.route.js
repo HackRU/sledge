@@ -100,7 +100,7 @@ router.patch('/:submissionID', updateSubmission);
  *     requestBody:
  *       required: true
  *       content:
- *         application/csv:
+ *         text/csv:
  *     tags:
  *       - submissions
  */
