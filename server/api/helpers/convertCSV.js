@@ -2,10 +2,10 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const SubmissionModel = require('../../models/submission.model');
 
-const convertCSV = () => {
+const convertCSV = (filepath) => {
   const results = [];
   return new Promise((resolve, reject) => {
-    fs.createReadStream('./testing/data/projects-fall-2021.csv')
+    fs.createReadStream(filepath)
       .pipe(csv())
       .on('data', (data) => {
         const submission = new SubmissionModel();

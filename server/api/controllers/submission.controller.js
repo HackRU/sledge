@@ -1,3 +1,4 @@
+const formidable = require('formidable');
 const {
   findSubmissions,
   findSubmissionById,
@@ -6,8 +7,6 @@ const {
 } = require('../services/submission.service.js');
 const { convertCSV } = require('../helpers/convertCSV');
 const { generateSubmission } = require('../../testing/testObjectGenerator.js');
-const formidable = require('formidable');
-
 
 const getSubmissions = async (req, res) => {
   const foundUsers = await findSubmissions();
@@ -58,29 +57,24 @@ const updateSubmission = async (req, res) => {
 };
 
 const convertCSVtoJSON = async (req, res) => {
-  const form = formidable({multiples: true});
+  const form = formidable({ multiples: true });
+  let filepath;
 
-  form.parse(req, (err, fields, files) => {
+  form.parse(req, async (err, fields, files) => {
     if (err) {
       res.writeHead(err.httpCode || 400, { 'Content-Type': 'text/plain' });
       res.end(String(err));
       return;
     }
-    //TODO: parse csv file to convertCSV 
-    //TODO: return submission model to res
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ fields, files }, null, 2));
-  });
 
-  //const JSONSubmissions = await convertCSV();
-  // if (JSONSubmissions) {
-  //   res.status(200).json({
-  //     message: 'Successfully converted submissions',
-  //     submissions: JSONSubmissions,
-  //   });
-  // } else {
-  //   res.status(500).send('Submissions converting not done correctly');
-  // }
+    filepath = files.file.path;
+    const JSONSubmissions = await convertCSV(filepath);
+    if (JSONSubmissions) {
+      res.send(JSON.stringify(JSONSubmissions));
+    } else {
+      res.status(500).send('Submissions converting not done correctly');
+    }
+  });
 };
 
 module.exports = {
