@@ -60,6 +60,8 @@ const convertCSVtoJSON = async (req, res) => {
   const form = formidable({ multiples: true });
   let filepath;
 
+  console.log(req.body);
+
   form.parse(req, async (err, fields, files) => {
     if (err) {
       res.writeHead(err.httpCode || 400, { 'Content-Type': 'text/plain' });
@@ -67,7 +69,9 @@ const convertCSVtoJSON = async (req, res) => {
       return;
     }
 
-    filepath = files.file.path;
+    console.log(files);
+
+    filepath = files.file.filepath;
     const JSONSubmissions = await convertCSV(filepath);
     if (JSONSubmissions) {
       res.send(JSON.stringify(JSONSubmissions));
